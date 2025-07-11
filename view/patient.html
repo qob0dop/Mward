@@ -197,10 +197,7 @@
                                     <input type="text" name="admiss_times" lay-verify="required" placeholder="" autocomplete="off" class="layui-input">
                                 </div>
 
-                                <div class="layui-input-inline"> 
-                                    <button type="button" name="tiwendan" class="layui-btn layui-btn-warm layui-btn-radius layui-anim" data-anim="layui-anim-fadein"> 体温单 </button>
-                                    <button type="button" class="layui-btn layui-btn-normal layui-btn-radius layui-anim" data-anim="layui-anim-fadein">基本信息</button>
-                                </div>
+                                
                             </div>
                             <div class="layui-form-item">
 
@@ -213,10 +210,7 @@
                                     <input type="text" name="admiss_days" lay-verify="required" placeholder="" autocomplete="off" class="layui-input">
                                 </div>
 
-                                <div class="layui-input-inline">
-                                    <button type="button" name="dianzibingli" class="layui-btn layui-btn-normal layui-btn-radius" onclick="javascrript:location.href = 'edoclist.html?ticks='+(new Date()).getTime()">电子病历</button>
-                                    <button type="button" class="layui-btn layui-btn-normal layui-btn-radius">护理文书</button>
-                                </div>
+                                
                             </div>
                             <div class="layui-form-item">
                                 <label class="layui-form-label">性别</label>
@@ -227,10 +221,7 @@
                                 <div class="layui-input-inline">
                                     <input type="text" name="ages" lay-verify="required" placeholder="" autocomplete="off" class="layui-input">
                                 </div>
-                                <div class="layui-input-inline">
-                                    <button type="button" class="layui-btn layui-btn-normal layui-btn-radius" onclick="javascrript:location.href = 'jylist.html?ticks='+(new Date()).getTime()">化验报告</button>
-                                    <button type="button" class="layui-btn layui-btn-normal layui-btn-radius" onclick="javascrript:location.href = 'jclist.html?ticks='+(new Date()).getTime()">检查报告</button>
-                                </div>
+                                
                             </div>
                             <div class="layui-form-item">
                                 <label class="layui-form-label">住院号</label>
@@ -242,7 +233,7 @@
                                     <input type="text" name="bed_no" lay-verify="required" placeholder="" autocomplete="off" class="layui-input">
                                 </div>
                                 <div class="layui-input-inline">
-                                    <button type="button" class="layui-btn layui-btn-normal layui-btn-radius" onclick="javascrript:location.href = 'oplist.html'">手术信息</button>
+                                    <!-- 手术信息按钮已移除，统一由底部选项栏控制 -->
                                 </div>
                             </div>
                             <div class="layui-form-item">
@@ -316,6 +307,11 @@
                         <li data-index="1">医嘱</li>
                         <li data-index="2">检验</li>
                         <li data-index="3">检查</li>
+                        <li data-index="4">医生文书</li>
+                        <li data-index="5">护理文书</li>
+                        <li data-index="6">护理记录</li>
+                        <li data-index="7">体温单</li>
+                        <li data-index="8">手术信息</li>
                     </ul>
                 </div>
             </div>
@@ -325,128 +321,140 @@
     <script src="../lib/layui-v2.6.3/layui.js" charset="utf-8"></script>
     <script src="../js/lay-config.js?v=1.0.4" charset="utf-8"></script>
     <script>layui.use(['table', 'treetable','appconfig','element'], function () {
-                    var $ = layui.jquery;
-                    var table = layui.table;
-                    var treetable = layui.treetable;
-                    var appconfig = layui.appconfig;
-                    var element = layui.element;
-            var userData = localStorage.getItem('userData');
+    var $ = layui.jquery;
+    var table = layui.table;
+    var treetable = layui.treetable;
+    var appconfig = layui.appconfig;
+    var element = layui.element;
+    var userData = localStorage.getItem('userData');
 
-            if (userData  === null) {
-                layer.msg("请先选择患者！");
-                return;
-            } else {
-                //layer.msg('加载中', {
-                //    icon: 16
-                //    , shade: 0.01
-                //});
-                var jsonData = JSON.parse(userData);
-                console.log(jsonData);
-                
-                // 更新顶部患者信息显示
-                $('#patient-header-info').html('<i class="layui-icon layui-icon-username" style="font-size: 18px; margin-right: 8px;"></i>' + 
-                    jsonData.name + ' &nbsp;|&nbsp; ' + 
-                    jsonData.inpatient_no + ' &nbsp;|&nbsp; ' + 
-                    jsonData.sex_name + ' &nbsp;|&nbsp; ' + 
-                    jsonData.ages + ' &nbsp;|&nbsp; ' + 
-                    jsonData.bed_no + '床');
-                
-                $("input[name='pname']").val(jsonData.name);
-                $("input[name='admiss_times']").val(jsonData.admiss_times);
-                $("input[name='admiss_date']").val(jsonData.admiss_date_text2);
-                $("input[name='admiss_days']").val(jsonData.admiss_days);
-                $("input[name='sex_name']").val(jsonData.sex_name);
-                $("input[name='ages']").val(jsonData.ages);
-                $("input[name='inpatient_no']").val(jsonData.inpatient_no);
-                $("input[name='bed_no']").val(jsonData.bed_no);
-                $("input[name='refer_physician_name']").val(jsonData.refer_physician_name);
-                $("input[name='refer_nurse_name']").val(jsonData.refer_nurse_name);
-                $("input[name='admiss_diag']").val(jsonData.admiss_diag);
-                $("input[name='admiss_diag_name']").val(jsonData.admiss_diag_name);
-                $("input[name='nursing']").val(jsonData.nursing);
-                $("input[name='responce_type_name']").val(jsonData.responce_type_name);
+    if (userData  === null) {
+        layer.msg("请先选择患者！");
+        return;
+    } else {
+        //layer.msg('加载中', {
+        //    icon: 16
+        //    , shade: 0.01
+        //});
+        var jsonData = JSON.parse(userData);
+        console.log(jsonData);
+        
+        // 更新顶部患者信息显示
+        $('#patient-header-info').html('<i class="layui-icon layui-icon-username" style="font-size: 18px; margin-right: 8px;"></i>' + 
+            jsonData.name + ' &nbsp;|&nbsp; ' + 
+            jsonData.inpatient_no + ' &nbsp;|&nbsp; ' + 
+            jsonData.sex_name + ' &nbsp;|&nbsp; ' + 
+            jsonData.ages + ' &nbsp;|&nbsp; ' + 
+            jsonData.bed_no + '床');
+        
+        $("input[name='pname']").val(jsonData.name);
+        $("input[name='admiss_times']").val(jsonData.admiss_times);
+        $("input[name='admiss_date']").val(jsonData.admiss_date_text2);
+        $("input[name='admiss_days']").val(jsonData.admiss_days);
+        $("input[name='sex_name']").val(jsonData.sex_name);
+        $("input[name='ages']").val(jsonData.ages);
+        $("input[name='inpatient_no']").val(jsonData.inpatient_no);
+        $("input[name='bed_no']").val(jsonData.bed_no);
+        $("input[name='refer_physician_name']").val(jsonData.refer_physician_name);
+        $("input[name='refer_nurse_name']").val(jsonData.refer_nurse_name);
+        $("input[name='admiss_diag']").val(jsonData.admiss_diag);
+        $("input[name='admiss_diag_name']").val(jsonData.admiss_diag_name);
+        $("input[name='nursing']").val(jsonData.nursing);
+        $("input[name='responce_type_name']").val(jsonData.responce_type_name);
 
 
-                var _twdurl = appconfig.twd_webpage + '/?patient_id=' + jsonData.patient_id + '&admiss_times=' + jsonData.admiss_times + '&api_host='+appconfig.api+"/";
-                //var _dzblurl = appconfig.twd_webpage + "/test.pdf";
-                var _dzblurl =  "/lib/pdfjs/test1.pdf";
-                //体温单点击
-                $("button[name='tiwendan']").click(function(){
-                const now = new Date();
-                const ticks = now.getTime();
-                //console.log(ticks);
-                    window.parent.layui.layer.open({
-                        type: 2,
-                        area: ['100%', '100%'],
-                        title: "体温单" + " - " +jsonData.name + " - " +jsonData.inpatient_no + " - " +jsonData.sex_name+ " - " +jsonData.ages,
-                        closeBtn: 1,
-                        shadeClose: true, // 点击遮罩关闭层
-                        content: _twdurl +"&ticks="+ticks //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
-                    });
-                });
-                //电子病历点击
-    //            $("button[name='dianzibingli']").click(function(){
-    //            const now = new Date();
-    //            const ticks = now.getTime();
-    ////_dzblurl = _dzblurl+"?ticks="+ticks
-    ////alert(_dzblurl);
-    //            //console.log(ticks);
-    //                window.parent.layui.layer.open({
-    //                    type: 1,
-    //                    area: ['100%', '100%'],
-    //                    title: "电子病历" + " - " +jsonData.name + " - " +jsonData.inpatient_no + " - " +jsonData.sex_name+ " - " +jsonData.ages,
-    //                    closeBtn: 1,
-    //                    shadeClose: true, // 点击遮罩关闭层
-    //                    content:  "<iframe src='../../lib/pdf6/web/viewer.html?file=" +
-    //                    //content:  "<iframe src='../../lib/pdf5/pdf.html?file=" +
-    //            _dzblurl +
-    //            "' style='width:100%;height:100%'></iframe>"//+"?ticks="+ticks //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
+        var _twdurl = appconfig.twd_webpage + '/?patient_id=' + jsonData.patient_id + '&admiss_times=' + jsonData.admiss_times + '&api_host='+appconfig.api+"/";
+        //var _dzblurl = appconfig.twd_webpage + "/test.pdf";
+        var _dzblurl =  "/lib/pdfjs/test1.pdf";
+        //体温单点击
+        $("button[name='tiwendan']").click(function(){
+        const now = new Date();
+        const ticks = now.getTime();
+        //console.log(ticks);
+            window.parent.layui.layer.open({
+                type: 2,
+                area: ['100%', '100%'],
+                title: "体温单" + " - " +jsonData.name + " - " +jsonData.inpatient_no + " - " +jsonData.sex_name+ " - " +jsonData.ages,
+                closeBtn: 1,
+                shadeClose: true, // 点击遮罩关闭层
+                content: _twdurl +"&ticks="+ticks //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
+            });
+        });
+        //电子病历点击
+//            $("button[name='dianzibingli']").click(function(){
+//            const now = new Date();
+//            const ticks = now.getTime();
+//    //_dzblurl = _dzblurl+"?ticks="+ticks
+//    //alert(_dzblurl);
+//            //console.log(ticks);
+//                window.parent.layui.layer.open({
+//                    type: 1,
+//                    area: ['100%', '100%'],
+//                    title: "电子病历" + " - " +jsonData.name + " - " +jsonData.inpatient_no + " - " +jsonData.sex_name+ " - " +jsonData.ages,
+//                    closeBtn: 1,
+//                    shadeClose: true, // 点击遮罩关闭层
+//                    content:  "<iframe src='../../lib/pdf6/web/viewer.html?file=" +
+//                    //content:  "<iframe src='../../lib/pdf5/pdf.html?file=" +
+//            _dzblurl +
+//            "' style='width:100%;height:100%'></iframe>"//+"?ticks="+ticks //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
     //                });
     //            });
 
 
-                $(".layuimini-container").show();
-            }
+            $(".layuimini-container").show();
+        }
 
-            // 底部选项卡切换事件
-            $('.bottom-tabs .layui-tab-title li').click(function(){
-                var index = $(this).data('index');
-                
-                // 切换选项卡样式
-                $('.bottom-tabs .layui-tab-title li').removeClass('layui-this');
-                $(this).addClass('layui-this');
-                
-                // 切换内容显示
-                $('.tab-content-area .layui-tab-item').removeClass('layui-show');
-                
-                var jsonData = JSON.parse(localStorage.getItem('userData'));
-                var patientParams = '?patient_id=' + jsonData.patient_id + '&admiss_times=' + jsonData.admiss_times + '&ticks=' + (new Date()).getTime();
-                
-                // 根据选项卡切换加载不同内容
-                switch(index) {
-                    case 0: // 患者信息
-                        $('#tab-patient').addClass('layui-show');
-                        break;
-                    case 1: // 医嘱
-                        $('#tab-yizhu').addClass('layui-show');
-                        if($('#yizhu-content iframe').length === 0) {
-                            $('#yizhu-content').html('<iframe src="yizhu.html' + patientParams + '"></iframe>');
-                        }
-                        break;
-                    case 2: // 检验
-                        $('#tab-jianyan').addClass('layui-show');
-                        if($('#jianyan-content iframe').length === 0) {
-                            $('#jianyan-content').html('<iframe src="jy_apply.html' + patientParams + '"></iframe>');
-                        }
-                        break;
-                    case 3: // 检查
-                        $('#tab-jiancha').addClass('layui-show');
-                        if($('#jiancha-content iframe').length === 0) {
-                            $('#jiancha-content').html('<iframe src="jc_apply.html' + patientParams + '"></iframe>');
-                        }
-                        break;
-                }
-            });
-        });</script>
+        // 底部选项卡切换事件
+        $('.bottom-tabs .layui-tab-title li').click(function(){
+            var index = $(this).data('index');
+            
+            // 切换选项卡样式
+            $('.bottom-tabs .layui-tab-title li').removeClass('layui-this');
+            $(this).addClass('layui-this');
+            
+            // 切换内容显示
+            $('.tab-content-area .layui-tab-item').removeClass('layui-show');
+            
+            var jsonData = JSON.parse(localStorage.getItem('userData'));
+            var patientParams = '?patient_id=' + jsonData.patient_id + '&admiss_times=' + jsonData.admiss_times + '&ticks=' + (new Date()).getTime();
+            
+            // 根据选项卡切换加载不同内容
+            switch(index) {
+                case 0: // 患者信息
+                    $('#tab-patient').addClass('layui-show');
+                    break;
+                case 1: // 医嘱
+                    $('#tab-yizhu').addClass('layui-show');
+                    if($('#yizhu-content iframe').length === 0) {
+                        $('#yizhu-content').html('<iframe src="yizhu.html' + patientParams + '"></iframe>');
+                    }
+                    break;
+                case 2: // 检验
+                    $('#tab-jianyan').addClass('layui-show');
+                    if($('#jianyan-content iframe').length === 0) {
+                        $('#jianyan-content').html('<iframe src="jy_apply.html' + patientParams + '"></iframe>');
+                    }
+                    break;
+                case 3: // 检查
+                    $('#tab-jiancha').addClass('layui-show');
+                    if($('#jiancha-content iframe').length === 0) {
+                        $('#jiancha-content').html('<iframe src="jc_apply.html' + patientParams + '"></iframe>');
+                    }
+                    break;
+                case 8: // 手术信息
+                    // 若不存在则动态添加tab-opinfo
+                    if($('#tab-opinfo').length === 0){
+                        $('.layui-tab-content').append('<div class="layui-tab-item" id="tab-opinfo"><div id="opinfo-content" class="tab-iframe-container"></div></div>');
+                    }
+                    $('#tab-opinfo').addClass('layui-show');
+                    if($('#opinfo-content iframe').length === 0){
+                        $('#opinfo-content').html('<iframe src="oplist.html' + patientParams + '"></iframe>');
+                    }
+                    break;
+            }
+        });
+
+        // 保留底部选项栏切换逻辑，无需表单按钮事件
+    });</script>
 </body>
 </html>
