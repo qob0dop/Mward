@@ -51,6 +51,8 @@
             height: 100vh;
             display: flex;
             flex-direction: column;
+            /* 为底部栏留出空间，避免内容被遮挡 */
+            padding-bottom: 60px;
         }
 
         .layuimini-container {
@@ -72,7 +74,10 @@
         
         /* 底部选项卡样式 */
         .bottom-tabs {
-            position: relative;  /* 改为相对定位 */
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
             background: #fff;
             border-top: 2px solid #e6e6e6;
             box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
@@ -165,6 +170,11 @@
             margin: 0;
             padding: 10px 15px;
             height: 100%;
+        }
+
+        @media (max-width: 800px) {
+            .bottom-tabs { height: 48px; }
+            .main-content { padding-bottom: 48px; }
         }
     </style>
 </head>
