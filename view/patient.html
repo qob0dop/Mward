@@ -82,7 +82,7 @@
             border-top: 2px solid #e6e6e6;
             box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
             z-index: 1000;
-            height: 60px;
+            /* height: 60px; */
             margin: 0;
             padding: 0;
         }
@@ -92,17 +92,25 @@
             background: #fff;
             border: none;
             display: flex;
+            flex-wrap: wrap;
             justify-content: center;
             height: 100%;
             align-items: center;
+            overflow-x: visible;
+            overflow-y: visible;
+            white-space: normal;
+            min-width: 0;
+            width: 100%;
         }
-        
+        .bottom-tabs .layui-tab-title::-webkit-scrollbar {
+            display: none;
+        }
         .bottom-tabs .layui-tab-title li {
             position: relative;
             background: transparent;
             border: none;
-            margin: 0 8px;
-            padding: 12px 20px;
+            margin: 4px 8px;
+            padding: 10px 16px;
             transition: all 0.3s ease;
             border-radius: 0;
             flex: none;
@@ -112,6 +120,7 @@
             align-items: center;
             justify-content: center;
             font-size: 14px;
+            white-space: nowrap;
         }
         
         .bottom-tabs .layui-tab-title li:hover {
@@ -175,6 +184,10 @@
         @media (max-width: 800px) {
             .bottom-tabs { height: 48px; }
             .main-content { padding-bottom: 48px; }
+            .bottom-tabs .layui-tab-title li {
+                padding: 6px 10px;
+                font-size: 13px;
+            }
         }
     </style>
 </head>
