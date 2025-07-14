@@ -5,7 +5,34 @@
     <title>患者信息</title>
     <!--<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta http-equiv="Access-Control-Allow-Origin" content="*">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="viewport" co                                                                   <div class="layui-form-item">
+                                <label class="layui-form-label">护理级别</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="care_level" lay-verify="required" placeholder="" autocomplete="off" class="layui-input" readonly>
+                                </div>
+                                <label class="layui-form-label">身份</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="identity" lay-verify="required" placeholder="" autocomplete="off" class="layui-input" readonly>
+                                </div>
+                            </div>div class="layui-form-item">
+                                <label class="layui-form-label">诊断代码</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="diagnosis_code" lay-verify="required" placeholder="" autocomplete="off" class="layui-input" readonly>
+                                </div>
+                                <label class="layui-form-label">诊断名称</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="diagnosis_name" lay-verify="required" placeholder="" autocomplete="off" class="layui-input" readonly>
+                                </div>
+                            </div>iv class="layui-form-item">
+                                <label class="layui-form-label">管床医生</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="doctor" lay-verify="required" placeholder="" autocomplete="off" class="layui-input" readonly>
+                                </div>
+                                <label class="layui-form-label">管床护士</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="nurse" lay-verify="required" placeholder="" autocomplete="off" class="layui-input" readonly>
+                                </div>
+                            </div>th=device-width, initial-scale=1, maximum-scale=1">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="format-detection" content="telephone=no">-->
@@ -109,8 +136,8 @@
             position: relative;
             background: transparent;
             border: none;
-            margin: 4px 8px;
-            padding: 10px 16px;
+            margin: 0.3rem 0.6rem;
+            padding: 0.7rem 1.2rem;
             transition: all 0.3s ease;
             border-radius: 0;
             flex: none;
@@ -119,7 +146,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 14px;
+            font-size: 1rem;
             white-space: nowrap;
         }
         
@@ -135,6 +162,15 @@
             font-weight: bold;
             box-shadow: 0 -2px 8px rgba(30, 159, 255, 0.3);
             border-radius: 8px;
+        }
+        
+        @media (max-width: 800px) {
+            .bottom-tabs { height: 48px; }
+            .main-content { padding-bottom: 48px; }
+            .bottom-tabs .layui-tab-title li {
+                padding: 0.4rem 0.7rem;
+                font-size: 0.85rem;
+            }
         }
         
         /* 选项卡内容区域 */
@@ -179,15 +215,16 @@
             margin: 0;
             padding: 10px 15px;
             height: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
         }
-
-        @media (max-width: 800px) {
-            .bottom-tabs { height: 48px; }
-            .main-content { padding-bottom: 48px; }
-            .bottom-tabs .layui-tab-title li {
-                padding: 6px 10px;
-                font-size: 13px;
-            }
+        
+        .layui-form-item {
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
     </style>
 </head>
@@ -208,16 +245,16 @@
                 <div class="layui-tab-content">
                     <!-- 患者信息选项卡 -->
                     <div class="layui-tab-item layui-show" id="tab-patient">
-                        <form class="layui-form layui-form-pane" action="">
+                        <form class="layui-form layui-form-pane"  action="">
                             <div class="layui-form-item">
                                 <label class="layui-form-label">患者姓名</label>
                                 <div class="layui-input-inline">
                                     <!--<div class="layui-input-block">-->
-                                    <input type="text" name="pname" autocomplete="off" placeholder="" class="layui-input">
+                                    <input type="text" name="pname" autocomplete="off" placeholder="" class="layui-input" readonly>
                                 </div>
                                 <label class="layui-form-label">次数</label>
                                 <div class="layui-input-inline">
-                                    <input type="text" name="admiss_times" lay-verify="required" placeholder="" autocomplete="off" class="layui-input">
+                                    <input type="text" name="admiss_times" lay-verify="required" placeholder="" autocomplete="off" class="layui-input" readonly>
                                 </div>
 
                                 
@@ -226,11 +263,11 @@
 
                                 <label class="layui-form-label">入院日期</label>
                                 <div class="layui-input-inline">
-                                    <input type="text" name="admiss_date" lay-verify="required" placeholder="" autocomplete="off" class="layui-input">
+                                    <input type="text" name="admiss_date" lay-verify="required" placeholder="" autocomplete="off" class="layui-input" readonly>
                                 </div>
                                 <label class="layui-form-label">入院天数</label>
                                 <div class="layui-input-inline">
-                                    <input type="text" name="admiss_days" lay-verify="required" placeholder="" autocomplete="off" class="layui-input">
+                                    <input type="text" name="admiss_days" lay-verify="required" placeholder="" autocomplete="off" class="layui-input" readonly>
                                 </div>
 
                                 
@@ -238,56 +275,54 @@
                             <div class="layui-form-item">
                                 <label class="layui-form-label">性别</label>
                                 <div class="layui-input-inline">
-                                    <input type="text" name="sex_name" lay-verify="required" placeholder="" autocomplete="off" class="layui-input">
+                                    <input type="text" name="sex_name" lay-verify="required" placeholder="" autocomplete="off" class="layui-input" readonly>
                                 </div>
                                 <label class="layui-form-label">年龄</label>
                                 <div class="layui-input-inline">
-                                    <input type="text" name="ages" lay-verify="required" placeholder="" autocomplete="off" class="layui-input">
+                                    <input type="text" name="ages" lay-verify="required" placeholder="" autocomplete="off" class="layui-input" readonly>
                                 </div>
                                 
                             </div>
                             <div class="layui-form-item">
                                 <label class="layui-form-label">住院号</label>
                                 <div class="layui-input-inline">
-                                    <input type="text" name="inpatient_no" lay-verify="required" placeholder="" autocomplete="off" class="layui-input">
+                                    <input type="text" name="inpatient_no" lay-verify="required" placeholder="" autocomplete="off" class="layui-input" readonly>
                                 </div>
                                 <label class="layui-form-label">床号</label>
                                 <div class="layui-input-inline">
-                                    <input type="text" name="bed_no" lay-verify="required" placeholder="" autocomplete="off" class="layui-input">
+                                    <input type="text" name="bed_no" lay-verify="required" placeholder="" autocomplete="off" class="layui-input" readonly>
                                 </div>
-                                <div class="layui-input-inline">
-                                    <!-- 手术信息按钮已移除，统一由底部选项栏控制 -->
-                                </div>
+                               
                             </div>
                             <div class="layui-form-item">
                                 <label class="layui-form-label">管床医生</label>
                                 <div class="layui-input-inline">
-                                    <input type="text" name="refer_physician_name" lay-verify="required" placeholder="" autocomplete="off" class="layui-input">
+                                    <input type="text" name="refer_physician_name" lay-verify="required" placeholder="" autocomplete="off" class="layui-input" readonly>
                                 </div>
                                 <label class="layui-form-label">管床护士</label>
                                 <div class="layui-input-inline">
-                                    <input type="text" name="refer_nurse_name" lay-verify="required" placeholder="" autocomplete="off" class="layui-input">
+                                    <input type="text" name="refer_nurse_name" lay-verify="required" placeholder="" autocomplete="off" class="layui-input" readonly>
                                 </div>
                             </div>
 
                             <div class="layui-form-item">
                                 <label class="layui-form-label">诊断代码</label>
                                 <div class="layui-input-inline">
-                                    <input type="text" name="admiss_diag" lay-verify="required" placeholder="" autocomplete="off" class="layui-input">
+                                    <input type="text" name="admiss_diag" lay-verify="required" placeholder="" autocomplete="off" class="layui-input" readonly>
                                 </div>
                                 <label class="layui-form-label">诊断名称</label>
                                 <div class="layui-input-inline">
-                                    <input type="text" name="admiss_diag_name" lay-verify="required" placeholder="" autocomplete="off" class="layui-input">
+                                    <input type="text" name="admiss_diag_name" lay-verify="required" placeholder="" autocomplete="off" class="layui-input" readonly>
                                 </div>
                             </div>
                             <div class="layui-form-item">
                                 <label class="layui-form-label">护理级别</label>
                                 <div class="layui-input-inline">
-                                    <input type="text" name="nursing" lay-verify="required" placeholder="" autocomplete="off" class="layui-input">
+                                    <input type="text" name="nursing" lay-verify="required" placeholder="" autocomplete="off" class="layui-input" readonly>
                                 </div>
                                 <label class="layui-form-label">身份</label>
                                 <div class="layui-input-inline">
-                                    <input type="text" name="responce_type_name" lay-verify="required" placeholder="" autocomplete="off" class="layui-input">
+                                    <input type="text" name="responce_type_name" lay-verify="required" placeholder="" autocomplete="off" class="layui-input" readonly>
                                 </div>
                             </div>
                         </form>
