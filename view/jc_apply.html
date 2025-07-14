@@ -325,6 +325,7 @@
             padding: 8px 0;
             line-height: 1.2;
         }
+        
     </style>
 </head>
 <body>
@@ -338,12 +339,20 @@
                 
                 <!-- 检查申请表格 -->
                 <table class="layui-hide" id="jiancha-table" lay-filter="jiancha-table"></table>
-                
+
+                <!-- 操作列模板 -->
+                <script type="text/html" id="rowBar">
+                  <button class="layui-btn layui-btn-danger layui-btn-xs" lay-event="delRow">删除</button>
+                </script>
+
                 <!-- 工具栏模板 -->
                 <script type="text/html" id="toolbarDemo">
                     <div class="layui-btn-container">
                         <button class="layui-btn layui-btn-warm" lay-event="newApply">
                             <i class="layui-icon layui-icon-add-1"></i> 新建申请
+                        </button>
+                        <button class="layui-btn layui-btn-warm" lay-event="deleteApply">
+                            <i class="layui-icon layui-icon-delete"></i> 删除申请
                         </button>
                     </div>
                 </script>
@@ -654,13 +663,15 @@
                     {field: 'charge_amount', title: '数量', width: 60},
                     {field: 'apply_date', title: '申请日期', width: 140, sort: true, templet: '#dateTpl'},
                     {field: 'exam_flag_str', title: '增强或重建', width: 90},
-                    {field: 'parent_serial', title: '父申请号', width: 100}
+                    {field: 'parent_serial', title: '父申请号', width: 100},
+                    {fixed: 'right', title: '操作', width: 80, align: 'center', toolbar: '#rowBar'}
                 ]],
                 height: 'full-42',
                 text: {
                     none: '<div style="text-align: center; padding: 20px; color: #999; font-size: 13px;"><i class="layui-icon layui-icon-file" style="font-size: 36px; display: block; margin-bottom: 8px;"></i>暂无检查申请数据</div>'
                 },
                 parseData: function(res) {
+                    console.log('表格接口返回数据:', res);
                     return {
                         "code": res.status === 1 ? 0 : res.status,
                         "msg": res.msg || '',
@@ -761,7 +772,7 @@
                                             }
                                         });
                                     }
-                                    
+                                    console.log('过滤后的项目数据:', packageItems);
                                     if (packageItems.length > 0) {
                                         packageItems.forEach(function(item) {
                                             console.log('生成checkbox的item数据:', item);
@@ -856,7 +867,50 @@
                         break;
                 }
             });
+
+            // 操作列模板
+            table.on('tool(jiancha-table)', function(obj){
+                var data = obj.data;
+                var layEvent = obj.event;
+                
+                if (layEvent === 'delRow') {
+                    // 删除操作
+                    layer.confirm('确定删除该申请吗？', {icon: 3, title:'提示'}, function(index){
+                        console.log("本行数据",data)
+                        // 执行删除操作的代码
+                        // 例如：调用接口删除数据，成功后从表格中移除该行
+                        
+                        $.ajax({
+                            url: appconfig.api + '/api/JcJy/DelJianCha',
+                            type: 'GET',
+                            contentType: 'application/json',
+ data: {
+        patient_id: data.patient_id,
+        admiss_times: data.admiss_times,
+        exam_no: data.exam_no,
+        // 还有 sybsys_id, opera 如有需要也加上
+    },                            dataType: 'json',
+                            success: function(res) {
+                                if (res.status === 1) {
+                                    layer.msg('删除成功', {icon: 1});
+                                    console.log(res)
+                                    table.reload('jiancha-table');
+                                } else {
+                                    console.error('删除失败:', res);
+                                    layer.msg('删除失败: ' + (res.msg || '未知错误'), {icon: 5});
+                                }
+                            },
+                            error: function(xhr, status, err) {
+                                console.error('删除请求异常:', xhr, status, err);
+                                layer.msg('网络错误，删除失败', {icon: 5});
+                            }
+                        });
+                        
+                        layer.close(index);
+                    });
+                }
+            });
         });
     </script>
 </body>
-</html> 
+</html>
