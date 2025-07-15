@@ -443,7 +443,6 @@
 
         var patient_id = getUrlParam("patient_id");
         var admiss_times = getUrlParam("admiss_times");
-
         // 获取患者信息 (已在顶部显示，此处不再重复)
 
         // 套餐数据变量
@@ -1015,7 +1014,19 @@
         table.on("tool(jiancha-table)", function (obj) {
           var data = obj.data;
           var layEvent = obj.event;
+          var loginUser = localStorage.getItem("loginUser");
+          var patientData = JSON.parse(
+            localStorage.getItem("patientData") || "{}"
+          );
 
+          if (!loginUser) {
+            layer.msg("登录信息已过期，请重新登录", { icon: 5 });
+            callback(false);
+            return;
+          }
+
+          var loginUserData = JSON.parse(loginUser);
+          console.log(loginUserData);
           if (layEvent === "delRow") {
             // 删除前先检查状态
             if (data.exam_status == 1) {
@@ -1033,6 +1044,8 @@
                       patient_id: data.patient_id,
                       admiss_times: data.admiss_times,
                       exam_no: data.exam_no,
+                      sybsys_id: loginUserData.subsys_id,
+                      opera: loginUserData.user_mi,
                       // 还有 sybsys_id, opera 如有需要也加上
                     },
                     dataType: "json",

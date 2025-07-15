@@ -380,7 +380,14 @@
               </button>
             </div>
           </script>
-
+          <script type="text/html" id="rowBar">
+            <button
+              class="layui-btn layui-btn-danger layui-btn-xs"
+              lay-event="delRow"
+            >
+              删除
+            </button>
+          </script>
           <!-- 状态模板 -->
           <script type="text/html" id="statusTpl">
             {{# if(d.status == '待执行'){ }}
@@ -469,6 +476,13 @@
                 width: 200,
                 templet: "#dateTpl",
               },
+              {
+                fixed: "right",
+                title: "操作",
+                width: 80,
+                align: "center",
+                toolbar: "#rowBar",
+              },
             ],
           ],
           height: "full-10", // 填满父容器，减去极少量边距
@@ -484,7 +498,52 @@
             };
           },
         });
-
+        //删除逻辑
+        // 操作列事件（删除按钮）
+        table.on("tool(jianyan-table)", function (obj) {
+          var data = obj.data;
+          console.log("选择行数据", data);
+          var layEvent = obj.event;
+          var loginUser = localStorage.getItem("loginUser");
+          if (!loginUser) {
+            layer.msg("登录信息已过期，请重新登录", { icon: 5 });
+            return;
+          }
+          var loginUserData = JSON.parse(loginUser);
+          if (layEvent === "delRow") {
+            layer.confirm(
+              "确定删除该检验申请吗？",
+              { icon: 3, title: "提示" },
+              function (index) {
+                $.ajax({
+                  url: appconfig.api + "/api/JcJy/DelJianYan",
+                  type: "GET",
+                  contentType: "application/json",
+                  data: {
+                    patient_id: data.patient_id,
+                    admiss_times: data.admiss_times,
+                    exam_no: data.jyapply_no,
+                  },
+                  dataType: "json",
+                  success: function (res) {
+                    if (res.status === 1) {
+                      layer.msg("删除成功", { icon: 1 });
+                      table.reload("jianyan-table");
+                    } else {
+                      layer.msg("删除失败: " + (res.msg || "未知错误"), {
+                        icon: 5,
+                      });
+                    }
+                  },
+                  error: function () {
+                    layer.msg("网络错误，删除失败", { icon: 5 });
+                  },
+                });
+                layer.close(index);
+              }
+            );
+          }
+        });
         // 获取检验项目数据
         function loadTestItems(callback) {
           var wardData = localStorage.getItem("wardData");
