@@ -1,215 +1,305 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <title>医嘱信息</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <link rel="stylesheet" href="../lib/layui-v2.6.3/css/layui.css" media="all">
-    <link rel="stylesheet" href="../css/public.css" media="all">
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <link
+      rel="stylesheet"
+      href="../lib/layui-v2.6.3/css/layui.css"
+      media="all"
+    />
+    <link rel="stylesheet" href="../css/public.css" media="all" />
     <style>
-        body {
-            background-color: transparent;
-            padding: 0;
-            margin: 0;
-            font-size: 16px;
-        }
-        .layui-table-cell {
-            height: auto;
-            white-space: normal;
-            padding: 4px 8px;
-        }
-        /* 移除容器边距，使用全宽 */
-        .layui-container {
-            width: 100%;
-            max-width: 100%;
-            padding: 0;
-            margin: 0;
-        }
-        .layui-row, .layui-col-md12 {
-            padding: 0;
-            margin: 0;
-        }
-        /* 表格行触摸效果 */
-        .layui-table tbody tr:active {
-            background-color: #f0f0f0;
-        }
-        /* 让表格滚动更流畅 */
-        .layui-table-body {
-            -webkit-overflow-scrolling: touch;
-        }
-        /* 增大按钮触摸区域 */
-        .layui-btn {
-            height: 40px;
-            line-height: 40px;
-        }
-        /* 表格标题样式 */
-        .table-title {
-            background-color: #1E9FFF;
-            color: #fff;
-            padding: 10px 15px;
-            font-size: 18px;
-            font-weight: bold;
-        }
-        /* 根据医嘱类型设置行背景色 */
-        .order-type-long { background-color: #e6f7ff !important; }
-        .order-type-once { background-color: #fffbe6 !important; }
-        .order-type-temp { background-color: #ffeaea !important; }
-        .order-type-other { background-color: #f4f4f4 !important; }
+      body {
+        background-color: transparent;
+        padding: 0;
+        margin: 0;
+        font-size: 16px;
+      }
+      .layui-table-cell {
+        height: auto;
+        white-space: normal;
+        padding: 4px 8px;
+      }
+      /* 移除容器边距，使用全宽 */
+      .layui-container {
+        width: 100%;
+        max-width: 100%;
+        padding: 0;
+        margin: 0;
+      }
+      .layui-row,
+      .layui-col-md12 {
+        padding: 0;
+        margin: 0;
+      }
+      /* 表格行触摸效果 */
+      .layui-table tbody tr:active {
+        background-color: #f0f0f0;
+      }
+      /* 让表格滚动更流畅 */
+      .layui-table-body {
+        -webkit-overflow-scrolling: touch;
+      }
+      /* 增大按钮触摸区域 */
+      .layui-btn {
+        height: 40px;
+        line-height: 40px;
+      }
+      /* 表格标题样式 */
+      .table-title {
+        background-color: #1e9fff;
+        color: #fff;
+        padding: 10px 15px;
+        font-size: 18px;
+        font-weight: bold;
+      }
+      /* 根据医嘱类型设置行背景色 */
+      .order-type-long {
+        background-color: #e6f7ff !important;
+      }
+      .order-type-once {
+        background-color: #fffbe6 !important;
+      }
+      .order-type-temp {
+        background-color: #ffeaea !important;
+      }
+      .order-type-other {
+        background-color: #f4f4f4 !important;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="layui-container">
-        <div class="layui-row">
-            <div class="layui-col-md12">
-                <div class="table-title">医嘱信息</div>
-                
-                <!-- 医嘱表格 -->
-                <table class="layui-hide" id="yizhu-table" lay-filter="yizhu-table"></table>
-                
-                <!-- 工具栏模板 -->
-                <script type="text/html" id="toolbarDemo">
-                    <div class="layui-btn-container">
-                        <button class="layui-btn layui-btn-sm" lay-event="refresh"><i class="layui-icon layui-icon-refresh"></i>刷新</button>
-                        <button class="layui-btn layui-btn-sm layui-btn-normal" lay-event="export"><i class="layui-icon layui-icon-export"></i>导出</button>
-                    </div>
-                </script>
+      <div class="layui-row">
+        <div class="layui-col-md12">
+          <div class="table-title">医嘱信息</div>
 
-                <!-- 行工具栏 -->
-                <script type="text/html" id="barDemo">
-                    <a class="layui-btn layui-btn-xs" lay-event="detail">详情</a>
-                </script>
+          <!-- 医嘱表格 -->
+          <table
+            class="layui-hide"
+            id="yizhu-table"
+            lay-filter="yizhu-table"
+          ></table>
+
+          <!-- 工具栏模板 -->
+          <script type="text/html" id="toolbarDemo">
+            <div class="layui-btn-container">
+              <button class="layui-btn layui-btn-sm" lay-event="refresh">
+                <i class="layui-icon layui-icon-refresh"></i>刷新
+              </button>
+              <button
+                class="layui-btn layui-btn-sm layui-btn-normal"
+                lay-event="export"
+              >
+                <i class="layui-icon layui-icon-export"></i>导出
+              </button>
             </div>
+          </script>
+
+          <!-- 行工具栏 -->
+          <script type="text/html" id="barDemo">
+            <a class="layui-btn layui-btn-xs" lay-event="detail">详情</a>
+          </script>
         </div>
+      </div>
     </div>
 
     <script src="../lib/layui-v2.6.3/layui.js" charset="utf-8"></script>
     <script src="../js/lay-config.js?v=1.0.4" charset="utf-8"></script>
     <script>
-        layui.use(['table', 'appconfig'], function(){
-            var table = layui.table;
-            var $ = layui.jquery;
-            var appconfig = layui.appconfig;
+      layui.use(["table", "appconfig"], function () {
+        var table = layui.table;
+        var $ = layui.jquery;
+        var appconfig = layui.appconfig;
 
-            // 获取URL参数
-            function getUrlParam(name) {
-                var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
-                var r = window.location.search.substr(1).match(reg);
-                if (r != null) return unescape(r[2]); return null;
-            }
+        // 获取URL参数
+        function getUrlParam(name) {
+          var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+          var r = window.location.search.substr(1).match(reg);
+          if (r != null) return unescape(r[2]);
+          return null;
+        }
 
-            var patient_id = getUrlParam('patient_id');
-            var admiss_times = getUrlParam('admiss_times');
+        var patient_id = getUrlParam("patient_id");
+        var admiss_times = getUrlParam("admiss_times");
 
-            // 获取患者信息和病区信息
-            var patientData = JSON.parse(localStorage.getItem('patientData') || '{}');
-            var wardData = JSON.parse(localStorage.getItem('wardData') || '{}');
-            var ward_sn = wardData.ward_sn || localStorage.ward_sn || '';
-            var userData = localStorage.getItem('userData');
-            if (userData  === null) {
-                layer.msg("请先选择患者！");
-                return;
-            }
-            var jsonData = JSON.parse(userData);
-            
-            // 渲染表格 - 保留所有原始列
-            table.render({
-                elem: '#yizhu-table',
-                url: appconfig.api + '/api/ActPatient/GetYzManageEOPOrders?ward_sn=' + ward_sn + '&inpatient_no=' + jsonData.inpatient_no,
-                //toolbar: '#toolbarDemo',
-                defaultToolbar: [],
-                cols: [[
-                    {title: '开给', colspan: 9, align: 'center'},
-                    {title: '停止', colspan: 3, align: 'center'},
-                    {title: '录入', colspan: 2, align: 'center'},
-                    {field: 'stop_opera_name', title: '护士', rowspan: 2, width: 100},
-                    {field: 'enter_time_mm_dd', title: '日期', rowspan: 2, width: 100},
-                    {field: 'enter_time_tt', title: '时间', rowspan: 2, width: 100},
-                    {field: '备注1', title: '备注', rowspan: 2, width: 100},
-                    {field: 'act_order_no', title: '医嘱编号', rowspan: 2, width: 100},
-                    {field: 'skin_test_flag_name', title: '是否皮试', rowspan: 2, width: 100},
-                    {field: 'fit_type_name', title: '皮试结果', rowspan: 2, width: 100}
-                ],[
-                    {field: 'long_once_flag', title: '医嘱类型', width: 100},
-                    {field: 'start_time_mm_dd', title: '日期', width: 80},
-                    {field: 'start_time_tt', title: '时间', width: 80},
-                    {field: 'order_name', title: '医嘱',align: 'center', width: 180},
-                    {field: 'charge_amount', title: '数量', width: 80},
-                    {field: 'frequ_name', title: '频率', width: 80},
-                    {field: 'doseage', title: '用法', width: 80},
-                    {field: 'doseage_unit', title: '价格', width: 80},
-                    {field: 'doseage_unit_name', title: '规格', width: 80},
-                    {field: 'order_doctor_name', title: '医生', width: 80},
-                    {field: 'stop_opera_name', title: '护士', width: 80},
-                    {field: 'end_time_mm_dd', title: '日期', width: 80},
-                    {field: 'enter_time_tt', title: '时间', width: 80},
-                    {field: 'enter_oper_name', title: '医生', width: 80},
-                ]],
-                height: 'full-42',
-                text: {
-                    none: '暂无医嘱数据'
-                },
-                parseData: function(res) {
-                    return {
-                        "code": res.status === 1 ? 0 : res.status,
-                        "msg": res.msg || '',
-                        "count": res.data ? res.data.length : 0,
-                        "data": res.data || []
-                    };
-                },
-                done: function(res, curr, count) {
-                    // 根据医嘱类型设置行背景色
-                    $("#yizhu-table").next('.layui-table-view').find('tbody tr').each(function(i, tr){
-                        var row = res.data[i];
-                        if(!row) return;
-                        // 假设long_once_flag字段区分类型：长期=long，临时=once，临时备用=temp，其他=other
-                        var type = (row.long_once_flag||'').toLowerCase();
-                        if(type.indexOf('长')!==-1 || type==='long') {
-                            $(tr).addClass('order-type-long');
-                        } else if(type.indexOf('临')!==-1 || type==='once') {
-                            $(tr).addClass('order-type-once');
-                        } else if(type.indexOf('备')!==-1 || type==='temp') {
-                            $(tr).addClass('order-type-temp');
-                        } else {
-                            $(tr).addClass('order-type-other');
-                        }
-                    });
+        // 获取患者信息和病区信息
+        var patientData = JSON.parse(
+          localStorage.getItem("patientData") || "{}"
+        );
+        var wardData = JSON.parse(localStorage.getItem("wardData") || "{}");
+        var ward_sn = wardData.ward_sn || localStorage.ward_sn || "";
+        var userData = localStorage.getItem("userData");
+        if (userData === null) {
+          layer.msg("请先选择患者！");
+          return;
+        }
+        var jsonData = JSON.parse(userData);
+
+        // 渲染表格 - 保留所有原始列
+        table.render({
+          elem: "#yizhu-table",
+          url:
+            appconfig.api +
+            "/api/ActPatient/GetYzManageEOPOrders?ward_sn=" +
+            ward_sn +
+            "&inpatient_no=" +
+            jsonData.inpatient_no,
+          //toolbar: '#toolbarDemo',
+          defaultToolbar: [],
+          cols: [
+            [
+              { title: "开给", colspan: 9, align: "center" },
+              { title: "停止", colspan: 3, align: "center" },
+              { title: "录入", colspan: 2, align: "center" },
+              {
+                field: "stop_opera_name",
+                title: "护士",
+                rowspan: 2,
+                width: 100,
+              },
+              {
+                field: "enter_time_mm_dd",
+                title: "日期",
+                rowspan: 2,
+                width: 100,
+              },
+              { field: "enter_time_tt", title: "时间", rowspan: 2, width: 100 },
+              { field: "备注1", title: "备注", rowspan: 2, width: 100 },
+              {
+                field: "act_order_no",
+                title: "医嘱编号",
+                rowspan: 2,
+                width: 100,
+              },
+              {
+                field: "skin_test_flag_name",
+                title: "是否皮试",
+                rowspan: 2,
+                width: 100,
+              },
+              {
+                field: "fit_type_name",
+                title: "皮试结果",
+                rowspan: 2,
+                width: 100,
+              },
+            ],
+            [
+              { field: "long_once_flag", title: "医嘱类型", width: 100 },
+              { field: "start_time_mm_dd", title: "日期", width: 80 },
+              { field: "start_time_tt", title: "时间", width: 80 },
+              {
+                field: "order_name",
+                title: "医嘱",
+                align: "center",
+                width: 180,
+              },
+              { field: "charge_amount", title: "数量", width: 80 },
+              { field: "frequ_name", title: "频率", width: 80 },
+              { field: "doseage", title: "用法", width: 80 },
+              { field: "doseage_unit", title: "价格", width: 80 },
+              { field: "doseage_unit_name", title: "规格", width: 80 },
+              { field: "order_doctor_name", title: "医生", width: 80 },
+              { field: "stop_opera_name", title: "护士", width: 80 },
+              { field: "end_time_mm_dd", title: "日期", width: 80 },
+              { field: "enter_time_tt", title: "时间", width: 80 },
+              { field: "enter_oper_name", title: "医生", width: 80 },
+            ],
+          ],
+          height: "full-42",
+          text: {
+            none: "暂无医嘱数据",
+          },
+          parseData: function (res) {
+            return {
+              code: res.status === 1 ? 0 : res.status,
+              msg: res.msg || "",
+              count: res.data ? res.data.length : 0,
+              data: res.data || [],
+            };
+          },
+          done: function (res, curr, count) {
+            // 根据医嘱类型设置行背景色
+            $("#yizhu-table")
+              .next(".layui-table-view")
+              .find("tbody tr")
+              .each(function (i, tr) {
+                var row = res.data[i];
+                if (!row) return;
+                // 假设long_once_flag字段区分类型：长期=long，临时=once，临时备用=temp，其他=other
+                var type = (row.long_once_flag || "").toLowerCase();
+                if (type.indexOf("长") !== -1 || type === "long") {
+                  $(tr).addClass("order-type-long");
+                } else if (type.indexOf("临") !== -1 || type === "once") {
+                  $(tr).addClass("order-type-once");
+                } else if (type.indexOf("备") !== -1 || type === "temp") {
+                  $(tr).addClass("order-type-temp");
+                } else {
+                  $(tr).addClass("order-type-other");
                 }
-            });
-
-            // 头工具栏事件
-            table.on('toolbar(yizhu-table)', function(obj){
-                switch(obj.event){
-                    case 'refresh':
-                        table.reload('yizhu-table');
-                        break;
-                    case 'export':
-                        layer.msg('导出功能开发中...');
-                        break;
-                }
-            });
-
-            // 行工具栏事件
-            table.on('tool(yizhu-table)', function(obj){
-                var data = obj.data;
-                if(obj.event === 'detail'){
-                    layer.open({
-                        type: 1,
-                        title: '医嘱详情',
-                        area: ['600px', '400px'],
-                        content: '<div style="padding: 20px;">' +
-                                '<p><strong>医嘱日期：</strong>' + data.order_date + ' ' + data.order_time + '</p>' +
-                                '<p><strong>医嘱类型：</strong>' + data.order_type_name + '</p>' +
-                                '<p><strong>医嘱内容：</strong>' + data.order_text + '</p>' +
-                                '<p><strong>剂量：</strong>' + (data.dosage || '') + '</p>' +
-                                '<p><strong>频次：</strong>' + (data.frequency || '') + '</p>' +
-                                '<p><strong>用法：</strong>' + (data.usage || '') + '</p>' +
-                                '<p><strong>开嘱医生：</strong>' + data.doctor_name + '</p>' +
-                                '<p><strong>状态：</strong>' + data.status_name + '</p>' +
-                                '</div>'
-                    });
-                }
-            });
+              });
+          },
         });
+
+        // 头工具栏事件
+        table.on("toolbar(yizhu-table)", function (obj) {
+          switch (obj.event) {
+            case "refresh":
+              table.reload("yizhu-table");
+              break;
+            case "export":
+              layer.msg("导出功能开发中...");
+              break;
+          }
+        });
+
+        // 行工具栏事件
+        table.on("tool(yizhu-table)", function (obj) {
+          var data = obj.data;
+          if (obj.event === "detail") {
+            layer.open({
+              type: 1,
+              title: "医嘱详情",
+              area: ["600px", "400px"],
+              content:
+                '<div style="padding: 20px;">' +
+                "<p><strong>医嘱日期：</strong>" +
+                data.order_date +
+                " " +
+                data.order_time +
+                "</p>" +
+                "<p><strong>医嘱类型：</strong>" +
+                data.order_type_name +
+                "</p>" +
+                "<p><strong>医嘱内容：</strong>" +
+                data.order_text +
+                "</p>" +
+                "<p><strong>剂量：</strong>" +
+                (data.dosage || "") +
+                "</p>" +
+                "<p><strong>频次：</strong>" +
+                (data.frequency || "") +
+                "</p>" +
+                "<p><strong>用法：</strong>" +
+                (data.usage || "") +
+                "</p>" +
+                "<p><strong>开嘱医生：</strong>" +
+                data.doctor_name +
+                "</p>" +
+                "<p><strong>状态：</strong>" +
+                data.status_name +
+                "</p>" +
+                "</div>",
+            });
+          }
+        });
+      });
     </script>
-</body>
+  </body>
 </html>
