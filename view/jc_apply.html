@@ -361,7 +361,7 @@
                 </blockquote> -->
 
           <!-- 检查申请表格 -->
-          <div class="table-title">检查表单</div>
+          <!-- <div class="table-title">检查表单</div> -->
           <table
             class="layui-hide"
             id="jiancha-table"
@@ -384,9 +384,17 @@
               <button class="layui-btn layui-btn-warm" lay-event="newApply">
                 <i class="layui-icon layui-icon-add-1"></i> 新建申请
               </button>
-              <button class="layui-btn layui-btn-warm" lay-event="deleteApply">
-                <i class="layui-icon layui-icon-delete"></i> 删除申请
-              </button>
+              <div
+                style="float: right; display: flex; gap: 8px; align-items: center;"
+              >
+                <button
+                  class="layui-btn layui-btn-danger layui-btn-xs"
+                  id="batch-delete-btn"
+                >
+                  <i class="layui-icon layui-icon-delete"></i> 批量删除
+                </button>
+                <!-- 可扩展更多批量操作按钮 -->
+              </div>
             </div>
           </script>
 
@@ -735,6 +743,7 @@
           cellMinWidth: 50,
           cols: [
             [
+              { type: "checkbox", fixed: "left", width: 40 },
               { field: "exam_serial", title: "申请单号", width: 110 },
               { field: "exam_status", title: "检查状态", width: 80 },
               { field: "exam_type_name", title: "检查类型", width: 100 },
@@ -1073,6 +1082,78 @@
               layer.msg("该申请状态不可删除！", { icon: 5 });
             }
           }
+        });
+        // 批量删除按钮事件
+        $(document).on("click", "#batch-delete-btn", function () {
+          var checkStatus = table.checkStatus("jiancha-table");
+          var selected = checkStatus.data;
+          if (!selected || selected.length === 0) {
+            layer.msg("请先勾选要删除的记录", { icon: 5 });
+            return;
+          }
+          layer.confirm(
+            "确定批量删除选中的申请吗？",
+            { icon: 3, title: "提示" },
+            function (index) {
+              // 这里只做前端演示，实际应循环调用删除接口或提供批量接口
+              var successCount = 0;
+              var failCount = 0;
+              var total = selected.length;
+              var finished = 0;
+              selected.forEach(function (row) {
+                $.ajax({
+                  url: appconfig.api + "/api/JcJy/DelJianCha",
+                  type: "GET",
+                  contentType: "application/json",
+                  data: {
+                    patient_id: row.patient_id,
+                    admiss_times: row.admiss_times,
+                    exam_no: row.exam_no,
+                    sybsys_id: localStorage.loginUser
+                      ? JSON.parse(localStorage.loginUser).subsys_id
+                      : "",
+                    opera: localStorage.loginUser
+                      ? JSON.parse(localStorage.loginUser).user_mi
+                      : "",
+                  },
+                  dataType: "json",
+                  success: function (res) {
+                    if (res.status === 1) {
+                      successCount++;
+                    } else {
+                      failCount++;
+                    }
+                    finished++;
+                    if (finished === total) {
+                      layer.msg(
+                        "批量删除完成，成功：" +
+                          successCount +
+                          "，失败：" +
+                          failCount,
+                        { icon: 1 }
+                      );
+                      table.reload("jiancha-table");
+                    }
+                  },
+                  error: function () {
+                    failCount++;
+                    finished++;
+                    if (finished === total) {
+                      layer.msg(
+                        "批量删除完成，成功：" +
+                          successCount +
+                          "，失败：" +
+                          failCount,
+                        { icon: 1 }
+                      );
+                      table.reload("jiancha-table");
+                    }
+                  },
+                });
+              });
+              layer.close(index);
+            }
+          );
         });
       });
     </script>

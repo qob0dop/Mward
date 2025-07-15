@@ -306,21 +306,46 @@
         min-height: 0;
       }
 
-      .layui-table-view {
-        height: 100% !important;
-        min-height: 0;
-        max-height: 100%;
-      }
-
-      .layui-table-box,
-      .layui-table-body {
-        height: 100% !important;
-        min-height: 0;
-        max-height: 100%;
+      .layui-table-tool-temp {
+        padding-right: 0;
       }
 
       .layui-table-tool {
         padding: 5px;
+      }
+
+      .layui-table-view {
+        margin: 0;
+        width: 100%;
+        height: calc(100% - 50px);
+      }
+
+      .layui-table-box,
+      .layui-table-body {
+        height: 100%;
+      }
+
+      .layui-table {
+        margin: 0;
+      }
+
+      /* 统一表头样式 */
+      .layui-table thead tr {
+        background-color: #f2f2f2;
+      }
+      .layui-table thead th {
+        font-size: 13px;
+        font-weight: bold;
+        color: #333;
+        padding: 8px 0;
+        line-height: 1.2;
+      }
+      .table-title {
+        background-color: #1e9fff;
+        color: #fff;
+        padding: 10px 15px;
+        font-size: 18px;
+        font-weight: bold;
       }
 
       .layui-btn-container {
@@ -365,7 +390,7 @@
                 </blockquote> -->
 
           <!-- 检验申请表格 -->
-          <div class="table-title">检验表单</div>
+          <!-- <div class="table-title">检验表单</div> -->
           <table
             class="layui-hide"
             id="jianyan-table"

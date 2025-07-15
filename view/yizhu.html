@@ -58,8 +58,49 @@
         font-size: 18px;
         font-weight: bold;
       }
+      .layui-table-tool-temp {
+        padding-right: 0;
+      }
+
+      .layui-table-tool {
+        padding: 5px;
+      }
+
+      .layui-table-view {
+        margin: 0;
+        width: 100%;
+        height: calc(100% - 50px);
+      }
+
+      .layui-table-box,
+      .layui-table-body {
+        height: 100%;
+      }
+
+      .layui-table {
+        margin: 0;
+      }
+
+      /* 统一表头样式 */
+      .layui-table thead tr {
+        background-color: #f2f2f2;
+      }
+      .layui-table thead th {
+        font-size: 13px;
+        font-weight: bold;
+        color: #333;
+        padding: 8px 0;
+        line-height: 1.2;
+      }
+      .table-title {
+        background-color: #1e9fff;
+        color: #fff;
+        padding: 10px 15px;
+        font-size: 18px;
+        font-weight: bold;
+      }
       /* 根据医嘱类型设置行背景色 */
-      .order-type-long {
+      /* .order-type-long {
         background-color: #e6f7ff !important;
       }
       .order-type-once {
@@ -70,14 +111,14 @@
       }
       .order-type-other {
         background-color: #f4f4f4 !important;
-      }
+      } */
     </style>
   </head>
   <body>
     <div class="layui-container">
       <div class="layui-row">
         <div class="layui-col-md12">
-          <div class="table-title">医嘱信息</div>
+          <!-- <div class="table-title">医嘱信息</div> -->
 
           <!-- 医嘱表格 -->
           <table
@@ -153,10 +194,31 @@
           //toolbar: '#toolbarDemo',
           defaultToolbar: [],
           cols: [
+            // [
+            //   //   { title: "开给", colspan: 9, align: "center" },
+            //   //   { title: "停止", colspan: 3, align: "center" },
+            //   //   { title: "录入", colspan: 2, align: "center" },
+            // ],
             [
-              { title: "开给", colspan: 9, align: "center" },
-              { title: "停止", colspan: 3, align: "center" },
-              { title: "录入", colspan: 2, align: "center" },
+              { field: "long_once_flag", title: "医嘱类型", width: 100 },
+              { field: "start_time_mm_dd", title: "日期", width: 80 },
+              { field: "start_time_tt", title: "时间", width: 80 },
+              {
+                field: "order_name",
+                title: "医嘱",
+                align: "center",
+                width: 180,
+              },
+              { field: "charge_amount", title: "数量", width: 80 },
+              { field: "frequ_name", title: "频率", width: 80 },
+              { field: "doseage", title: "用法", width: 80 },
+              { field: "doseage_unit", title: "价格", width: 80 },
+              { field: "doseage_unit_name", title: "规格", width: 80 },
+              { field: "order_doctor_name", title: "医生", width: 80 },
+              { field: "stop_opera_name", title: "护士", width: 80 },
+              { field: "end_time_mm_dd", title: "日期", width: 80 },
+              { field: "enter_time_tt", title: "时间", width: 80 },
+              { field: "enter_oper_name", title: "医生", width: 80 },
               {
                 field: "stop_opera_name",
                 title: "护士",
@@ -189,27 +251,6 @@
                 rowspan: 2,
                 width: 100,
               },
-            ],
-            [
-              { field: "long_once_flag", title: "医嘱类型", width: 100 },
-              { field: "start_time_mm_dd", title: "日期", width: 80 },
-              { field: "start_time_tt", title: "时间", width: 80 },
-              {
-                field: "order_name",
-                title: "医嘱",
-                align: "center",
-                width: 180,
-              },
-              { field: "charge_amount", title: "数量", width: 80 },
-              { field: "frequ_name", title: "频率", width: 80 },
-              { field: "doseage", title: "用法", width: 80 },
-              { field: "doseage_unit", title: "价格", width: 80 },
-              { field: "doseage_unit_name", title: "规格", width: 80 },
-              { field: "order_doctor_name", title: "医生", width: 80 },
-              { field: "stop_opera_name", title: "护士", width: 80 },
-              { field: "end_time_mm_dd", title: "日期", width: 80 },
-              { field: "enter_time_tt", title: "时间", width: 80 },
-              { field: "enter_oper_name", title: "医生", width: 80 },
             ],
           ],
           height: "full-42",
