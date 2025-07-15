@@ -13,7 +13,8 @@
       media="all"
     />
     <link rel="stylesheet" href="../css/public.css" media="all" />
-    <style>
+    <link rel="stylesheet" href="../css/table/iframe.css" media="all" />
+    <!-- <style>
       body {
         background-color: transparent;
         padding: 0;
@@ -112,28 +113,12 @@
       .order-type-other {
         background-color: #f4f4f4 !important;
       } */
-    </style>
+    </style> -->
   </head>
   <body>
     <div class="layui-container">
       <div class="layui-row">
         <div class="layui-col-md12">
-          <div
-            style="
-              display: flex;
-              justify-content: flex-start;
-              align-items: center;
-              margin-bottom: 10px;
-            "
-          >
-            <button
-              class="layui-btn layui-btn-primary layui-btn-sm"
-              id="btn-print"
-            >
-              <i class="layui-icon layui-icon-print"></i> 打印
-            </button>
-          </div>
-
           <!-- 医嘱表格 -->
           <table
             class="layui-hide"
@@ -144,8 +129,11 @@
           <!-- 工具栏模板 -->
           <script type="text/html" id="toolbarDemo">
             <div class="layui-btn-container">
-              <button class="layui-btn layui-btn-sm" lay-event="refresh">
-                <i class="layui-icon layui-icon-refresh"></i>刷新
+              <button
+                class="layui-btn layui-btn-sm layui-btn-primary"
+                lay-event="print"
+              >
+                <i class="layui-icon layui-icon-print"></i> 打印
               </button>
               <button
                 class="layui-btn layui-btn-sm layui-btn-normal"
@@ -214,7 +202,7 @@
             ward_sn +
             "&inpatient_no=" +
             jsonData.inpatient_no,
-          //toolbar: '#toolbarDemo',
+          toolbar: "#toolbarDemo",
           defaultToolbar: [],
           cols: [
             // [
