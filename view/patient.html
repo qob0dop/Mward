@@ -696,6 +696,8 @@
         // 替换底部选项卡切换事件为按钮栏
         $("#tab-btn-bar").on("click", ".tab-btn", function () {
           var index = $(this).data("index");
+          // 判断点击前是否已激活
+          var isCurrent = $(this).hasClass("layui-this") || $(this).hasClass("active");
           // 切换按钮样式
           $("#tab-btn-bar .tab-btn").removeClass("layui-this active");
           $(this).addClass("layui-this active");
@@ -712,10 +714,18 @@
           switch (index) {
             case 0: // 患者信息
               $("#tab-patient").addClass("layui-show");
+              if (isCurrent) {
+                // 刷新页面
+                location.reload();
+              }
               break;
             case 1: // 医嘱
               $("#tab-yizhu").addClass("layui-show");
-              if ($("#yizhu-content iframe").length === 0) {
+              if (isCurrent) {
+                $("#yizhu-content").html(
+                  '<iframe src="yizhu.html' + patientParams + '"></iframe>'
+                );
+              } else if ($("#yizhu-content iframe").length === 0) {
                 $("#yizhu-content").html(
                   '<iframe src="yizhu.html' + patientParams + '"></iframe>'
                 );
@@ -723,7 +733,11 @@
               break;
             case 2: // 检验
               $("#tab-jianyan").addClass("layui-show");
-              if ($("#jianyan-content iframe").length === 0) {
+              if (isCurrent) {
+                $("#jianyan-content").html(
+                  '<iframe src="jy_apply.html' + patientParams + '"></iframe>'
+                );
+              } else if ($("#jianyan-content iframe").length === 0) {
                 $("#jianyan-content").html(
                   '<iframe src="jy_apply.html' + patientParams + '"></iframe>'
                 );
@@ -731,7 +745,11 @@
               break;
             case 3: // 检查
               $("#tab-jiancha").addClass("layui-show");
-              if ($("#jiancha-content iframe").length === 0) {
+              if (isCurrent) {
+                $("#jiancha-content").html(
+                  '<iframe src="jc_apply.html' + patientParams + '"></iframe>'
+                );
+              } else if ($("#jiancha-content iframe").length === 0) {
                 $("#jiancha-content").html(
                   '<iframe src="jc_apply.html' + patientParams + '"></iframe>'
                 );
@@ -739,7 +757,11 @@
               break;
             case 4: // 电子病历
               $("#tab-dianzibingli").addClass("layui-show");
-              if ($("#dianzibingli-content iframe").length === 0) {
+              if (isCurrent) {
+                $("#dianzibingli-content").html(
+                  '<iframe src="edoclist.html"></iframe>'
+                );
+              } else if ($("#dianzibingli-content iframe").length === 0) {
                 $("#dianzibingli-content").html(
                   '<iframe src="edoclist.html"></iframe>'
                 );
@@ -752,7 +774,11 @@
                 );
               }
               $("#tab-opinfo").addClass("layui-show");
-              if ($("#opinfo-content iframe").length === 0) {
+              if (isCurrent) {
+                $("#opinfo-content").html(
+                  '<iframe src="oplist.html' + patientParams + '"></iframe>'
+                );
+              } else if ($("#opinfo-content iframe").length === 0) {
                 $("#opinfo-content").html(
                   '<iframe src="oplist.html' + patientParams + '"></iframe>'
                 );
