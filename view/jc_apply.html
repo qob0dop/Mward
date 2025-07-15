@@ -23,15 +23,6 @@
         overflow: hidden;
       }
 
-      /* Pad端优化样式 */
-      .layui-table-cell {
-        height: auto;
-        white-space: normal;
-        padding: 0 8px;
-        font-size: 13px;
-        line-height: 1.4;
-      }
-
       /* 容器全宽设置 */
       .layui-container {
         width: 100%;
@@ -76,13 +67,6 @@
 
       .layui-btn-container .layui-btn i {
         font-size: 13px;
-      }
-
-      /* 表格头部优化 */
-      .layui-table th {
-        font-size: 14px;
-        font-weight: bold;
-        background-color: #f8f9fa;
       }
 
       /* 患者信息栏优化 */
@@ -306,7 +290,25 @@
       ::-webkit-scrollbar-thumb:hover {
         background: #a8a8a8;
       }
-
+      /* 修正表格勾选框、操作按钮悬浮错位 */
+      .layui-table-fixed .layui-table-body .layui-table-cell,
+      .layui-table-fixed .layui-table-header .layui-table-cell {
+        padding: 8px 8px;
+        box-sizing: border-box;
+      }
+      .layui-table-fixed .layui-table-checkbox,
+      .layui-table-header .layui-table-checkbox {
+        margin-left: 0;
+        left: 50%;
+        transform: translateX(-50%);
+      }
+      .layui-table-fixed .layui-btn,
+      .layui-table-header .layui-btn {
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
       /* 表格工具栏样式 */
       .layui-table-tool-temp {
         padding-right: 0;
@@ -348,6 +350,58 @@
         padding: 10px 15px;
         font-size: 18px;
         font-weight: bold;
+      }
+      .layui-table th {
+        font-size: 14px;
+        font-weight: bold;
+        background-color: #f8f9fa;
+      }
+      /* Pad端优化样式 */
+      .layui-table-cell {
+        height: auto;
+        white-space: normal;
+        padding: 12px 8px;
+        font-size: 14px;
+        line-height: 1.4;
+      }
+      .layui-table-tool-temp {
+        padding-right: 0;
+      }
+
+      .layui-table-tool {
+        padding: 5px;
+      }
+
+      .layui-table-view {
+        margin: 0;
+        width: 100%;
+        height: calc(100% - 50px);
+      }
+
+      .layui-table-box,
+      .layui-table-body {
+        height: 100%;
+      }
+
+      .layui-table {
+        margin: 0;
+      }
+
+      /* 统一表头样式 */
+      .layui-table thead tr {
+        background-color: #f2f2f2;
+      }
+      .layui-table thead th {
+        font-size: 13px;
+        font-weight: bold;
+        color: #333;
+        padding: 8px 0;
+        line-height: 1.2;
+      }
+      .layui-table th {
+        font-size: 14px;
+        font-weight: bold;
+        background-color: #f8f9fa;
       }
     </style>
   </head>
@@ -743,7 +797,7 @@
           cellMinWidth: 50,
           cols: [
             [
-              { type: "checkbox", fixed: "left", width: 40 },
+              { type: "checkbox", width: 40 },
               { field: "exam_serial", title: "申请单号", width: 110 },
               { field: "exam_status", title: "检查状态", width: 80 },
               { field: "exam_type_name", title: "检查类型", width: 100 },
@@ -752,7 +806,7 @@
               {
                 field: "apply_date",
                 title: "申请日期",
-                width: 140,
+                width: 200,
                 sort: true,
                 templet: "#dateTpl",
               },
