@@ -632,28 +632,44 @@
             //var _dzblurl = appconfig.twd_webpage + "/test.pdf";
             var _dzblurl = "/lib/pdfjs/test1.pdf";
             //体温单点击
-            $("button[name='tiwendan']").click(function () {
-              const now = new Date();
-              const ticks = now.getTime();
-              //console.log(ticks);
-              window.parent.layui.layer.open({
-                type: 2,
-                area: ["100%", "100%"],
-                title:
-                  "体温单" +
-                  " - " +
-                  jsonData.name +
-                  " - " +
-                  jsonData.inpatient_no +
-                  " - " +
-                  jsonData.sex_name +
-                  " - " +
-                  jsonData.ages,
-                closeBtn: 1,
-                shadeClose: true, // 点击遮罩关闭层
-                content: _twdurl + "&ticks=" + ticks, //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
+            $("button[name='tiwendan']")
+              .off("click")
+              .on("click", function () {
+                var userData = localStorage.getItem("userData");
+                if (!userData) {
+                  layer.msg("请先选择患者！");
+                  return;
+                }
+                var jsonData = JSON.parse(userData);
+                var _twdurl =
+                  appconfig.twd_webpage +
+                  "/?patient_id=" +
+                  jsonData.patient_id +
+                  "&admiss_times=" +
+                  jsonData.admiss_times +
+                  "&api_host=" +
+                  appconfig.api +
+                  "/";
+                var now = new Date();
+                var ticks = now.getTime();
+                window.parent.layui.layer.open({
+                  type: 2,
+                  area: ["100%", "100%"],
+                  title:
+                    "体温单" +
+                    " - " +
+                    jsonData.name +
+                    " - " +
+                    jsonData.inpatient_no +
+                    " - " +
+                    jsonData.sex_name +
+                    " - " +
+                    jsonData.ages,
+                  closeBtn: 1,
+                  shadeClose: true,
+                  content: _twdurl + "&ticks=" + ticks,
+                });
               });
-            });
             //电子病历点击
             //            $("button[name='dianzibingli']").click(function(){
             //            const now = new Date();
@@ -764,7 +780,44 @@
                   '<iframe src="edoclist.html' + patientParams + '"></iframe>'
                 );
                 break;
-              case 8: // 手术信息
+              case 8: // 体温单
+                // 体温单弹窗逻辑
+                var userData = localStorage.getItem("userData");
+                if (!userData) {
+                  layer.msg("请先选择患者！");
+                  break;
+                }
+                var jsonData = JSON.parse(userData);
+                var _twdurl =
+                  appconfig.twd_webpage +
+                  "/?patient_id=" +
+                  jsonData.patient_id +
+                  "&admiss_times=" +
+                  jsonData.admiss_times +
+                  "&api_host=" +
+                  appconfig.api +
+                  "/";
+                var now = new Date();
+                var ticks = now.getTime();
+                window.parent.layui.layer.open({
+                  type: 2,
+                  area: ["100%", "100%"],
+                  title:
+                    "体温单" +
+                    " - " +
+                    jsonData.name +
+                    " - " +
+                    jsonData.inpatient_no +
+                    " - " +
+                    jsonData.sex_name +
+                    " - " +
+                    jsonData.ages,
+                  closeBtn: 1,
+                  shadeClose: true,
+                  content: _twdurl + "&ticks=" + ticks,
+                });
+                break;
+              case 9: // 手术信息
                 if ($("#tab-opinfo").length === 0) {
                   $(".layui-tab-content").append(
                     '<div class="layui-tab-item" id="tab-opinfo"><div id="opinfo-content" class="tab-iframe-container"></div></div>'
@@ -877,6 +930,13 @@
                 return;
               }
 
+              // 立即高亮选中行
+              var $trs = $(
+                "#switch-patient-table+div .layui-table-body table tbody tr"
+              );
+              $trs.removeClass("selected");
+              $trs.eq(obj.tr.data("index")).addClass("selected");
+
               // 显示切换中的加载提示
               var loadingIndex = layer.load(1, {
                 shade: [0.3, "#000"],
@@ -892,12 +952,6 @@
 
               // 保存新的患者数据
               localStorage.setItem("userData", JSON.stringify(data));
-
-              // 关闭列表
-              // $("#patient-switch-list").removeClass("show");
-              // $("#btn-switch-patient").removeClass("active");
-              // $("body").removeClass("patient-list-open");
-
               // 动态更新患者信息而不刷新页面
               switchPatientDynamic(data, loadingIndex);
             });
