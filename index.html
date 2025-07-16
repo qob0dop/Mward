@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="utf-8">
+  <head>
+    <meta charset="utf-8" />
     <title>移动查房管理系统</title>
     <!--<meta name="keywords" content="移动查房管理系统">
     <meta name="description" content="移动查房管理系统">
@@ -13,294 +13,415 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="format-detection" content="telephone=no">-->
-    <link rel="icon" href="images/favicon.ico">
-    <link rel="stylesheet" href="lib/layui-v2.6.3/css/layui.css" media="all">
-    <link rel="stylesheet" href="css/public.css" media="all">
+    <link rel="icon" href="images/favicon.ico" />
+    <link rel="stylesheet" href="lib/layui-v2.6.3/css/layui.css" media="all" />
+    <link rel="stylesheet" href="css/public.css" media="all" />
+    <link rel="manifest" href="manifest.json" />
+    <meta name="theme-color" content="#1e9fff" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+    />
     <style>
-        .layui-btn:not(.layui-btn-lg ):not(.layui-btn-sm):not(.layui-btn-xs) {
-            height: 34px;
-            line-height: 34px;
-            padding: 0 8px;
-        }
+      .layui-btn:not(.layui-btn-lg):not(.layui-btn-sm):not(.layui-btn-xs) {
+        height: 34px;
+        line-height: 34px;
+        padding: 0 8px;
+      }
 
-        .layui-table-tool-temp {
-            padding-right: 0px;
-        }
+      .layui-table-tool-temp {
+        padding-right: 0px;
+      }
 
-        .layui-table-cell {
-            padding: 0 10px;
-        }
+      .layui-table-cell {
+        padding: 0 10px;
+      }
 
-        .layui-table-tool {
-            padding-left: 0;
-        }
-        .layui-table tr.status-normal { background: #fff !important; }
-.layui-table tr.status-danger { background: #fff0f0 !important; }
-.layui-table tr.status-urgent { background: #f7f0ff !important; }
-.layui-table tr.status-heavy { background: #f0f7ff !important; }
-.layui-table tr.status-other { background: #fffbe6 !important; }
-.layuimini-container, .layuimini-main, body {
-    background: #f4f8fb !important;
-}
+      .layui-table-tool {
+        padding-left: 0;
+      }
+      .layui-table tr.status-normal {
+        background: #fff !important;
+      }
+      .layui-table tr.status-danger {
+        background: #fff0f0 !important;
+      }
+      .layui-table tr.status-urgent {
+        background: #f7f0ff !important;
+      }
+      .layui-table tr.status-heavy {
+        background: #f0f7ff !important;
+      }
+      .layui-table tr.status-other {
+        background: #fffbe6 !important;
+      }
+      .layuimini-container,
+      .layuimini-main,
+      body {
+        background: #f4f8fb !important;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", function () {
+        navigator.serviceWorker.register("service-worker.js");
+      });
+    }
+  </script>
+  <body>
     <div class="layuimini-container">
-        <div class="layuimini-main">
-            <div>
-                <table id="munu-table" class="layui-table" lay-filter="munu-table"></table>
-            </div>
+      <div class="layuimini-main">
+        <div>
+          <table
+            id="munu-table"
+            class="layui-table"
+            lay-filter="munu-table"
+          ></table>
         </div>
+      </div>
     </div>
     <!-- 操作列 -->
     <script type="text/html" id="toolbarDemo">
-        <div class="layui-btn-container">
-            <blockquote class="layui-elem-quote" style="font-size: 1.1rem; display: inline-block; line-height: 1.1; padding: 8px; font-weight: bold; padding-right: 20px;">患者列表</blockquote>
-            <i class="layui-icon layui-icon-form" style="color:blue"></i>
-            <button type="button" id="btn_ward_name" class="layui-btn layui-btn-primary" style="border-color:transparent">病区名称</button>
-            <i class="layui-icon layui-icon-username" style="color:blue"></i>
-            <button type="button" id="btn_user_name" class="layui-btn layui-btn-primary" style="border-color:transparent">管理员</button>
-            <button class="layui-btn layui-btn-sm layui-bg-blue" id="reloadTest" style="display:none">
-                选择病区
-                <i class="layui-icon layui-icon-down layui-font-12"></i>
-            </button>
-            <button class="layui-btn layui-btn-normal" lay-event="allPatient">全部患者</button>
-            <button class="layui-btn layui-btn-primary" lay-event="myPatient">我的患者</button> 
+      <div class="layui-btn-container">
+        <blockquote
+          class="layui-elem-quote"
+          style="font-size: 1.1rem; display: inline-block; line-height: 1.1; padding: 8px; font-weight: bold; padding-right: 20px;"
+        >
+          患者列表
+        </blockquote>
+        <i class="layui-icon layui-icon-form" style="color:blue"></i>
+        <button
+          type="button"
+          id="btn_ward_name"
+          class="layui-btn layui-btn-primary"
+          style="border-color:transparent"
+        >
+          病区名称
+        </button>
+        <i class="layui-icon layui-icon-username" style="color:blue"></i>
+        <button
+          type="button"
+          id="btn_user_name"
+          class="layui-btn layui-btn-primary"
+          style="border-color:transparent"
+        >
+          管理员
+        </button>
+        <button
+          class="layui-btn layui-btn-sm layui-bg-blue"
+          id="reloadTest"
+          style="display:none"
+        >
+          选择病区
+          <i class="layui-icon layui-icon-down layui-font-12"></i>
+        </button>
+        <button class="layui-btn layui-btn-normal" lay-event="allPatient">
+          全部患者
+        </button>
+        <button class="layui-btn layui-btn-primary" lay-event="myPatient">
+          我的患者
+        </button>
 
-            <button type="button" class="layui-btn layui-btn-sm layui-btn-normal" onclick="javascrript: location.href = '/login.html';" style="float: right;font-size:14px"><i class="layui-icon"></i>返回</button>
-
-        </div>
+        <button
+          type="button"
+          class="layui-btn layui-btn-sm layui-btn-normal"
+          onclick="javascrript: location.href = '/login.html';"
+          style="float: right;font-size:14px"
+        >
+          <i class="layui-icon"></i>返回
+        </button>
+      </div>
     </script>
     <script type="text/html" id="auth-state">
-        <a class="layui-btn layui-btn-primary layui-btn-sm layui-bg-blue" style="font-size:14px" lay-event="detail">详情</a>
-        <!--<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>-->
+      <a
+        class="layui-btn layui-btn-primary layui-btn-sm layui-bg-blue"
+        style="font-size:14px"
+        lay-event="detail"
+        >详情</a
+      >
+      <!--<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>-->
     </script>
     <script type="text/html" id="sexTpl">
-        {{#  if(d.sex_name === '女'){ }}
-        <span style="color: #F581B1;">{{ d.sex_name }}</span>
-        {{#  } else { }}
-        <span style="color: dodgerblue;">
-            {{ d.sex_name }}
-        </span>
-        {{#  } }}
+      {{# if(d.sex_name === '女'){ }}
+      <span style="color: #F581B1;">{{ d.sex_name }}</span>
+      {{# } else { }}
+      <span style="color: dodgerblue;"> {{ d.sex_name }} </span>
+      {{# } }}
     </script>
     <script type="text/html" id="statusTpl">
-        {{#  if(d.admiss_status_name === '常规'){ }}
-        <span style="color: green;">{{ d.admiss_status_name }}</span>
-        {{#  } else if(d.admiss_status_name === '危'){ }}
-        <span style="color: red;">{{ d.admiss_status_name }}</span>
-        {{#  } else if(d.admiss_status_name === '急'){ }}
-        <span style="color: purple;">{{ d.admiss_status_name }}</span>
-        {{#  } else if(d.admiss_status_name === '重'){ }}
-        <span style="color: blue;">{{ d.admiss_status_name }}</span>
-        {{#  } else { }}
-        <!--{ d.admiss_status_name }}-->
-        {{#  } }}
+      {{# if(d.admiss_status_name === '常规'){ }}
+      <span style="color: green;">{{ d.admiss_status_name }}</span>
+      {{# } else if(d.admiss_status_name === '危'){ }}
+      <span style="color: red;">{{ d.admiss_status_name }}</span>
+      {{# } else if(d.admiss_status_name === '急'){ }}
+      <span style="color: purple;">{{ d.admiss_status_name }}</span>
+      {{# } else if(d.admiss_status_name === '重'){ }}
+      <span style="color: blue;">{{ d.admiss_status_name }}</span>
+      {{# } else { }}
+      <!--{ d.admiss_status_name }}-->
+      {{# } }}
     </script>
     <script src="lib/layui-v2.6.3/layui.js" charset="utf-8"></script>
     <script src="js/lay-config.js?v=1.0.4" charset="utf-8"></script>
     <script>
-        var userData;
-        //alert("height:"+ screen.height + "width:"+screen.width  )
-        layui.use(['table', 'treetable', 'dropdown', 'appconfig'], function () {
-            var $ = layui.jquery;
-            var table = layui.table;
-            var treetable = layui.treetable;
-            var appconfig = layui.appconfig;
-            var dropdown = layui.dropdown;
+      var userData;
+      //alert("height:"+ screen.height + "width:"+screen.width  )
+      layui.use(["table", "treetable", "dropdown", "appconfig"], function () {
+        var $ = layui.jquery;
+        var table = layui.table;
+        var treetable = layui.treetable;
+        var appconfig = layui.appconfig;
+        var dropdown = layui.dropdown;
 
+        var loginUser = localStorage.getItem("loginUser");
 
-            var loginUser = localStorage.getItem('loginUser');
+        if (loginUser === null) {
+          location.href = "login.html";
+          return;
+        }
+        var loginUserData = JSON.parse(loginUser);
 
-            if (loginUser === null) {
-                location.href = "login.html";
-                return;
-            }
-            var loginUserData = JSON.parse(loginUser);
+        var wardData = localStorage.getItem("wardData");
 
-            var wardData = localStorage.getItem('wardData');
+        if (wardData === null) {
+          layer.msg("请先选择病区！");
+          location.href = "view/wardlist.html";
+          return;
+        }
+        var jsonData = JSON.parse(wardData);
+        localStorage.ward_sn = jsonData.ward_sn;
+        localStorage.ward_name = jsonData.ward_name;
 
-            if (wardData === null) {
-                layer.msg("请先选择病区！");
-                location.href = "view/wardlist.html";
-                return;
-            }
-            var jsonData = JSON.parse(wardData);
-            localStorage.ward_sn = jsonData.ward_sn;
-            localStorage.ward_name = jsonData.ward_name;
-
-            // 渲染
-            table.render({
-                elem: '#munu-table',
-                url: appconfig.api + '/api/MobileWard/GetActPatientLists?ward=' + localStorage.ward_sn + '&inout=I',
-                //page: true,
-                toolbar: '#toolbarDemo',
-                //defaultToolbar: ['filter', 'exports', 'print', {
-                //  title: '帮助'
-                //  ,layEvent: 'LAYTABLE_TIPS'
-                //  ,icon: 'layui-icon-tips'
-                //}],
-                defaultToolbar: [],
-                response: {
-                    statusCode: 1 // 重新规定成功的状态码为 1，table 组件默认为 0
-                },
-                // 将原始数据解析成 table 组件所规定的数据格式
-                parseData: function (res) {
-                    return {
-                        "code": res.status, //解析接口状态
-                        "msg": res.message, //解析提示文本
-                        "count": res.total, //解析数据长度
-                        "data": res.data //解析数据列表
-                    };
-                },
-                cellMinWidth: 60,
-                cols: [[
-                    { field: 'inpatient_no', title: '住院号', width: 90, sort: true },// unresize: true,
-                    { field: 'bed_no', title: '床号', width: 70, sort: true },
-                    { field: 'name', title: '姓名' },
-                    { field: 'sex_name', title: '性别', width: 50, templet: '#sexTpl' },
-                    { field: 'ages', title: '年龄' },
-                    { field: 'admiss_days', title: '入院天数', width: 80 },
-                    //{ field: 'responce_type_name', title: '身份' },
-                    { field: 'refer_physician_name', title: '管床医生' },
-                    { field: 'refer_nurse_name', title: '管床护士' },
-                    { field: 'admiss_status_name', title: '状态', width: 50, templet: '#statusTpl' },
-                    { field: 'nursing', title: '护理级别' },
-                    { fixed: 'right', title: '操作', toolbar: '#auth-state' }
-                ]],
-                //height: 315
-                done: function(res, curr, count) {
-                    // 行状态着色
-                    var trs = document.querySelectorAll('#munu-table+div .layui-table-body table tbody tr');
-                    res.data.forEach(function(row, i) {
-                        var tr = trs[i];
-                        if(!tr) return;
-                        switch(row.admiss_status_name) {
-                            case '常规':
-                                tr.classList.add('status-normal');
-                                break;
-                            case '危':
-                                tr.classList.add('status-danger');
-                                break;
-                            case '急':
-                                tr.classList.add('status-urgent');
-                                break;
-                            case '重':
-                                tr.classList.add('status-heavy');
-                                break;
-                            default:
-                                tr.classList.add('status-other');
-                        }
-                    });
-                },
-
+        // 渲染
+        table.render({
+          elem: "#munu-table",
+          url:
+            appconfig.api +
+            "/api/MobileWard/GetActPatientLists?ward=" +
+            localStorage.ward_sn +
+            "&inout=I",
+          //page: true,
+          toolbar: "#toolbarDemo",
+          //defaultToolbar: ['filter', 'exports', 'print', {
+          //  title: '帮助'
+          //  ,layEvent: 'LAYTABLE_TIPS'
+          //  ,icon: 'layui-icon-tips'
+          //}],
+          defaultToolbar: [],
+          response: {
+            statusCode: 1, // 重新规定成功的状态码为 1，table 组件默认为 0
+          },
+          // 将原始数据解析成 table 组件所规定的数据格式
+          parseData: function (res) {
+            return {
+              code: res.status, //解析接口状态
+              msg: res.message, //解析提示文本
+              count: res.total, //解析数据长度
+              data: res.data, //解析数据列表
+            };
+          },
+          cellMinWidth: 60,
+          cols: [
+            [
+              { field: "inpatient_no", title: "住院号", width: 90, sort: true }, // unresize: true,
+              { field: "bed_no", title: "床号", width: 70, sort: true },
+              { field: "name", title: "姓名" },
+              {
+                field: "sex_name",
+                title: "性别",
+                width: 50,
+                templet: "#sexTpl",
+              },
+              { field: "ages", title: "年龄" },
+              { field: "admiss_days", title: "入院天数", width: 80 },
+              //{ field: 'responce_type_name', title: '身份' },
+              { field: "refer_physician_name", title: "管床医生" },
+              { field: "refer_nurse_name", title: "管床护士" },
+              {
+                field: "admiss_status_name",
+                title: "状态",
+                width: 50,
+                templet: "#statusTpl",
+              },
+              { field: "nursing", title: "护理级别" },
+              { fixed: "right", title: "操作", toolbar: "#auth-state" },
+            ],
+          ],
+          //height: 315
+          done: function (res, curr, count) {
+            // 行状态着色
+            var trs = document.querySelectorAll(
+              "#munu-table+div .layui-table-body table tbody tr"
+            );
+            res.data.forEach(function (row, i) {
+              var tr = trs[i];
+              if (!tr) return;
+              switch (row.admiss_status_name) {
+                case "常规":
+                  tr.classList.add("status-normal");
+                  break;
+                case "危":
+                  tr.classList.add("status-danger");
+                  break;
+                case "急":
+                  tr.classList.add("status-urgent");
+                  break;
+                case "重":
+                  tr.classList.add("status-heavy");
+                  break;
+                default:
+                  tr.classList.add("status-other");
+              }
             });
-
-            $("#btn_ward_name").html(localStorage.ward_name);
-            $("#btn_user_name").html(loginUserData.name);
-            var ddl_data = [];
-
-            $.ajax({  //绑定病区列表
-                url: appconfig.api + "/api/ActPatient/GetYzUnitList?usermi=" + loginUserData.user_mi + "&subsys_id=yz",  //   获取控制器URL地址
-                type: "get",
-                dataType: "json",
-                success: function (data) {
-                    //方法一
-                    //ddl_data =[];
-                    for (var i = 0; i < data.data.length; i++) {
-                        //sel_pward.options.add(new Option(data.data[i].ward_name, data.data[i].ward_sn));
-                        ddl_data.push({ id: data.data[i].ward_sn, title: data.data[i].ward_name })
-                    }
-                    dropdown.render({
-                        elem: '#reloadTest' //可绑定在任意元素中，此处以上述按钮为例
-                        , data: ddl_data
-                        // 菜单被点击的事件
-                        , click: function (obj) {
-
-                            localStorage.ward_sn = obj.id;
-                            localStorage.ward_name = obj.title;
-
-                            $("#reloadTest").data("wardsn", obj.id);
-                            $("#reloadTest").html(obj.title + "<i class='layui-icon layui-icon-down layui-font-12'></i>");
-                            //layer.msg('可观察 Network 请求参数的变化');
-
-                            //重新加载表格数据
-                            layui.table.reloadData('munu-table', {
-                                url: appconfig.api + '/api/MobileWard/GetActPatientLists?ward=' + localStorage.ward_sn + '&inout=I',
-                            });
-                        }
-                    });
-                    if (localStorage.ward_sn === undefined) {
-                        $("#reloadTest").click();
-                    } else if ($("#reloadTest").html().indexOf("选择科室") > -1) {
-                        $("#reloadTest").data("wardsn", localStorage.ward_sn);
-                        $("#reloadTest").html(localStorage.ward_name + "<i class='layui-icon layui-icon-down layui-font-12'></i>");
-                    }
-                },
-                error: function (data) {
-                    layer.msg('访问数据失败！请检查网络链接是否畅通。');
-                }
-            })
-            //行单击事件（双击事件为：rowDouble）
-            table.on('row(munu-table)', function (obj) { 
-                var data = obj.data;
-
-                localStorage.setItem('userData', JSON.stringify(data));
-                const now = new Date();
-                const ticks = now.getTime();
-                console.log(ticks);
-                location.href = "view/patient.html" + "?ticks=" + ticks;
-            });
-            //工具栏事件
-            table.on('toolbar(munu-table)', function (obj) {
-                var id = obj.config.id;
-                var checkStatus = table.checkStatus(id);
-                var othis = lay(this);
-                switch (obj.event) {
-                    case 'allPatient':
-                        $("button[lay-event='allPatient']").removeClass("layui-btn-primary").removeClass("layui-btn-normal").addClass("layui-btn-normal");
-                        $("button[lay-event='myPatient']").removeClass("layui-btn-primary").removeClass("layui-btn-normal").addClass("layui-btn-primary");
-
-                        table.reloadData('munu-table', {
-                            where: {
-                                doctor_sn: ''
-                            }
-                            //,defaultToolbar: ['print'] // 重载头部工具栏右侧图标
-                            //,cols: ins1.config.cols
-                        }, true);
-                        break;
-                    case 'myPatient':
-
-                        $("button[lay-event='myPatient']").removeClass("layui-btn-primary").removeClass("layui-btn-normal").addClass("layui-btn-normal");
-                        $("button[lay-event='allPatient']").removeClass("layui-btn-primary").removeClass("layui-btn-normal").addClass("layui-btn-primary");
-                        table.reloadData('munu-table', {
-                            where: {
-                                doctor_sn: loginUserData.user_mi
-                            }
-                        }, true);
-                        break;
-
-                };
-            });
-
-            //监听工具条
-            table.on('tool(munu-table)', function (obj) {
-                var data = obj.data;
-                var layEvent = obj.event;
-
-                if (layEvent === 'del') {
-                    layer.msg('删除' + data.id);
-                } else if (layEvent === 'edit') {
-                    layer.msg('修改' + data.id);
-                } else if (layEvent === 'detail') {
-                    localStorage.setItem('userData', JSON.stringify(data));
-                    const now = new Date();
-                    const ticks = now.getTime();
-                    console.log(ticks);
-                    location.href = "view/patient.html" + "?ticks=" + ticks;
-                }
-            });
+          },
         });
+
+        $("#btn_ward_name").html(localStorage.ward_name);
+        $("#btn_user_name").html(loginUserData.name);
+        var ddl_data = [];
+
+        $.ajax({
+          //绑定病区列表
+          url:
+            appconfig.api +
+            "/api/ActPatient/GetYzUnitList?usermi=" +
+            loginUserData.user_mi +
+            "&subsys_id=yz", //   获取控制器URL地址
+          type: "get",
+          dataType: "json",
+          success: function (data) {
+            //方法一
+            //ddl_data =[];
+            for (var i = 0; i < data.data.length; i++) {
+              //sel_pward.options.add(new Option(data.data[i].ward_name, data.data[i].ward_sn));
+              ddl_data.push({
+                id: data.data[i].ward_sn,
+                title: data.data[i].ward_name,
+              });
+            }
+            dropdown.render({
+              elem: "#reloadTest", //可绑定在任意元素中，此处以上述按钮为例
+              data: ddl_data,
+              // 菜单被点击的事件
+              click: function (obj) {
+                localStorage.ward_sn = obj.id;
+                localStorage.ward_name = obj.title;
+
+                $("#reloadTest").data("wardsn", obj.id);
+                $("#reloadTest").html(
+                  obj.title +
+                    "<i class='layui-icon layui-icon-down layui-font-12'></i>"
+                );
+                //layer.msg('可观察 Network 请求参数的变化');
+
+                //重新加载表格数据
+                layui.table.reloadData("munu-table", {
+                  url:
+                    appconfig.api +
+                    "/api/MobileWard/GetActPatientLists?ward=" +
+                    localStorage.ward_sn +
+                    "&inout=I",
+                });
+              },
+            });
+            if (localStorage.ward_sn === undefined) {
+              $("#reloadTest").click();
+            } else if ($("#reloadTest").html().indexOf("选择科室") > -1) {
+              $("#reloadTest").data("wardsn", localStorage.ward_sn);
+              $("#reloadTest").html(
+                localStorage.ward_name +
+                  "<i class='layui-icon layui-icon-down layui-font-12'></i>"
+              );
+            }
+          },
+          error: function (data) {
+            layer.msg("访问数据失败！请检查网络链接是否畅通。");
+          },
+        });
+        //行单击事件（双击事件为：rowDouble）
+        table.on("row(munu-table)", function (obj) {
+          var data = obj.data;
+
+          localStorage.setItem("userData", JSON.stringify(data));
+          const now = new Date();
+          const ticks = now.getTime();
+          console.log(ticks);
+          location.href = "view/patient.html" + "?ticks=" + ticks;
+        });
+        //工具栏事件
+        table.on("toolbar(munu-table)", function (obj) {
+          var id = obj.config.id;
+          var checkStatus = table.checkStatus(id);
+          var othis = lay(this);
+          switch (obj.event) {
+            case "allPatient":
+              $("button[lay-event='allPatient']")
+                .removeClass("layui-btn-primary")
+                .removeClass("layui-btn-normal")
+                .addClass("layui-btn-normal");
+              $("button[lay-event='myPatient']")
+                .removeClass("layui-btn-primary")
+                .removeClass("layui-btn-normal")
+                .addClass("layui-btn-primary");
+
+              table.reloadData(
+                "munu-table",
+                {
+                  where: {
+                    doctor_sn: "",
+                  },
+                  //,defaultToolbar: ['print'] // 重载头部工具栏右侧图标
+                  //,cols: ins1.config.cols
+                },
+                true
+              );
+              break;
+            case "myPatient":
+              $("button[lay-event='myPatient']")
+                .removeClass("layui-btn-primary")
+                .removeClass("layui-btn-normal")
+                .addClass("layui-btn-normal");
+              $("button[lay-event='allPatient']")
+                .removeClass("layui-btn-primary")
+                .removeClass("layui-btn-normal")
+                .addClass("layui-btn-primary");
+              table.reloadData(
+                "munu-table",
+                {
+                  where: {
+                    doctor_sn: loginUserData.user_mi,
+                  },
+                },
+                true
+              );
+              break;
+          }
+        });
+
+        //监听工具条
+        table.on("tool(munu-table)", function (obj) {
+          var data = obj.data;
+          var layEvent = obj.event;
+
+          if (layEvent === "del") {
+            layer.msg("删除" + data.id);
+          } else if (layEvent === "edit") {
+            layer.msg("修改" + data.id);
+          } else if (layEvent === "detail") {
+            localStorage.setItem("userData", JSON.stringify(data));
+            const now = new Date();
+            const ticks = now.getTime();
+            console.log(ticks);
+            location.href = "view/patient.html" + "?ticks=" + ticks;
+          }
+        });
+      });
     </script>
-</body>
+  </body>
 </html>
