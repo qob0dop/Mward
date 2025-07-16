@@ -302,8 +302,15 @@
 
         <!-- 选项卡内容显示区域 -->
         <div id="patient-switch-list">
-          <div class="list-header">病人列表</div>
-          <table class="layui-table" id="switch-patient-table"></table>
+          <div class="list-header">
+            <span>病人列表</span>
+            <span class="close-btn" id="close-patient-list">✕</span>
+          </div>
+          <table
+            class="layui-table"
+            id="switch-patient-table"
+            lay-filter="switch-patient-table"
+          ></table>
         </div>
         <div class="tab-content-area">
           <div class="layui-tab-content">
@@ -693,57 +700,69 @@
               case 0: // 患者信息
                 $("#tab-patient").addClass("layui-show");
                 if (isCurrent) {
-                  // 刷新页面
-                  location.reload();
+                  // 对于患者信息选项卡，刷新表单数据而不是重新加载页面
+                  var userData = localStorage.getItem("userData");
+                  if (userData) {
+                    var currentData = JSON.parse(userData);
+                    // 重新填充表单数据
+                    $("input[name='pname']").val(currentData.name);
+                    $("input[name='admiss_times']").val(
+                      currentData.admiss_times
+                    );
+                    $("input[name='admiss_date']").val(
+                      currentData.admiss_date_text2
+                    );
+                    $("input[name='admiss_days']").val(currentData.admiss_days);
+                    $("input[name='sex_name']").val(currentData.sex_name);
+                    $("input[name='ages']").val(currentData.ages);
+                    $("input[name='inpatient_no']").val(
+                      currentData.inpatient_no
+                    );
+                    $("input[name='bed_no']").val(currentData.bed_no);
+                    $("input[name='refer_physician_name']").val(
+                      currentData.refer_physician_name
+                    );
+                    $("input[name='refer_nurse_name']").val(
+                      currentData.refer_nurse_name
+                    );
+                    $("input[name='admiss_diag']").val(currentData.admiss_diag);
+                    $("input[name='admiss_diag_name']").val(
+                      currentData.admiss_diag_name
+                    );
+                    $("input[name='nursing']").val(currentData.nursing);
+                    $("input[name='responce_type_name']").val(
+                      currentData.responce_type_name
+                    );
+                  }
                 }
                 break;
               case 1: // 医嘱
                 $("#tab-yizhu").addClass("layui-show");
-                if (isCurrent) {
-                  $("#yizhu-content").html(
-                    '<iframe src="yizhu.html' + patientParams + '"></iframe>'
-                  );
-                } else if ($("#yizhu-content iframe").length === 0) {
-                  $("#yizhu-content").html(
-                    '<iframe src="yizhu.html' + patientParams + '"></iframe>'
-                  );
-                }
+                // 总是重新加载iframe，确保显示最新数据
+                $("#yizhu-content").html(
+                  '<iframe src="yizhu.html' + patientParams + '"></iframe>'
+                );
                 break;
               case 2: // 检验
                 $("#tab-jianyan").addClass("layui-show");
-                if (isCurrent) {
-                  $("#jianyan-content").html(
-                    '<iframe src="jy_apply.html' + patientParams + '"></iframe>'
-                  );
-                } else if ($("#jianyan-content iframe").length === 0) {
-                  $("#jianyan-content").html(
-                    '<iframe src="jy_apply.html' + patientParams + '"></iframe>'
-                  );
-                }
+                // 总是重新加载iframe，确保显示最新数据
+                $("#jianyan-content").html(
+                  '<iframe src="jy_apply.html' + patientParams + '"></iframe>'
+                );
                 break;
               case 3: // 检查
                 $("#tab-jiancha").addClass("layui-show");
-                if (isCurrent) {
-                  $("#jiancha-content").html(
-                    '<iframe src="jc_apply.html' + patientParams + '"></iframe>'
-                  );
-                } else if ($("#jiancha-content iframe").length === 0) {
-                  $("#jiancha-content").html(
-                    '<iframe src="jc_apply.html' + patientParams + '"></iframe>'
-                  );
-                }
+                // 总是重新加载iframe，确保显示最新数据
+                $("#jiancha-content").html(
+                  '<iframe src="jc_apply.html' + patientParams + '"></iframe>'
+                );
                 break;
               case 4: // 电子病历
                 $("#tab-dianzibingli").addClass("layui-show");
-                if (isCurrent) {
-                  $("#dianzibingli-content").html(
-                    '<iframe src="edoclist.html"></iframe>'
-                  );
-                } else if ($("#dianzibingli-content iframe").length === 0) {
-                  $("#dianzibingli-content").html(
-                    '<iframe src="edoclist.html"></iframe>'
-                  );
-                }
+                // 总是重新加载iframe，确保显示最新数据
+                $("#dianzibingli-content").html(
+                  '<iframe src="edoclist.html' + patientParams + '"></iframe>'
+                );
                 break;
               case 8: // 手术信息
                 if ($("#tab-opinfo").length === 0) {
@@ -752,49 +771,232 @@
                   );
                 }
                 $("#tab-opinfo").addClass("layui-show");
-                if (isCurrent) {
-                  $("#opinfo-content").html(
-                    '<iframe src="oplist.html' + patientParams + '"></iframe>'
-                  );
-                } else if ($("#opinfo-content iframe").length === 0) {
-                  $("#opinfo-content").html(
-                    '<iframe src="oplist.html' + patientParams + '"></iframe>'
-                  );
-                }
+                // 总是重新加载iframe，确保显示最新数据
+                $("#opinfo-content").html(
+                  '<iframe src="oplist.html' + patientParams + '"></iframe>'
+                );
                 break;
               // 其他case可按需补充
             }
           });
 
-          // 切换患者侧边弹窗
+          // 切换患者功能
           $("#btn-switch-patient").on("click", function () {
-            layer.open({
-              type: 2,
-              title: "选择患者",
-              area: ["420px", "100vh"], // 侧边栏样式
-              offset: "lt", // 左上角
-              shade: 0.1,
-              shadeClose: true,
-              move: false,
-              content: "/index.html?from=patient",
-              success: function (layero, index) {
-                var iframe = layero.find("iframe")[0];
-                if (!iframe) return;
-                var oldUserData = localStorage.getItem("userData");
-                var timer = setInterval(function () {
-                  var newUserData = localStorage.getItem("userData");
-                  if (newUserData !== oldUserData) {
-                    clearInterval(timer);
-                    layer.close(index);
-                    location.reload();
-                  }
-                }, 500);
-                layero.on("remove", function () {
-                  clearInterval(timer);
-                });
+            var $btn = $(this);
+            var $list = $("#patient-switch-list");
+            var $body = $("body");
+
+            if ($list.hasClass("show")) {
+              // 隐藏列表
+              $list.removeClass("show");
+              $btn.removeClass("active");
+              $body.removeClass("patient-list-open");
+            } else {
+              // 显示列表并加载数据
+              $list.addClass("show");
+              $btn.addClass("active");
+              $body.addClass("patient-list-open");
+              loadPatientList();
+            }
+          });
+
+          // 关闭病人列表
+          $("#close-patient-list").on("click", function () {
+            $("#patient-switch-list").removeClass("show");
+            $("#btn-switch-patient").removeClass("active");
+            $("body").removeClass("patient-list-open");
+          });
+
+          // 加载病人列表
+          function loadPatientList() {
+            var wardSn = localStorage.getItem("ward_sn");
+            if (!wardSn) {
+              layer.msg("未找到病区信息，请重新登录");
+              return;
+            }
+
+            table.render({
+              elem: "#switch-patient-table",
+              url:
+                appconfig.api +
+                "/api/MobileWard/GetActPatientLists?ward=" +
+                wardSn +
+                "&inout=I",
+              response: {
+                statusCode: 1,
+              },
+              parseData: function (res) {
+                return {
+                  code: res.status,
+                  msg: res.message,
+                  count: res.total,
+                  data: res.data,
+                };
+              },
+              cellMinWidth: 60,
+              size: "sm",
+              cols: [
+                [
+                  { field: "bed_no", title: "床号", width: 60 },
+                  { field: "name", title: "姓名", width: 80 },
+                  { field: "sex_name", title: "性别", width: 50 },
+                  { field: "ages", title: "年龄", width: 60 },
+                  { field: "admiss_days", title: "住院天数", width: 80 },
+                ],
+              ],
+              done: function (res, curr, count) {
+                // 高亮当前患者
+                var currentPatient = JSON.parse(
+                  localStorage.getItem("userData")
+                );
+                if (currentPatient) {
+                  var trs = document.querySelectorAll(
+                    "#switch-patient-table+div .layui-table-body table tbody tr"
+                  );
+                  res.data.forEach(function (row, i) {
+                    var tr = trs[i];
+                    if (tr && row.patient_id === currentPatient.patient_id) {
+                      tr.classList.add("selected");
+                    }
+                  });
+                }
               },
             });
-          });
+
+            // 监听行点击事件
+            table.on("row(switch-patient-table)", function (obj) {
+              var data = obj.data;
+              var currentPatient = JSON.parse(localStorage.getItem("userData"));
+
+              // 检查是否点击的是当前患者
+              if (data.patient_id === currentPatient.patient_id) {
+                // 如果是当前患者，仅关闭列表
+                $("#patient-switch-list").removeClass("show");
+                $("#btn-switch-patient").removeClass("active");
+                $("body").removeClass("patient-list-open");
+                return;
+              }
+
+              // 显示切换中的加载提示
+              var loadingIndex = layer.load(1, {
+                shade: [0.3, "#000"],
+                content:
+                  '<div style="text-align:center; padding:20px;">正在切换患者...</div>',
+                success: function (layero) {
+                  layero.find(".layui-layer-content").css({
+                    "padding-top": "40px",
+                    width: "200px",
+                  });
+                },
+              });
+
+              // 保存新的患者数据
+              localStorage.setItem("userData", JSON.stringify(data));
+
+              // 关闭列表
+              // $("#patient-switch-list").removeClass("show");
+              // $("#btn-switch-patient").removeClass("active");
+              // $("body").removeClass("patient-list-open");
+
+              // 动态更新患者信息而不刷新页面
+              switchPatientDynamic(data, loadingIndex);
+            });
+          }
+
+          // 动态切换患者函数
+          function switchPatientDynamic(newPatientData, loadingIndex) {
+            try {
+              // 1. 更新顶部患者信息显示
+              $("#patient-header-info").html(
+                '<i class="layui-icon layui-icon-username" style="font-size: 18px; margin-right: 8px;"></i>' +
+                  newPatientData.name +
+                  " &nbsp;|&nbsp; " +
+                  newPatientData.inpatient_no +
+                  " &nbsp;|&nbsp; " +
+                  newPatientData.sex_name +
+                  " &nbsp;|&nbsp; " +
+                  newPatientData.ages +
+                  " &nbsp;|&nbsp; " +
+                  newPatientData.bed_no +
+                  "床"
+              );
+
+              // 2. 更新患者信息表单
+              $("input[name='pname']").val(newPatientData.name);
+              $("input[name='admiss_times']").val(newPatientData.admiss_times);
+              $("input[name='admiss_date']").val(
+                newPatientData.admiss_date_text2
+              );
+              $("input[name='admiss_days']").val(newPatientData.admiss_days);
+              $("input[name='sex_name']").val(newPatientData.sex_name);
+              $("input[name='ages']").val(newPatientData.ages);
+              $("input[name='inpatient_no']").val(newPatientData.inpatient_no);
+              $("input[name='bed_no']").val(newPatientData.bed_no);
+              $("input[name='refer_physician_name']").val(
+                newPatientData.refer_physician_name
+              );
+              $("input[name='refer_nurse_name']").val(
+                newPatientData.refer_nurse_name
+              );
+              $("input[name='admiss_diag']").val(newPatientData.admiss_diag);
+              $("input[name='admiss_diag_name']").val(
+                newPatientData.admiss_diag_name
+              );
+              $("input[name='nursing']").val(newPatientData.nursing);
+              $("input[name='responce_type_name']").val(
+                newPatientData.responce_type_name
+              );
+
+              // 3. 清空所有iframe内容，重置为加载状态
+              var iframeContainers = [
+                { id: "#yizhu-content", text: "正在加载医嘱信息..." },
+                { id: "#jianyan-content", text: "正在加载检验信息..." },
+                { id: "#jiancha-content", text: "正在加载检查信息..." },
+                {
+                  id: "#dianzibingli-content",
+                  text: "正在加载电子病历信息...",
+                },
+                { id: "#opinfo-content", text: "正在加载手术信息..." },
+              ];
+
+              iframeContainers.forEach(function (container) {
+                if ($(container.id).length > 0) {
+                  $(container.id).html(
+                    '<div class="loading-container">' +
+                      '<i class="layui-icon layui-icon-loading layui-anim layui-anim-rotate layui-anim-loop loading-icon"></i>' +
+                      '<div class="loading-text">' +
+                      container.text +
+                      "</div>" +
+                      "</div>"
+                  );
+                }
+              });
+
+              // 4. 如果当前显示的是非患者信息选项卡，重新加载该选项卡的内容
+              var activeTabBtn = $(
+                "#tab-btn-bar .tab-btn.layui-this, #tab-btn-bar .tab-btn.active"
+              );
+              var activeIndex = activeTabBtn.data("index");
+
+              if (activeIndex !== 0) {
+                // 延迟一点时间再重新加载iframe，确保DOM更新完成
+                setTimeout(function () {
+                  // 触发当前激活选项卡的重新加载
+                  activeTabBtn.trigger("click");
+                }, 100);
+              }
+
+              // 5. 显示切换成功提示并关闭加载
+              setTimeout(function () {
+                layer.close(loadingIndex);
+                layer.msg("患者切换成功", { icon: 1, time: 1500 });
+              }, 800);
+            } catch (error) {
+              console.error("切换患者时出错:", error);
+              layer.close(loadingIndex);
+              layer.msg("切换患者失败，请重试", { icon: 2, time: 2000 });
+            }
+          }
         }
       );
     </script>

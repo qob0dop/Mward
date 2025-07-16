@@ -3,15 +3,28 @@
 /* 病人切换列表样式 */
 #patient-switch-list {
   display: none;
-  position: absolute;
+  position: fixed;
   left: 0;
-  top: 60px;
+  top: 0;
   bottom: 0;
-  width: 420px;
+  width: 0;
   background: #fff;
   z-index: 999;
   box-shadow: 2px 0 8px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  transition: width 0.3s ease;
+}
+
+#patient-switch-list.show {
+  display: block;
+  width: 30%;
   overflow-y: auto;
+}
+
+/* 当列表显示时，主内容区域向右偏移 */
+body.patient-list-open .layuimini-main {
+  margin-left: 30%;
+  transition: margin-left 0.3s ease;
 }
 
 #patient-switch-list .list-header {
@@ -19,6 +32,46 @@
   font-weight: bold;
   font-size: 1.1rem;
   border-bottom: 1px solid #eee;
+  background: #f8f9fa;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+#patient-switch-list .list-header .close-btn {
+  cursor: pointer;
+  font-size: 18px;
+  color: #666;
+  padding: 2px 8px;
+  border-radius: 3px;
+}
+
+#patient-switch-list .list-header .close-btn:hover {
+  background: #e9ecef;
+  color: #000;
+}
+
+/* 病人列表表格样式优化 */
+#patient-switch-list .layui-table {
+  margin: 0;
+}
+
+#patient-switch-list .layui-table th,
+#patient-switch-list .layui-table td {
+  padding: 8px 10px;
+  font-size: 14px;
+}
+
+#patient-switch-list .layui-table tbody tr:hover {
+  background: #f0f7ff !important;
+  cursor: pointer;
+}
+
+#patient-switch-list .layui-table tbody tr.selected {
+  background: #e3f2fd !important;
 }
 
 /* 按钮样式优化 */
@@ -27,6 +80,12 @@
   font-size: 14px;
   margin-right: 8px;
   font-weight: normal;
+  transition: all 0.3s ease;
+}
+
+.btn-switch-patient.active {
+  background: #ff5722 !important;
+  border-color: #ff5722 !important;
 }
 
 .btn-back {
