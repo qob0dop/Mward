@@ -42,6 +42,8 @@
         overflow: hidden;
       }
       .layui-elem-quote {
+        height: 40px;
+        min-height: 5%;
         padding: 5px 15px;
         margin: 0;
         font-weight: bold;
@@ -64,7 +66,7 @@
         display: flex;
         flex-direction: column;
         /* 为底部栏留出空间，避免内容被遮挡 */
-        padding-bottom: 60px;
+        /* padding-bottom: 60px; */
       }
 
       .layuimini-container {
@@ -85,7 +87,9 @@
       }
 
       /* 底部选项卡样式 */
-      .bottom-tabs {
+      .bottom-tabs,
+      .bottom-tab-placeholder {
+        min-height: 5%;
         position: fixed;
         left: 0;
         right: 0;
@@ -97,6 +101,13 @@
         /* height: 60px; */
         margin: 0;
         padding: 0;
+      }
+      .bottom-tab-placeholder {
+        border: none;
+        box-shadow: none;
+        position: static;
+        height: auto;
+        min-height: 5%;
       }
 
       .bottom-tabs .layui-tab-title {
@@ -114,51 +125,14 @@
         min-width: 0;
         width: 100%;
       }
-      .bottom-tabs .layui-tab-title::-webkit-scrollbar {
-        display: none;
-      }
-      .bottom-tabs .layui-tab-title li {
-        position: relative;
-        background: transparent;
-        border: none;
-        margin: 0.3rem 0.6rem;
-        padding: 0.7rem 1.2rem;
-        transition: all 0.3s ease;
-        border-radius: 0;
-        flex: none;
-        height: auto;
-        line-height: 1.2;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1rem;
-        white-space: nowrap;
-      }
-
-      .bottom-tabs .layui-tab-title li:hover {
-        background: #e8f4fd;
-        color: #1e9fff;
-        border-radius: 6px;
-      }
-
-      .bottom-tabs .layui-tab-title li.layui-this {
-        background: linear-gradient(135deg, #1e9fff 0%, #1890ff 100%);
-        color: #fff;
-        font-weight: bold;
-        box-shadow: 0 -2px 8px rgba(30, 159, 255, 0.3);
-        border-radius: 8px;
-      }
 
       @media (max-width: 800px) {
-        .bottom-tabs {
+        .bottom-tabs,
+        .bottom-tab-placeholder {
           height: 48px;
         }
         .main-content {
           padding-bottom: 48px;
-        }
-        .bottom-tabs .layui-tab-title li {
-          padding: 0.4rem 0.7rem;
-          font-size: 0.85rem;
         }
       }
 
@@ -202,7 +176,7 @@
       /* 患者信息表单样式 */
       .layui-form {
         margin: 0;
-        padding: 10px 15px;
+        padding: 0px 0px;
         height: 100%;
         max-width: 800px;
         margin: 0 auto;
@@ -228,19 +202,23 @@
         border-top: 2px solid #e6e6e6;
       }
       .tab-btn {
-        min-width: 120px;
-        max-width: 120px;
-        height: 48px;
+        min-width: 160px;
+        max-width: 160px;
+        height: 100%;
         background: #fff;
         border: none;
         border-radius: 6px 6px 0 0;
-        font-size: 16px;
+        font-size: 1.5rem;
         color: #333;
         margin: 0;
         cursor: pointer;
         transition: background 0.2s, color 0.2s, box-shadow 0.2s;
         box-shadow: 0 1px 3px rgba(30, 159, 255, 0.04);
         outline: none;
+        padding: 5px;
+      }
+      .option-bar {
+        height: 100%;
       }
       .tab-btn.layui-this,
       .tab-btn.active {
@@ -257,10 +235,10 @@
         display: none;
       }
       .bottom-tab-placeholder {
-        height: 60px; /* 或底部栏实际高度 */
-        background: transparent; 
+        background: transparent;
         width: 100%;
         pointer-events: none;
+        /* 移除固定高度，让它自动跟随 bottom-tabs */
       }
       #patient-header-info {
         margin: 0 auto;
@@ -279,12 +257,6 @@
         background-color: #f5f5f5 !important;
         cursor: pointer;
       }
-
-      @media (max-width: 800px) {
-        .bottom-tab-placeholder {
-          height: 48px;
-        }
-      }
     </style>
   </head>
   <body>
@@ -295,17 +267,23 @@
             type="button"
             class="layui-btn layui-btn-sm layui-btn-warm btn-switch-patient"
             id="btn-switch-patient"
+            style="height: 80%"
           >
-            切换患者
+            <i class="layui-icon layui-icon-form"></i>切换患者
           </button>
 
           <span id="patient-header-info">患者详细信息</span>
           <button
             type="button"
+            style="height: 80%"
             class="layui-btn layui-btn-sm layui-btn-normal btn-back"
             onclick="javascrript:window.history.back()"
           >
-            <i class="layui-icon"></i>返回
+            <i
+              class="layui-icon layui-icon-return"
+              style="font-size: 18px; margin-right: 6px"
+            ></i
+            >返回
           </button>
           <!--<button class="layui-btn layui-btn-sm" onclick="javascrript:location.reload()" style="float: right;">刷新</button>-->
           <!--<button class="layui-btn layui-btn-normal" id="btn-fold">全部折叠</button>
@@ -323,6 +301,11 @@
             class="layui-table"
             id="switch-patient-table"
             lay-filter="switch-patient-table"
+          ></table>
+          <table
+            class="layui-table"
+            id="switch-patient-table-simple"
+            lay-filter="switch-patient-table-simple"
           ></table>
         </div>
         <div class="tab-content-area">
@@ -863,15 +846,6 @@
             }
           });
 
-          // 双击切换患者按钮刷新患者列表
-          $("#btn-switch-patient").on("dblclick", function () {
-            layer.msg("正在刷新患者列表...", { icon: 1, time: 1500 });
-            patientListLoaded = false;
-            patientListData = null;
-            patientTableEventsBound = false;
-            loadPatientList();
-          });
-
           // 关闭病人列表
           $("#close-patient-list").on("click", function () {
             $("#patient-switch-list").removeClass("show");
@@ -913,10 +887,10 @@
               cols: [
                 [
                   { field: "bed_no", title: "床号", width: 60 },
-                  { field: "name", title: "姓名", width: 80 },
+                  { field: "name", title: "姓名", width: 100 },
                   { field: "sex_name", title: "性别", width: 50 },
                   { field: "ages", title: "年龄", width: 60 },
-                  { field: "admiss_days", title: "住院天数", width: 80 },
+                  // { field: "admiss_days", title: "住院天数", width: 80 },
                 ],
               ],
               done: function (res, curr, count) {
