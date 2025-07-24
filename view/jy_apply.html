@@ -391,19 +391,8 @@
           </script>
           <!-- 状态模板 -->
           <script type="text/html" id="statusTpl">
-            {{# if(d.status == '待执行'){ }}
-            <span class="status-pending">
-              <i class="layui-icon layui-icon-time"></i> {{d.status}}
-            </span>
-            {{# } else if(d.status == '已完成'){ }}
-            <span class="status-completed">
-              <i class="layui-icon layui-icon-ok"></i> {{d.status}}
-            </span>
-            {{# } else { }}
-            <span class="status-cancelled">
-              <i class="layui-icon layui-icon-close"></i> {{d.status}}
-            </span>
-            {{# } }}
+            {{# if(d.status == '0'){ }} 申请 {{# } else if(d.status == '1'){ }}
+            已登记 {{# } else { }} 未保存 {{# } }}
           </script>
 
           <!-- 日期格式化模板 -->
@@ -468,8 +457,13 @@
                 width: 120,
                 sort: true,
               },
-              { field: "status_name", title: "检验状态", width: 100 },
-              { field: "grp_name", title: "检验项目", width: 130 },
+              {
+                field: "status",
+                title: "检验状态",
+                width: 100,
+                templet: "#statusTpl",
+              },
+              { field: "grp_name", title: "检验项目" },
               { field: "charge_amount", title: "数量", width: 100 },
               {
                 field: "reg_date",
@@ -478,7 +472,7 @@
                 templet: "#dateTpl",
               },
               {
-                fixed: "right",
+                // fixed: "right",
                 title: "操作",
                 width: 80,
                 align: "center",
@@ -499,7 +493,47 @@
             };
           },
         });
-        //删除逻辑
+        // 删除逻辑
+        table.on("tool(jianyan-table)", function (obj) {
+          var data = obj.data;
+          var layEvent = obj.event;
+          if (layEvent === "delRow") {
+            if (data.exam_status == 0) {
+              layer.msg("该申请已登记，不能删除", { icon: 5 });
+              return;
+            }
+            layer.confirm(
+              "确定删除该申请吗？",
+              { icon: 3, title: "提示" },
+              function (index) {
+                $.ajax({
+                  url: appconfig.api + "/api/JcJy/DelJianYan",
+                  type: "GET",
+                  data: {
+                    patient_id: data.patient_id,
+                    admiss_times: data.admiss_times,
+                    exam_no: data.jyapply_no,
+                  },
+                  dataType: "json",
+                  success: function (res) {
+                    if (res.status === 1) {
+                      layer.msg("删除成功", { icon: 1 });
+                      table.reload("jianyan-table");
+                    } else {
+                      layer.msg("删除失败: " + (res.msg || "未知错误"), {
+                        icon: 5,
+                      });
+                    }
+                  },
+                  error: function () {
+                    layer.msg("网络错误，删除失败", { icon: 5 });
+                  },
+                });
+                layer.close(index);
+              }
+            );
+          }
+        });
 
         // 获取检验项目数据
         function loadTestItems(callback) {

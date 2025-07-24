@@ -83,6 +83,12 @@
           <!-- 操作列模板 -->
           <script type="text/html" id="rowBar">
             <button
+              class="layui-btn layui-btn-xs layui-btn-normal"
+              lay-event="detail"
+            >
+              详情
+            </button>
+            <button
               class="layui-btn layui-btn-danger layui-btn-xs"
               lay-event="delRow"
             >
@@ -107,19 +113,8 @@
 
           <!-- 状态模板 -->
           <script type="text/html" id="statusTpl">
-            {{# if(d.status == '待执行'){ }}
-            <span class="status-pending">
-              <i class="layui-icon layui-icon-time"></i> {{d.status}}
-            </span>
-            {{# } else if(d.status == '已完成'){ }}
-            <span class="status-completed">
-              <i class="layui-icon layui-icon-ok"></i> {{d.status}}
-            </span>
-            {{# } else { }}
-            <span class="status-cancelled">
-              <i class="layui-icon layui-icon-close"></i> {{d.status}}
-            </span>
-            {{# } }}
+            {{# if(d.exam_status == '0'){ }} 申请 {{# } else if(d.exam_status ==
+            '1'){ }} 已登记 {{# } else { }} 未保存 {{# } }}
           </script>
 
           <!-- 日期格式化模板 -->
@@ -452,7 +447,12 @@
             [
               { type: "checkbox", width: 40 },
               { field: "exam_serial", title: "申请单号", width: 110 },
-              { field: "exam_status", title: "检查状态", width: 80 },
+              {
+                field: "exam_status",
+                title: "检查状态",
+                width: 80,
+                templet: "#statusTpl",
+              },
               { field: "exam_type_name", title: "检查类型", width: 100 },
               { field: "exam_sub_type_name", title: "检查项目", minWidth: 180 },
               { field: "charge_amount", title: "数量", width: 60 },
@@ -466,7 +466,7 @@
               { field: "exam_flag_str", title: "增强或重建", width: 90 },
               { field: "parent_serial", title: "父申请号", width: 100 },
               {
-                fixed: "right",
+                // fixed: "right",
                 title: "操作",
                 width: 80,
                 align: "center",
@@ -737,20 +737,90 @@
 
           if (!loginUser) {
             layer.msg("登录信息已过期，请重新登录", { icon: 5 });
-            callback(false);
             return;
           }
 
           var loginUserData = JSON.parse(loginUser);
-          console.log(loginUserData);
-          if (layEvent === "delRow") {
+          if (layEvent === "detail") {
+            // 详情弹窗：请求接口获取报告URL并嵌入式显示
+            var url =
+              "http://10.101.199.142:5130/api/Third/GetTag20012?patient_id=001015074100&exam_no=2025072115484&exam_type=01";
+
+            $.ajax({
+              url: url,
+              type: "GET",
+              dataType: "json",
+              timeout: 15000, // 15秒超时
+              success: function (res) {
+                if (res.status === 1 && res.data) {
+                  // 检测是否为移动设备
+                  var isMobile =
+                    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+                      navigator.userAgent
+                    );
+
+                  // 为URL添加参数，强制以网页形式显示（防止下载）
+                  var reportUrl = res.data;
+                  if (reportUrl.indexOf("?") > -1) {
+                    reportUrl += "&view=inline&display=web";
+                  } else {
+                    reportUrl += "?view=inline&display=web";
+                  }
+
+                  if (isMobile) {
+                    // 移动端：尝试多种方式打开
+                    try {
+                      // 方式1：创建一个隐藏的a标签点击
+                      var link = document.createElement("a");
+                      link.href = reportUrl;
+                      link.target = "_blank";
+                      link.rel = "noopener noreferrer";
+                      document.body.appendChild(link);
+                      link.click();
+                      document.body.removeChild(link);
+                    } catch (e) {
+                      // 方式2：直接使用window.open
+                      window.open(reportUrl, "_blank", "noopener,noreferrer");
+                    }
+                  } else {
+                    // PC端：在弹窗中嵌入iframe显示报告
+                    layer.open({
+                      type: 1,
+                      title:
+                        '<i class="layui-icon layui-icon-file"></i> 检查报告详情 - ' +
+                        data.exam_sub_type_name,
+                      area: ["95%", "90%"],
+                      maxmin: true,
+                      content:
+                        '<iframe src="' +
+                        reportUrl +
+                        '" frameborder="0" style="width:100%;height:100%;"></iframe>',
+                      success: function (layero, index) {
+                        var iframe = layero.find("iframe")[0];
+                        iframe.onerror = function () {
+                          layer.msg("报告页面加载失败", { icon: 5 });
+                        };
+                      },
+                    });
+                  }
+                } else {
+                  layer.alert("未获取到有效的报告链接", { icon: 5 });
+                }
+              },
+              error: function (xhr) {
+                layer.alert(
+                  "获取报告链接失败：" + (xhr.statusText || "网络错误"),
+                  { icon: 5 }
+                );
+              },
+            });
+          } else if (layEvent === "delRow") {
             // 删除前先检查状态
             if (data.exam_status == 1) {
               layer.confirm(
                 "确定删除该申请吗？",
                 { icon: 3, title: "提示" },
                 function (index) {
-                  console.log("本行数据", data);
                   // 执行删除操作的代码
                   $.ajax({
                     url: appconfig.api + "/api/JcJy/DelJianCha",
@@ -762,23 +832,19 @@
                       exam_no: data.exam_no,
                       sybsys_id: loginUserData.subsys_id,
                       opera: loginUserData.user_mi,
-                      // 还有 sybsys_id, opera 如有需要也加上
                     },
                     dataType: "json",
                     success: function (res) {
                       if (res.status === 1) {
                         layer.msg("删除成功", { icon: 1 });
-                        console.log(res);
                         table.reload("jiancha-table");
                       } else {
-                        console.error("删除失败:", res);
                         layer.msg("删除失败: " + (res.msg || "未知错误"), {
                           icon: 5,
                         });
                       }
                     },
-                    error: function (xhr, status, err) {
-                      console.error("删除请求异常:", xhr, status, err);
+                    error: function () {
                       layer.msg("网络错误，删除失败", { icon: 5 });
                     },
                   });

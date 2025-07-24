@@ -90,7 +90,7 @@
       .bottom-tabs,
       .bottom-tab-placeholder {
         min-height: 5%;
-        position: fixed;
+        /* position: fixed; */
         left: 0;
         right: 0;
         bottom: 0;
@@ -130,9 +130,6 @@
         .bottom-tabs,
         .bottom-tab-placeholder {
           height: 48px;
-        }
-        .main-content {
-          padding-bottom: 48px;
         }
       }
 
@@ -244,6 +241,10 @@
         margin: 0 auto;
         display: inline-block;
         text-align: center;
+        max-width: 80vw;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
 
       /* 患者列表样式优化 */
@@ -374,7 +375,7 @@
           </div>
         </div>
       </div>
-      <div class="bottom-tab-placeholder"></div>
+      <!-- <div class="bottom-tab-placeholder"></div> -->
     </div>
 
     <script src="../lib/layui-v2.6.3/layui.js" charset="utf-8"></script>
