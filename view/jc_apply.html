@@ -742,7 +742,7 @@
 
           var loginUserData = JSON.parse(loginUser);
           if (layEvent === "detail") {
-            // 详情弹窗：请求接口获取报告URL并嵌入式显示
+            // 详情弹窗：请求接口获取报告URL并直接新标签页打开（SPA）
             var url =
               "http://10.101.199.142:5130/api/Third/GetTag20012?patient_id=001015074100&exam_no=2025072115484&exam_type=01";
 
@@ -753,56 +753,14 @@
               timeout: 15000, // 15秒超时
               success: function (res) {
                 if (res.status === 1 && res.data) {
-                  // 检测是否为移动设备
-                  var isMobile =
-                    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-                      navigator.userAgent
-                    );
-
-                  // 为URL添加参数，强制以网页形式显示（防止下载）
                   var reportUrl = res.data;
                   if (reportUrl.indexOf("?") > -1) {
                     reportUrl += "&view=inline&display=web";
                   } else {
                     reportUrl += "?view=inline&display=web";
                   }
-
-                  if (isMobile) {
-                    // 移动端：尝试多种方式打开
-                    try {
-                      // 方式1：创建一个隐藏的a标签点击
-                      var link = document.createElement("a");
-                      link.href = reportUrl;
-                      link.target = "_blank";
-                      link.rel = "noopener noreferrer";
-                      document.body.appendChild(link);
-                      link.click();
-                      document.body.removeChild(link);
-                    } catch (e) {
-                      // 方式2：直接使用window.open
-                      window.open(reportUrl, "_blank", "noopener,noreferrer");
-                    }
-                  } else {
-                    // PC端：在弹窗中嵌入iframe显示报告
-                    layer.open({
-                      type: 1,
-                      title:
-                        '<i class="layui-icon layui-icon-file"></i> 检查报告详情 - ' +
-                        data.exam_sub_type_name,
-                      area: ["95%", "90%"],
-                      maxmin: true,
-                      content:
-                        '<iframe src="' +
-                        reportUrl +
-                        '" frameborder="0" style="width:100%;height:100%;"></iframe>',
-                      success: function (layero, index) {
-                        var iframe = layero.find("iframe")[0];
-                        iframe.onerror = function () {
-                          layer.msg("报告页面加载失败", { icon: 5 });
-                        };
-                      },
-                    });
-                  }
+                  // 统一用window.open新标签页打开，无论PC还是移动端
+                  window.open(reportUrl, "_blank", "noopener,noreferrer");
                 } else {
                   layer.alert("未获取到有效的报告链接", { icon: 5 });
                 }
