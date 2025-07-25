@@ -53,22 +53,7 @@
       }
       
       /* 按钮选中状态样式 */
-      .btn-active {
-        background-color: #5FB878 !important;
-        border: 3px solid #009688 !important;
-        color: #fff !important;
-        box-shadow: 0 0 10px rgba(0, 150, 136, 0.5) !important;
-        font-weight: bold !important;
-        transform: scale(1.05);
-        transition: all 0.3s ease;
-      }
       
-      /* 按钮悬停效果 */
-      .layui-btn:not(.btn-active):hover {
-        transform: translateY(-1px);
-        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        transition: all 0.2s ease;
-      }
       
       /* 按钮默认状态 */
       .layui-btn {
@@ -146,6 +131,48 @@
         background-color: #f4f4f4 !important;
       } */
     </style> -->
+    <style>
+      /* 选中按钮高亮样式，兼容不同色系 */
+      .btn-active {
+        position: relative;
+        z-index: 1;
+        font-weight: bold !important;
+        border-width: 2.5px !important;
+        box-shadow: 0 2px 8px rgba(30, 185, 90, 0.18), 0 0 0 2px #b2f0c0 inset !important;
+        outline: none !important;
+      }
+      /* 针对绿色按钮（layui-btn-warm）选中时加深色 */
+      .layui-btn-warm.btn-active {
+        background-color: #3ec97c !important;
+        border-color: #1eae5b !important;
+        color: #fff !important;
+      }
+      /* 针对红色按钮（layui-btn-danger）选中时加深色 */
+      .layui-btn-danger.btn-active {
+        background-color: #e74c3c !important;
+        border-color: #c0392b !important;
+        color: #fff !important;
+      }
+      /* 针对蓝色按钮（layui-btn-primary/normal/cyan）选中时加深色 */
+      .layui-btn-primary.btn-active,
+      .layui-btn-normal.btn-active,
+      .layui-btn-cyan.btn-active {
+        background-color: #1e9fff !important;
+        border-color: #1786d4 !important;
+        color: #fff !important;
+      }
+      /* 兼容小屏幕按钮点击反馈 */
+      .btn-active:active {
+        box-shadow: 0 1px 4px rgba(30, 185, 90, 0.12) !important;
+      }
+
+      /* 按钮悬停效果 */
+      .layui-btn:not(.btn-active):hover {
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        transition: all 0.2s ease;
+      }
+    </style>
   </head>
   <body>
     <div class="layui-container">
@@ -160,11 +187,19 @@
               gap: 10px;
               flex-wrap: wrap;
               justify-content: center;
+              align-items: center;
             "
           >
             <!-- 医嘱类型筛选 -->
             <div style="display: flex; gap: 8px; align-items: center">
-              <span style="font-size: 13px; color: #666; font-weight: bold"
+              <span
+                style="
+                  font-size: 13px;
+                  color: #666;
+                  font-weight: bold;
+                  white-space: nowrap;
+                  text-overflow: ellipsis;
+                "
                 >医嘱类型：</span
               >
               <button
@@ -192,6 +227,29 @@
                 全部医嘱
               </button>
             </div>
+            <!-- 录音按钮 -->
+            <div style="display: flex; align-items: center; gap: 8px">
+              <button
+                type="button"
+                id="btn-record-audio"
+                class="layui-btn layui-btn-sm layui-btn-normal"
+              >
+                <i class="layui-icon layui-icon-mike"></i> 录音
+              </button>
+              <button
+                type="button"
+                id="btn-save-audio"
+                class="layui-btn layui-btn-sm layui-btn-primary"
+                style="display: none"
+              >
+                <i class="layui-icon layui-icon-download-circle"></i> 保存录音
+              </button>
+              <audio
+                id="audio-preview"
+                controls
+                style="display: none; max-width: 120px"
+              ></audio>
+            </div>
 
             <!-- 开嘱人筛选 -->
             <div
@@ -202,7 +260,14 @@
                 margin-left: 20px;
               "
             >
-              <span style="font-size: 13px; color: #666; font-weight: bold"
+              <span
+                style="
+                  font-size: 13px;
+                  color: #666;
+                  font-weight: bold;
+                  white-space: nowrap;
+                  text-overflow: ellipsis;
+                "
                 >开嘱人：</span
               >
               <button
@@ -273,6 +338,78 @@
         if (btn) {
           btn.onclick = function () {
             window.print();
+          };
+        }
+
+        // 录音功能
+        let mediaRecorder;
+        let audioChunks = [];
+        let audioBlob = null;
+        const recordBtn = document.getElementById("btn-record-audio");
+        const saveBtn = document.getElementById("btn-save-audio");
+        const audioPreview = document.getElementById("audio-preview");
+        let isRecording = false;
+
+        if (recordBtn && saveBtn && audioPreview) {
+          recordBtn.onclick = async function () {
+            if (!isRecording) {
+              // 开始录音
+              if (
+                !navigator.mediaDevices ||
+                !navigator.mediaDevices.getUserMedia
+              ) {
+                layer.msg("当前浏览器不支持录音", { icon: 2 });
+                return;
+              }
+              try {
+                const stream = await navigator.mediaDevices.getUserMedia({
+                  audio: true,
+                });
+                mediaRecorder = new MediaRecorder(stream);
+                audioChunks = [];
+                mediaRecorder.ondataavailable = function (e) {
+                  if (e.data.size > 0) audioChunks.push(e.data);
+                };
+                mediaRecorder.onstop = function () {
+                  audioBlob = new Blob(audioChunks, { type: "audio/webm" });
+                  audioPreview.src = URL.createObjectURL(audioBlob);
+                  audioPreview.style.display = "inline-block";
+                  saveBtn.style.display = "inline-block";
+                };
+                mediaRecorder.start();
+                isRecording = true;
+                recordBtn.innerHTML =
+                  '<i class="layui-icon layui-icon-pause"></i> 停止';
+                saveBtn.style.display = "none";
+                audioPreview.style.display = "none";
+                layer.msg("正在录音...再次点击停止", { icon: 1, time: 1200 });
+              } catch (err) {
+                layer.msg("无法访问麦克风", { icon: 2 });
+              }
+            } else {
+              // 停止录音
+              if (mediaRecorder && mediaRecorder.state !== "inactive") {
+                mediaRecorder.stop();
+              }
+              isRecording = false;
+              recordBtn.innerHTML =
+                '<i class="layui-icon layui-icon-mike"></i> 录音';
+            }
+          };
+          saveBtn.onclick = function () {
+            if (audioBlob) {
+              const url = URL.createObjectURL(audioBlob);
+              const a = document.createElement("a");
+              a.style.display = "none";
+              a.href = url;
+              a.download = "record.webm";
+              document.body.appendChild(a);
+              a.click();
+              setTimeout(() => {
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+              }, 100);
+            }
           };
         }
       });
