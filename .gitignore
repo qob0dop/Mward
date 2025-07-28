@@ -4,6 +4,7 @@
 # 但以下文件例外（即你要 Git 关注的）
 !.gitignore
 !capacitor.config.ts
-！index.html
+!main.html
+!index.html
 !view/
 !css/
