@@ -178,7 +178,6 @@
           <div
             class="layui-btn-container filter-buttons"
             style="
-              margin-bottom: 12px;
               display: flex;
               gap: 10px;
               flex-wrap: wrap;
@@ -292,12 +291,14 @@
               </button>
             </div>
           </div>
-          <!-- 医嘱表格 -->
-          <table
-            class="layui-hide"
-            id="yizhu-table"
-            lay-filter="yizhu-table"
-          ></table>
+          <!-- 医嘱表格容器 -->
+          <div class="table-container">
+            <table
+              class="layui-hide"
+              id="yizhu-table"
+              lay-filter="yizhu-table"
+            ></table>
+          </div>
 
           <!-- 工具栏模板 -->
           <script type="text/html" id="toolbarDemo">
@@ -523,7 +524,7 @@
             data: data,
             defaultToolbar: [],
             cols: tableCols,
-            height: "full-42",
+            height: "full-60", // 减去过滤按钮区域的高度
             text: {
               none: "暂无医嘱数据",
             },
