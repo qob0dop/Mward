@@ -22,62 +22,13 @@
     <link rel="stylesheet" href="/css/public.css" media="all" />
     <link rel="stylesheet" href="/css/patient.css" media="all" />
     <style>
-      .layui-btn:not(.layui-btn-lg):not(.layui-btn-sm):not(.layui-btn-xs) {
-        height: 34px;
-        line-height: 34px;
-        padding: 0 8px;
-      }
-
-      .layui-input {
-        color: dodgerblue;
-      }
-
-      .layui-btn-radius {
-        width: 80px;
-      }
-
       body {
         background-color: transparent;
         margin: 0;
         padding: 0;
         height: 100vh !important;
-        max-height: 100vh !important;
         overflow: hidden !important;
         position: relative;
-        /* APK WebView兼容性 */
-        -webkit-overflow-scrolling: touch;
-        -webkit-transform: translateZ(0);
-        transform: translateZ(0);
-      }
-      .layui-elem-quote {
-        height: 35px;
-        min-height: 35px;
-        padding: 3px 10px;
-        margin: 0;
-        font-weight: bold;
-        font-size: 1rem;
-        border: none;
-        background: #fff;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        position: relative;
-      }
-      .layui-layer-setwin a {
-        height: 26px;
-        transform: scale(1.5);
-      }
-
-      /* 页面布局样式 - APK兼容 */
-      .main-content {
-        height: 100vh !important;
-        max-height: 100vh !important;
-        display: flex;
-        flex-direction: column;
-        overflow: hidden !important;
-        position: relative;
-        /* APK WebView强制约束 */
-        -webkit-overflow-scrolling: touch;
       }
 
       .layuimini-container {
@@ -85,72 +36,32 @@
         margin: 0;
         border: none;
         height: 100% !important;
-        max-height: 100% !important;
-        display: flex;
-        flex-direction: column;
-        overflow: hidden !important;
-        position: relative;
       }
-
-      .layuimini-main {
+      .main-content {
+        display: flex;
+        position: relative; /*子绝父相*/
         padding: 0;
         margin: 0px;
         height: 100% !important;
         max-height: 100% !important;
-        display: flex;
         flex-direction: column;
         overflow: hidden !important;
-        position: relative;
       }
-
-      /* 底部选项卡样式 */
-      .bottom-tabs,
-      .bottom-tab-placeholder {
-        min-height: 5%;
-        /* position: fixed; */
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: #fff;
-        border-top: 2px solid #e6e6e6;
-        box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
-        z-index: 1000;
-        /* height: 60px; */
-        margin: 0;
-        padding: 0;
-      }
-      .bottom-tab-placeholder {
-        border: none;
-        box-shadow: none;
-        position: static;
-        height: auto;
-        min-height: 5%;
-      }
-
-      .bottom-tabs .layui-tab-title {
-        margin: 0;
-        background: #fff;
-        border: none;
+      /* 《======================顶部区域样式======================》 */
+      .layui-elem-quote {
         display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        height: 100%;
         align-items: center;
-        overflow-x: visible;
-        overflow-y: visible;
-        white-space: normal;
-        min-width: 0;
-        width: 100%;
+        justify-content: center;
+        padding: 3px 10px;
+        margin: 0;
+        height: 35px;
+        min-height: 35px;
+        border: none;
+        background: #fff;
+        font-weight: bold;
+        font-size: 1rem;
       }
-
-      @media (max-width: 800px) {
-        .bottom-tabs,
-        .bottom-tab-placeholder {
-          height: 48px;
-        }
-      }
-
-      /* 选项卡内容区域 - APK兼容 */
+      /* 《======================中间区域样式======================》 */
       .tab-content-area {
         flex: 1;
         overflow: hidden !important; /* 强制隐藏滚动条，防止父页面出现滚动条 */
@@ -160,19 +71,40 @@
         height: 0; /* flex布局中配合flex:1使用 */
         min-height: 0;
         max-height: 100%;
-        /* APK WebView强制约束 */
-        isolation: isolate;
+        isolation: isolate; /* 层级隔离 */
       }
-
+      /* 病人切换列表样式 */
+      #patient-switch-list {
+        display: none;
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 0;
+        background: #fff;
+        z-index: 999;
+        box-shadow: 2px 0 8px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+        transition: width 0.3s ease; /* 动画效果 */
+      }
+      #patient-switch-list.show {
+        display: block;
+        width: 30%;
+        overflow-y: auto; /* 自动显示滚动条 */
+      }
+      /* 主要展示框 */
       .layui-tab-content {
         height: 100% !important;
-        max-height: 100% !important;
         padding: 0;
         margin: 0;
         overflow: hidden !important;
         position: relative;
       }
-
+      body.patient-list-open .layui-tab-content {
+        margin-left: 30%;
+        transition: margin-left 0.3s ease;
+      }
+      /* 选项卡内容区域 */
       .layui-tab-item {
         height: 100% !important;
         max-height: 100% !important;
@@ -181,21 +113,21 @@
         overflow: hidden !important;
         position: relative;
       }
-
-      /* iframe容器样式 - APK兼容 */
+      /* 患者信息选项卡特殊处理 - 允许滚动 */
+      #tab-patient {
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+      }
+      /* iframe容器样式*/
       .tab-iframe-container {
         height: 100%;
         width: 100%;
-        margin: 0;
-        padding: 0;
         overflow: hidden;
-        box-sizing: border-box;
         position: relative;
-        /* 强制约束iframe在此容器内 */
         isolation: isolate;
       }
 
-      /* 确保iframe填满容器但不超出 - APK兼容 */
+      /* 确保iframe填满容器但不超出*/
       .tab-content-area iframe {
         width: 100% !important;
         height: 100% !important;
@@ -209,57 +141,70 @@
         left: 0;
         /* 强制iframe不能超出父容器 */
         overflow: hidden;
-        -webkit-transform: translateZ(0);
-        transform: translateZ(0);
       }
-
       /* 患者信息表单样式 */
       .layui-form {
         margin: 0;
-        padding: 5px 10px;
-        height: 100%;
-        max-width: 800px;
-        margin: 0 auto;
-        text-align: center;
+        padding: 0;
+        height: auto; /* 改为自动高度 */
+        min-height: 100%; /* 确保至少填满容器 */
+        box-sizing: border-box;
       }
-
       .layui-form-item {
-        text-align: center;
         display: flex;
         justify-content: center;
         align-items: center;
         margin-bottom: 8px;
       }
+      @media (max-width: 600px) {
+        /* 窄屏时取消列表宽度限制，主内容也不再右移 */
+      }
 
-      .option-bar {
-        width: 100vw;
-        overflow-x: auto;
-        white-space: nowrap;
+      /* 《======================底部区域样式======================》 */
+      .bottom-tabs {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 40px;
+        min-height: 5%;
         background: #fff;
+        border-top: 2px solid #e6e6e6;
+        box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+        margin: 0;
+        padding: 0;
+      }
+      .option-bar {
+        display: flex;
+        height: 100%;
+        width: 100%;
+        background: rgb(199, 199, 199);
         padding: 0 0 0 8px;
         box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.04);
-        display: flex;
-        gap: 12px;
+        gap: 6px;
         border-top: 2px solid #e6e6e6;
+        overflow-x: auto;
+        white-space: nowrap;
+      }
+      .option-bar::-webkit-scrollbar {
+        display: none; /* 隐藏滚动条 */
       }
       .tab-btn {
         min-width: 160px;
         max-width: 160px;
         height: 100%;
+        line-height: 100%;
+        margin-top: 2px;
+        padding: 5px;
         background: #fff;
         border: none;
         border-radius: 6px 6px 0 0;
         font-size: 1.5rem;
         color: #333;
-        margin: 0;
         cursor: pointer;
-        transition: background 0.2s, color 0.2s, box-shadow 0.2s;
         box-shadow: 0 1px 3px rgba(30, 159, 255, 0.04);
         outline: none;
-        padding: 5px;
-      }
-      .option-bar {
-        height: 100%;
       }
       .tab-btn.layui-this,
       .tab-btn.active {
@@ -272,20 +217,16 @@
         background: #e8f4fd;
         color: #1e9fff;
       }
-      .option-bar::-webkit-scrollbar {
-        display: none;
+      /* 《======================主区域样式结束======================》 */
+
+      /* 病人信息字体颜色 */
+      .layui-input {
+        color: dodgerblue;
       }
-      .bottom-tab-placeholder {
-        background: transparent;
-        width: 100%;
-        pointer-events: none;
-        /* 移除固定高度，让它自动跟随 bottom-tabs */
-      }
+
       #patient-header-info {
         margin: 0 auto;
         display: inline-block;
-        text-align: center;
-        max-width: 70vw;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -305,90 +246,7 @@
       }
       /* 患者详情页专用样式 */
 
-      /* 病人切换列表样式 */
-      #patient-switch-list {
-        display: none;
-        position: absolute;
-        left: 0;
-        top: 0;
-        bottom: 0;
-        width: 0;
-        background: #fff;
-        z-index: 999;
-        box-shadow: 2px 0 8px rgba(0, 0, 0, 0.08);
-        overflow: hidden;
-        transition: width 0.3s ease;
-      }
-
-      #patient-switch-list.show {
-        display: block;
-        width: 30%;
-        overflow-y: auto;
-      }
-
-      @media (max-width: 600px) {
-        /* 窄屏时取消列表宽度限制，主内容也不再右移 */
-        #patient-switch-list.show,
-        #patient-switch-list {
-          width: auto;
-        }
-        body.patient-list-open .layui-tab-content {
-          margin-left: 0 !important;
-        }
-      }
-
       /* 当列表显示时，主内容区域向右偏移 */
-      body.patient-list-open .layui-tab-content {
-        margin-left: 30%;
-        transition: margin-left 0.3s ease;
-      }
-
-      #patient-switch-list .list-header {
-        padding: 8px 12px;
-        font-weight: bold;
-        font-size: 1rem;
-        border-bottom: 1px solid #eee;
-        background: #f8f9fa;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        position: sticky;
-        top: 0;
-        z-index: 10;
-      }
-
-      #patient-switch-list .list-header .close-btn {
-        cursor: pointer;
-        font-size: 18px;
-        color: #666;
-        padding: 2px 8px;
-        border-radius: 3px;
-      }
-
-      #patient-switch-list .list-header .close-btn:hover {
-        background: #e9ecef;
-        color: #000;
-      }
-
-      /* 病人列表表格样式优化 */
-      #patient-switch-list .layui-table {
-        margin: 0;
-      }
-
-      #patient-switch-list .layui-table th,
-      #patient-switch-list .layui-table td {
-        padding: 6px 8px;
-        font-size: 13px;
-      }
-
-      #patient-switch-list .layui-table tbody tr:hover {
-        background: #f0f7ff !important;
-        cursor: pointer;
-      }
-
-      #patient-switch-list .layui-table tbody tr.selected {
-        background: #e3f2fd !important;
-      }
 
       /* 按钮样式优化 */
       .btn-switch-patient {
@@ -406,7 +264,43 @@
         background: #ff5722 !important;
         border-color: #ff5722 !important;
       }
+      #patient-switch-list .list-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: sticky;
+        top: 0;
+        padding: 8px 12px;
+        border-bottom: 1px solid #eee;
+        background: #f8f9fa;
+        font-weight: bold;
+        font-size: 1rem;
+        z-index: 10;
+      }
+      #patient-switch-list .list-header .close-btn {
+        cursor: pointer;
+        font-size: 18px;
+        color: #666;
+      }
 
+      #patient-switch-list .list-header .close-btn:hover {
+        background: #e9ecef;
+        color: #000;
+      }
+
+      /* 病人列表表格样式优化 */
+      #patient-switch-list .layui-table {
+        margin: 0;
+      }
+
+      #patient-switch-list .layui-table tbody tr:hover {
+        background: #f0f7ff !important;
+        cursor: pointer;
+      }
+
+      #patient-switch-list .layui-table tbody tr.selected {
+        background: #e3f2fd !important;
+      }
       .btn-back {
         float: right;
         font-size: 13px;
@@ -432,17 +326,41 @@
         margin-top: 15px;
         font-size: 15px;
       }
+      @media (max-width: 600px) {
+        #patient-switch-list.show,/* 窄屏时调出切换病人列表界面不再右移 */
+        #patient-switch-list {
+          width: auto;
+        }
+        body.patient-list-open .layui-tab-content {
+          margin-left: 0 !important;
+        }
+        /* 窄屏时病人信息表单样式调整 */
+        .layui-form-item {
+          flex-direction: column !important;
+          align-items: stretch !important;
+        }
+        .layui-form-item .layui-form-label,
+        .layui-form-item .layui-input-inline {
+          width: 100% !important;
+          max-width: 100% !important;
+          text-align: left;
+          margin-bottom: 4px;
+        }
+        .layui-form-item .layui-input-inline {
+          margin-left: 0 !important;
+        }
+      }
     </style>
   </head>
   <body>
     <div class="layuimini-container">
-      <div class="layuimini-main main-content">
+      <div class="main-content">
+        <!-- 顶部区域开始 -->
         <blockquote class="layui-elem-quote">
           <button
             type="button"
             class="layui-btn layui-btn-sm layui-btn-warm btn-switch-patient"
             id="btn-switch-patient"
-            style="height: 75%"
           >
             <i class="layui-icon layui-icon-form"></i>切换患者
           </button>
@@ -450,25 +368,16 @@
           <span id="patient-header-info">患者详细信息</span>
           <button
             type="button"
-            style="height: 75%"
             class="layui-btn layui-btn-sm layui-btn-normal btn-back"
-            onclick="javascrript:window.history.back()"
+            onclick="window.location.href='../main.html'"
           >
-            <i
-              class="layui-icon layui-icon-return"
-              style="font-size: 18px; margin-right: 6px"
-            ></i
-            >返回
+            <i class="layui-icon layui-icon-return"></i>返回
           </button>
-          <!--<button class="layui-btn layui-btn-sm" onclick="javascrript:location.reload()" style="float: right;">刷新</button>-->
-          <!--<button class="layui-btn layui-btn-normal" id="btn-fold">全部折叠</button>
-                <button type="button" class="layui-btn layui-btn-primary" id="test-page-title">剔除默认标题栏</button>-->
-          <br />
         </blockquote>
-
-        <!-- 选项卡内容显示区域 -->
-
+        <!-- 顶部区域结束 -->
+        <!-- 中间区域开始 -->
         <div class="tab-content-area">
+          <!-- 切换患者栏 -->
           <div id="patient-switch-list">
             <div class="list-header">
               <span>病人列表</span>
@@ -479,12 +388,8 @@
               id="switch-patient-table"
               lay-filter="switch-patient-table"
             ></table>
-            <table
-              class="layui-table"
-              id="switch-patient-table-simple"
-              lay-filter="switch-patient-table-simple"
-            ></table>
           </div>
+          <!-- 不同选项卡切换栏 -->
           <div class="layui-tab-content">
             <!-- 患者信息选项卡 -->
             <div class="layui-tab-item layui-show" id="tab-patient">
@@ -493,7 +398,43 @@
                 action=""
                 id="patient-info-form"
               >
-                <!-- 动态生成的表单项将插入这里 -->
+                <!-- 
+                ========== 动态生成的患者信息表单DOM结构示例 ==========
+                
+                generatePatientForm() 函数会在此位置动态生成患者表单字段：
+                
+                <div class="layui-form-item">
+                  <label class="layui-form-label">患者姓名</label>
+                  <div class="layui-input-inline">
+                    <input type="text" name="pname" autocomplete="off" placeholder="" class="layui-input" readonly />
+                  </div>
+                  <label class="layui-form-label">次数</label>
+                  <div class="layui-input-inline">
+                    <input type="text" name="admiss_times" autocomplete="off" placeholder="" class="layui-input" readonly />
+                  </div>
+                </div>
+                
+                <div class="layui-form-item">
+                  <label class="layui-form-label">入院日期</label>
+                  <div class="layui-input-inline">
+                    <input type="text" name="admiss_date" autocomplete="off" placeholder="" class="layui-input" readonly />
+                  </div>
+                  <label class="layui-form-label">入院天数</label>
+                  <div class="layui-input-inline">
+                    <input type="text" name="admiss_days" autocomplete="off" placeholder="" class="layui-input" readonly />
+                  </div>
+                </div>
+                
+                ... 以此类推，每行两个字段 ...
+                
+                生成逻辑：
+                - 遍历 patientFields 二维数组
+                - 每个子数组生成一个 .layui-form-item 行
+                - 每行包含两个字段：label + input
+                - 响应式：宽屏一行两个，窄屏(@media max-width: 600px)一行一个
+                
+                ========== 动态生成患者信息表单DOM结构示例结束 ==========
+                -->
               </form>
             </div>
             <!-- 医嘱选项卡 -->
@@ -540,13 +481,88 @@
                 </div>
               </div>
             </div>
+
+            <!-- 
+            ========== 以下为动态生成的选项卡DOM结构示例 ==========
+            
+            当用户点击标记为 dynamic: true 的选项卡时，会在此位置动态生成类似结构：
+            
+            例如：医生文书选项卡 (tab-yishengwenshu)
+            <div class="layui-tab-item" id="tab-yishengwenshu">
+              <div id="yishengwenshu-content" class="tab-iframe-container">
+                <div class="loading-container">
+                  <i class="layui-icon layui-icon-loading layui-anim layui-anim-rotate layui-anim-loop loading-icon"></i>
+                  <div class="loading-text">正在加载医生文书信息...</div>
+                </div>
+              </div>
+            </div>
+
+            例如：护理文书选项卡 (tab-huliwenshu)
+            <div class="layui-tab-item" id="tab-huliwenshu">
+              <div id="huliwenshu-content" class="tab-iframe-container">
+                <div class="loading-container">
+                  <i class="layui-icon layui-icon-loading layui-anim layui-anim-rotate layui-anim-loop loading-icon"></i>
+                  <div class="loading-text">正在加载护理文书信息...</div>
+                </div>
+              </div>
+            </div>
+
+            例如：护理记录选项卡 (tab-hulijilu)
+            <div class="layui-tab-item" id="tab-hulijilu">
+              <div id="hulijilu-content" class="tab-iframe-container">
+                <div class="loading-container">
+                  <i class="layui-icon layui-icon-loading layui-anim layui-anim-rotate layui-anim-loop loading-icon"></i>
+                  <div class="loading-text">正在加载护理记录信息...</div>
+                </div>
+              </div>
+            </div>
+
+            例如：手术信息选项卡 (tab-opinfo) - 标记为 dynamic: true
+            <div class="layui-tab-item" id="tab-opinfo">
+              <div id="opinfo-content" class="tab-iframe-container">
+                <div class="loading-container">
+                  <i class="layui-icon layui-icon-loading layui-anim layui-anim-rotate layui-anim-loop loading-icon"></i>
+                  <div class="loading-text">正在加载手术信息信息...</div>
+                </div>
+              </div>
+            </div>
+
+            生成逻辑：
+            - 当点击这些选项卡按钮时，createTabContent() 函数会检查 config.dynamic === true
+            - 如果为 true 且对应的 #tabId 不存在，则会调用 $(".layui-tab-content").append() 动态创建
+            - 创建后会调用 loadIframeContent() 加载对应的 iframe 内容
+            
+            ========== 动态生成DOM结构示例结束 ==========
+            -->
           </div>
         </div>
-
-        <!-- 底部选项卡 -->
+        <!-- 中间区域结束 -->
+        <!-- 底部区域开始 -->
         <div class="bottom-tabs">
           <div class="option-bar" id="tab-btn-bar">
-            <!-- 动态生成的选项卡按钮将插入这里 -->
+            <!-- 
+            ========== 动态生成的选项卡按钮DOM结构示例 ==========
+            
+            generateTabButtons() 函数会在此位置动态生成所有选项卡按钮：
+            
+            <button class="tab-btn layui-this" data-index="0">患者信息</button>
+            <button class="tab-btn" data-index="1">医嘱</button>
+            <button class="tab-btn" data-index="2">检验</button>
+            <button class="tab-btn" data-index="3">检查</button>
+            <button class="tab-btn" data-index="4">电子病历</button>
+            <button class="tab-btn" data-index="5">医生文书</button>
+            <button class="tab-btn" data-index="6">护理文书</button>
+            <button class="tab-btn" data-index="7">护理记录</button>
+            <button class="tab-btn" data-index="8">体温单</button>
+            <button class="tab-btn" data-index="9">手术信息</button>
+            
+            生成逻辑：
+            - 遍历 tabConfigs 数组中的每个配置项
+            - 为每个配置创建 <button> 元素，设置 data-index 和标题
+            - 第一个按钮 (index=0) 会有 layui-this 激活样式
+            
+            ========== 动态生成选项卡按钮DOM结构示例结束 ==========
+            -->
           </div>
         </div>
       </div>
@@ -556,51 +572,6 @@
     <script src="/lib/layui-v2.6.3/layui.js" charset="utf-8"></script>
     <script src="/js/lay-config.js?v=1.0.4" charset="utf-8"></script>
     <script>
-      // APK WebView环境检测和强制样式应用
-      (function () {
-        // 检测是否在APK WebView环境中
-        var isAPK =
-          /MWard|WebView|wv/i.test(navigator.userAgent) ||
-          window.location.protocol === "file:" ||
-          window.Android ||
-          document.documentElement.classList.contains("apk-webview");
-
-        if (isAPK) {
-          // 为APK环境添加特殊类名
-          document.documentElement.classList.add("apk-webview");
-
-          // 强制应用APK兼容样式
-          var apkStyles = document.createElement("style");
-          apkStyles.textContent = `
-            .apk-webview body,
-            .apk-webview html {
-              height: 100vh !important;
-              max-height: 100vh !important;
-              overflow: hidden !important;
-              position: relative !important;
-            }
-            .apk-webview .tab-content-area iframe {
-              position: absolute !important;
-              top: 0 !important;
-              left: 0 !important;
-              width: 100% !important;
-              height: 100% !important;
-              max-width: 100% !important;
-              max-height: 100% !important;
-              border: none !important;
-              overflow: hidden !important;
-            }
-            .apk-webview .tab-iframe-container {
-              position: relative !important;
-              overflow: hidden !important;
-              width: 100% !important;
-              height: 100% !important;
-            }
-          `;
-          document.head.appendChild(apkStyles);
-        }
-      })();
-
       layui.use(
         ["table", "treetable", "appconfig", "element", "layer"],
         function () {
@@ -687,6 +658,8 @@
               title: "患者信息",
               type: "form",
               tabId: "tab-patient",
+              contentId: "patientinfo-content",
+              src: "patientInfo.html",
               active: true,
             },
             {
@@ -807,7 +780,7 @@
             $("#tab-btn-bar").html(buttonsHtml);
           }
 
-          // 动态创建选项卡内容
+          // 动态创建选项卡内容，dynamic: true才生成，否则用静态
           function createTabContent(config) {
             if (config.dynamic && $("#" + config.tabId).length === 0) {
               $(".layui-tab-content").append(
@@ -856,6 +829,7 @@
           // 动态生成患者信息表单
           function generatePatientForm() {
             var formHtml = "";
+            // 每行两个字段，宽屏一行两个，窄屏自动一行一个
             patientFields.forEach(function (row) {
               formHtml += '<div class="layui-form-item">';
               row.forEach(function (field) {
@@ -866,8 +840,7 @@
                   '<div class="layui-input-inline">' +
                   '<input type="text" name="' +
                   field.name +
-                  '" autocomplete="off" ' +
-                  'placeholder="" class="layui-input" readonly />' +
+                  '" autocomplete="off" placeholder="" class="layui-input" readonly />' +
                   "</div>";
               });
               formHtml += "</div>";
@@ -910,59 +883,6 @@
 
             // 使用新的填充数据方法
             fillPatientData(jsonData);
-
-            var _twdurl =
-              appconfig.twd_webpage +
-              "/?patient_id=" +
-              jsonData.patient_id +
-              "&admiss_times=" +
-              jsonData.admiss_times +
-              "&api_host=" +
-              appconfig.api +
-              "/";
-            //var _dzblurl = appconfig.twd_webpage + "/test.pdf";
-            var _dzblurl = "/lib/pdfjs/test1.pdf";
-            //体温单点击
-            $("button[name='tiwendan']")
-              .off("click")
-              .on("click", function () {
-                var userData = localStorage.getItem("userData");
-                if (!userData) {
-                  layer.msg("请先选择患者！");
-                  return;
-                }
-                var jsonData = JSON.parse(userData);
-                var _twdurl =
-                  appconfig.twd_webpage +
-                  "/?patient_id=" +
-                  jsonData.patient_id +
-                  "&admiss_times=" +
-                  jsonData.admiss_times +
-                  "&api_host=" +
-                  appconfig.api +
-                  "/";
-                var now = new Date();
-                var ticks = now.getTime();
-                window.parent.layui.layer.open({
-                  type: 2,
-                  area: ["100%", "100%"],
-                  title:
-                    "体温单" +
-                    " - " +
-                    jsonData.name +
-                    " - " +
-                    jsonData.inpatient_no +
-                    " - " +
-                    jsonData.sex_name +
-                    " - " +
-                    jsonData.ages,
-                  closeBtn: 1,
-                  shadeClose: true,
-                  content: _twdurl + "&ticks=" + ticks,
-                });
-              });
-
-            $(".layuimini-container").show();
 
             // 不在页面初始化时加载患者列表，改为按需加载
             // loadPatientList();

@@ -770,7 +770,7 @@
             });
           } else if (layEvent === "delRow") {
             // 删除前先检查状态
-            if (data.exam_status == 1) {
+            if (data.exam_status == 0) {
               layer.confirm(
                 "确定删除该申请吗？",
                 { icon: 3, title: "提示" },
