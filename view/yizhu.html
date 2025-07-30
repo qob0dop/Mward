@@ -522,14 +522,14 @@
           $.ajax({
             url:
               appconfig.api +
-              "/api/ActPatient/GetYzManageEOPOrders?ward_sn=" +
+              "/api/MobileWard/GetYzManageEOPOrders?ward_sn=" +
               ward_sn +
               "&inpatient_no=" +
               jsonData.inpatient_no,
             method: "GET",
             dataType: "json",
             success: function (res) {
-              allYizhuData = res.data || [];
+              allYizhuData = res.Data || [];
               renderYizhuTable(allYizhuData);
               if (typeof callback === "function") callback();
             },
@@ -539,6 +539,176 @@
               if (typeof callback === "function") callback();
             },
           });
+        }
+
+        // 停止医嘱功能
+        function stopMedicalOrder(orderData) {
+          console.log("orderData:", orderData);
+
+          // 获取当前用户信息
+          var currentUser = JSON.parse(
+            localStorage.getItem("loginUser") || "{}"
+          );
+          var doctorName =
+            currentUser.name || currentUser.user_name || "系统用户";
+
+          // 获取当前时间
+          var now = new Date();
+          var stopTime =
+            String(now.getMonth() + 1).padStart(2, "0") +
+            "/" +
+            String(now.getDate()).padStart(2, "0") +
+            "/" +
+            now.getFullYear() +
+            " " +
+            String(now.getHours()).padStart(2, "0") +
+            ":" +
+            String(now.getMinutes()).padStart(2, "0") +
+            ":" +
+            String(now.getSeconds()).padStart(2, "0");
+
+          // 确认对话框
+          layer.confirm(
+            "确定要停止此医嘱吗？<br>" +
+              '<span style="color: #666; font-size: 12px;">医嘱内容：' +
+              (orderData.order_name || "未知") +
+              "</span>",
+            {
+              icon: 3,
+              title: "停止医嘱确认",
+              btn: ["确定停止", "取消"],
+            },
+            function (index) {
+              // 构建API参数
+              var apiParams = {
+                patient_id: patient_id || orderData.patient_id,
+                admiss_times: admiss_times || orderData.admiss_times,
+                act_order_no: orderData.act_order_no || orderData.order_no,
+                stop_doctor: doctorName,
+                stop_time: stopTime,
+              };
+
+              // 调试信息
+              console.log("停止医嘱API参数:", apiParams);
+              console.log("医嘱数据:", orderData);
+
+              // 验证必要参数
+              if (
+                !apiParams.patient_id ||
+                !apiParams.admiss_times ||
+                !apiParams.act_order_no
+              ) {
+                layer.msg(
+                  "缺少必要参数，无法停止医嘱<br>请检查患者ID、住院次数和医嘱编号",
+                  {
+                    icon: 2,
+                    time: 3000,
+                  }
+                );
+                console.error("参数验证失败:", apiParams);
+                return;
+              }
+
+              // 显示加载提示
+              var loadingIndex = layer.load(1, { shade: [0.3, "#000"] });
+              console.log("apiParams:", apiParams);
+
+              // 调用停止医嘱API
+              $.ajax({
+                url: appconfig.api + "/api/MobileWard/StopActYz",
+                method: "GET",
+                data: apiParams,
+                dataType: "json",
+                success: function (response) {
+                  layer.close(loadingIndex);
+
+                  if (response && response.Status) {
+                    layer.msg("医嘱停止成功", { icon: 1 });
+
+                    // 刷新表格数据
+                    loadYizhuData(function () {
+                      applyFilters(); // 重新应用当前筛选条件
+                    });
+                  } else {
+                    var errorMsg =
+                      response && response.Message
+                        ? response.Message
+                        : "停止医嘱失败";
+                    layer.msg(errorMsg, { icon: 2, time: 4000 });
+                    console.error("API响应错误:", response);
+                  }
+
+                  layer.close(index);
+                },
+                error: function (xhr, status, error) {
+                  layer.close(loadingIndex);
+                  layer.close(index);
+
+                  var errorMsg = "网络错误，停止医嘱失败";
+
+                  // 详细的错误处理
+                  if (xhr.responseJSON && xhr.responseJSON.Message) {
+                    errorMsg = xhr.responseJSON.Message;
+
+                    // 特殊处理SQL文件缺失错误
+                    if (
+                      errorMsg.indexOf("Could not find file") !== -1 &&
+                      errorMsg.indexOf("yz_stop_order.sql") !== -1
+                    ) {
+                      errorMsg =
+                        "服务器配置错误：缺少停止医嘱的SQL文件\n请联系系统管理员检查服务器配置";
+                    }
+                  } else if (xhr.status === 401) {
+                    errorMsg = "权限不足，请重新登录";
+                  } else if (xhr.status === 500) {
+                    errorMsg = "服务器内部错误";
+                  } else if (xhr.status === 404) {
+                    errorMsg = "API接口不存在，请检查服务器配置";
+                  }
+
+                  layer.msg(errorMsg, { icon: 2, time: 5000 });
+                  console.error("AJAX错误详情:", {
+                    status: xhr.status,
+                    statusText: xhr.statusText,
+                    responseText: xhr.responseText,
+                    error: error,
+                  });
+                },
+              });
+            }
+          );
+        }
+
+        // 撤销医嘱功能（框架，需要根据实际API调整）
+        function revokeMedicalOrder(orderData) {
+          layer.confirm(
+            "确定要撤销此医嘱吗？<br>" +
+              '<span style="color: #ff5722; font-size: 12px;">注意：撤销后医嘱将被永久删除</span><br>' +
+              '<span style="color: #666; font-size: 12px;">医嘱内容：' +
+              (orderData.order_name || "未知") +
+              "</span>",
+            {
+              icon: 3,
+              title: "撤销医嘱确认",
+              btn: ["确定撤销", "取消"],
+            },
+            function (index) {
+              // TODO: 根据实际撤销医嘱API调整以下代码
+              // 示例API参数结构：
+              /*
+                         var apiParams = {
+                           patient_id: patient_id || orderData.patient_id,
+                           admiss_times: admiss_times || orderData.admiss_times,
+                           order_no: orderData.order_no,
+                           revoke_doctor: doctorName,
+                           revoke_reason: "医生撤销"
+                         };
+                         */
+
+              layer.msg("撤销功能需要根据具体API实现", { icon: 0 });
+              layer.close(index);
+            }
+          );
         }
 
         // 渲染表格
@@ -747,9 +917,9 @@
                 "</div>",
             });
           } else if (obj.event === "revoke") {
-            layer.msg("撤销功能开发中...");
+            revokeMedicalOrder(data);
           } else if (obj.event === "stop") {
-            layer.msg("停止功能开发中...");
+            stopMedicalOrder(data);
           }
         });
       });

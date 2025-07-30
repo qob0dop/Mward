@@ -57,9 +57,11 @@
         height: 35px;
         min-height: 35px;
         border: none;
-        background: #fff;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: #fff;
         font-weight: bold;
         font-size: 1rem;
+        box-shadow: 0 2px 10px rgba(102, 126, 234, 0.3);
       }
       /* 《======================中间区域样式======================》 */
       .tab-content-area {
@@ -67,7 +69,7 @@
         overflow: hidden !important; /* 强制隐藏滚动条，防止父页面出现滚动条 */
         margin: 0;
         position: relative;
-        background: #fff;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
         height: 0; /* flex布局中配合flex:1使用 */
         min-height: 0;
         max-height: 100%;
@@ -81,11 +83,17 @@
         top: 0;
         bottom: 0;
         width: 0;
-        background: #fff;
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.95) 0%,
+          rgba(245, 247, 250, 0.95) 100%
+        );
+        backdrop-filter: blur(10px);
         z-index: 999;
-        box-shadow: 2px 0 8px rgba(0, 0, 0, 0.08);
+        box-shadow: 2px 0 20px rgba(102, 126, 234, 0.15);
         overflow: hidden;
-        transition: width 0.3s ease; /* 动画效果 */
+        transition: width 0.3s ease;
+        border-radius: 0 12px 12px 0;
       }
       #patient-switch-list.show {
         display: block;
@@ -168,9 +176,9 @@
         bottom: 0;
         height: 40px;
         min-height: 5%;
-        background: #fff;
-        border-top: 2px solid #e6e6e6;
-        box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        border-top: 2px solid #4facfe;
+        box-shadow: 0 -4px 20px rgba(79, 172, 254, 0.3);
         z-index: 1000;
         margin: 0;
         padding: 0;
@@ -179,11 +187,11 @@
         display: flex;
         height: 100%;
         width: 100%;
-        background: rgb(199, 199, 199);
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
         padding: 0 0 0 8px;
-        box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.04);
+        box-shadow: 0 -2px 8px rgba(79, 172, 254, 0.2);
         gap: 6px;
-        border-top: 2px solid #e6e6e6;
+        border-top: 2px solid #4facfe;
         overflow-x: auto;
         white-space: nowrap;
       }
@@ -197,25 +205,30 @@
         line-height: 100%;
         margin-top: 2px;
         padding: 5px;
-        background: #fff;
+        background: rgba(255, 255, 255, 0.9);
         border: none;
-        border-radius: 6px 6px 0 0;
+        border-radius: 8px 8px 0 0;
         font-size: 1.5rem;
-        color: #333;
+        color: #2d3748;
         cursor: pointer;
-        box-shadow: 0 1px 3px rgba(30, 159, 255, 0.04);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         outline: none;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(10px);
       }
       .tab-btn.layui-this,
       .tab-btn.active {
-        background: linear-gradient(135deg, #1e9fff 0%, #1890ff 100%);
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: #fff;
         font-weight: bold;
-        box-shadow: 0 -2px 8px rgba(30, 159, 255, 0.3);
+        box-shadow: 0 -2px 15px rgba(102, 126, 234, 0.4);
+        transform: translateY(-2px);
       }
       .tab-btn:hover {
-        background: #e8f4fd;
-        color: #1e9fff;
+        background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+        color: #2d3748;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 15px rgba(168, 237, 234, 0.3);
       }
       /* 《======================主区域样式结束======================》 */
 
@@ -235,14 +248,25 @@
 
       /* 患者列表样式优化 */
       #switch-patient-table + div .layui-table-body table tbody tr.selected {
-        background-color: #e8f4fd !important;
-        color: #1e9fff;
+        background: linear-gradient(
+          135deg,
+          rgba(102, 126, 234, 0.2) 0%,
+          rgba(118, 75, 162, 0.2) 100%
+        ) !important;
+        color: #667eea;
         font-weight: bold;
+        border-left: 4px solid #667eea;
       }
 
       #switch-patient-table + div .layui-table-body table tbody tr:hover {
-        background-color: #f5f5f5 !important;
+        background: linear-gradient(
+          135deg,
+          rgba(168, 237, 234, 0.2) 0%,
+          rgba(254, 214, 227, 0.2) 100%
+        ) !important;
         cursor: pointer;
+        transform: translateX(3px);
+        transition: all 0.3s ease;
       }
       /* 患者详情页专用样式 */
 
@@ -258,11 +282,44 @@
         height: 28px;
         line-height: 28px;
         padding: 0 8px;
+        position: relative;
+        overflow: hidden;
       }
 
       .btn-switch-patient.active {
-        background: #ff5722 !important;
-        border-color: #ff5722 !important;
+        background: linear-gradient(
+          135deg,
+          #ff6b6b 0%,
+          #ee5a24 100%
+        ) !important;
+        border-color: #ff6b6b !important;
+        color: #fff !important;
+        box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+      }
+
+      /* 全局按钮悬停效果增强 */
+      .layui-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+      }
+
+      /* 为了兼容性，添加一些现代化的按钮样式 */
+      .modern-btn {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        border: none;
+        border-radius: 8px;
+        color: #fff;
+        font-weight: 600;
+        padding: 10px 20px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
+      }
+
+      .modern-btn:hover {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 25px rgba(102, 126, 234, 0.4);
       }
       #patient-switch-list .list-header {
         display: flex;
@@ -270,22 +327,35 @@
         align-items: center;
         position: sticky;
         top: 0;
-        padding: 8px 12px;
-        border-bottom: 1px solid #eee;
-        background: #f8f9fa;
+        padding: 12px 16px;
+        height: 12px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         font-weight: bold;
-        font-size: 1rem;
+        font-size: 1.1rem;
         z-index: 10;
+        color: #fff;
+        border-radius: 12px 12px 0 0;
+        box-shadow: 0 2px 15px rgba(102, 126, 234, 0.3);
       }
       #patient-switch-list .list-header .close-btn {
         cursor: pointer;
-        font-size: 18px;
-        color: #666;
+        font-size: 20px;
+        color: rgba(255, 255, 255, 0.9);
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        background: rgba(255, 255, 255, 0.1);
       }
 
       #patient-switch-list .list-header .close-btn:hover {
-        background: #e9ecef;
-        color: #000;
+        background: rgba(255, 255, 255, 0.2);
+        color: #fff;
+        transform: scale(1.1);
       }
 
       /* 病人列表表格样式优化 */
@@ -294,12 +364,25 @@
       }
 
       #patient-switch-list .layui-table tbody tr:hover {
-        background: #f0f7ff !important;
+        background: linear-gradient(
+          135deg,
+          rgba(168, 237, 234, 0.3) 0%,
+          rgba(254, 214, 227, 0.3) 100%
+        ) !important;
         cursor: pointer;
+        transform: translateX(5px);
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 10px rgba(168, 237, 234, 0.2);
       }
 
       #patient-switch-list .layui-table tbody tr.selected {
-        background: #e3f2fd !important;
+        background: linear-gradient(
+          135deg,
+          rgba(102, 126, 234, 0.3) 0%,
+          rgba(118, 75, 162, 0.3) 100%
+        ) !important;
+        border-left: 4px solid #667eea;
+        font-weight: bold;
       }
       .btn-back {
         float: right;
@@ -350,6 +433,33 @@
           margin-left: 0 !important;
         }
       }
+
+      /* 现代化输入框样式 */
+      .layui-input:focus,
+      .layui-textarea:focus {
+        border-color: #667eea !important;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1) !important;
+        outline: none !important;
+        transition: all 0.3s ease;
+      }
+
+      .layui-input,
+      .layui-textarea {
+        border-radius: 6px !important;
+        border: 1px solid #e1e5e9 !important;
+        transition: all 0.3s ease;
+      }
+
+      .layui-input:hover,
+      .layui-textarea:hover {
+        border-color: #4facfe !important;
+      }
+
+      /* 表单标签现代化 */
+      .layui-form-label {
+        color: #2d3748 !important;
+        font-weight: 600 !important;
+      }
     </style>
   </head>
   <body>
@@ -361,6 +471,15 @@
             type="button"
             class="layui-btn layui-btn-sm layui-btn-warm btn-switch-patient"
             id="btn-switch-patient"
+            style="
+              background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+              border: none;
+              border-radius: 8px;
+              color: #fff;
+              font-weight: 600;
+              box-shadow: 0 3px 12px rgba(79, 172, 254, 0.3);
+              transition: all 0.3s ease;
+            "
           >
             <i class="layui-icon layui-icon-form"></i>切换患者
           </button>
@@ -370,6 +489,15 @@
             type="button"
             class="layui-btn layui-btn-sm layui-btn-normal btn-back"
             onclick="window.location.href='../main.html'"
+            style="
+              background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+              border: none;
+              border-radius: 8px;
+              color: #fff;
+              font-weight: 600;
+              box-shadow: 0 3px 12px rgba(102, 126, 234, 0.3);
+              transition: all 0.3s ease;
+            "
           >
             <i class="layui-icon layui-icon-return"></i>返回
           </button>
@@ -1017,10 +1145,10 @@
               parseData: function (res) {
                 console.log("患者列表API响应:", res);
                 return {
-                  code: res.status,
+                  code: res.Status,
                   msg: res.message,
                   count: res.total,
-                  data: res.data,
+                  data: res.Data,
                 };
               },
               cellMinWidth: 60,

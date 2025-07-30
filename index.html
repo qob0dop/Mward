@@ -315,6 +315,11 @@
                         <span class="bind-password icon icon-4"></span>
                     </div>
 
+                    <div class="item">
+                        <span class="icon icon-1"></span>
+                        <input type="text" name="apiurl" id="api-url" placeholder="请输入API地址" maxlength="100" value="http://10.102.41.142:5251">
+                    </div>
+
                     <!--<div id="validatePanel" class="item" style="width: 137px;">
                         <input type="text" name="captcha" placeholder="请输入验证码" maxlength="4">
                         <img id="refreshCaptcha" class="validateImg"  src="/images/captcha.jpg" >
@@ -344,6 +349,13 @@ layui.use(['form', 'jquery', 'appconfig', 'dropdown'], function () {
                 appconfig = layui.appconfig,
                 layer = layui.layer;
             dropdown = layui.dropdown;
+
+            // 检查localStorage中是否有保存的API地址
+            var savedApiUrl = localStorage.getItem('api_url');
+            if (savedApiUrl) {
+                appconfig.api = savedApiUrl;
+                $('#api-url').val(savedApiUrl); // 设置输入框的值
+            }
 
             // 登录过期的时候，跳出ifram框架
             if (top.location != self.location) top.location = self.location;
@@ -399,10 +411,19 @@ layui.use(['form', 'jquery', 'appconfig', 'dropdown'], function () {
                 data = data.field;
                 var username = data.username;
                 var password = data.password;
+                var apiurl = data.apiurl || appconfig.api; // 获取用户输入的API地址，没有则用默认值
+                
                 if (data.username == '') {
                     layer.msg('用户名不能为空');
                     return false;
                 }
+                
+                // 动态设置API地址
+                if (apiurl && apiurl.trim() !== '') {
+                    appconfig.api = apiurl.trim();
+                    localStorage.setItem('api_url', apiurl.trim()); // 保存到localStorage
+                }
+                
                 //if (data.password == '') {
                 //    layer.msg('密码不能为空');
                 //    return false;
@@ -418,10 +439,10 @@ layui.use(['form', 'jquery', 'appconfig', 'dropdown'], function () {
                     dataType: "json",
                     success: function (data) {
 
-                        if (data.data.length > 0) {
+                        if (data.Data.length > 0) {
                             //layer.msg(JSON.stringify(data));
 
-                            localStorage.setItem('loginUser', JSON.stringify(data.data[0]));
+                            localStorage.setItem('loginUser', JSON.stringify(data.Data[0]));
                             layer.msg('登录成功');
                             //保存登录名
 

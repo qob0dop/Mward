@@ -482,10 +482,10 @@
           },
           parseData: function (res) {
             return {
-              code: res.status === 1 ? 0 : res.status,
+              code: res.Status === 1 ? 0 : res.Status,
               msg: res.msg || "",
-              count: res.data ? res.data.length : 0,
-              data: res.data || [],
+              count: res.Data ? res.Data.length : 0,
+              data: res.Data || [],
             };
           },
         });

@@ -29,7 +29,7 @@
         font-size: 14px !important;
         font-weight: bold !important;
         background-color: #f8f9fa !important;
-        padding: 12px 8px !important;
+        /* padding: 12px 8px !important; */
       }
 
       /* 操作按钮样式优化 */
@@ -175,8 +175,8 @@
             type: "GET",
             dataType: "json",
             success: function (res) {
-              if (res.status === 1 && res.data) {
-                allExamItems = res.data;
+              if (res.Status === 1 && res.Data) {
+                allExamItems = res.Data;
                 callback(true);
               } else {
                 layer.msg("获取检查项目数据失败: " + (res.msg || "未知错误"), {
@@ -464,7 +464,7 @@
               {
                 // fixed: "right",
                 title: "操作",
-                width: 80,
+                width: 200,
                 align: "center",
                 toolbar: "#rowBar",
               },
@@ -477,10 +477,10 @@
           parseData: function (res) {
             console.log("表格接口返回数据:", res);
             return {
-              code: res.status === 1 ? 0 : res.status,
+              code: res.Status === 1 ? 0 : res.Status,
               msg: res.msg || "",
-              count: res.data ? res.data.length : 0,
-              data: res.data || [],
+              count: res.Data ? res.Data.length : 0,
+              data: res.Data || [],
             };
           },
         });
@@ -789,7 +789,7 @@
                     },
                     dataType: "json",
                     success: function (res) {
-                      if (res.status === 1) {
+                      if (res.Status === 1) {
                         layer.msg("删除成功", { icon: 1 });
                         table.reload("jiancha-table");
                       } else {
