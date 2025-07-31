@@ -128,6 +128,9 @@
       } */
     </style> -->
     <style>
+      .myorder {
+        background-color: skyblue;
+      }
       /* 选中按钮高亮样式，兼容不同色系 */
       .btn-active {
         position: relative;
@@ -168,186 +171,168 @@
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         transition: all 0.2s ease;
       }
+
+      /* select框样式优化 */
+      .layui-form-select {
+        height: 34px !important;
+      }
+
+      .layui-form-select .layui-select-title {
+        height: 34px !important;
+        line-height: 34px !important;
+        font-size: 13px !important;
+        color: #333 !important;
+        border: 1px solid #e6e6e6 !important;
+        border-radius: 2px !important;
+      }
+
+      .layui-form-select .layui-select-title input {
+        height: 32px !important;
+        line-height: 32px !important;
+        font-size: 13px !important;
+        color: #333 !important;
+      }
+
+      .layui-form-select dl {
+        font-size: 13px !important;
+      }
+
+      .layui-form-select dl dd {
+        line-height: 36px !important;
+        color: #333 !important;
+      }
     </style>
   </head>
   <body>
     <div class="layui-container">
-      <div class="layui-row">
-        <div class="layui-col-md12">
-          <!-- 操作栏 -->
+      <!-- 操作栏 -->
+      <form class="layui-form">
+        <div
+          class="layui-btn-container filter-buttons"
+          style="
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+          "
+        >
+          <!-- 录音按钮 -->
+          <div style="display: flex; align-items: center; gap: 8px">
+            <button
+              type="button"
+              id="btn-add-order"
+              class="layui-btn layui-btn-sm layui-btn-primary"
+            >
+              <i class="layui-icon layui-icon-add-1"></i> 新增医嘱
+            </button>
+            <button
+              type="button"
+              id="btn-record-audio"
+              class="layui-btn layui-btn-sm layui-btn-normal"
+            >
+              <i class="layui-icon layui-icon-mike"></i> 录音
+            </button>
+            <button
+              type="button"
+              id="btn-save-audio"
+              class="layui-btn layui-btn-sm layui-btn-primary"
+              style="display: none"
+            >
+              <i class="layui-icon layui-icon-download-circle"></i> 保存录音
+            </button>
+            <audio
+              id="audio-preview"
+              controls
+              style="display: none; max-width: 120px"
+            ></audio>
+          </div>
+          <!-- 医嘱类型筛选 -->
+          <div style="display: flex; gap: 8px; align-items: center">
+            <span
+              style="
+                font-size: 13px;
+                color: #666;
+                font-weight: bold;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+              "
+              >医嘱类型：</span
+            >
+            <select
+              id="order-type-select"
+              lay-filter="order-type-select"
+              class="layui-select"
+              style="font-size: 13px; width: 150px"
+            >
+              <option value="long">长期医嘱</option>
+              <option value="temp">临时医嘱</option>
+              <option value="all" selected>全部医嘱</option>
+            </select>
+          </div>
+          <!-- 开嘱人筛选 -->
           <div
-            class="layui-btn-container filter-buttons"
             style="
               display: flex;
-              gap: 10px;
-              flex-wrap: wrap;
-              justify-content: center;
+              gap: 8px;
               align-items: center;
+              margin-left: 20px;
             "
           >
-            <!-- 医嘱类型筛选 -->
-            <div style="display: flex; gap: 8px; align-items: center">
-              <span
-                style="
-                  font-size: 13px;
-                  color: #666;
-                  font-weight: bold;
-                  white-space: nowrap;
-                  text-overflow: ellipsis;
-                "
-                >医嘱类型：</span
-              >
-              <select
-                style="
-                  font-size: 13px;
-                  width: 150px;
-                  height: 34px;
-                  line-height: 34px;
-                "
-              >
-                <option value="long" selected>长期医嘱</option>
-                <option value="temp">临时医嘱</option>
-                <option value="all">全部医嘱</option>
-              </select>
-              <button
-                type="button"
-                id="btn-long-order"
-                class="layui-btn layui-btn-sm layui-btn-warm btn-active"
-                data-filter="long"
-              >
-                长期医嘱
-              </button>
-              <button
-                type="button"
-                id="btn-temp-order"
-                class="layui-btn layui-btn-sm layui-btn-danger"
-                data-filter="temp"
-              >
-                临时医嘱
-              </button>
-              <button
-                type="button"
-                id="btn-all-order"
-                class="layui-btn layui-btn-sm layui-btn-primary"
-                data-filter="all"
-              >
-                全部医嘱
-              </button>
-            </div>
-            <!-- 录音按钮 -->
-            <div style="display: flex; align-items: center; gap: 8px">
-              <button
-                type="button"
-                id="btn-record-audio"
-                class="layui-btn layui-btn-sm layui-btn-normal"
-              >
-                <i class="layui-icon layui-icon-mike"></i> 录音
-              </button>
-              <button
-                type="button"
-                id="btn-save-audio"
-                class="layui-btn layui-btn-sm layui-btn-primary"
-                style="display: none"
-              >
-                <i class="layui-icon layui-icon-download-circle"></i> 保存录音
-              </button>
-              <audio
-                id="audio-preview"
-                controls
-                style="display: none; max-width: 120px"
-              ></audio>
-            </div>
-
-            <!-- 开嘱人筛选 -->
-            <div
+            <span
               style="
-                display: flex;
-                gap: 8px;
-                align-items: center;
-                margin-left: 20px;
+                font-size: 13px;
+                color: #666;
+                font-weight: bold;
+                white-space: nowrap;
+                text-overflow: ellipsis;
               "
+              >开嘱人：</span
             >
-              <span
-                style="
-                  font-size: 13px;
-                  color: #666;
-                  font-weight: bold;
-                  white-space: nowrap;
-                  text-overflow: ellipsis;
-                "
-                >开嘱人：</span
-              >
-              <select
-                style="
-                  font-size: 13px;
-                  width: 150px;
-                  height: 34px;
-                  line-height: 34px;
-                "
-              >
-                <option value="doctor" selected>医生</option>
-                <option value="nurse">护士</option>
-                <option value="all">全部</option>
-              </select>
-              <button
-                type="button"
-                id="btn-doctor-order"
-                class="layui-btn layui-btn-sm layui-btn-normal"
-                data-filter="doctor"
-              >
-                医生医嘱
-              </button>
-              <button
-                type="button"
-                id="btn-nurse-order"
-                class="layui-btn layui-btn-sm layui-btn-cyan"
-                data-filter="nurse"
-              >
-                护士医嘱
-              </button>
-              <button
-                type="button"
-                id="btn-all-role"
-                class="layui-btn layui-btn-sm layui-btn-primary btn-active"
-                data-filter="all-role"
-              >
-                全部
-              </button>
-            </div>
+            <select
+              id="role-type-select"
+              lay-filter="role-type-select"
+              class="layui-select"
+              style="font-size: 13px; width: 150px"
+            >
+              <option value="doctor" selected>医生</option>
+              <option value="nurse">护士</option>
+              <option value="all-role">全部</option>
+            </select>
           </div>
-          <!-- 医嘱表格容器 -->
-          <div class="table-container">
-            <table
-              class="layui-hide"
-              id="yizhu-table"
-              lay-filter="yizhu-table"
-            ></table>
-          </div>
-
-          <!-- 工具栏模板 -->
-          <script type="text/html" id="toolbarDemo">
-            <div class="layui-btn-container">
-              <button
-                class="layui-btn layui-btn-sm layui-btn-primary"
-                lay-event="print"
-              >
-                <i class="layui-icon layui-icon-print"></i> 打印
-              </button>
-              <button
-                class="layui-btn layui-btn-sm layui-btn-normal"
-                lay-event="export"
-              >
-                <i class="layui-icon layui-icon-export"></i>导出
-              </button>
-            </div>
-          </script>
-
-          <!-- 行工具栏 -->
-          <script type="text/html" id="barDemo">
-            <a class="layui-btn layui-btn-xs" lay-event="detail">详情</a>
-          </script>
         </div>
+      </form>
+      <!-- 医嘱表格容器 -->
+      <div class="table-container">
+        <table
+          class="layui-hide"
+          id="yizhu-table"
+          lay-filter="yizhu-table"
+        ></table>
       </div>
+
+      <!-- 工具栏模板 -->
+      <script type="text/html" id="toolbarDemo">
+        <div class="layui-btn-container">
+          <button
+            class="layui-btn layui-btn-sm layui-btn-primary"
+            lay-event="print"
+          >
+            <i class="layui-icon layui-icon-print"></i> 打印
+          </button>
+          <button
+            class="layui-btn layui-btn-sm layui-btn-normal"
+            lay-event="export"
+          >
+            <i class="layui-icon layui-icon-export"></i>导出
+          </button>
+        </div>
+      </script>
+
+      <!-- 行工具栏 -->
+      <script type="text/html" id="barDemo">
+        <a class="layui-btn layui-btn-xs" lay-event="detail">详情</a>
+      </script>
     </div>
 
     <script src="/lib/layui-v2.6.3/layui.js" charset="utf-8"></script>
@@ -434,10 +419,14 @@
           };
         }
       });
-      layui.use(["table", "appconfig"], function () {
+      layui.use(["table", "appconfig", "form"], function () {
         var table = layui.table;
         var $ = layui.jquery;
         var appconfig = layui.appconfig;
+        var form = layui.form;
+
+        // 立即渲染表单元素，确保select框能正常工作
+        form.render();
 
         // 获取URL参数
         function getUrlParam(name) {
@@ -468,8 +457,8 @@
 
         // 当前筛选条件
         var currentFilters = {
-          orderType: "long", // 'long', 'temp', 'all'
-          roleType: "all-role", // 'doctor', 'nurse', 'all-role'
+          orderType: "all", // 'long', 'temp', 'all'
+          roleType: "doctor", // 'doctor', 'nurse', 'all-role'
         };
         var tableCols = [
           [
@@ -550,7 +539,7 @@
             localStorage.getItem("loginUser") || "{}"
           );
           var doctorName =
-            currentUser.name || currentUser.user_name || "系统用户";
+            currentUser.user_mi || currentUser.user_name || "系统用户";
 
           // 获取当前时间
           var now = new Date();
@@ -679,6 +668,325 @@
           );
         }
 
+        // 新增医嘱功能
+        function addMedicalOrder() {
+          // 获取当前用户信息
+          var currentUser = JSON.parse(
+            localStorage.getItem("loginUser") || "{}"
+          );
+          var doctorCode = currentUser.user_id || "00000";
+          var doctorName =
+            currentUser.user_mi || currentUser.user_name || "系统用户";
+
+          // 获取当前时间
+          var now = new Date();
+          var currentTime =
+            String(now.getMonth() + 1).padStart(2, "0") +
+            "/" +
+            String(now.getDate()).padStart(2, "0") +
+            "/" +
+            now.getFullYear() +
+            " " +
+            String(now.getHours()).padStart(2, "0") +
+            ":" +
+            String(now.getMinutes()).padStart(2, "0") +
+            ":" +
+            String(now.getSeconds()).padStart(2, "0");
+
+          // 弹出新增医嘱表单
+          layer.open({
+            type: 1,
+            title: "新增医嘱",
+            area: ["600px", "700px"],
+            content: `
+              <form class="layui-form" style="padding: 20px;" id="add-order-form">
+                <div class="layui-row">
+                  <div class="layui-col-md6">
+                    <div class="layui-form-item">
+                      <label class="layui-form-label">医嘱类型</label>
+                      <div class="layui-input-block">
+                        <select name="long_once_flag" lay-verify="required">
+                          <option value="">请选择</option>
+                          <option value="1">长期医嘱</option>
+                          <option value="0">临时医嘱</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="layui-col-md6">
+                    <div class="layui-form-item">
+                      <label class="layui-form-label">医嘱类型代码</label>
+                      <div class="layui-input-block">
+                        <input type="text" name="order_type" placeholder="如：3" class="layui-input">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="layui-form-item">
+                  <label class="layui-form-label">医嘱内容</label>
+                  <div class="layui-input-block">
+                    <input type="text" name="order_name" lay-verify="required" placeholder="请输入医嘱内容" class="layui-input">
+                  </div>
+                </div>
+                
+                <div class="layui-row">
+                  <div class="layui-col-md6">
+                    <div class="layui-form-item">
+                      <label class="layui-form-label">数量</label>
+                      <div class="layui-input-block">
+                        <input type="text" name="charge_amount" placeholder="如：1" class="layui-input">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="layui-col-md6">
+                    <div class="layui-form-item">
+                      <label class="layui-form-label">频率代码</label>
+                      <div class="layui-input-block">
+                        <input type="text" name="frequ_code" placeholder="如：ONCE" class="layui-input">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="layui-row">
+                  <div class="layui-col-md6">
+                    <div class="layui-form-item">
+                      <label class="layui-form-label">用法代码</label>
+                      <div class="layui-input-block">
+                        <input type="text" name="supply_code" placeholder="用法代码" class="layui-input">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="layui-col-md6">
+                    <div class="layui-form-item">
+                      <label class="layui-form-label">执行科室</label>
+                      <div class="layui-input-block">
+                        <input type="text" name="exec_unit" placeholder="如：2020100" class="layui-input">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="layui-row">
+                  <div class="layui-col-md6">
+                    <div class="layui-form-item">
+                      <label class="layui-form-label">药物规格</label>
+                      <div class="layui-input-block">
+                        <input type="text" name="drug_specification" placeholder="药物规格" class="layui-input">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="layui-col-md6">
+                    <div class="layui-form-item">
+                      <label class="layui-form-label">医嘱代码</label>
+                      <div class="layui-input-block">
+                        <input type="text" name="order_code" placeholder="如：500004" class="layui-input">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="layui-row">
+                  <div class="layui-col-md6">
+                    <div class="layui-form-item">
+                      <label class="layui-form-label">剂量</label>
+                      <div class="layui-input-block">
+                        <input type="number" name="doseage" placeholder="剂量" class="layui-input">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="layui-col-md6">
+                    <div class="layui-form-item">
+                      <label class="layui-form-label">剂量单位</label>
+                      <div class="layui-input-block">
+                        <input type="text" name="doseage_unit" placeholder="剂量单位" class="layui-input">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="layui-form-item">
+                  <label class="layui-form-label">说明</label>
+                  <div class="layui-input-block">
+                    <textarea name="instruction" placeholder="请输入说明" class="layui-textarea"></textarea>
+                  </div>
+                </div>
+                
+                <div class="layui-row">
+                  <div class="layui-col-md6">
+                    <div class="layui-form-item">
+                      <label class="layui-form-label">是否自费</label>
+                      <div class="layui-input-block">
+                        <select name="self_buy">
+                          <option value="0">否</option>
+                          <option value="1">是</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="layui-col-md6">
+                    <div class="layui-form-item">
+                      <label class="layui-form-label">是否皮试</label>
+                      <div class="layui-input-block">
+                        <select name="skin_test_flag">
+                          <option value="">无需皮试</option>
+                          <option value="1">需要皮试</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="layui-form-item">
+                  <div class="layui-input-block">
+                    <button class="layui-btn" lay-submit lay-filter="add-order">立即提交</button>
+                    <button type="button" class="layui-btn layui-btn-primary" onclick="layer.closeAll()">取消</button>
+                  </div>
+                </div>
+              </form>
+            `,
+            success: function (layero, index) {
+              // 重新渲染表单
+              form.render();
+
+              // 监听表单提交
+              form.on("submit(add-order)", function (data) {
+                submitNewOrder(data.field, index);
+                return false;
+              });
+            },
+          });
+        }
+
+        // 提交新增医嘱
+        function submitNewOrder(formData, layerIndex) {
+          // 获取当前用户和时间信息
+          var currentUser = JSON.parse(
+            localStorage.getItem("loginUser") || "{}"
+          );
+          var doctorCode = currentUser.user_id || "00000";
+          var doctorName =
+            currentUser.user_mi || currentUser.user_name || "系统用户";
+
+          var now = new Date();
+          var currentTime =
+            String(now.getMonth() + 1).padStart(2, "0") +
+            "/" +
+            String(now.getDate()).padStart(2, "0") +
+            "/" +
+            now.getFullYear() +
+            " " +
+            String(now.getHours()).padStart(2, "0") +
+            ":" +
+            String(now.getMinutes()).padStart(2, "0") +
+            ":" +
+            String(now.getSeconds()).padStart(2, "0");
+
+          // 构建API参数
+          var apiParams = {
+            long_once_flag: formData.long_once_flag,
+            start_time: currentTime,
+            end_time: null,
+            end_time_2: null,
+            order_name: formData.order_name,
+            charge_amount: formData.charge_amount || "1",
+            frequ_code: formData.frequ_code || "ONCE",
+            drug_specification: formData.drug_specification || null,
+            order_doctor: doctorCode,
+            enter_oper: doctorCode,
+            Serial: "**",
+            enter_time: currentTime,
+            exec_unit: formData.exec_unit || ward_sn,
+            order_time: currentTime,
+            patient_id: patient_id,
+            admiss_times: admiss_times,
+            status_flag: "1",
+            fit_flag: "1",
+            exclusive_type: "1",
+            order_type: formData.order_type || "3",
+            drug_occ: null,
+            discription: null,
+            group_no: "000000",
+            ca_id_doctor: null,
+            order_code: formData.order_code,
+            act_order_no: null, // 后端生成
+            alter_print_order: null,
+            modify_price: null,
+            prev_flag: null,
+            ward_sn: ward_sn,
+            instruction: formData.instruction || null,
+            doseage: formData.doseage ? parseFloat(formData.doseage) : null,
+            doseage_unit: formData.doseage_unit || null,
+            supply_code: formData.supply_code || null,
+            parent_no: null,
+            self_buy: formData.self_buy || "0",
+            skin_test_flag: formData.skin_test_flag || null,
+            drop_speed: null,
+            spinfo_type: formData.self_buy === "1" ? "0" : "1",
+            fua: null,
+            add_time: currentTime,
+            add_opera: doctorCode,
+            is_new: true,
+          };
+
+          console.log("新增医嘱API参数:", apiParams);
+
+          // 显示加载提示
+          var loadingIndex = layer.load(1, { shade: [0.3, "#000"] });
+
+          // 调用新增医嘱API
+          $.ajax({
+            url: appconfig.api + "/api/MobileWard/AddActYz",
+            method: "POST",
+            data: apiParams,
+            dataType: "json",
+            success: function (response) {
+              layer.close(loadingIndex);
+
+              if (response && response.Status) {
+                layer.msg("医嘱新增成功", { icon: 1 });
+                layer.close(layerIndex); // 关闭表单弹窗
+
+                // 刷新表格数据
+                loadYizhuData(function () {
+                  applyFilters(); // 重新应用当前筛选条件
+                });
+              } else {
+                var errorMsg =
+                  response && response.Message
+                    ? response.Message
+                    : "新增医嘱失败";
+                layer.msg(errorMsg, { icon: 2, time: 4000 });
+                console.error("API响应错误:", response);
+              }
+            },
+            error: function (xhr, status, error) {
+              layer.close(loadingIndex);
+
+              var errorMsg = "网络错误，新增医嘱失败";
+
+              if (xhr.responseJSON && xhr.responseJSON.Message) {
+                errorMsg = xhr.responseJSON.Message;
+              } else if (xhr.status === 401) {
+                errorMsg = "权限不足，请重新登录";
+              } else if (xhr.status === 500) {
+                errorMsg = "服务器内部错误";
+              } else if (xhr.status === 404) {
+                errorMsg = "API接口不存在，请检查服务器配置";
+              }
+
+              layer.msg(errorMsg, { icon: 2, time: 5000 });
+              console.error("AJAX错误详情:", {
+                status: xhr.status,
+                statusText: xhr.statusText,
+                responseText: xhr.responseText,
+                error: error,
+              });
+            },
+          });
+        }
+
         // 撤销医嘱功能（框架，需要根据实际API调整）
         function revokeMedicalOrder(orderData) {
           layer.confirm(
@@ -740,17 +1048,12 @@
                   } else {
                     $(tr).addClass("order-type-other");
                   }
+                  if (row.order_doctor_name) {
+                    $(tr).addClass("myorder");
+                  }
                 });
             },
           });
-        }
-
-        // 按钮状态管理
-        function setActiveButton(groupClass, activeId) {
-          // 移除指定组内所有按钮的激活状态
-          $(groupClass).removeClass("btn-active");
-          // 为当前按钮添加激活状态
-          $(activeId).addClass("btn-active");
         }
 
         // 应用筛选条件
@@ -807,64 +1110,27 @@
           }
         }
 
-        // 按钮筛选事件 - 医嘱类型
-        $(document).on("click", "#btn-long-order", function () {
-          setActiveButton(
-            "#btn-long-order, #btn-temp-order, #btn-all-order",
-            "#btn-long-order"
-          );
-          currentFilters.orderType = "long";
+        // select框筛选事件 - 医嘱类型
+        form.on("select(order-type-select)", function (data) {
+          console.log("医嘱类型select触发了:", data.value);
+          currentFilters.orderType = data.value;
           applyFilters();
         });
 
-        $(document).on("click", "#btn-temp-order", function () {
-          setActiveButton(
-            "#btn-long-order, #btn-temp-order, #btn-all-order",
-            "#btn-temp-order"
-          );
-          currentFilters.orderType = "temp";
+        // select框筛选事件 - 开嘱人类型
+        form.on("select(role-type-select)", function (data) {
+          console.log("开嘱人类型select触发了:", data.value);
+          currentFilters.roleType = data.value;
           applyFilters();
         });
 
-        $(document).on("click", "#btn-all-order", function () {
-          setActiveButton(
-            "#btn-long-order, #btn-temp-order, #btn-all-order",
-            "#btn-all-order"
-          );
-          currentFilters.orderType = "all";
-          applyFilters();
+        // 新增医嘱按钮事件
+        $(document).on("click", "#btn-add-order", function () {
+          addMedicalOrder();
         });
 
-        // 按钮筛选事件 - 开嘱人类型
-        $(document).on("click", "#btn-doctor-order", function () {
-          setActiveButton(
-            "#btn-doctor-order, #btn-nurse-order, #btn-all-role",
-            "#btn-doctor-order"
-          );
-          currentFilters.roleType = "doctor";
-          applyFilters();
-        });
-
-        $(document).on("click", "#btn-nurse-order", function () {
-          setActiveButton(
-            "#btn-doctor-order, #btn-nurse-order, #btn-all-role",
-            "#btn-nurse-order"
-          );
-          currentFilters.roleType = "nurse";
-          applyFilters();
-        });
-
-        $(document).on("click", "#btn-all-role", function () {
-          setActiveButton(
-            "#btn-doctor-order, #btn-nurse-order, #btn-all-role",
-            "#btn-all-role"
-          );
-          currentFilters.roleType = "all-role";
-          applyFilters();
-        });
-
-        // 默认加载全部并设置默认选中状态
-        loadYizhuData();
+        // 默认加载全部并设置默认选中状态，首次加载后立即应用筛选条件
+        loadYizhuData(applyFilters);
 
         // 头工具栏事件
         table.on("toolbar(yizhu-table)", function (obj) {
