@@ -192,7 +192,7 @@
         box-shadow: 0 -2px 8px rgba(79, 172, 254, 0.2);
         gap: 6px;
         border-top: 2px solid #4facfe;
-        overflow-x: auto;
+        /* overflow-x: auto; */
         white-space: nowrap;
       }
       .option-bar::-webkit-scrollbar {
@@ -218,11 +218,12 @@
       }
       .tab-btn.layui-this,
       .tab-btn.active {
+        height: 50px;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: #fff;
         font-weight: bold;
         box-shadow: 0 -2px 15px rgba(102, 126, 234, 0.4);
-        transform: translateY(-2px);
+        transform: translateY(-10px);
       }
       .tab-btn:hover {
         background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
@@ -335,7 +336,7 @@
         font-size: 1.1rem;
         z-index: 10;
         color: #fff;
-        border-radius: 12px 12px 0 0;
+        border-radius: 0 12px 0 0;
         box-shadow: 0 2px 15px rgba(102, 126, 234, 0.3);
       }
       #patient-switch-list .list-header .close-btn {
@@ -413,6 +414,7 @@
         #patient-switch-list.show,/* 窄屏时调出切换病人列表界面不再右移 */
         #patient-switch-list {
           width: auto;
+          max-width: 100%;
         }
         body.patient-list-open .layui-tab-content {
           margin-left: 0 !important;
@@ -459,6 +461,17 @@
       .layui-form-label {
         color: #2d3748 !important;
         font-weight: 600 !important;
+      }
+      #my-patients-btn {
+        padding: 4px;
+        font-size: 10px;
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        border: none;
+        border-radius: 8px;
+        color: #fff;
+        font-weight: 600;
+        box-shadow: 0 3px 12px rgba(79, 172, 254, 0.3);
+        transition: all 0.3s ease;
       }
     </style>
   </head>
@@ -509,6 +522,7 @@
           <div id="patient-switch-list">
             <div class="list-header">
               <span>病人列表</span>
+              <button id="my-patients-btn">我的病人</button>
               <span class="close-btn" id="close-patient-list">✕</span>
             </div>
             <table
@@ -598,6 +612,18 @@
                 </div>
               </div>
             </div>
+            <!-- 查房记录选项卡 -->
+            <div class="layui-tab-item" id="tab-chafangjilu">
+              <div id="chafangjilu-content" class="tab-iframe-container">
+                <div class="loading-container">
+                  <i
+                    class="layui-icon layui-icon-loading layui-anim layui-anim-rotate layui-anim-loop loading-icon"
+                  ></i>
+                  <div class="loading-text">正在加载查房记录信息...</div>
+                </div>
+              </div>
+            </div>
+
             <!-- 电子病历选项卡 -->
             <div class="layui-tab-item" id="tab-dianzibingli">
               <div id="dianzibingli-content" class="tab-iframe-container">
@@ -714,6 +740,7 @@
           // 患者列表缓存变量
           var patientListData = null;
           var patientListLoaded = false;
+          var showingMyPatients = false; // 当前是否显示我的病人
 
           // 患者信息字段配置 - 用于动态生成表单
           var patientFields = [
@@ -823,28 +850,12 @@
               src: "edoclist.html",
             },
             {
-              index: 5,
-              title: "医生文书",
-              type: "iframe",
-              tabId: "tab-yishengwenshu",
-              contentId: "yishengwenshu-content",
-              src: "yswslist.html",
-            },
-            {
-              index: 6,
-              title: "护理文书",
-              type: "iframe",
-              tabId: "tab-huliwenshu",
-              contentId: "huliwenshu-content",
-              src: "hlwslist.html",
-            },
-            {
               index: 7,
-              title: "护理记录",
+              title: "查房记录",
               type: "iframe",
-              tabId: "tab-hulijilu",
-              contentId: "hulijilu-content",
-              src: "hljllist.html",
+              tabId: "tab-chafangjilu",
+              contentId: "chafangjilu-content",
+              src: "ward_records.html",
             },
             {
               index: 8,
@@ -1105,7 +1116,7 @@
 
               // 每次显示时都检查是否需要加载
               if (!patientListLoaded) {
-                loadPatientList();
+                loadPatientListData();
               } else {
                 // 如果已经加载过，直接更新高亮
                 setTimeout(function () {
@@ -1114,7 +1125,53 @@
               }
             }
           });
+          $("#my-patients-btn").on("click", function () {
+            var loginUser = JSON.parse(
+              localStorage.getItem("loginUser") || "{}"
+            );
+            var userMi = loginUser.user_mi;
 
+            if (!userMi) {
+              layer.msg("未找到当前用户信息，请重新登录", { icon: 2 });
+              return;
+            }
+
+            if (!patientListLoaded) {
+              layer.msg("请先加载病人列表", { icon: 2 });
+              return;
+            }
+
+            // 切换筛选状态
+            if (showingMyPatients) {
+              // 当前显示的是我的病人，切换回全部病人
+              showingMyPatients = false;
+              $("#my-patients-btn").removeClass("active").text("我的病人");
+
+              // 重新渲染全部病人列表
+              renderPatientTable(patientListData);
+              layer.msg("已显示全部病人", { icon: 1, time: 1000 });
+            } else {
+              // 当前显示全部病人，切换到我的病人
+              showingMyPatients = true;
+              $("#my-patients-btn").addClass("active").text("全部病人");
+
+              // 筛选我的病人
+              var myPatients = patientListData.filter(function (patient) {
+                return patient.refer_physician === userMi;
+              });
+
+              if (myPatients.length === 0) {
+                layer.msg("您当前没有管床病人", { icon: 0, time: 2000 });
+                renderPatientTable([]);
+              } else {
+                renderPatientTable(myPatients);
+                layer.msg("已显示我的病人(" + myPatients.length + "人)", {
+                  icon: 1,
+                  time: 1500,
+                });
+              }
+            }
+          });
           // 关闭病人列表
           $("#close-patient-list").on("click", function () {
             $("#patient-switch-list").removeClass("show");
@@ -1122,76 +1179,81 @@
             $("body").removeClass("patient-list-open");
           });
 
-          // 加载病人列表（按需调用）
-          function loadPatientList() {
-            var wardSn = localStorage.getItem("ward_sn");
-            if (!wardSn) {
-              layer.msg("未找到病区信息，请重新登录");
-              return;
-            }
-
-            // 不再显示加载动画和文字
-
+          // 渲染患者表格（支持筛选后的数据）
+          function renderPatientTable(data) {
+            console.log(data);
             table.render({
               elem: "#switch-patient-table",
-              url:
-                appconfig.api +
-                "/api/MobileWard/GetActPatientLists?ward=" +
-                wardSn +
-                "&inout=I",
-              response: {
-                statusCode: 1,
-              },
-              parseData: function (res) {
-                console.log("患者列表API响应:", res);
-                return {
-                  code: res.Status,
-                  msg: res.message,
-                  count: res.total,
-                  data: res.Data,
-                };
-              },
+              data: data,
+              page: false, // 禁用分页
+              limit: 1000, // 设置一个足够大的限制
               cellMinWidth: 60,
               size: "sm",
               cols: [
                 [
                   { field: "bed_no", title: "床号", width: 60 },
                   { field: "name", title: "姓名", width: 100 },
-                  { field: "sex_name", title: "性别", width: 50 },
-                  { field: "ages", title: "年龄", width: 60 },
-                  // { field: "admiss_days", title: "住院天数", width: 80 },
+                  { field: "sex_name", title: "性别" },
+                  { field: "ages", title: "年龄" },
                 ],
               ],
               done: function (res, curr, count) {
-                console.log("患者列表渲染完成:", res);
+                // 高亮当前患者
+                setTimeout(function () {
+                  highlightCurrentPatient();
+                }, 100);
 
-                // 根据实际API响应格式判断成功状态
-                if (
-                  (res.code === 0 || res.code === 1) &&
-                  res.data &&
-                  res.data.length > 0
-                ) {
+                // 绑定行点击事件（只绑定一次）
+                bindPatientTableEvents();
+              },
+            });
+          }
+
+          // 加载病人列表数据（只获取数据，不渲染表格）
+          function loadPatientListData() {
+            var wardSn = localStorage.getItem("ward_sn");
+            if (!wardSn) {
+              layer.msg("未找到病区信息，请重新登录");
+              return;
+            }
+
+            // 显示加载提示
+            var loadingIndex = layer.load(1, { shade: [0.1, "#000"] });
+
+            $.ajax({
+              url:
+                appconfig.api +
+                "/api/MobileWard/GetActPatientLists?ward=" +
+                wardSn +
+                "&inout=I",
+              method: "GET",
+              dataType: "json",
+              success: function (res) {
+                layer.close(loadingIndex);
+                console.log("患者列表API响应:", res);
+
+                if (res.Status && res.Data && res.Data.length > 0) {
                   // 保存患者列表数据
-                  patientListData = res.data;
+                  patientListData = res.Data;
                   patientListLoaded = true;
 
-                  // 高亮当前患者
-                  setTimeout(function () {
-                    highlightCurrentPatient();
-                  }, 300);
+                  // 默认显示全部病人
+                  showingMyPatients = false;
+                  $("#my-patients-btn").removeClass("active").text("我的病人");
 
-                  // 绑定行点击事件（只绑定一次）
-                  bindPatientTableEvents();
+                  // 渲染表格
+                  renderPatientTable(patientListData);
 
                   layer.msg("患者列表加载成功", { icon: 1, time: 1000 });
                 } else {
                   patientListLoaded = false;
-                  var errorMsg = res.msg || res.message || "加载失败，没有数据";
+                  var errorMsg = res.message || "加载失败，没有数据";
                   layer.msg("患者列表: " + errorMsg, { icon: 2 });
                   console.error("患者列表数据问题:", res);
                 }
               },
               error: function (xhr, status, error) {
+                layer.close(loadingIndex);
                 patientListLoaded = false;
                 layer.msg("网络错误，无法加载患者列表", { icon: 2 });
                 console.error("网络请求失败:", error);
@@ -1201,7 +1263,7 @@
 
           // 高亮当前患者
           function highlightCurrentPatient() {
-            if (!patientListData || !patientListLoaded) return;
+            if (!patientListLoaded) return;
 
             // 延迟执行，确保DOM已经渲染完成
             setTimeout(function () {
@@ -1218,7 +1280,11 @@
                   );
                 }
 
-                patientListData.forEach(function (row, i) {
+                // 获取当前表格显示的数据（可能是筛选后的）
+                var currentTableData =
+                  table.cache["switch-patient-table"] || [];
+
+                currentTableData.forEach(function (row, i) {
                   var tr = trs[i];
                   if (tr && row.patient_id === currentPatient.patient_id) {
                     tr.classList.add("selected");

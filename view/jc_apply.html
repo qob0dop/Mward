@@ -170,7 +170,7 @@
           $.ajax({
             url:
               appconfig.api +
-              "/api/jcjy/GetJianChaList?ward_sn=" +
+              "/api/JcJy/GetJianChaList?ward_sn=" +
               (localStorage.ward_sn || ""),
             type: "GET",
             dataType: "json",
@@ -203,7 +203,7 @@
           var loginUserData = JSON.parse(loginUser);
           $.ajax({
             url:
-              appconfig.api +
+              "http://10.102.41.142:5105" +
               "/api/jcjy/GetCustomerTemplates?type=jiancha&opera=" +
               loginUserData.user_mi,
             type: "GET",
@@ -229,12 +229,12 @@
         // 获取申请单编号
         function getApplySn(callback) {
           $.ajax({
-            url: appconfig.api + "/api/jcjy/GetApplySn",
+            url: appconfig.api + "/api/JcJy/GetApplySn",
             type: "GET",
             dataType: "json",
             success: function (res) {
-              if (res.status === 1 && res.data) {
-                callback(true, res.data);
+              if (res.Status === 1 && res.Data) {
+                callback(true, res.Data);
               } else {
                 layer.msg("获取申请单编号失败: " + (res.msg || "未知错误"), {
                   icon: 5,
@@ -402,16 +402,16 @@
             }
 
             $.ajax({
-              url: appconfig.api + "/api/jcjy/JianchaSubmit",
+              url: appconfig.api + "/api/JcJy/JianchaSubmit",
               type: "POST",
               contentType: "application/json",
               data: JSON.stringify(todoList),
               dataType: "json",
               success: function (res) {
-                if (res.status === 1) {
+                if (res.Status === 1) {
                   callback(true);
                 } else {
-                  layer.msg("提交申请失败: " + (res.msg || "未知错误"), {
+                  layer.msg("提交申请失败: " + (res.Msg || "未知错误"), {
                     icon: 5,
                   });
                   callback(false);
@@ -430,7 +430,7 @@
           elem: "#jiancha-table",
           url:
             appconfig.api +
-            "/api/jcjy/GetJianChaApplys_JZZXYY?patient_id=" +
+            "/api/JcJy/GetJianChaApplys_JZZXYY?patient_id=" +
             patient_id +
             "&admiss_times=" +
             admiss_times +

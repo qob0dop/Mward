@@ -175,6 +175,7 @@
       /* select框样式优化 */
       .layui-form-select {
         height: 34px !important;
+        width: 100px !important;
       }
 
       .layui-form-select .layui-select-title {
@@ -263,7 +264,7 @@
               id="order-type-select"
               lay-filter="order-type-select"
               class="layui-select"
-              style="font-size: 13px; width: 150px"
+              style="font-size: 13px; width: 80px"
             >
               <option value="long">长期医嘱</option>
               <option value="temp">临时医嘱</option>
@@ -293,10 +294,11 @@
               id="role-type-select"
               lay-filter="role-type-select"
               class="layui-select"
-              style="font-size: 13px; width: 150px"
+              style="font-size: 13px; width: 120px"
             >
               <option value="doctor" selected>医生</option>
               <option value="nurse">护士</option>
+              <option value="mine">我的医嘱</option>
               <option value="all-role">全部</option>
             </select>
           </div>
@@ -310,24 +312,6 @@
           lay-filter="yizhu-table"
         ></table>
       </div>
-
-      <!-- 工具栏模板 -->
-      <script type="text/html" id="toolbarDemo">
-        <div class="layui-btn-container">
-          <button
-            class="layui-btn layui-btn-sm layui-btn-primary"
-            lay-event="print"
-          >
-            <i class="layui-icon layui-icon-print"></i> 打印
-          </button>
-          <button
-            class="layui-btn layui-btn-sm layui-btn-normal"
-            lay-event="export"
-          >
-            <i class="layui-icon layui-icon-export"></i>导出
-          </button>
-        </div>
-      </script>
 
       <!-- 行工具栏 -->
       <script type="text/html" id="barDemo">
@@ -446,6 +430,7 @@
         var wardData = JSON.parse(localStorage.getItem("wardData") || "{}");
         var ward_sn = wardData.ward_sn || localStorage.ward_sn || "";
         var userData = localStorage.getItem("userData");
+        var loginUser = JSON.parse(localStorage.getItem("loginUser") || "{}");
         if (userData === null) {
           layer.msg("请先选择患者！");
           return;
@@ -458,7 +443,7 @@
         // 当前筛选条件
         var currentFilters = {
           orderType: "all", // 'long', 'temp', 'all'
-          roleType: "doctor", // 'doctor', 'nurse', 'all-role'
+          roleType: "doctor", // 'doctor', 'nurse',"mine", 'all-role'
         };
         var tableCols = [
           [
@@ -479,7 +464,7 @@
             { field: "frequ_name", title: "频率", width: 80 },
             { field: "supply_name", title: "用法", width: 80 },
             { field: "order_doctor_name", title: "医生", width: 80 },
-            { field: "end_time_mm_dd", title: "日期", width: 80 },
+            { field: "enter_time_mm_dd", title: "日期", width: 80 },
             { field: "end_time_mm_dd", title: "日期", width: 80 },
             {
               // fixed: "right",
@@ -539,8 +524,8 @@
             localStorage.getItem("loginUser") || "{}"
           );
           var doctorName =
-            currentUser.user_mi || currentUser.user_name || "系统用户";
-
+            currentUser.name || currentUser.user_name || "系统用户";
+          var doctorCode = currentUser.user_mi || "00000";
           // 获取当前时间
           var now = new Date();
           var stopTime =
@@ -573,7 +558,7 @@
                 patient_id: patient_id || orderData.patient_id,
                 admiss_times: admiss_times || orderData.admiss_times,
                 act_order_no: orderData.act_order_no || orderData.order_no,
-                stop_doctor: doctorName,
+                stop_doctor: doctorCode,
                 stop_time: stopTime,
               };
 
@@ -674,7 +659,7 @@
           var currentUser = JSON.parse(
             localStorage.getItem("loginUser") || "{}"
           );
-          var doctorCode = currentUser.user_id || "00000";
+          var doctorCode = currentUser.user_mi || "00000";
           var doctorName =
             currentUser.user_mi || currentUser.user_name || "系统用户";
 
@@ -987,8 +972,17 @@
           });
         }
 
-        // 撤销医嘱功能（框架，需要根据实际API调整）
+        // 撤销医嘱功能
         function revokeMedicalOrder(orderData) {
+          console.log("撤销医嘱 orderData:", orderData);
+
+          // 获取当前用户信息
+          var currentUser = JSON.parse(
+            localStorage.getItem("loginUser") || "{}"
+          );
+          var operatorCode = currentUser.user_mi || "00000";
+
+          // 确认对话框
           layer.confirm(
             "确定要撤销此医嘱吗？<br>" +
               '<span style="color: #ff5722; font-size: 12px;">注意：撤销后医嘱将被永久删除</span><br>' +
@@ -1001,20 +995,93 @@
               btn: ["确定撤销", "取消"],
             },
             function (index) {
-              // TODO: 根据实际撤销医嘱API调整以下代码
-              // 示例API参数结构：
-              /*
-                         var apiParams = {
-                           patient_id: patient_id || orderData.patient_id,
-                           admiss_times: admiss_times || orderData.admiss_times,
-                           order_no: orderData.order_no,
-                           revoke_doctor: doctorName,
-                           revoke_reason: "医生撤销"
-                         };
-                         */
+              // 构建API参数
+              var apiParams = {
+                patient_id: patient_id || orderData.patient_id,
+                admiss_times: admiss_times || orderData.admiss_times,
+                act_order_no: orderData.act_order_no || orderData.order_no,
+                opera: loginUser.user_mi,
+                cancel_mode: "1", // 撤销模式，1表示撤销
+                pre_cancel_step: "2", // 预撤销步骤，1表示直接撤销
+              };
 
-              layer.msg("撤销功能需要根据具体API实现", { icon: 0 });
-              layer.close(index);
+              // 调试信息
+              console.log("撤销医嘱API参数:", apiParams);
+              console.log("医嘱数据:", orderData);
+
+              // 验证必要参数
+              if (
+                !apiParams.patient_id ||
+                !apiParams.admiss_times ||
+                !apiParams.act_order_no
+              ) {
+                layer.msg(
+                  "缺少必要参数，无法撤销医嘱<br>请检查患者ID、住院次数和医嘱编号",
+                  {
+                    icon: 2,
+                    time: 3000,
+                  }
+                );
+                console.error("参数验证失败:", apiParams);
+                return;
+              }
+
+              // 显示加载提示
+              var loadingIndex = layer.load(1, { shade: [0.3, "#000"] });
+
+              // 调用撤销医嘱API
+              $.ajax({
+                url: appconfig.api + "/api/MobileWard/CancelActYz",
+                method: "GET",
+                data: apiParams,
+                dataType: "json",
+                success: function (response) {
+                  layer.close(loadingIndex);
+
+                  if (response && response.Status) {
+                    layer.msg("医嘱撤销成功", { icon: 1 });
+
+                    // 刷新表格数据
+                    loadYizhuData(function () {
+                      applyFilters(); // 重新应用当前筛选条件
+                    });
+                  } else {
+                    var errorMsg =
+                      response && response.Message
+                        ? response.Message
+                        : "撤销医嘱失败";
+                    layer.msg(errorMsg, { icon: 2, time: 4000 });
+                    console.error("API响应错误:", response);
+                  }
+
+                  layer.close(index);
+                },
+                error: function (xhr, status, error) {
+                  layer.close(loadingIndex);
+                  layer.close(index);
+
+                  var errorMsg = "网络错误，撤销医嘱失败";
+
+                  // 详细的错误处理
+                  if (xhr.responseJSON && xhr.responseJSON.Message) {
+                    errorMsg = xhr.responseJSON.Message;
+                  } else if (xhr.status === 401) {
+                    errorMsg = "权限不足，请重新登录";
+                  } else if (xhr.status === 500) {
+                    errorMsg = "服务器内部错误";
+                  } else if (xhr.status === 404) {
+                    errorMsg = "API接口不存在，请检查服务器配置";
+                  }
+
+                  layer.msg(errorMsg, { icon: 2, time: 5000 });
+                  console.error("AJAX错误详情:", {
+                    status: xhr.status,
+                    statusText: xhr.statusText,
+                    responseText: xhr.responseText,
+                    error: error,
+                  });
+                },
+              });
             }
           );
         }
@@ -1075,6 +1142,8 @@
               matchRoleType = String(item.fit_flag) === "1";
             } else if (currentFilters.roleType === "nurse") {
               matchRoleType = String(item.fit_flag) === "0";
+            } else if (currentFilters.roleType === "mine") {
+              matchRoleType = item.order_doctor === loginUser.user_mi;
             }
             // 'all-role' 不需要筛选条件
 
@@ -1095,6 +1164,8 @@
               ? "医生医嘱"
               : currentFilters.roleType === "nurse"
               ? "护士医嘱"
+              : currentFilters.roleType === "mine"
+              ? "我的医嘱"
               : "全部";
 
           if (

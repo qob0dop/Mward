@@ -439,7 +439,7 @@
           elem: "#jianyan-table",
           url:
             appconfig.api +
-            "/api/jcjy/GetJianYanApplys?patient_id=" +
+            "/api/JcJy/GetJianYanApplys?patient_id=" +
             patient_id +
             "&admiss_times=" +
             admiss_times,
@@ -546,16 +546,16 @@
           $.ajax({
             url:
               appconfig.api +
-              "/api/jcjy/GetJianYanList?ward_sn=" +
+              "/api/JcJy/GetJianYanList?ward_sn=" +
               (localStorage.ward_sn || ""),
             type: "GET",
             dataType: "json",
             success: function (res) {
-              if (res.status === 1 && res.data) {
-                allTestItems = res.data;
+              if (res.Status === 1 && res.Data) {
+                allTestItems = res.Data;
                 callback(true);
               } else {
-                layer.msg("获取检验项目数据失败: " + (res.msg || "未知错误"), {
+                layer.msg("获取检验项目数据失败: " + (res.Msg || "未知错误"), {
                   icon: 5,
                 });
                 callback(false);
@@ -579,17 +579,18 @@
           var loginUserData = JSON.parse(loginUser);
           $.ajax({
             url:
-              appconfig.api +
+              "http://10.102.41.142:5105" +
               "/api/jcjy/GetCustomerTemplates?type=jianyan&opera=" +
               loginUserData.user_mi,
             type: "GET",
             dataType: "json",
             success: function (res) {
+              console.log("获取套餐数据 - 响应:", res);
               if (res.status === 1 && res.data) {
                 testPackages = res.data;
                 callback(true);
               } else {
-                layer.msg("获取套餐数据失败: " + (res.msg || "未知错误"), {
+                layer.msg("获取套餐数据失败: " + (res.Msg || "未知错误"), {
                   icon: 5,
                 });
                 callback(false);
@@ -605,12 +606,12 @@
         // 获取申请单编号
         function getApplySn(callback) {
           $.ajax({
-            url: appconfig.api + "/api/jcjy/GetApplySn",
+            url: appconfig.api + "/api/JcJy/GetApplySn",
             type: "GET",
             dataType: "json",
             success: function (res) {
-              if (res.status === 1 && res.data) {
-                callback(true, res.data);
+              if (res.Status === 1 && res.Data) {
+                callback(true, res.Data);
               } else {
                 layer.msg("获取申请单编号失败: " + (res.msg || "未知错误"), {
                   icon: 5,
@@ -769,16 +770,16 @@
             }
 
             $.ajax({
-              url: appconfig.api + "/api/jcjy/JianyanSubmit",
+              url: appconfig.api + "/api/JcJy/JianyanSubmit",
               type: "POST",
               contentType: "application/json",
               data: JSON.stringify(todoList),
               dataType: "json",
               success: function (res) {
-                if (res.status === 1) {
+                if (res.Status === 1) {
                   callback(true);
                 } else {
-                  layer.msg("提交申请失败: " + (res.msg || "未知错误"), {
+                  layer.msg("提交申请失败: " + (res.Msg || "未知错误"), {
                     icon: 5,
                   });
                   callback(false);
