@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>layout 管理界面大布局示例 - Layui</title>
+    <meta name="renderer" content="webkit" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="//unpkg.com/layui@2.11.4/dist/css/layui.css" rel="stylesheet" />
+    <style>
+      body {
+        height: 100vh;
+        overflow: hidden;
+      }
+      .layui-layout-admin .layui-body {
+        /* 主题内容盒子 */
+        top: 0;
+        padding-bottom: 0;
+      }
+      .layui-layout-admin .layui-side {
+        /* 侧边导航盒子 */
+        top: 0;
+      }
+      .layui-panel {
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="layui-layout layui-layout-admin">
+      <div class="layui-side layui-bg-black">
+        <div class="layui-side-scroll">
+          <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+          <ul class="layui-nav layui-nav-tree" lay-filter="choice">
+            <li class="layui-nav-item layui-nav-itemed">
+              <a class="parent-kind" href="javascript:;">医生文书</a>
+              <dl class="layui-nav-child">
+                <dd><a href="javascript:;">病程记录</a></dd>
+                <dd><a href="javascript:;">入院记录</a></dd>
+                <dd><a href="javascript:;">手术记录</a></dd>
+                <dd><a href="javascript:;">医患沟通</a></dd>
+              </dl>
+            </li>
+            <li class="layui-nav-item">
+              <a href="javascript:;">护理文书</a>
+              <dl class="layui-nav-child">
+                <dd><a href="javascript:;">list 1</a></dd>
+                <dd><a href="javascript:;">list 2</a></dd>
+                <dd><a href="javascript:;">超链接</a></dd>
+              </dl>
+            </li>
+            <li class="layui-nav-item">
+              <a href="javascript:;">click menu item</a>
+            </li>
+            <li class="layui-nav-item"><a href="javascript:;">the links</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="layui-body">
+        <!-- 内容主体区域 -->
+        <div style="padding: 15px; height: 100%">
+          <!-- <blockquote class="layui-elem-quote layui-text">
+            Layui 框体布局内容主体区域
+          </blockquote> -->
+          <div class="layui-card layui-panel">
+            <iframe
+              src="about:blank"
+              height="100%"
+              width="100%"
+              frameborder="0"
+              class="layui-iframe"
+            ></iframe>
+          </div>
+        </div>
+        <div id="test"></div>
+      </div>
+    </div>
+
+    <script src="//unpkg.com/layui@2.11.4/dist/layui.js"></script>
+    <script>
+      // xml转换为js对象
+      function xmlToJson(xml) {
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(xml, "text/xml");
+
+        function parseNode(node) {
+          const obj = {};
+          if (node.nodeType === 1) {
+            if (node.attributes.length > 0) {
+              obj["@attributes"] = {};
+              for (let i = 0; i < node.attributes.length; i++) {
+                const attr = node.attributes[i];
+                obj["@attributes"][attr.nodeName] = attr.nodeValue;
+              }
+            }
+            if (node.hasChildNodes()) {
+              const children = node.childNodes;
+              for (let i = 0; i < children.length; i++) {
+                const child = children[i];
+                const childName = child.nodeName;
+                if (childName === "#text") {
+                  const text = child.nodeValue.trim();
+                  if (text) {
+                    obj["#text"] = text;
+                  }
+                } else {
+                  const childObj = parseNode(child);
+                  if (obj[childName]) {
+                    if (!Array.isArray(obj[childName])) {
+                      obj[childName] = [obj[childName]];
+                    }
+                    obj[childName].push(childObj);
+                  } else {
+                    obj[childName] = childObj;
+                  }
+                }
+              }
+            }
+          }
+          const keys = Object.keys(obj); //拍平处理
+          if (keys.length === 1 && keys[0] === "#text") {
+            return obj["#text"];
+          }
+          return obj;
+        }
+
+        return parseNode(xmlDoc.documentElement);
+      }
+    </script>
+    <script>
+      //JS
+      layui.use(["element", "layer", "util"], function () {
+        var element = layui.element;
+        var layer = layui.layer;
+        var util = layui.util;
+        var $ = layui.$;
+        var userData = localStorage.getItem("userData");
+        userData = JSON.parse(userData);
+        $.ajax({
+          url: "http://10.101.199.42:18888/api/Interface/QueryInterfaceXmlToJsonFromForm",
+          type: "post",
+          data: {
+            param: `<Service>
+          <Service_Header>
+              <Request_Main>gx_YDYZ_GetBLType</Request_Main>
+          </Service_Header>
+          <Service_Body>
+              <Request>
+                  <patient_id>001009540800</patient_id>
+              </Request>
+          </Service_Body>
+      </Service>`,
+          },
+          success: function (res) {
+            const resobj = xmlToJson(res);
+            const records = resobj.record;
+            console.log(records);
+            const groupMap = {};
+            records.forEach((record) => {
+              if (!groupMap[record.parent_name])
+                groupMap[record.parent_name] = [];
+              groupMap[record.parent_name].push(record);
+            });
+            console.log(records[0]);
+
+            let html = "";
+            Object.keys(groupMap).forEach((parent) => {
+              html += `<li class="layui-nav-item "><a href="#">${parent}</a><dl class="layui-nav-child">`;
+              groupMap[parent].forEach((record) => {
+                console.log(record.record_serial);
+                html += `<dd data-id="${record.record_serial}"><a >${record.noteTitle}</a></dd>`;
+              });
+              html += "</dl></li>";
+            });
+            document.querySelector(".layui-nav-tree").innerHTML = html;
+            // 重新渲染layui导航（如果需要）
+            if (layui.element && layui.element.init) layui.element.init();
+            // 使用Layui推荐的element.on方式监听菜单点击
+            element.on("nav(choice)", function (elem) {
+              // elem 是被点击的jQuery对象
+              // 判断是否点击的是子菜单（dd > a）
+              if (!elem.parent().is("li")) {
+                // 获取data-id属性（应从dd上取）
+                var dataId = elem.parent().data("id");
+                console.log("你点击了子项：", elem.text(), "data-id:", dataId);
+                // 这里可以写点击子项后的操作
+                $.ajax({
+                  url: `http://10.102.41.142:5220/api/Emr2DocFile/GetDocHtmlTextByIdAsync?noteContent=0003464562007${dataId}`,
+                  type: "get",
+                  dataType: "json",
+                  success: function (res) {
+                    // 处理返回的数据
+                    const decodedStr = atob(res.Data); // 直接用 atob 解码 base64 字符串
+                    // 将Base64字符串转换为二进制字符串
+                    const binaryString = atob(res.Data);
+                    // 将二进制字符串转换为字节数组
+                    const bytes = new Uint8Array(binaryString.length);
+                    for (let i = 0; i < binaryString.length; i++) {
+                      bytes[i] = binaryString.charCodeAt(i);
+                    }
+                    // 将字节数组解码为UTF-8字符串
+                    const htmlString = new TextDecoder("utf-8").decode(bytes);
+
+                    // 创建iframe并显示decodedStr内容
+                    var iframe = document.querySelector(".layui-iframe");
+
+                    iframe.src = "about:blank";
+                    iframe.onload = function () {
+                      var doc =
+                        iframe.contentDocument || iframe.contentWindow.document;
+                      doc.open();
+                      doc.write(htmlString);
+                      doc.close();
+                    };
+                  },
+                });
+              } else if (elem.parent().is("li")) {
+                // 点击的是一级类别
+                console.log("你点击了类别：", elem.text());
+                // 这里可以写点击类别后的操作
+              }
+              // 展开/收起逻辑Layui会自动处理
+            });
+          },
+        });
+
+        //头部事件
+        util.event("lay-header-event", {
+          menuLeft: function (othis) {
+            // 左侧菜单事件
+            layer.msg("展开左侧菜单的操作", { icon: 0 });
+          },
+          menuRight: function () {
+            // 右侧菜单事件
+            layer.open({
+              type: 1,
+              title: "更多",
+              content: '<div style="padding: 15px;">处理右侧面板的操作</div>',
+              area: ["260px", "100%"],
+              offset: "rt", // 右上角
+              anim: "slideLeft", // 从右侧抽屉滑出
+              shadeClose: true,
+              scrollbar: false,
+            });
+          },
+        });
+      });
+    </script>
+  </body>
+</html>
