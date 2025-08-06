@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>查房记录</title>
+    <link rel="stylesheet" href="/lib/layui-v2.6.3/css/layui.css" media="all" />
+    <link rel="stylesheet" href="/css/public.css" media="all" />
+    <link rel="stylesheet" href="/css/table/iframe.css" media="all" />
+    <style>
+      body {
+        background-color: transparent;
+        padding: 10px;
+        margin: 0;
+      }
+      .layui-container {
+        width: 100%;
+        max-width: 100%;
+        padding: 0;
+        margin: 0;
+      }
+
+      /* 头部操作区域样式 */
+      .header-controls {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 6px;
+        border: 1px solid #e9ecef;
+        margin-bottom: 20px;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+      }
+
+      .page-title {
+        font-size: 18px;
+        font-weight: bold;
+        color: #333;
+        margin: 0;
+      }
+
+      /* 查房记录列表样式 */
+      .record-list {
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        height: 100%;
+        overflow-y: auto;
+      }
+
+      .ward-record-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 15px;
+        padding: 20px;
+        border-bottom: 1px solid #f0f0f0;
+        transition: background-color 0.2s;
+        border-left: 4px solid #1e9fff;
+        margin-bottom: 15px;
+        border-radius: 6px;
+        background: #fafafa;
+      }
+
+      .ward-record-item:hover {
+        background-color: #f0f9ff;
+      }
+
+      .ward-record-info {
+        flex: 1;
+      }
+
+      .ward-record-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 10px;
+      }
+
+      .ward-record-title {
+        font-weight: bold;
+        color: #333;
+        font-size: 16px;
+        margin-bottom: 5px;
+      }
+
+      .ward-record-meta {
+        font-size: 12px;
+        color: #666;
+        display: flex;
+        gap: 15px;
+        margin-bottom: 10px;
+      }
+
+      .ward-record-content {
+        color: #555;
+        line-height: 1.6;
+        margin-bottom: 10px;
+        background: #fff;
+        padding: 10px;
+        border-radius: 4px;
+        border: 1px solid #eee;
+      }
+
+      .ward-record-actions {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+
+      /* 录音控件样式 */
+      .recording-section {
+        margin-top: 15px;
+        padding: 10px;
+        background: #f8f9fa;
+        border-radius: 4px;
+        border: 1px solid #e9ecef;
+      }
+
+      .recording-controls {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        margin-bottom: 10px;
+      }
+
+      /* 音频播放器样式 */
+      audio {
+        width: 100%;
+        max-width: 300px;
+        height: 30px;
+      }
+
+      /* 表单样式优化 */
+      .layui-form-item {
+        margin-bottom: 20px;
+      }
+
+      .layui-textarea {
+        min-height: 120px;
+      }
+      .layui-layer {
+        top: 0;
+        left: 0;
+      }
+      .ward-record-list-container {
+        overflow-y: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="layui-container">
+      <!-- 头部操作区域 -->
+      <div class="header-controls">
+        <h2 class="page-title">
+          <i class="layui-icon layui-icon-record"></i> 查房记录管理
+        </h2>
+        <div>
+          <button
+            type="button"
+            id="btn-add-record"
+            class="layui-btn layui-btn-normal"
+          >
+            <i class="layui-icon layui-icon-add-1"></i> 新建查房记录
+          </button>
+        </div>
+      </div>
+
+      <!-- 查房记录列表区域 -->
+      <div class="record-list">
+        <div id="ward-record-list-container">
+          <div style="text-align: center; padding: 40px; color: #999">
+            <i
+              class="layui-icon layui-icon-record"
+              style="font-size: 48px; display: block; margin-bottom: 10px"
+            ></i>
+            暂无查房记录，点击上方按钮新建记录
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="/lib/layui-v2.6.3/layui.js" charset="utf-8"></script>
+    <script src="/js/lay-config.js?v=1.0.4" charset="utf-8"></script>
+    <script>
+      layui.use(["layer", "form"], function () {
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var form = layui.form;
+
+        // 获取患者信息
+        var patientData = JSON.parse(
+          localStorage.getItem("patientData") || "{}"
+        );
+        var userData = JSON.parse(localStorage.getItem("userData") || "{}");
+        var loginUser = JSON.parse(localStorage.getItem("loginUser") || "{}");
+
+        // 查房记录存储
+        let wardRecords = JSON.parse(
+          localStorage.getItem("wardRecords") || "[]"
+        );
+
+        // 录音功能变量
+        let mediaRecorder;
+        let audioChunks = [];
+        let audioBlob = null;
+        let isRecording = false;
+        let recordingStartTime = null;
+        let currentRecordId = null; // 当前正在编辑的查房记录ID
+
+        // 初始化页面
+        function init() {
+          renderWardRecordList();
+          bindEvents();
+        }
+
+        // 绑定事件
+        function bindEvents() {
+          // 新建查房记录按钮
+          $("#btn-add-record").on("click", function () {
+            showAddRecordDialog();
+          });
+        }
+
+        // 显示新增查房记录对话框
+        function showAddRecordDialog() {
+          var now = new Date();
+          var currentTime = formatDateTime(now);
+          var patientName = userData.name || patientData.name || "未知患者";
+          var bedNo = userData.bed_no || patientData.bed_no || "未知床号";
+          var doctorName = loginUser.user_name || loginUser.name || "未知医生";
+
+          layer.open({
+            type: 1,
+            title: "新建查房记录",
+            area: ["800px", "80%"], // 使用百分比高度，自适应父页面
+            maxHeight: "90%", // 最大高度不超过父页面90%
+            offset: "auto",
+            content: `
+              <form class="layui-form" style="padding: 20px;" id="ward-record-form">
+                <div class="layui-row">
+                  <div class="layui-col-md6">
+                    <div class="layui-form-item">
+                      <label class="layui-form-label">患者姓名</label>
+                      <div class="layui-input-block">
+                        <input type="text" name="patient_name" value="${patientName}" readonly class="layui-input layui-disabled">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="layui-col-md6">
+                    <div class="layui-form-item">
+                      <label class="layui-form-label">床号</label>
+                      <div class="layui-input-block">
+                        <input type="text" name="bed_no" value="${bedNo}" readonly class="layui-input layui-disabled">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="layui-row">
+                  <div class="layui-col-md6">
+                    <div class="layui-form-item">
+                      <label class="layui-form-label">查房医生</label>
+                      <div class="layui-input-block">
+                        <input type="text" name="doctor_name" value="${doctorName}" class="layui-input">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="layui-col-md6">
+                    <div class="layui-form-item">
+                      <label class="layui-form-label">查房时间</label>
+                      <div class="layui-input-block">
+                        <input type="text" name="visit_time" value="${currentTime}" class="layui-input">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="layui-form-item">
+                  <label class="layui-form-label">查房主题</label>
+                  <div class="layui-input-block">
+                    <input type="text" name="record_title" lay-verify="required" placeholder="请输入查房主题" class="layui-input">
+                  </div>
+                </div>
+
+                <div class="layui-form-item">
+                  <label class="layui-form-label">查房记录</label>
+                  <div class="layui-input-block">
+                    <textarea name="record_content" lay-verify="required" placeholder="请详细记录查房情况、患者状态、处理意见等..." class="layui-textarea"></textarea>
+                  </div>
+                </div>
+
+                <!-- 录音功能区域 -->
+                <div class="layui-form-item">
+                  <label class="layui-form-label">录音记录</label>
+                  <div class="layui-input-block">
+                    <div class="recording-section">
+                      <div class="recording-controls">
+                        <button type="button" id="btn-record-audio" class="layui-btn layui-btn-sm layui-btn-normal">
+                          <i class="layui-icon layui-icon-mike"></i> 开始录音
+                        </button>
+                        <button type="button" id="btn-save-audio" class="layui-btn layui-btn-sm layui-btn-primary" style="display: none;">
+                          <i class="layui-icon layui-icon-download-circle"></i> 保存录音
+                        </button>
+                        <span id="recording-status" style="color: #666; font-size: 12px;"></span>
+                      </div>
+                      <audio id="audio-preview" controls style="display: none; width: 100%; max-width: 400px;"></audio>
+                      <div id="saved-audio-list" style="margin-top: 10px;"></div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="layui-form-item" style="text-align: center; margin-top: 30px;">
+                  <button class="layui-btn layui-btn-normal" lay-submit lay-filter="save-record">
+                    <i class="layui-icon layui-icon-ok"></i> 保存查房记录
+                  </button>
+                  <button type="button" class="layui-btn layui-btn-primary" onclick="layer.closeAll()">
+                    <i class="layui-icon layui-icon-close"></i> 取消
+                  </button>
+                </div>
+              </form>
+            `,
+            success: function (layero, index) {
+              currentRecordId = "temp_" + Date.now(); // 临时ID
+
+              // 重新渲染表单
+              form.render();
+
+              // 绑定录音功能
+              bindRecordingEvents();
+
+              // 监听表单提交
+              form.on("submit(save-record)", function (data) {
+                saveWardRecord(data.field, index);
+                return false;
+              });
+            },
+            end: function () {
+              // 清理录音状态
+              cleanupRecording();
+            },
+          });
+        }
+
+        // 绑定录音功能事件
+        function bindRecordingEvents() {
+          const recordBtn = document.getElementById("btn-record-audio");
+          const saveBtn = document.getElementById("btn-save-audio");
+          const audioPreview = document.getElementById("audio-preview");
+          const statusSpan = document.getElementById("recording-status");
+
+          if (recordBtn && saveBtn && audioPreview) {
+            recordBtn.onclick = async function () {
+              if (!isRecording) {
+                await startRecording();
+              } else {
+                stopRecording();
+              }
+            };
+
+            saveBtn.onclick = function () {
+              saveRecordingToList();
+            };
+          }
+        }
+
+        // 开始录音
+        async function startRecording() {
+          if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            layer.msg("当前浏览器不支持录音功能", { icon: 2 });
+            return;
+          }
+
+          try {
+            const stream = await navigator.mediaDevices.getUserMedia({
+              audio: true,
+            });
+
+            mediaRecorder = new MediaRecorder(stream);
+            audioChunks = [];
+            recordingStartTime = new Date();
+
+            mediaRecorder.ondataavailable = function (e) {
+              if (e.data.size > 0) {
+                audioChunks.push(e.data);
+              }
+            };
+
+            mediaRecorder.onstop = function () {
+              audioBlob = new Blob(audioChunks, { type: "audio/webm" });
+              const audioPreview = document.getElementById("audio-preview");
+              const saveBtn = document.getElementById("btn-save-audio");
+
+              audioPreview.src = URL.createObjectURL(audioBlob);
+              audioPreview.style.display = "block";
+              saveBtn.style.display = "inline-block";
+
+              // 停止所有音频轨道
+              stream.getTracks().forEach((track) => track.stop());
+            };
+
+            mediaRecorder.start();
+            isRecording = true;
+
+            const recordBtn = document.getElementById("btn-record-audio");
+            const statusSpan = document.getElementById("recording-status");
+
+            recordBtn.innerHTML =
+              '<i class="layui-icon layui-icon-pause"></i> 停止录音';
+            recordBtn.className = "layui-btn layui-btn-sm layui-btn-danger";
+            statusSpan.textContent = "正在录音中...";
+
+            document.getElementById("btn-save-audio").style.display = "none";
+            document.getElementById("audio-preview").style.display = "none";
+          } catch (err) {
+            console.error("录音错误:", err);
+            layer.msg("无法访问麦克风，请检查权限设置", { icon: 2 });
+          }
+        }
+
+        // 停止录音
+        function stopRecording() {
+          if (mediaRecorder && mediaRecorder.state !== "inactive") {
+            mediaRecorder.stop();
+          }
+          isRecording = false;
+
+          const recordBtn = document.getElementById("btn-record-audio");
+          const statusSpan = document.getElementById("recording-status");
+
+          recordBtn.innerHTML =
+            '<i class="layui-icon layui-icon-mike"></i> 开始录音';
+          recordBtn.className = "layui-btn layui-btn-sm layui-btn-normal";
+          statusSpan.textContent = "录音已停止，请试听后保存";
+        }
+
+        // 保存录音到列表
+        function saveRecordingToList() {
+          if (!audioBlob) {
+            layer.msg("没有可保存的录音", { icon: 2 });
+            return;
+          }
+
+          const recordTime = new Date();
+          const recordName = "录音_" + formatTime(recordTime);
+          const duration = calculateDuration();
+
+          // 保存到临时存储
+          const audioRecord = {
+            id: "audio_" + recordTime.getTime(),
+            name: recordName,
+            time: recordTime.toISOString(),
+            duration: duration,
+            blob: audioBlob,
+            url: URL.createObjectURL(audioBlob),
+          };
+
+          // 添加到当前记录的录音列表
+          if (!window.tempAudioRecords) {
+            window.tempAudioRecords = [];
+          }
+          window.tempAudioRecords.push(audioRecord);
+
+          // 更新显示
+          updateSavedAudioList();
+
+          // 清理当前录音状态
+          audioBlob = null;
+          document.getElementById("audio-preview").style.display = "none";
+          document.getElementById("btn-save-audio").style.display = "none";
+          document.getElementById("audio-preview").src = "";
+          document.getElementById("recording-status").textContent = "";
+
+          layer.msg("录音已添加到记录中", { icon: 1, time: 1500 });
+        }
+
+        // 更新已保存的录音列表显示
+        function updateSavedAudioList() {
+          const container = document.getElementById("saved-audio-list");
+          if (
+            !window.tempAudioRecords ||
+            window.tempAudioRecords.length === 0
+          ) {
+            container.innerHTML = "";
+            return;
+          }
+
+          let html =
+            "<div style='margin-top: 10px;'><strong>已添加的录音：</strong></div>";
+          window.tempAudioRecords.forEach((record, index) => {
+            html += `
+              <div style="display: flex; align-items: center; gap: 10px; margin-top: 8px; padding: 8px; background: #fff; border-radius: 4px;">
+                <span style="flex: 1; font-size: 12px;">${record.name} (${record.duration})</span>
+                <audio controls style="width: 150px; height: 25px;">
+                  <source src="${record.url}" type="audio/webm">
+                </audio>
+                <button type="button" class="layui-btn layui-btn-xs layui-btn-danger" onclick="removeAudioRecord(${index})">
+                  删除
+                </button>
+              </div>
+            `;
+          });
+          container.innerHTML = html;
+        }
+
+        // 删除录音记录
+        window.removeAudioRecord = function (index) {
+          if (window.tempAudioRecords && window.tempAudioRecords[index]) {
+            // 释放URL对象
+            URL.revokeObjectURL(window.tempAudioRecords[index].url);
+            window.tempAudioRecords.splice(index, 1);
+            updateSavedAudioList();
+            layer.msg("录音已删除", { icon: 1, time: 1000 });
+          }
+        };
+
+        // 清理录音状态
+        function cleanupRecording() {
+          if (mediaRecorder && mediaRecorder.state === "recording") {
+            mediaRecorder.stop();
+          }
+          isRecording = false;
+          audioBlob = null;
+          currentRecordId = null;
+          if (window.tempAudioRecords) {
+            window.tempAudioRecords.forEach((record) => {
+              if (record.url) {
+                URL.revokeObjectURL(record.url);
+              }
+            });
+            window.tempAudioRecords = [];
+          }
+        }
+
+        // 保存查房记录
+        function saveWardRecord(formData, layerIndex) {
+          const recordTime = new Date();
+          const recordId = "ward_" + recordTime.getTime();
+
+          const newRecord = {
+            id: recordId,
+            patient_name: formData.patient_name || "未知患者",
+            bed_no: formData.bed_no || "未知床号",
+            doctor_name:
+              formData.doctor_name || loginUser.user_name || "未知医生",
+            visit_time: formData.visit_time || formatDateTime(recordTime),
+            record_title: formData.record_title || "查房记录",
+            record_content: formData.record_content || "",
+            create_time: recordTime.toISOString(),
+            audio_records: window.tempAudioRecords
+              ? [...window.tempAudioRecords]
+              : [],
+          };
+
+          wardRecords.unshift(newRecord);
+          localStorage.setItem("wardRecords", JSON.stringify(wardRecords));
+
+          // 更新界面
+          renderWardRecordList();
+
+          layer.close(layerIndex);
+          layer.msg("查房记录保存成功", { icon: 1 });
+
+          // 清理临时状态
+          window.tempAudioRecords = [];
+        }
+
+        // 渲染查房记录列表
+        function renderWardRecordList() {
+          const container = document.getElementById(
+            "ward-record-list-container"
+          );
+
+          if (wardRecords.length === 0) {
+            container.innerHTML = `
+              <div style="text-align: center; padding: 40px; color: #999;">
+                <i class="layui-icon layui-icon-record" style="font-size: 48px; display: block; margin-bottom: 10px;"></i>
+                暂无查房记录，点击上方按钮新建记录
+              </div>
+            `;
+            return;
+          }
+
+          let html = "";
+          wardRecords.forEach((record, index) => {
+            const createDate = new Date(record.create_time);
+            const timeStr = createDate.toLocaleString();
+
+            html += `
+              <div class="ward-record-item">
+                <div class="ward-record-info">
+                  <div class="ward-record-header">
+                    <div class="ward-record-title">${record.record_title}</div>
+                    <div class="ward-record-actions">
+                      <button class="layui-btn layui-btn-xs layui-btn-normal" onclick="viewRecord('${
+                        record.id
+                      }')">
+                        <i class="layui-icon layui-icon-search"></i> 查看详情
+                      </button>
+                      <button class="layui-btn layui-btn-xs layui-btn-danger" onclick="deleteWardRecord('${
+                        record.id
+                      }')">
+                        <i class="layui-icon layui-icon-delete"></i> 删除
+                      </button>
+                    </div>
+                  </div>
+                  <div class="ward-record-meta">
+                    <span><i class="layui-icon layui-icon-user"></i> 患者：${
+                      record.patient_name
+                    }</span>
+                    <span><i class="layui-icon layui-icon-home"></i> 床号：${
+                      record.bed_no
+                    }</span>
+                    <span><i class="layui-icon layui-icon-username"></i> 医生：${
+                      record.doctor_name
+                    }</span>
+                    <span><i class="layui-icon layui-icon-time"></i> 查房时间：${
+                      record.visit_time
+                    }</span>
+                  </div>
+                  <div class="ward-record-content">
+                    ${
+                      record.record_content &&
+                      record.record_content.length > 200
+                        ? record.record_content.substring(0, 200) + "..."
+                        : record.record_content || "暂无记录内容"
+                    }
+                  </div>
+                  ${
+                    record.audio_records && record.audio_records.length > 0
+                      ? `
+                    <div style="margin-top: 10px;">
+                      <span style="color: #666; font-size: 12px;">
+                        <i class="layui-icon layui-icon-voice"></i> 包含 ${record.audio_records.length} 个录音文件
+                      </span>
+                    </div>
+                  `
+                      : ""
+                  }
+                  <div style="color: #999; font-size: 11px; margin-top: 8px;">
+                    创建时间：${timeStr}
+                  </div>
+                </div>
+              </div>
+            `;
+          });
+
+          container.innerHTML = html;
+        }
+
+        // 查看记录详情
+        window.viewRecord = function (recordId) {
+          const record = wardRecords.find((r) => r.id === recordId);
+          if (!record) {
+            layer.msg("记录不存在", { icon: 2 });
+            return;
+          }
+
+          let audioHtml = "";
+          if (record.audio_records && record.audio_records.length > 0) {
+            audioHtml =
+              "<div style='margin-top: 15px;'><strong>录音文件：</strong>";
+            record.audio_records.forEach((audio, index) => {
+              audioHtml += `
+                <div style="margin-top: 8px; padding: 8px; background: #f8f9fa; border-radius: 4px;">
+                  <div style="font-size: 12px; color: #666; margin-bottom: 5px;">${audio.name} (${audio.duration})</div>
+                  <audio controls style="width: 100%; max-width: 400px;">
+                    <source src="${audio.url}" type="audio/webm">
+                  </audio>
+                </div>
+              `;
+            });
+            audioHtml += "</div>";
+          }
+
+          layer.open({
+            type: 1,
+            title: "查房记录详情",
+            area: ["700px", "600px"],
+            content: `
+              <div style="padding: 20px;">
+                <h3 style="margin-bottom: 15px; color: #333;">${
+                  record.record_title
+                }</h3>
+                <div style="background: #f8f9fa; padding: 15px; border-radius: 6px; margin-bottom: 15px;">
+                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 14px;">
+                    <div><strong>患者姓名：</strong>${record.patient_name}</div>
+                    <div><strong>床号：</strong>${record.bed_no}</div>
+                    <div><strong>查房医生：</strong>${record.doctor_name}</div>
+                    <div><strong>查房时间：</strong>${record.visit_time}</div>
+                  </div>
+                </div>
+                <div style="margin-bottom: 15px;">
+                  <strong>查房记录：</strong>
+                  <div style="margin-top: 8px; padding: 15px; background: #fff; border: 1px solid #e6e6e6; border-radius: 4px; line-height: 1.6;">
+                    ${(record.record_content || "暂无记录内容").replace(
+                      /\n/g,
+                      "<br>"
+                    )}
+                  </div>
+                </div>
+                ${audioHtml}
+                <div style="text-align: center; margin-top: 20px;">
+                  <button type="button" class="layui-btn layui-btn-primary" onclick="layer.closeAll()">关闭</button>
+                </div>
+              </div>
+            `,
+          });
+        };
+
+        // 删除查房记录
+        window.deleteWardRecord = function (recordId) {
+          layer.confirm(
+            "确定要删除这条查房记录吗？",
+            {
+              icon: 3,
+              title: "删除确认",
+            },
+            function (index) {
+              // 找到记录并清理音频URL
+              const recordIndex = wardRecords.findIndex(
+                (r) => r.id === recordId
+              );
+              if (recordIndex !== -1) {
+                const record = wardRecords[recordIndex];
+                if (record.audio_records) {
+                  record.audio_records.forEach((audio) => {
+                    if (audio.url) {
+                      URL.revokeObjectURL(audio.url);
+                    }
+                  });
+                }
+
+                wardRecords.splice(recordIndex, 1);
+                localStorage.setItem(
+                  "wardRecords",
+                  JSON.stringify(wardRecords)
+                );
+                renderWardRecordList();
+              }
+
+              layer.close(index);
+              layer.msg("查房记录已删除", { icon: 1 });
+            }
+          );
+        };
+
+        // 计算录音时长
+        function calculateDuration() {
+          if (!recordingStartTime) return "未知";
+          const duration =
+            (new Date().getTime() - recordingStartTime.getTime()) / 1000;
+          return Math.round(duration) + "秒";
+        }
+
+        // 格式化日期时间
+        function formatDateTime(date) {
+          return (
+            date.getFullYear() +
+            "-" +
+            String(date.getMonth() + 1).padStart(2, "0") +
+            "-" +
+            String(date.getDate()).padStart(2, "0") +
+            " " +
+            String(date.getHours()).padStart(2, "0") +
+            ":" +
+            String(date.getMinutes()).padStart(2, "0")
+          );
+        }
+
+        // 格式化时间（用于录音文件名）
+        function formatTime(date) {
+          return (
+            String(date.getHours()).padStart(2, "0") +
+            ":" +
+            String(date.getMinutes()).padStart(2, "0") +
+            ":" +
+            String(date.getSeconds()).padStart(2, "0")
+          );
+        }
+
+        // 页面加载完成后初始化
+        init();
+      });
+    </script>
+  </body>
+</html>

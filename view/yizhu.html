@@ -1,0 +1,1370 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>医嘱信息</title>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <link rel="stylesheet" href="/lib/layui-v2.6.3/css/layui.css" media="all" />
+    <link rel="stylesheet" href="/css/public.css" media="all" />
+    <link rel="stylesheet" href="/css/table/iframe.css" media="all" />
+    <style>
+      /* .myorder {
+        background-color: skyblue;
+      } */
+      /* 选中按钮高亮样式，兼容不同色系 */
+      .btn-active {
+        position: relative;
+        z-index: 1;
+        font-weight: bold !important;
+        border-width: 2.5px !important;
+        box-shadow: 0 2px 8px rgba(30, 185, 90, 0.18), 0 0 0 2px #b2f0c0 inset !important;
+        outline: none !important;
+      }
+      /* 针对绿色按钮（layui-btn-warm）选中时加深色 */
+      .layui-btn-warm.btn-active {
+        background-color: #3ec97c !important;
+        border-color: #1eae5b !important;
+        color: #fff !important;
+      }
+      /* 针对红色按钮（layui-btn-danger）选中时加深色 */
+      .layui-btn-danger.btn-active {
+        background-color: #e74c3c !important;
+        border-color: #c0392b !important;
+        color: #fff !important;
+      }
+      /* 针对蓝色按钮（layui-btn-primary/normal/cyan）选中时加深色 */
+      .layui-btn-primary.btn-active,
+      .layui-btn-normal.btn-active,
+      .layui-btn-cyan.btn-active {
+        background-color: #1e9fff !important;
+        border-color: #1786d4 !important;
+        color: #fff !important;
+      }
+      /* 兼容小屏幕按钮点击反馈 */
+      .btn-active:active {
+        box-shadow: 0 1px 4px rgba(30, 185, 90, 0.12) !important;
+      }
+
+      /* 按钮悬停效果 */
+      .layui-btn:not(.btn-active):hover {
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        transition: all 0.2s ease;
+      }
+
+      /* select框样式优化 */
+      .layui-form-select {
+        height: 34px !important;
+        width: 100px !important;
+      }
+
+      .layui-form-select .layui-select-title {
+        height: 34px !important;
+        line-height: 34px !important;
+        font-size: 13px !important;
+        color: #333 !important;
+        border: 1px solid #e6e6e6 !important;
+        border-radius: 2px !important;
+      }
+
+      .layui-form-select .layui-select-title input {
+        height: 32px !important;
+        line-height: 32px !important;
+        font-size: 13px !important;
+        color: #333 !important;
+      }
+
+      .layui-form-select dl {
+        font-size: 13px !important;
+      }
+
+      .layui-form-select dl dd {
+        line-height: 36px !important;
+        color: #333 !important;
+      }
+
+      /* 模板选择框特殊样式 - 覆盖默认宽度限制 */
+      #template-category,
+      #template-detail {
+        width: 100% !important;
+        min-width: 300px !important;
+      }
+
+      /* 针对模板选择框的父容器 */
+      #template-category + .layui-form-select,
+      #template-detail + .layui-form-select {
+        width: 100% !important;
+        min-width: 300px !important;
+      }
+
+      /* 模板选择框的标题区域 */
+      #template-category + .layui-form-select .layui-select-title,
+      #template-detail + .layui-form-select .layui-select-title {
+        width: 100% !important;
+        min-width: 300px !important;
+      }
+
+      /* 模板选择框的输入框 */
+      #template-category + .layui-form-select .layui-select-title input,
+      #template-detail + .layui-form-select .layui-select-title input {
+        width: 100% !important;
+        min-width: 290px !important;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="layui-container">
+      <!-- 操作栏 -->
+      <form class="layui-form">
+        <div
+          class="layui-btn-container filter-buttons"
+          style="
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+          "
+        >
+          <!-- 新增医嘱按钮 -->
+          <button
+            type="button"
+            id="btn-add-order"
+            class="layui-btn layui-btn-sm layui-btn-primary"
+          >
+            <i class="layui-icon layui-icon-add-1"></i> 新增医嘱
+          </button>
+
+          <!-- 医嘱类型筛选 -->
+          <div style="display: flex; gap: 8px; align-items: center">
+            <span
+              style="
+                font-size: 13px;
+                color: #666;
+                font-weight: bold;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+              "
+              >医嘱类型：</span
+            >
+            <select
+              id="order-type-select"
+              lay-filter="order-type-select"
+              class="layui-select"
+              style="font-size: 13px; width: 80px"
+            >
+              <option value="long">长期医嘱</option>
+              <option value="temp">临时医嘱</option>
+              <option value="all" selected>全部医嘱</option>
+            </select>
+            <span
+              style="
+                font-size: 13px;
+                color: #666;
+                font-weight: bold;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+              "
+              >开嘱人：</span
+            >
+            <select
+              id="role-type-select"
+              lay-filter="role-type-select"
+              class="layui-select"
+              style="font-size: 13px; width: 120px"
+            >
+              <option value="doctor" selected>医生</option>
+              <option value="nurse">护士</option>
+              <option value="mine">我的医嘱</option>
+              <option value="all-role">全部</option>
+            </select>
+          </div>
+          <!-- 开嘱人筛选 -->
+        </div>
+      </form>
+      <!-- 医嘱表格容器 -->
+      <div class="table-container">
+        <table
+          class="layui-hide"
+          id="yizhu-table"
+          lay-filter="yizhu-table"
+        ></table>
+      </div>
+    </div>
+
+    <script src="/lib/layui-v2.6.3/layui.js" charset="utf-8"></script>
+    <script src="/js/lay-config.js?v=1.0.4" charset="utf-8"></script>
+    <script>
+      layui.use(["table", "appconfig", "form"], function () {
+        var table = layui.table;
+        var $ = layui.jquery;
+        var appconfig = layui.appconfig;
+        var form = layui.form;
+
+        // 立即渲染表单元素，确保select框能正常工作
+        form.render();
+
+        // 获取患者信息和病区信息
+        var wardData = JSON.parse(localStorage.getItem("wardData") || "{}");
+        var ward_sn = localStorage.getItem("ward_sn") || "";
+        var userData = JSON.parse(localStorage.getItem("userData") || "{}");
+        var loginUser = JSON.parse(localStorage.getItem("loginUser") || "{}");
+        var patient_id = userData.patient_id;
+        var admiss_times = userData.admiss_times;
+        if (userData === null) {
+          layer.msg("请先选择患者！");
+          return;
+        }
+
+        // 缓存全部医嘱数据
+        var allYizhuData = [];
+
+        // 医嘱模板数据 - 从API获取
+        var orderTemplates = [];
+
+        // 存储选择的模板数据
+        var selectedCategoryData = null; // 一级分类数据
+        var selectedDetailData = null; // 二级分类数据
+
+        // 当前筛选条件
+        var currentFilters = {
+          orderType: "all", // 'long', 'temp', 'all'
+          roleType: "doctor", // 'doctor', 'nurse',"mine", 'all-role'
+        };
+        var tableCols = [
+          [
+            { title: "开始", colspan: 7, align: "center" },
+            { title: "录入", colspan: 1, align: "center" },
+            { title: "停止", colspan: 1, align: "center" },
+            { title: "操作", colspan: 1, align: "center" },
+          ],
+          [
+            { field: "long_once_flag", title: "医嘱类型", width: 100 },
+            { field: "start_time_mm_dd", title: "日期", width: 80 },
+            {
+              field: "order_name",
+              title: "医嘱",
+              align: "center",
+            },
+            { field: "charge_amount", title: "数量", width: 80 },
+            { field: "frequ_name", title: "频率", width: 80 },
+            { field: "supply_name", title: "用法", width: 80 },
+            { field: "order_doctor_name", title: "医生", width: 80 },
+            { field: "enter_time_mm_dd", title: "日期", width: 80 },
+            { field: "end_time_mm_dd", title: "日期", width: 80 },
+            {
+              // fixed: "right",
+              title: "操作",
+              toolbar: "#rowActionBar",
+              width: 120,
+              align: "center",
+            },
+          ],
+        ];
+        // 行操作栏模板
+        var rowActionBar = `
+          <div class="layui-btn-group">
+            <button class="layui-btn layui-btn-xs layui-btn-danger" lay-event="revoke">撤销</button>
+            <button class="layui-btn layui-btn-xs layui-btn-warm" lay-event="stop">停止</button>
+          </div>
+        `;
+        // 动态插入模板到页面底部
+        if (!document.getElementById("rowActionBar")) {
+          var tpl = document.createElement("script");
+          tpl.type = "text/html";
+          tpl.id = "rowActionBar";
+          tpl.innerHTML = rowActionBar;
+          document.body.appendChild(tpl);
+        }
+
+        // 首次加载数据
+        function loadYizhuData(callback) {
+          $.ajax({
+            url:
+              appconfig.api +
+              "/api/MobileWard/GetYzManageEOPOrders?ward_sn=" +
+              ward_sn +
+              "&inpatient_no=" +
+              userData.inpatient_no,
+            method: "GET",
+            dataType: "json",
+            success: function (res) {
+              allYizhuData = res.Data || [];
+              renderYizhuTable(allYizhuData);
+              if (typeof callback === "function") callback();
+            },
+            error: function () {
+              allYizhuData = [];
+              renderYizhuTable([]);
+              if (typeof callback === "function") callback();
+            },
+          });
+        }
+
+        // 停止医嘱功能
+        function stopMedicalOrder(orderData) {
+          console.log("orderData:", orderData);
+
+          // 获取当前用户信息
+          var currentUser = JSON.parse(
+            localStorage.getItem("loginUser") || "{}"
+          );
+          var doctorName =
+            currentUser.name || currentUser.user_name || "系统用户";
+          var doctorCode = currentUser.user_mi || "00000";
+          // 获取当前时间
+          var now = new Date();
+          var stopTime =
+            String(now.getMonth() + 1).padStart(2, "0") +
+            "/" +
+            String(now.getDate()).padStart(2, "0") +
+            "/" +
+            now.getFullYear() +
+            " " +
+            String(now.getHours()).padStart(2, "0") +
+            ":" +
+            String(now.getMinutes()).padStart(2, "0") +
+            ":" +
+            String(now.getSeconds()).padStart(2, "0");
+
+          // 确认对话框
+          layer.confirm(
+            "确定要停止此医嘱吗？<br>" +
+              '<span style="color: #666; font-size: 12px;">医嘱内容：' +
+              (orderData.order_name || "未知") +
+              "</span>",
+            {
+              icon: 3,
+              title: "停止医嘱确认",
+              btn: ["确定停止", "取消"],
+            },
+            function (index) {
+              // 构建API参数
+              var apiParams = {
+                patient_id: patient_id || orderData.patient_id,
+                admiss_times: admiss_times || orderData.admiss_times,
+                act_order_no: orderData.act_order_no || orderData.order_no,
+                stop_doctor: doctorCode,
+                stop_time: stopTime,
+              };
+
+              // 调试信息
+              console.log("停止医嘱API参数:", apiParams);
+              console.log("医嘱数据:", orderData);
+
+              // 验证必要参数
+              if (
+                !apiParams.patient_id ||
+                !apiParams.admiss_times ||
+                !apiParams.act_order_no
+              ) {
+                layer.msg(
+                  "缺少必要参数，无法停止医嘱<br>请检查患者ID、住院次数和医嘱编号",
+                  {
+                    icon: 2,
+                    time: 3000,
+                  }
+                );
+                console.error("参数验证失败:", apiParams);
+                return;
+              }
+
+              // 显示加载提示
+              var loadingIndex = layer.load(1, { shade: [0.3, "#000"] });
+              console.log("apiParams:", apiParams);
+
+              // 调用停止医嘱API
+              $.ajax({
+                url: appconfig.api + "/api/MobileWard/StopActYz",
+                method: "GET",
+                data: apiParams,
+                dataType: "json",
+                success: function (response) {
+                  layer.close(loadingIndex);
+
+                  if (response && response.Status) {
+                    layer.msg("医嘱停止成功", { icon: 1 });
+
+                    // 刷新表格数据
+                    loadYizhuData(function () {
+                      applyFilters(); // 重新应用当前筛选条件
+                    });
+                  } else {
+                    var errorMsg =
+                      response && response.Message
+                        ? response.Message
+                        : "停止医嘱失败";
+                    layer.msg(errorMsg, { icon: 2, time: 4000 });
+                    console.error("API响应错误:", response);
+                  }
+
+                  layer.close(index);
+                },
+                error: function (xhr, status, error) {
+                  layer.close(loadingIndex);
+                  layer.close(index);
+
+                  var errorMsg = "网络错误，停止医嘱失败";
+
+                  // 详细的错误处理
+                  if (xhr.responseJSON && xhr.responseJSON.Message) {
+                    errorMsg = xhr.responseJSON.Message;
+
+                    // 特殊处理SQL文件缺失错误
+                    if (
+                      errorMsg.indexOf("Could not find file") !== -1 &&
+                      errorMsg.indexOf("yz_stop_order.sql") !== -1
+                    ) {
+                      errorMsg =
+                        "服务器配置错误：缺少停止医嘱的SQL文件\n请联系系统管理员检查服务器配置";
+                    }
+                  } else if (xhr.status === 401) {
+                    errorMsg = "权限不足，请重新登录";
+                  } else if (xhr.status === 500) {
+                    errorMsg = "服务器内部错误";
+                  } else if (xhr.status === 404) {
+                    errorMsg = "API接口不存在，请检查服务器配置";
+                  }
+
+                  layer.msg(errorMsg, { icon: 2, time: 5000 });
+                  console.error("AJAX错误详情:", {
+                    status: xhr.status,
+                    statusText: xhr.statusText,
+                    responseText: xhr.responseText,
+                    error: error,
+                  });
+                },
+              });
+            }
+          );
+        }
+
+        // 加载医嘱模板数据
+        function loadOrderTemplates(callback) {
+          // 获取病区信息用于API调用
+          var wardData = JSON.parse(localStorage.getItem("wardData") || "{}");
+          var dept_sn = wardData.dept_sn || "1010300"; // 默认科室编号，实际应从用户数据获取
+
+          $.ajax({
+            url:
+              appconfig.api +
+              "/api/MobileWard/GetYzPatternList?dept_sn=" +
+              dept_sn,
+            method: "GET",
+            dataType: "json",
+            success: function (res) {
+              if (res && res.Status && res.Data) {
+                // 转换API数据格式为模板格式
+                orderTemplates = res.Data.map(function (item) {
+                  return {
+                    id: item.pattern_code,
+                    name: item.pattern_name,
+                    code: item.pattern_code,
+                    py_code: item.py_code,
+                    d_code: item.d_code,
+                    dept_sn: item.dept_sn,
+                    ward_sn: item.ward_sn,
+                    create_name: item.create_name,
+                    // 默认数据结构，实际使用时可能需要调用详情API获取具体医嘱内容
+                    data: {
+                      long_once_flag: "0",
+                      order_type: "3",
+                      order_name: item.pattern_name,
+                      charge_amount: "1",
+                      frequ_code: "ONCE",
+                      supply_code: "",
+                      exec_unit: item.ward_sn || ward_sn,
+                      drug_specification: "",
+                      order_code: item.pattern_code,
+                      doseage: "",
+                      doseage_unit: "",
+                      instruction: "",
+                      self_buy: "0",
+                      skin_test_flag: "",
+                    },
+                  };
+                });
+
+                console.log("加载医嘱模板成功:", orderTemplates);
+              } else {
+                console.warn("医嘱模板数据格式异常:", res);
+                orderTemplates = [];
+              }
+
+              if (typeof callback === "function") callback();
+            },
+            error: function (xhr, status, error) {
+              console.error("加载医嘱模板失败:", error);
+              // 提供一些默认模板作为备用
+              orderTemplates = [
+                {
+                  id: "default_1",
+                  name: "血常规检查",
+                  code: "default_1",
+                  data: {
+                    long_once_flag: "0",
+                    order_type: "3",
+                    order_name: "血常规检查",
+                    charge_amount: "1",
+                    frequ_code: "ONCE",
+                    supply_code: "",
+                    exec_unit: ward_sn,
+                    drug_specification: "",
+                    order_code: "500001",
+                    doseage: "",
+                    doseage_unit: "",
+                    instruction: "",
+                    self_buy: "0",
+                    skin_test_flag: "",
+                  },
+                },
+              ];
+              if (typeof callback === "function") callback();
+            },
+          });
+        }
+
+        // 新增医嘱功能
+        function addMedicalOrder() {
+          // 清空之前的模板数据
+          selectedCategoryData = null;
+          selectedDetailData = null;
+
+          // 获取当前用户信息
+          var currentUser = JSON.parse(
+            localStorage.getItem("loginUser") || "{}"
+          );
+          var doctorCode = currentUser.user_mi || "00000";
+          var doctorName =
+            currentUser.user_mi || currentUser.user_name || "系统用户";
+
+          // 获取当前时间
+          var now = new Date();
+          var currentTime =
+            String(now.getMonth() + 1).padStart(2, "0") +
+            "/" +
+            String(now.getDate()).padStart(2, "0") +
+            "/" +
+            now.getFullYear() +
+            " " +
+            String(now.getHours()).padStart(2, "0") +
+            ":" +
+            String(now.getMinutes()).padStart(2, "0") +
+            ":" +
+            String(now.getSeconds()).padStart(2, "0");
+
+          // 弹出新增医嘱表单
+          layer.open({
+            type: 1,
+            title: "新增医嘱",
+            area: ["600px", "500px"],
+            content: `
+              <form class="layui-form" style="padding: 20px;" id="add-order-form">
+                <!-- 模板选择区域 - 两级选择 -->
+                <div class="layui-form-item">
+                  <label class="layui-form-label" style="color: #1e9fff; font-weight: bold;">选择模板分类</label>
+                  <div class="layui-input-block">
+                    <select name="template_category" lay-filter="template-category" id="template-category" style="width: 100%; min-width: 300px;">
+                      <option value="">请先选择模板分类</option>
+                      ${orderTemplates
+                        .map(
+                          (template) =>
+                            `<option value="${template.id}" title="${
+                              template.create_name
+                                ? "创建者：" + template.create_name
+                                : ""
+                            }">${template.name}</option>`
+                        )
+                        .join("")}
+                    </select>
+                  </div>
+                </div>
+                
+                <div class="layui-form-item" id="template-detail-row" style="display: none;">
+                  <label class="layui-form-label" style="color: #1e9fff; font-weight: bold;">选择具体模板</label>
+                  <div class="layui-input-block">
+                    <select name="template_detail" lay-filter="template-detail" id="template-detail" style="width: 100%; min-width: 300px;">
+                      <option value="">请先选择模板分类</option>
+                    </select>
+                  </div>
+                </div>
+                
+                <div class="layui-form-item">
+                  <div class="layui-input-block">
+                    <div style="background: #f0f9ff; padding: 10px; border-radius: 4px; font-size: 12px; color: #666; border-left: 3px solid #1e9fff;">
+                      💡 提示：<br>
+                      1️⃣ 先选择模板分类，系统会加载该分类下的具体模板<br>
+                      2️⃣ 然后选择具体模板，会自动填充医嘱信息<br>
+                      📋 模板数据来源：${
+                        orderTemplates.length > 0
+                          ? "已从服务器加载 " +
+                            orderTemplates.length +
+                            " 个模板分类"
+                          : "暂无可用模板分类"
+                      }
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="layui-row">
+                  <div class="layui-col-md6">
+                    <div class="layui-form-item">
+                      <label class="layui-form-label">医嘱类型</label>
+                      <div class="layui-input-block">
+                        <select name="long_once_flag" lay-verify="required">
+                          <option value="">请选择</option>
+                          <option value="1">长期医嘱</option>
+                          <option value="0">临时医嘱</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="layui-col-md6">
+                    <div class="layui-form-item">
+                      <label class="layui-form-label">医嘱类型代码</label>
+                      <div class="layui-input-block">
+                        <input type="text" name="order_type" placeholder="如：3" class="layui-input">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="layui-form-item">
+                  <label class="layui-form-label">医嘱内容</label>
+                  <div class="layui-input-block">
+                    <input type="text" name="order_name" lay-verify="required" placeholder="请输入医嘱内容" class="layui-input">
+                  </div>
+                </div>
+                
+                <div class="layui-row">
+                  <div class="layui-col-md6">
+                    <div class="layui-form-item">
+                      <label class="layui-form-label">数量</label>
+                      <div class="layui-input-block">
+                        <input type="text" name="charge_amount" placeholder="如：1" class="layui-input">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="layui-col-md6">
+                    <div class="layui-form-item">
+                      <label class="layui-form-label">频率代码</label>
+                      <div class="layui-input-block">
+                        <input type="text" name="frequ_code" placeholder="如：ONCE" class="layui-input">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="layui-row">
+                  <div class="layui-col-md6">
+                    <div class="layui-form-item">
+                      <label class="layui-form-label">用法代码</label>
+                      <div class="layui-input-block">
+                        <input type="text" name="supply_code" placeholder="用法代码" class="layui-input">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="layui-col-md6">
+                    <div class="layui-form-item">
+                      <label class="layui-form-label">执行科室</label>
+                      <div class="layui-input-block">
+                        <input type="text" name="exec_unit" placeholder="如：2020100" class="layui-input">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="layui-row">
+                  <div class="layui-col-md6">
+                    <div class="layui-form-item">
+                      <label class="layui-form-label">药物规格</label>
+                      <div class="layui-input-block">
+                        <input type="text" name="drug_specification" placeholder="药物规格" class="layui-input">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="layui-col-md6">
+                    <div class="layui-form-item">
+                      <label class="layui-form-label">医嘱代码</label>
+                      <div class="layui-input-block">
+                        <input type="text" name="order_code" placeholder="如：500004" class="layui-input">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="layui-row">
+                  <div class="layui-col-md6">
+                    <div class="layui-form-item">
+                      <label class="layui-form-label">剂量</label>
+                      <div class="layui-input-block">
+                        <input type="number" name="doseage" placeholder="剂量" class="layui-input">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="layui-col-md6">
+                    <div class="layui-form-item">
+                      <label class="layui-form-label">剂量单位</label>
+                      <div class="layui-input-block">
+                        <input type="text" name="doseage_unit" placeholder="剂量单位" class="layui-input">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="layui-form-item">
+                  <label class="layui-form-label">说明</label>
+                  <div class="layui-input-block">
+                    <textarea name="instruction" placeholder="请输入说明" class="layui-textarea"></textarea>
+                  </div>
+                </div>
+                
+                <div class="layui-row">
+                  <div class="layui-col-md6">
+                    <div class="layui-form-item">
+                      <label class="layui-form-label">是否自费</label>
+                      <div class="layui-input-block">
+                        <select name="self_buy">
+                          <option value="0">否</option>
+                          <option value="1">是</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="layui-col-md6">
+                    <div class="layui-form-item">
+                      <label class="layui-form-label">是否皮试</label>
+                      <div class="layui-input-block">
+                        <select name="skin_test_flag">
+                          <option value="">无需皮试</option>
+                          <option value="1">需要皮试</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="layui-form-item">
+                  <div class="layui-input-block">
+                    <button class="layui-btn" lay-submit lay-filter="add-order">立即提交</button>
+                    <button type="button" class="layui-btn layui-btn-primary" onclick="layer.closeAll()">取消</button>
+                  </div>
+                </div>
+              </form>
+            `,
+            success: function (layero, index) {
+              // 重新渲染表单
+              form.render();
+
+              // 监听模板分类选择事件
+              form.on("select(template-category)", function (data) {
+                if (data.value) {
+                  // 保存选择的一级分类数据
+                  selectedCategoryData = orderTemplates.find(
+                    (t) => t.id === data.value
+                  );
+                  console.log("保存的一级分类数据:", selectedCategoryData);
+
+                  loadTemplateDetails(data.value);
+                } else {
+                  // 清空分类数据
+                  selectedCategoryData = null;
+                  selectedDetailData = null;
+
+                  // 清空具体模板选择并隐藏
+                  $("#template-detail").html(
+                    '<option value="">请先选择模板分类</option>'
+                  );
+                  $("#template-detail-row").hide();
+                  form.render("select");
+                }
+              });
+
+              // 监听具体模板选择事件
+              form.on("select(template-detail)", function (data) {
+                if (data.value) {
+                  // 解析模板详情ID获取二级分类数据
+                  var parts = data.value.split("_");
+                  if (parts.length >= 2) {
+                    var detailIndex = parseInt(parts[1]);
+                    if (
+                      selectedCategoryData &&
+                      selectedCategoryData.details &&
+                      selectedCategoryData.details[detailIndex]
+                    ) {
+                      selectedDetailData =
+                        selectedCategoryData.details[detailIndex];
+                      console.log("保存的二级分类数据:", selectedDetailData);
+                    }
+                  }
+
+                  fillTemplateData(data.value);
+                } else {
+                  selectedDetailData = null;
+                }
+              });
+
+              // 监听表单提交
+              form.on("submit(add-order)", function (data) {
+                submitNewOrder(data.field, index);
+                return false;
+              });
+            },
+          });
+        }
+
+        // 加载模板详情列表（第二级）
+        function loadTemplateDetails(categoryId) {
+          var category = orderTemplates.find((t) => t.id === categoryId);
+          if (!category) return;
+
+          var wardData = JSON.parse(localStorage.getItem("wardData") || "{}");
+          var loginUser = JSON.parse(localStorage.getItem("loginUser") || "{}");
+          var dept_sn = wardData.dept_sn || "1010300";
+          var emp_sn = loginUser.user_mi || loginUser.user_id || "1010302";
+          var pattern_code = category.code;
+
+          // 显示加载状态
+          $("#template-detail").html(
+            '<option value="">正在加载模板详情...</option>'
+          );
+          $("#template-detail-row").show();
+          form.render("select");
+
+          // 请求模板详情列表
+          $.ajax({
+            url: appconfig.api + "/api/MobileWard/GetYzPatternDetail",
+            method: "GET",
+            dataType: "json",
+            data: {
+              dept_sn: dept_sn,
+              emp_sn: emp_sn,
+              pattern_code: pattern_code,
+            },
+            success: function (res) {
+              if (res && res.Status && res.Data && res.Data.length > 0) {
+                // 构建具体模板选项
+                var options = '<option value="">请选择具体模板</option>';
+                res.Data.forEach(function (detail, index) {
+                  var templateName = detail.order_name || "模板" + (index + 1);
+                  options += `<option value="${pattern_code}_${index}" title="医嘱：${templateName}">${templateName}</option>`;
+                });
+
+                $("#template-detail").html(options);
+
+                // 缓存详情数据供后续使用
+                category.details = res.Data;
+
+                console.log("加载模板详情成功:", res.Data);
+                layer.msg("已加载 " + res.Data.length + " 个具体模板", {
+                  icon: 1,
+                  time: 1500,
+                });
+              } else {
+                $("#template-detail").html(
+                  '<option value="">该分类下暂无可用模板</option>'
+                );
+                console.warn("模板详情数据格式异常:", res);
+              }
+
+              form.render("select");
+            },
+            error: function (xhr, status, error) {
+              $("#template-detail").html(
+                '<option value="">加载模板详情失败</option>'
+              );
+              form.render("select");
+              console.error("加载模板详情失败:", error);
+              layer.msg("加载模板详情失败，请重试", { icon: 2, time: 2000 });
+            },
+          });
+        }
+
+        // 根据模板填充表单数据（修改后的版本）
+        function fillTemplateData(templateDetailId) {
+          // 解析模板详情ID: pattern_code_index
+          var parts = templateDetailId.split("_");
+          if (parts.length < 2) return;
+
+          var categoryId = parts[0];
+          var detailIndex = parseInt(parts[1]);
+
+          var category = orderTemplates.find((t) => t.code === categoryId);
+          if (
+            !category ||
+            !category.details ||
+            !category.details[detailIndex]
+          ) {
+            layer.msg("模板数据异常，请重新选择", { icon: 2, time: 2000 });
+            return;
+          }
+
+          var templateData = category.details[detailIndex];
+          var wardData = JSON.parse(localStorage.getItem("wardData") || "{}");
+
+          // 填充表单数据
+          $('select[name="long_once_flag"]').val(
+            templateData.order_type === "3" ? "1" : "0"
+          );
+          $('input[name="order_type"]').val(templateData.order_type || "3");
+          $('input[name="order_name"]').val(templateData.order_name || "");
+          $('input[name="charge_amount"]').val(
+            templateData.charge_amount || "1"
+          );
+          $('input[name="frequ_code"]').val(
+            (templateData.frequ_code || "ONCE").trim()
+          );
+          $('input[name="supply_code"]').val(templateData.supply_code || "");
+          $('input[name="exec_unit"]').val(wardData.ward_sn || "");
+          $('input[name="drug_specification"]').val(
+            templateData.drug_specification || ""
+          );
+          $('input[name="order_code"]').val(templateData.order_code || "");
+          $('input[name="doseage"]').val(templateData.doseage || "");
+          $('input[name="doseage_unit"]').val(templateData.doseage_unit || "");
+          $('textarea[name="instruction"]').val(templateData.instruction || "");
+
+          form.render();
+          layer.msg("已应用模板：" + (templateData.order_name || "模板数据"), {
+            icon: 1,
+            time: 2000,
+          });
+        }
+
+        // 提交新增医嘱
+        function submitNewOrder(formData, layerIndex) {
+          // 可用的模板数据
+          var categoryData = selectedCategoryData; // 一级分类数据
+          var detailData = selectedDetailData; // 二级分类数据
+
+          console.log("表单数据 formData:", formData);
+          console.log("一级分类数据 categoryData:", categoryData);
+          console.log("二级分类数据 detailData:", detailData);
+
+          // 获取当前用户和时间信息
+          var currentUser = JSON.parse(
+            localStorage.getItem("loginUser") || "{}"
+          );
+          var patientData = JSON.parse(
+            localStorage.getItem("userData") || "{}"
+          );
+          var doctorCode = currentUser.user_id || "00000";
+          var doctorName =
+            currentUser.user_mi || currentUser.user_name || "系统用户";
+          var patient_id = patientData.patient_id || "00000";
+          var admiss_times = patientData.admiss_times || "1";
+
+          var now = new Date();
+          var currentTime =
+            String(now.getMonth() + 1).padStart(2, "0") +
+            "/" +
+            String(now.getDate()).padStart(2, "0") +
+            "/" +
+            now.getFullYear() +
+            " " +
+            String(now.getHours()).padStart(2, "0") +
+            ":" +
+            String(now.getMinutes()).padStart(2, "0") +
+            ":" +
+            String(now.getSeconds()).padStart(2, "0");
+
+          // 构建API参数
+          var apiParams = {
+            act_order_no: detailData.act_order_no || "", // 后端生成
+            add_opera: doctorCode,
+            // add_time: "",
+            admiss_times: admiss_times,
+            alter_print_order: "",
+            ca_id_doctor: "05596",
+            charge_amount: detailData.charge_amount || "1",
+            discription: "",
+            // doseage: "",
+            // doseage_unit: detailData.doseage_unit || "",
+            drop_speed: "",
+            drug_occ: detailData.drug_occ || "",
+            drug_specification: detailData.drug_specification || "",
+            end_time: "",
+            end_time_2: "",
+            enter_oper: doctorCode,
+            enter_time: currentTime,
+            exec_unit: categoryData.data.exec_unit || "",
+            exclusive_type: "1",
+            fit_flag: "1",
+            frequ_code: detailData.frequ_code || "ONCE",
+            group_no: detailData.group_no || "000000",
+            instruction: detailData.instruction || "",
+            is_new: true,
+            long_once_flag: categoryData.data.long_once_flag || "",
+            modify_price: "",
+            order_code: detailData.order_code || "",
+            order_doctor: doctorCode,
+            order_name: detailData.order_name || "",
+            order_time: currentTime,
+            order_type: detailData.order_type || "",
+            parent_no: "",
+            patient_id: patient_id,
+            prev_flag: "",
+            Serial: "**",
+            self_buy: categoryData.data.self_buy || "",
+            skin_test_flag: categoryData.data.skin_test_flag || "",
+            spinfo_type: formData.self_buy === "1" ? "0" : "1",
+            start_time: currentTime,
+            status_flag: "0",
+            supply_code: detailData.supply_code || "",
+            ward_sn: categoryData.ward_sn || "",
+          };
+
+          console.log("新增医嘱API参数:", apiParams);
+
+          // 显示加载提示
+          var loadingIndex = layer.load(1, { shade: [0.3, "#000"] });
+
+          // 调用新增医嘱API
+          $.ajax({
+            url: appconfig.api + "/api/MobileWard/AddActYz",
+            method: "POST",
+            contentType: "application/json",
+            data: JSON.stringify([apiParams]),
+            dataType: "json",
+            success: function (response) {
+              layer.close(loadingIndex);
+
+              if (response && response.Status) {
+                layer.msg("医嘱新增成功", { icon: 1 });
+                layer.close(layerIndex); // 关闭表单弹窗
+
+                // 刷新表格数据
+                loadYizhuData(function () {
+                  applyFilters(); // 重新应用当前筛选条件
+                });
+              } else {
+                var errorMsg =
+                  response && response.Message
+                    ? response.Message
+                    : "新增医嘱失败";
+                layer.msg(errorMsg, { icon: 2, time: 4000 });
+                console.error("API响应错误:", response);
+              }
+            },
+            error: function (xhr, status, error) {
+              layer.close(loadingIndex);
+
+              var errorMsg = "网络错误，新增医嘱失败";
+
+              if (xhr.responseJSON && xhr.responseJSON.Message) {
+                errorMsg = xhr.responseJSON.Message;
+              } else if (xhr.status === 401) {
+                errorMsg = "权限不足，请重新登录";
+              } else if (xhr.status === 500) {
+                errorMsg = "服务器内部错误";
+              } else if (xhr.status === 404) {
+                errorMsg = "API接口不存在，请检查服务器配置";
+              }
+
+              layer.msg(errorMsg, { icon: 2, time: 5000 });
+              console.error("AJAX错误详情:", {
+                status: xhr.status,
+                statusText: xhr.statusText,
+                responseText: xhr.responseText,
+                error: error,
+              });
+            },
+          });
+        }
+
+        // 撤销医嘱功能
+        function revokeMedicalOrder(orderData) {
+          console.log("撤销医嘱 orderData:", orderData);
+
+          // 获取当前用户信息
+          var currentUser = JSON.parse(
+            localStorage.getItem("loginUser") || "{}"
+          );
+          var operatorCode = currentUser.user_mi || "00000";
+
+          // 确认对话框
+          layer.confirm(
+            "确定要撤销此医嘱吗？<br>" +
+              '<span style="color: #ff5722; font-size: 12px;">注意：撤销后医嘱将被永久删除</span><br>' +
+              '<span style="color: #666; font-size: 12px;">医嘱内容：' +
+              (orderData.order_name || "未知") +
+              "</span>",
+            {
+              icon: 3,
+              title: "撤销医嘱确认",
+              btn: ["确定撤销", "取消"],
+            },
+            function (index) {
+              // 构建API参数
+              var apiParams = {
+                patient_id: patient_id || orderData.patient_id,
+                admiss_times: admiss_times || orderData.admiss_times,
+                act_order_no: orderData.act_order_no || orderData.order_no,
+                opera: loginUser.user_mi,
+                cancel_mode: "1", // 撤销模式，1表示撤销
+                pre_cancel_step: "2", // 预撤销步骤，1表示直接撤销
+              };
+
+              // 调试信息
+              console.log("撤销医嘱API参数:", apiParams);
+              console.log("医嘱数据:", orderData);
+
+              // 验证必要参数
+              if (
+                !apiParams.patient_id ||
+                !apiParams.admiss_times ||
+                !apiParams.act_order_no
+              ) {
+                layer.msg(
+                  "缺少必要参数，无法撤销医嘱<br>请检查患者ID、住院次数和医嘱编号",
+                  {
+                    icon: 2,
+                    time: 3000,
+                  }
+                );
+                console.error("参数验证失败:", apiParams);
+                return;
+              }
+
+              // 显示加载提示
+              var loadingIndex = layer.load(1, { shade: [0.3, "#000"] });
+
+              // 调用撤销医嘱API
+              $.ajax({
+                url: appconfig.api + "/api/MobileWard/CancelActYz",
+                method: "GET",
+                data: apiParams,
+                dataType: "json",
+                success: function (response) {
+                  layer.close(loadingIndex);
+
+                  if (response && response.Status) {
+                    layer.msg("医嘱撤销成功", { icon: 1 });
+
+                    // 刷新表格数据
+                    loadYizhuData(function () {
+                      applyFilters(); // 重新应用当前筛选条件
+                    });
+                  } else {
+                    var errorMsg =
+                      response && response.Message
+                        ? response.Message
+                        : "撤销医嘱失败";
+                    layer.msg(errorMsg, { icon: 2, time: 4000 });
+                    console.error("API响应错误:", response);
+                  }
+
+                  layer.close(index);
+                },
+                error: function (xhr, status, error) {
+                  layer.close(loadingIndex);
+                  layer.close(index);
+
+                  var errorMsg = "网络错误，撤销医嘱失败";
+
+                  // 详细的错误处理
+                  if (xhr.responseJSON && xhr.responseJSON.Message) {
+                    errorMsg = xhr.responseJSON.Message;
+                  } else if (xhr.status === 401) {
+                    errorMsg = "权限不足，请重新登录";
+                  } else if (xhr.status === 500) {
+                    errorMsg = "服务器内部错误";
+                  } else if (xhr.status === 404) {
+                    errorMsg = "API接口不存在，请检查服务器配置";
+                  }
+
+                  layer.msg(errorMsg, { icon: 2, time: 5000 });
+                  console.error("AJAX错误详情:", {
+                    status: xhr.status,
+                    statusText: xhr.statusText,
+                    responseText: xhr.responseText,
+                    error: error,
+                  });
+                },
+              });
+            }
+          );
+        }
+
+        // 渲染表格
+        function renderYizhuTable(data) {
+          table.render({
+            elem: "#yizhu-table",
+            data: data,
+            defaultToolbar: [],
+            cols: tableCols,
+            height: "full-60", // 减去过滤按钮区域的高度
+            text: {
+              none: "暂无医嘱数据",
+            },
+            done: function (res, curr, count) {
+              // 根据医嘱类型设置行背景色
+              $("#yizhu-table")
+                .next(".layui-table-view")
+                .find("tbody tr")
+                .each(function (i, tr) {
+                  var row = data[i];
+                  if (!row) return;
+                  var type = (row.long_once_flag || "").toLowerCase();
+                  if (type.indexOf("长") !== -1 || type === "long") {
+                    $(tr).addClass("order-type-long");
+                  } else if (type.indexOf("临") !== -1 || type === "once") {
+                    $(tr).addClass("order-type-once");
+                  } else if (type.indexOf("备") !== -1 || type === "temp") {
+                    $(tr).addClass("order-type-temp");
+                  } else {
+                    $(tr).addClass("order-type-other");
+                  }
+                  if (row.order_doctor_name) {
+                    $(tr).addClass("myorder");
+                  }
+                });
+            },
+          });
+        }
+
+        // 应用筛选条件
+        function applyFilters() {
+          var filtered = allYizhuData.filter(function (item) {
+            var matchOrderType = true;
+            var matchRoleType = true;
+
+            // 医嘱类型筛选
+            if (currentFilters.orderType === "long") {
+              matchOrderType = String(item.long_once_flag) === "1";
+            } else if (currentFilters.orderType === "temp") {
+              matchOrderType = String(item.long_once_flag) === "0";
+            }
+            // 'all' 不需要筛选条件
+
+            // 开嘱人类型筛选
+            if (currentFilters.roleType === "doctor") {
+              matchRoleType = String(item.fit_flag) === "1";
+            } else if (currentFilters.roleType === "nurse") {
+              matchRoleType = String(item.fit_flag) === "0";
+            } else if (currentFilters.roleType === "mine") {
+              matchRoleType = item.order_doctor === loginUser.user_mi;
+            }
+            // 'all-role' 不需要筛选条件
+
+            return matchOrderType && matchRoleType;
+          });
+
+          renderYizhuTable(filtered);
+
+          // 显示筛选结果提示
+          var orderTypeText =
+            currentFilters.orderType === "long"
+              ? "长期医嘱"
+              : currentFilters.orderType === "temp"
+              ? "临时医嘱"
+              : "全部医嘱";
+          var roleTypeText =
+            currentFilters.roleType === "doctor"
+              ? "医生医嘱"
+              : currentFilters.roleType === "nurse"
+              ? "护士医嘱"
+              : currentFilters.roleType === "mine"
+              ? "我的医嘱"
+              : "全部";
+
+          if (
+            currentFilters.orderType !== "all" ||
+            currentFilters.roleType !== "all-role"
+          ) {
+            layer.msg(`已筛选：${orderTypeText} - ${roleTypeText}`, {
+              icon: 1,
+              time: 1500,
+            });
+          } else {
+            layer.msg("已显示全部医嘱", { icon: 1, time: 1000 });
+          }
+        }
+
+        // select框筛选事件 - 医嘱类型
+        form.on("select(order-type-select)", function (data) {
+          console.log("医嘱类型select触发了:", data.value);
+          currentFilters.orderType = data.value;
+          applyFilters();
+        });
+
+        // select框筛选事件 - 开嘱人类型
+        form.on("select(role-type-select)", function (data) {
+          console.log("开嘱人类型select触发了:", data.value);
+          currentFilters.roleType = data.value;
+          applyFilters();
+        });
+
+        // 新增医嘱按钮事件
+        $(document).on("click", "#btn-add-order", function () {
+          addMedicalOrder();
+        });
+
+        // 默认加载全部并设置默认选中状态，首次加载后立即应用筛选条件
+        loadOrderTemplates(function () {
+          loadYizhuData(applyFilters);
+        });
+
+        // 头工具栏事件
+        table.on("toolbar(yizhu-table)", function (obj) {
+          switch (obj.event) {
+            case "refresh":
+              table.reload("yizhu-table");
+              break;
+            case "export":
+              layer.msg("导出功能开发中...");
+              break;
+          }
+        });
+
+        // 行工具栏事件
+        table.on("tool(yizhu-table)", function (obj) {
+          var data = obj.data;
+          if (obj.event === "detail") {
+            layer.open({
+              type: 1,
+              title: "医嘱详情",
+              area: ["600px", "400px"],
+              content:
+                '<div style="padding: 20px;">' +
+                "<p><strong>医嘱日期：</strong>" +
+                data.order_date +
+                " " +
+                data.order_time +
+                "</p>" +
+                "<p><strong>医嘱类型：</strong>" +
+                data.order_type_name +
+                "</p>" +
+                "<p><strong>医嘱内容：</strong>" +
+                data.order_text +
+                "</p>" +
+                "<p><strong>剂量：</strong>" +
+                (data.dosage || "") +
+                "</p>" +
+                "<p><strong>频次：</strong>" +
+                (data.frequency || "") +
+                "</p>" +
+                "<p><strong>用法：</strong>" +
+                (data.usage || "") +
+                "</p>" +
+                "<p><strong>开嘱医生：</strong>" +
+                data.doctor_name +
+                "</p>" +
+                "<p><strong>状态：</strong>" +
+                data.status_name +
+                "</p>" +
+                "</div>",
+            });
+          } else if (obj.event === "revoke") {
+            revokeMedicalOrder(data);
+          } else if (obj.event === "stop") {
+            stopMedicalOrder(data);
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

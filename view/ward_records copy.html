@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>查房记录</title>
+    <link rel="stylesheet" href="/lib/layui-v2.6.3/css/layui.css" media="all" />
+    <link rel="stylesheet" href="/css/public.css" media="all" />
+    <style>
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: pink;
+        padding: 10px;
+      }
+      .record-item {
+        height: 70px;
+        display: flex;
+        justify-content: space-between;
+        background-color: #938b8b;
+        padding: 5px;
+      }
+      .record-info {
+        display: flex;
+        width: 80%;
+      }
+      .record-header {
+        display: flex;
+        flex-direction: column;
+        width: 20%;
+      }
+      .record-content {
+        background-color: #fff;
+        margin-left: 15px;
+        width: 80%;
+      }
+      .record-actions {
+        display: flex;
+        justify-content: flex-end;
+        width: 20%;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <button>新增查房记录</button>
+    </div>
+    <div class="records-list"></div>
+    <script>
+      const recordsList = document.querySelector(".records-list");
+      recordsList.innerHTML = `
+      <div class="record-item">
+        <div class="record-info">
+          <div class="record-header">
+          <h3>查房记录标题</h3>
+          <h4>时间: 08/04/2025 10:00</h4>
+          </div>
+          <div class="record-content">
+            <p>查房记录内容...</p>
+          </div>
+        </div>
+        <div class="record-actions">
+          <button class="layui-btn">编辑</button>
+          <button class="layui-btn">删除</button>
+        </div>
+      </div>
+      `;
+    </script>
+  </body>
+</html>

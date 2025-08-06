@@ -1,0 +1,26 @@
+{
+  "name": "移动查房系统",
+  "short_name": "查房",
+  "start_url": "./index.html",
+  "display": "fullscreen",
+  "background_color": "#ffffff",
+  "theme_color": "#1e9fff",
+  "description": "医院移动查房系统PWA版",
+  "icons": [
+    {
+      "src": "images/favicon.ico",
+      "sizes": "48x48 72x72 96x96 128x128 256x256",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "images/logo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "images/logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
