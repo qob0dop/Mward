@@ -194,9 +194,7 @@
         var form = layui.form;
         var appconfig = layui.appconfig;
         // 获取患者信息
-        var patientData = JSON.parse(
-          localStorage.getItem("patientData") || "{}"
-        );
+        var patientData = JSON.parse(localStorage.getItem("userData") || "{}");
         var userData = JSON.parse(localStorage.getItem("userData") || "{}");
         var loginUser = JSON.parse(localStorage.getItem("loginUser") || "{}");
 
@@ -218,7 +216,23 @@
           renderWardRecordList();
           bindEvents();
         }
-
+        $.ajax({
+          url: appconfig.api + "/api/MobileWard/GetWardRoundsRecordList",
+          type: "GET",
+          data: {
+            patient_id: userData.patient_id || "",
+            admiss_times: userData.admiss_times || "",
+          },
+          success: function (res) {
+            if (res.Status == 1) {
+              wardRecords = res.Data || [];
+              localStorage.setItem("wardRecords", JSON.stringify(wardRecords));
+              renderWardRecordList();
+            } else {
+              layer.msg("获取查房记录失败：" + res.Message, { icon: 2 });
+            }
+          },
+        });
         // 绑定事件
         function bindEvents() {
           // 新建查房记录按钮
@@ -565,6 +579,7 @@
             exec_dept: userData.dept,
             exec_ward: userData.ward,
             emp_sn: loginUser.user_mi,
+            emp_name: loginUser.name,
             exec_date: currentTime,
             sound: formData.record_content,
           };
@@ -635,7 +650,7 @@
                   </div>
                   <div class="ward-record-meta">
                     <span><i class="layui-icon layui-icon-user"></i> 患者：${
-                      record.patient_name
+                      record.name
                     }</span>
                     <span><i class="layui-icon layui-icon-home"></i> 床号：${
                       record.bed_no

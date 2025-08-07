@@ -188,15 +188,13 @@
     <script src="../lib/layui-v2.6.3/layui.js" charset="utf-8"></script>
     <script src="../js/lay-config.js?v=1.0.4" charset="utf-8"></script>
     <script>
-      layui.use(["layer", "form"], function () {
+      layui.use(["layer", "form", "appconfig"], function () {
         var $ = layui.jquery;
         var layer = layui.layer;
         var form = layui.form;
-
+        var appconfig = layui.appconfig;
         // 获取患者信息
-        var patientData = JSON.parse(
-          localStorage.getItem("patientData") || "{}"
-        );
+        var patientData = JSON.parse(localStorage.getItem("userData") || "{}");
         var userData = JSON.parse(localStorage.getItem("userData") || "{}");
         var loginUser = JSON.parse(localStorage.getItem("loginUser") || "{}");
 
@@ -218,7 +216,23 @@
           renderWardRecordList();
           bindEvents();
         }
-
+        $.ajax({
+          url: appconfig.api + "/api/MobileWard/GetWardRoundsRecordList",
+          type: "GET",
+          data: {
+            patient_id: userData.patient_id || "",
+            admiss_times: userData.admiss_times || "",
+          },
+          success: function (res) {
+            if (res.Status == 1) {
+              wardRecords = res.Data || [];
+              localStorage.setItem("wardRecords", JSON.stringify(wardRecords));
+              renderWardRecordList();
+            } else {
+              layer.msg("获取查房记录失败：" + res.Message, { icon: 2 });
+            }
+          },
+        });
         // 绑定事件
         function bindEvents() {
           // 新建查房记录按钮
@@ -261,7 +275,7 @@
                     </div>
                   </div>
                 </div>
-                
+
                 <div class="layui-row">
                   <div class="layui-col-md6">
                     <div class="layui-form-item">
@@ -539,9 +553,11 @@
 
         // 保存查房记录
         function saveWardRecord(formData, layerIndex) {
+          console.log("saveWardRecord called");
+
           const recordTime = new Date();
           const recordId = "ward_" + recordTime.getTime();
-
+          const currentTime = recordTime.toISOString();
           const newRecord = {
             id: recordId,
             patient_name: formData.patient_name || "未知患者",
@@ -556,7 +572,30 @@
               ? [...window.tempAudioRecords]
               : [],
           };
-
+          const ajaxData = {
+            patient_id: userData.patient_id || "",
+            admiss_times: userData.admiss_times || "",
+            name: userData.name || "",
+            exec_dept: userData.dept,
+            exec_ward: userData.ward,
+            emp_sn: loginUser.user_mi,
+            emp_name: loginUser.name,
+            exec_date: currentTime,
+            sound: formData.record_content,
+          };
+          $.ajax({
+            url: appconfig.api + "/api/MobileWard/AddWardRoundsRecord",
+            type: "POST",
+            contentType: "application/json",
+            data: JSON.stringify(ajaxData),
+            success: function (res) {
+              if (res.Status == 1) {
+                layer.msg("查房记录保存成功", { icon: 1 });
+              } else {
+                layer.msg("查房记录保存失败", { icon: 2 });
+              }
+            },
+          });
           wardRecords.unshift(newRecord);
           localStorage.setItem("wardRecords", JSON.stringify(wardRecords));
 
@@ -611,7 +650,7 @@
                   </div>
                   <div class="ward-record-meta">
                     <span><i class="layui-icon layui-icon-user"></i> 患者：${
-                      record.patient_name
+                      record.name
                     }</span>
                     <span><i class="layui-icon layui-icon-home"></i> 床号：${
                       record.bed_no
