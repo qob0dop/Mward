@@ -424,7 +424,7 @@
             });
           }
         }
-
+        var loginUserData = JSON.parse(localStorage.getItem("loginUser"));
         // 渲染表格
         table.render({
           elem: "#jiancha-table",
@@ -435,7 +435,7 @@
             "&admiss_times=" +
             admiss_times +
             "&subsys_id=" +
-            (localStorage.subsys_id || ""),
+            (loginUserData.subsys_id || ""),
           toolbar: "#toolbarDemo",
           defaultToolbar: [],
           cellMinWidth: 50,
@@ -459,7 +459,7 @@
                 sort: true,
                 templet: "#dateTpl",
               },
-              { field: "exam_flag_str", title: "增强或重建", width: 90 },
+              // { field: "exam_flag_str", title: "增强或重建", width: 90 },
               { field: "parent_serial", title: "父申请号", width: 100 },
               {
                 // fixed: "right",
@@ -756,7 +756,16 @@
                     reportUrl += "?view=inline&display=web";
                   }
                   // 统一用window.open新标签页打开，无论PC还是移动端
-                  window.open(reportUrl, "_blank", "noopener,noreferrer");
+                  // window.open(reportUrl, "_blank", "noopener,noreferrer");
+                  layer.open({
+                    type: 1,
+                    title: "报告预览",
+                    area: ["90%", "90%"], // 设置弹窗大小
+                    content:
+                      '<iframe src="' +
+                      reportUrl +
+                      '" style="width:100%;height:100%;border:none;"></iframe>',
+                  });
                 } else {
                   layer.alert("未获取到有效的报告链接", { icon: 5 });
                 }

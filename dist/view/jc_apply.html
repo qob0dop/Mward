@@ -424,7 +424,7 @@
             });
           }
         }
-
+        var loginUserData = JSON.parse(localStorage.getItem("loginUser"));
         // 渲染表格
         table.render({
           elem: "#jiancha-table",
@@ -435,7 +435,7 @@
             "&admiss_times=" +
             admiss_times +
             "&subsys_id=" +
-            (localStorage.subsys_id || ""),
+            (loginUserData.subsys_id || ""),
           toolbar: "#toolbarDemo",
           defaultToolbar: [],
           cellMinWidth: 50,
@@ -459,7 +459,7 @@
                 sort: true,
                 templet: "#dateTpl",
               },
-              { field: "exam_flag_str", title: "增强或重建", width: 90 },
+              // { field: "exam_flag_str", title: "增强或重建", width: 90 },
               { field: "parent_serial", title: "父申请号", width: 100 },
               {
                 // fixed: "right",

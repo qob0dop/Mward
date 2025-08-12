@@ -216,6 +216,9 @@
           renderWardRecordList();
           bindEvents();
         }
+
+        // 注释掉API获取查房记录列表，暂时只与本地localStorage交互
+        /*
         $.ajax({
           url: appconfig.api + "/api/MobileWard/GetWardRoundsRecordList",
           type: "GET",
@@ -233,6 +236,7 @@
             }
           },
         });
+        */
         // 绑定事件
         function bindEvents() {
           // 新建查房记录按钮
@@ -252,7 +256,7 @@
           layer.open({
             type: 1,
             title: "新建查房记录",
-            area: ["800px", "80%"], // 使用百分比高度，自适应父页面
+            area: ["100%", "80%"], // 使用百分比高度，自适应父页面
             maxHeight: "90%", // 最大高度不超过父页面90%
             offset: "auto",
             content: `
@@ -407,15 +411,42 @@
 
             mediaRecorder.onstop = function () {
               audioBlob = new Blob(audioChunks, { type: "audio/webm" });
-              const audioPreview = document.getElementById("audio-preview");
-              const saveBtn = document.getElementById("btn-save-audio");
 
-              audioPreview.src = URL.createObjectURL(audioBlob);
-              audioPreview.style.display = "block";
-              saveBtn.style.display = "inline-block";
+              // 转换为WAV格式
+              convertToWav(audioBlob)
+                .then((wavBlob) => {
+                  audioBlob = wavBlob; // 更新为WAV格式
+                  const audioPreview = document.getElementById("audio-preview");
+                  const saveBtn = document.getElementById("btn-save-audio");
 
-              // 停止所有音频轨道
-              stream.getTracks().forEach((track) => track.stop());
+                  audioPreview.src = URL.createObjectURL(audioBlob);
+                  audioPreview.style.display = "block";
+                  saveBtn.style.display = "inline-block";
+
+                  // 停止所有音频轨道
+                  stream.getTracks().forEach((track) => track.stop());
+                })
+                .catch((err) => {
+                  console.error("音频格式转换失败:", err);
+                  layer.msg(
+                    "音频格式转换失败，将使用原始格式。转换文字功能可能受影响。",
+                    {
+                      icon: 2,
+                      time: 3000,
+                    }
+                  );
+
+                  // 如果转换失败，继续使用原格式
+                  const audioPreview = document.getElementById("audio-preview");
+                  const saveBtn = document.getElementById("btn-save-audio");
+
+                  audioPreview.src = URL.createObjectURL(audioBlob);
+                  audioPreview.style.display = "block";
+                  saveBtn.style.display = "inline-block";
+
+                  // 停止所有音频轨道
+                  stream.getTracks().forEach((track) => track.stop());
+                });
             };
 
             mediaRecorder.start();
@@ -451,6 +482,207 @@
             '<i class="layui-icon layui-icon-mike"></i> 开始录音';
           recordBtn.className = "layui-btn layui-btn-sm layui-btn-normal";
           statusSpan.textContent = "录音已停止，请试听后保存";
+        }
+        // 将音频转换为WAV格式
+        function convertToWav(audioBlob) {
+          return new Promise((resolve, reject) => {
+            try {
+              const audioContext = new (window.AudioContext ||
+                window.webkitAudioContext)();
+              const fileReader = new FileReader();
+
+              fileReader.onload = function (e) {
+                audioContext
+                  .decodeAudioData(e.target.result)
+                  .then((audioBuffer) => {
+                    try {
+                      const wavBlob = audioBufferToWav(audioBuffer);
+                      resolve(wavBlob);
+                    } catch (err) {
+                      console.error("WAV转换失败:", err);
+                      reject(new Error("WAV格式转换失败"));
+                    }
+                  })
+                  .catch((err) => {
+                    console.error("音频解码失败:", err);
+                    reject(new Error("音频解码失败，可能是不支持的音频格式"));
+                  });
+              };
+
+              fileReader.onerror = function (err) {
+                console.error("文件读取失败:", err);
+                reject(new Error("文件读取失败"));
+              };
+
+              fileReader.readAsArrayBuffer(audioBlob);
+            } catch (err) {
+              console.error("音频转换初始化失败:", err);
+              reject(new Error("浏览器不支持音频处理功能"));
+            }
+          });
+        }
+
+        // 将AudioBuffer转换为16KHz WAV格式的Blob
+        function audioBufferToWav(audioBuffer) {
+          const originalSampleRate = audioBuffer.sampleRate;
+          const targetSampleRate = 16000; // 后端要求的16KHz
+          const numberOfChannels = 1; // 转为单声道，减少数据量
+
+          // 重采样处理
+          let resampledData;
+          if (originalSampleRate === targetSampleRate) {
+            // 如果采样率已经是16KHz，直接使用
+            resampledData = audioBuffer.getChannelData(0);
+          } else {
+            // 需要重采样
+            const resampleRatio = targetSampleRate / originalSampleRate;
+            const originalData = audioBuffer.getChannelData(0);
+            const resampledLength = Math.floor(
+              originalData.length * resampleRatio
+            );
+            resampledData = new Float32Array(resampledLength);
+
+            // 简单线性插值重采样
+            for (let i = 0; i < resampledLength; i++) {
+              const sourceIndex = i / resampleRatio;
+              const index = Math.floor(sourceIndex);
+              const fraction = sourceIndex - index;
+
+              if (index + 1 < originalData.length) {
+                resampledData[i] =
+                  originalData[index] * (1 - fraction) +
+                  originalData[index + 1] * fraction;
+              } else {
+                resampledData[i] = originalData[index] || 0;
+              }
+            }
+          }
+
+          const length = resampledData.length;
+          const arrayBuffer = new ArrayBuffer(
+            44 + length * numberOfChannels * 2
+          );
+          const view = new DataView(arrayBuffer);
+
+          // WAV文件头
+          const writeString = (offset, string) => {
+            for (let i = 0; i < string.length; i++) {
+              view.setUint8(offset + i, string.charCodeAt(i));
+            }
+          };
+
+          writeString(0, "RIFF");
+          view.setUint32(4, 36 + length * numberOfChannels * 2, true);
+          writeString(8, "WAVE");
+          writeString(12, "fmt ");
+          view.setUint32(16, 16, true);
+          view.setUint16(20, 1, true);
+          view.setUint16(22, numberOfChannels, true);
+          view.setUint32(24, targetSampleRate, true);
+          view.setUint32(28, targetSampleRate * numberOfChannels * 2, true);
+          view.setUint16(32, numberOfChannels * 2, true);
+          view.setUint16(34, 16, true);
+          writeString(36, "data");
+          view.setUint32(40, length * numberOfChannels * 2, true);
+
+          // 写入音频数据
+          let offset = 44;
+          for (let i = 0; i < length; i++) {
+            const sample = resampledData[i];
+            const int16Sample = Math.max(
+              -32768,
+              Math.min(32767, Math.floor(sample * 32767))
+            );
+            view.setInt16(offset, int16Sample, true);
+            offset += 2;
+          }
+
+          console.log(
+            `音频重采样: ${originalSampleRate}Hz -> ${targetSampleRate}Hz, 长度: ${audioBuffer.length} -> ${length}`
+          );
+          return new Blob([arrayBuffer], { type: "audio/wav" });
+        }
+
+        function transformAudio(audioBlob) {
+          // 构建FormData对象
+          const formData = new FormData();
+          formData.append("audioFile", audioBlob, "recording.wav");
+
+          // language作为URL参数传递
+          $.ajax({
+            url:
+              appconfig.api +
+              "/api/MobileWard/ConvertAudioToText?language=zh-CN",
+            method: "POST",
+            data: formData,
+            accept: "text/plain", // 期望返回文本格式
+            processData: false,
+            contentType: "multipart/form-data", // 使用FormData时不需要设置contentType
+            timeout: 30000, // 设置30秒超时
+            success: function (res) {
+              if (res.Status === 1) {
+                layer.msg("音频转换成功", { icon: 1 });
+                // 处理转换结果
+                console.log("转换结果：", res.Data);
+                // 可以在这里将转换结果填入文本框
+                if (res.Data && res.Data.text) {
+                  var currentContent = $(
+                    'textarea[name="record_content"]'
+                  ).val();
+                  var newContent =
+                    currentContent +
+                    (currentContent ? "\n\n" : "") +
+                    "语音转录：\n" +
+                    res.Data.text;
+                  $('textarea[name="record_content"]').val(newContent);
+                  layer.msg("转换结果已添加到查房记录中", {
+                    icon: 1,
+                    time: 2000,
+                  });
+                }
+              } else {
+                // 详细的错误处理
+                let errorMsg = "音频转换失败";
+                if (res.Message) {
+                  if (
+                    res.Message.includes("mfplat.dll") ||
+                    res.Message.includes("Unable to load DLL")
+                  ) {
+                    errorMsg =
+                      "服务器音频处理组件未安装，请联系管理员安装Windows Media Foundation组件";
+                  } else if (res.Message.includes("不支持的音频格式")) {
+                    errorMsg = "音频格式不支持，请尝试重新录音";
+                  } else if (
+                    res.Message.includes("Only 16KHz sample rate is supported")
+                  ) {
+                    errorMsg =
+                      "音频采样率不正确，系统已自动处理为16KHz，请重试";
+                  } else {
+                    errorMsg = "音频转换失败：" + res.Message;
+                  }
+                }
+                layer.msg(errorMsg, { icon: 2, time: 5000 });
+                console.error("音频转换详细错误：", res);
+              }
+            },
+            error: function (xhr, status, error) {
+              let errorMsg = "音频转换请求失败";
+              if (status === "timeout") {
+                errorMsg = "音频转换超时，请检查网络连接或稍后重试";
+              } else if (xhr.status === 500) {
+                errorMsg =
+                  "服务器内部错误，可能是音频处理组件问题，请联系管理员";
+              } else if (xhr.status === 0) {
+                errorMsg = "网络连接失败，请检查网络状态";
+              }
+              layer.msg(errorMsg, { icon: 2, time: 5000 });
+              console.error("AJAX错误详情：", {
+                status: status,
+                error: error,
+                xhr: xhr,
+              });
+            },
+          });
         }
 
         // 保存录音到列表
@@ -511,8 +743,11 @@
               <div style="display: flex; align-items: center; gap: 10px; margin-top: 8px; padding: 8px; background: #fff; border-radius: 4px;">
                 <span style="flex: 1; font-size: 12px;">${record.name} (${record.duration})</span>
                 <audio controls style="width: 150px; height: 25px;">
-                  <source src="${record.url}" type="audio/webm">
+                  <source src="${record.url}" type="audio/wav">
                 </audio>
+                <button type="button" class="layui-btn layui-btn-xs layui-btn-normal" onclick="convertAudioToText(${index})" title="转换为文字">
+                  <i class="layui-icon layui-icon-edit"></i> 转文字
+                </button>
                 <button type="button" class="layui-btn layui-btn-xs layui-btn-danger" onclick="removeAudioRecord(${index})">
                   删除
                 </button>
@@ -530,6 +765,18 @@
             window.tempAudioRecords.splice(index, 1);
             updateSavedAudioList();
             layer.msg("录音已删除", { icon: 1, time: 1000 });
+          }
+        };
+
+        // 转换音频为文字
+        window.convertAudioToText = function (index) {
+          if (window.tempAudioRecords && window.tempAudioRecords[index]) {
+            const audioRecord = window.tempAudioRecords[index];
+            layer.msg("正在转换音频为文字，请稍候...", {
+              icon: 16,
+              time: 2000,
+            });
+            transformAudio(audioRecord.blob);
           }
         };
 
@@ -572,6 +819,9 @@
               ? [...window.tempAudioRecords]
               : [],
           };
+
+          // 注释掉API保存查房记录，暂时只与本地localStorage交互
+          /*
           const ajaxData = {
             patient_id: userData.patient_id || "",
             admiss_times: userData.admiss_times || "",
@@ -581,7 +831,7 @@
             emp_sn: loginUser.user_mi,
             emp_name: loginUser.name,
             exec_date: currentTime,
-            sound: formData.record_content,
+            sound: formData.audio_records,
           };
           $.ajax({
             url: appconfig.api + "/api/MobileWard/AddWardRoundsRecord",
@@ -596,6 +846,8 @@
               }
             },
           });
+          */
+
           wardRecords.unshift(newRecord);
           localStorage.setItem("wardRecords", JSON.stringify(wardRecords));
 
@@ -649,9 +901,7 @@
                     </div>
                   </div>
                   <div class="ward-record-meta">
-                    <span><i class="layui-icon layui-icon-user"></i> 患者：${
-                      record.name
-                    }</span>
+                   
                     <span><i class="layui-icon layui-icon-home"></i> 床号：${
                       record.bed_no
                     }</span>
@@ -709,7 +959,7 @@
                 <div style="margin-top: 8px; padding: 8px; background: #f8f9fa; border-radius: 4px;">
                   <div style="font-size: 12px; color: #666; margin-bottom: 5px;">${audio.name} (${audio.duration})</div>
                   <audio controls style="width: 100%; max-width: 400px;">
-                    <source src="${audio.url}" type="audio/webm">
+                    <source src="${audio.url}" type="audio/wav">
                   </audio>
                 </div>
               `;
@@ -720,7 +970,7 @@
           layer.open({
             type: 1,
             title: "查房记录详情",
-            area: ["700px", "600px"],
+            area: ["100%", "85%"],
             content: `
               <div style="padding: 20px;">
                 <h3 style="margin-bottom: 15px; color: #333;">${

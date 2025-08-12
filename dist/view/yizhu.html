@@ -11,11 +11,31 @@
     <link rel="stylesheet" href="../css/public.css" media="all" />
     <link rel="stylesheet" href="../css/table/iframe.css" media="all" />
     <style>
+      .layui-layer-msg {
+        line-height: 1.5 !important;
+        padding: 10px !important;
+        max-height: 100px; /* 限制最大高度 */
+      }
+      .font-grey {
+        color: #999;
+      }
+      .font-black {
+        color: #333;
+      }
+      .font-green {
+        color: #52c41a;
+      }
+      .font-red {
+        color: #e74c3c;
+      }
+      .font-purple {
+        color: rgb(255, 0, 255); /* 紫色字体 */
+      }
       .order-type-long {
-        background-color: #dff0d8; /* 浅绿色背景 */
+        background-color: rgb(192, 220, 192); /* 浅绿色背景 */
       }
       .order-type-once {
-        background-color: #fcf8e3; /* 浅黄色背景 */
+        background-color: rgb(238, 251, 250); /* 浅黄色背景 */
       }
       /* .myorder {
         background-color: rgb(206, 227, 236);
@@ -72,8 +92,9 @@
         line-height: 34px !important;
         font-size: 13px !important;
         color: #333 !important;
-        border: 1px solid #e6e6e6 !important;
+        /* border: 1px solid #e6e6e6 !important; */
         border-radius: 2px !important;
+        width: 110px;
       }
 
       .layui-form-select .layui-select-title input {
@@ -84,6 +105,7 @@
       }
 
       .layui-form-select dl {
+        max-height: 150px;
         font-size: 13px !important;
       }
 
@@ -122,14 +144,18 @@
         flex-direction: column;
         border-right: 1px solid #e6e6e6;
       }
-
+      .order-left-and-middle {
+        display: flex;
+        flex-direction: row;
+        width: 350px;
+      }
       .order-left {
-        flex: 0 0 200px;
+        flex: 0 0 150px;
         background: #fafafa;
       }
 
       .order-middle {
-        flex: 0 0 250px;
+        flex: 0 0 200px;
         background: #f5f5f5;
       }
 
@@ -276,11 +302,44 @@
       /* 表单区域样式 */
       .form-fields {
         flex: 1;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px 24px;
+        align-items: center;
+      }
+
+      /* 让每个表单项自适应宽度 */
+      .form-fields .layui-form-item {
+        margin-bottom: 0;
+        display: flex;
+        align-items: center;
+      }
+      .form-fields .layui-form-label {
+        width: 80px;
+        min-width: 60px;
+        padding: 0 8px 0 0;
+        text-align: right;
+      }
+      .form-fields .layui-input-block {
+        flex: 1;
+        min-width: 0;
+      }
+      .layui-input-block {
+        margin-left: 30px;
+      }
+      /* 让说明textarea独占一行 */
+      .form-fields textarea.layui-textarea {
+        min-height: 40px;
+        resize: vertical;
+      }
+      .form-fields .layui-form-item-textarea {
+        grid-column: 1 / span 2;
+        align-items: flex-start;
       }
 
       .template-info {
-        margin-bottom: 16px;
-        padding: 12px;
+        /* margin-bottom: 16px; */
+        /* padding: 12px; */
         background: #f0f9ff;
         border-radius: 4px;
         border-left: 3px solid #1e9fff;
@@ -290,11 +349,11 @@
       .template-info .info-title {
         font-weight: bold;
         color: #1e9fff;
-        margin-bottom: 8px;
+        /* margin-bottom: 8px; */
       }
 
       .template-info .info-item {
-        margin: 4px 0;
+        /* margin: 4px 0; */
         color: #666;
       }
 
@@ -340,16 +399,51 @@
       /* 响应式优化 */
       @media (max-width: 768px) {
         .order-selector {
-          height: 450px;
+          flex-direction: column;
+          height: 100%;
         }
-
-        .order-left {
-          flex: 0 0 150px;
+        .order-left-and-middle {
+          display: flex;
+          flex-direction: row;
+          width: 100%;
+          height: 30%;
         }
-
+        .order-left,
         .order-middle {
-          flex: 0 0 200px;
+          flex: 1 1 0;
+          min-width: 0;
+          border-right: 1px solid #e6e6e6;
         }
+        .order-middle {
+          border-right: none;
+          border-left: 1px solid #e6e6e6;
+        }
+        .order-right {
+          width: 100%;
+          border: none;
+          margin-top: 8px;
+          height: 70%;
+        }
+        /* .layui-table-box {
+          transform: scale(0.5);
+          transform-origin: top left;
+          width: 200%;
+        } */
+      }
+
+      /* 医生单元格背景色样式 */
+      .doctor-cell-primary {
+        background-color: LightGray !important;
+        /* color: #1e9fff !important; */
+        font-weight: bold;
+      }
+      .doctor-cell-nurse {
+        background-color: #f6ffed !important;
+        /* color: #52c41a !important; */
+      }
+      .doctor-cell-special {
+        background-color: #fff1f0 !important;
+        /* color: #e74c3c !important; */
       }
 
       #layui-layer2 {
@@ -446,28 +540,29 @@
       <div class="order-form-container">
         <!-- 三列布局容器 -->
         <div class="order-selector">
-          <!-- 第一列：模板分类 -->
-          <div class="order-left">
-            <div class="section-header">
-              <i class="layui-icon layui-icon-template-1"></i>
-              模板分类
+          <div class="order-left-and-middle">
+            <!-- 第一列：模板分类 -->
+            <div class="order-left">
+              <div class="section-header">
+                <i class="layui-icon layui-icon-template-1"></i>
+                模板分类
+              </div>
+              <div class="category-list" id="category-list">
+                <div class="no-data">正在加载分类...</div>
+              </div>
             </div>
-            <div class="category-list" id="category-list">
-              <div class="no-data">正在加载分类...</div>
+
+            <!-- 第二列：具体模板 -->
+            <div class="order-middle">
+              <div class="section-header">
+                <i class="layui-icon layui-icon-list"></i>
+                具体模板
+              </div>
+              <div class="template-list" id="template-list">
+                <div class="no-selection">请先选择左侧的模板分类</div>
+              </div>
             </div>
           </div>
-
-          <!-- 第二列：具体模板 -->
-          <div class="order-middle">
-            <div class="section-header">
-              <i class="layui-icon layui-icon-list"></i>
-              具体模板
-            </div>
-            <div class="template-list" id="template-list">
-              <div class="no-selection">请先选择左侧的模板分类</div>
-            </div>
-          </div>
-
           <!-- 第三列：模板详情和表单 -->
           <div class="order-right">
             <div class="section-header">
@@ -490,21 +585,16 @@
                     id="form-fields"
                     style="display: none"
                   >
-                    <div class="layui-row">
-                      <div class="layui-col-md6">
-                        <div class="layui-form-item">
-                          <label class="layui-form-label">医嘱类型</label>
-                          <div class="layui-input-block">
-                            <select name="long_once_flag" lay-verify="required">
-                              <option value="">请选择</option>
-                              <option value="1">长期医嘱</option>
-                              <option value="0">临时医嘱</option>
-                            </select>
-                          </div>
-                        </div>
+                    <div class="layui-form-item">
+                      <label class="layui-form-label">医嘱类型</label>
+                      <div class="layui-input-block">
+                        <select name="long_once_flag" lay-verify="required">
+                          <option value="">请选择</option>
+                          <option value="1">长期医嘱</option>
+                          <option value="0">临时医嘱</option>
+                        </select>
                       </div>
                     </div>
-
                     <div class="layui-form-item">
                       <label class="layui-form-label">医嘱内容</label>
                       <div class="layui-input-block">
@@ -517,66 +607,75 @@
                         />
                       </div>
                     </div>
-
-                    <div class="layui-row">
-                      <div class="layui-col-md6">
-                        <div class="layui-form-item">
-                          <label class="layui-form-label">数量</label>
-                          <div class="layui-input-block">
-                            <input
-                              type="text"
-                              name="charge_amount"
-                              placeholder="如：1"
-                              class="layui-input"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      <div class="layui-col-md6">
-                        <div class="layui-form-item">
-                          <label class="layui-form-label">执行科室</label>
-                          <div class="layui-input-block">
-                            <input
-                              type="text"
-                              name="exec_unit"
-                              placeholder="如：2020100"
-                              class="layui-input"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div class="layui-row">
-                      <div class="layui-col-md6">
-                        <div class="layui-form-item">
-                          <label class="layui-form-label">剂量</label>
-                          <div class="layui-input-block">
-                            <input
-                              type="number"
-                              name="doseage"
-                              placeholder="剂量"
-                              class="layui-input"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      <div class="layui-col-md6">
-                        <div class="layui-form-item">
-                          <label class="layui-form-label">剂量单位</label>
-                          <div class="layui-input-block">
-                            <input
-                              type="text"
-                              name="doseage_unit"
-                              placeholder="剂量单位"
-                              class="layui-input"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
                     <div class="layui-form-item">
+                      <label class="layui-form-label">数量</label>
+                      <div class="layui-input-block">
+                        <input
+                          type="text"
+                          name="charge_amount"
+                          placeholder="如：1"
+                          class="layui-input"
+                        />
+                      </div>
+                    </div>
+                    <!-- <div class="layui-form-item">
+                      <label class="layui-form-label">执行科室</label>
+                      <div class="layui-input-block">
+                        <input
+                          type="text"
+                          name="exec_unit"
+                          placeholder="如：2020100"
+                          class="layui-input"
+                        />
+                      </div>
+                    </div> -->
+                    <div class="layui-form-item">
+                      <label class="layui-form-label">剂量</label>
+                      <div class="layui-input-block">
+                        <input
+                          type="number"
+                          name="doseage"
+                          placeholder="剂量"
+                          class="layui-input"
+                        />
+                      </div>
+                    </div>
+                    <div class="layui-form-item">
+                      <label class="layui-form-label">剂量单位</label>
+                      <div class="layui-input-block">
+                        <input
+                          type="text"
+                          name="doseage_unit"
+                          placeholder="剂量单位"
+                          class="layui-input"
+                        />
+                      </div>
+                    </div>
+                    <div class="layui-form-item">
+                      <label class="layui-form-label">频率</label>
+                      <div class="layui-input-block">
+                        <select
+                          name="frequ_code"
+                          id="frequ-select"
+                          lay-filter="frequ-select"
+                        >
+                          <option value="">请选择频率</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="layui-form-item">
+                      <label class="layui-form-label">用法</label>
+                      <div class="layui-input-block">
+                        <select
+                          name="supply_code"
+                          id="supply-select"
+                          lay-filter="supply-select"
+                        >
+                          <option value="">请选择用法</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="layui-form-item layui-form-item-textarea">
                       <label class="layui-form-label">说明</label>
                       <div class="layui-input-block">
                         <textarea
@@ -586,29 +685,22 @@
                         ></textarea>
                       </div>
                     </div>
-
-                    <div class="layui-row">
-                      <div class="layui-col-md6">
-                        <div class="layui-form-item">
-                          <label class="layui-form-label">是否自费</label>
-                          <div class="layui-input-block">
-                            <select name="self_buy">
-                              <option value="0">否</option>
-                              <option value="1">是</option>
-                            </select>
-                          </div>
-                        </div>
+                    <div class="layui-form-item">
+                      <label class="layui-form-label">是否自费</label>
+                      <div class="layui-input-block">
+                        <select name="self_buy">
+                          <option value="0">否</option>
+                          <option value="1">是</option>
+                        </select>
                       </div>
-                      <div class="layui-col-md6">
-                        <div class="layui-form-item">
-                          <label class="layui-form-label">是否皮试</label>
-                          <div class="layui-input-block">
-                            <select name="skin_test_flag">
-                              <option value="">无需皮试</option>
-                              <option value="1">需要皮试</option>
-                            </select>
-                          </div>
-                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                      <label class="layui-form-label">是否皮试</label>
+                      <div class="layui-input-block">
+                        <select name="skin_test_flag">
+                          <option value="">无需皮试</option>
+                          <option value="1">需要皮试</option>
+                        </select>
                       </div>
                     </div>
                   </div>
@@ -640,6 +732,60 @@
     <script src="../lib/layui-v2.6.3/layui.js" charset="utf-8"></script>
     <script src="../js/lay-config.js?v=1.0.4" charset="utf-8"></script>
     <script>
+      //js动态计算表格缩放比例
+      const tempAppconfig = "http://10.102.38.104:5251/";
+      function scaleTableForMobile() {
+        const layuiTableBox = document.querySelector(".layui-table-box");
+        if (!layuiTableBox) {
+          console.log("未找到 .layui-table-box 元素");
+          return;
+        }
+        const tableContainer = document.querySelector(".table-container");
+        // 获取表格内容的真实宽度（而不是容器宽度）
+        const layuiTable = layuiTableBox.querySelector(".layui-table");
+        const tableHeader = layuiTableBox.querySelector(
+          ".layui-table-header table"
+        );
+        const tableBody = layuiTableBox.querySelector(
+          ".layui-table-body table"
+        );
+        // 优先使用表头的宽度，如果没有则使用表体宽度
+        let tableRealWidth = 0;
+        if (tableHeader) {
+          tableRealWidth = tableHeader.offsetWidth;
+          console.log("使用表头宽度:", tableRealWidth);
+        } else if (tableBody) {
+          tableRealWidth = tableBody.offsetWidth;
+          console.log("使用表体宽度:", tableRealWidth);
+        } else if (layuiTable) {
+          tableRealWidth = layuiTable.scrollWidth; // 使用scrollWidth获取真实内容宽度
+          console.log("使用表格内容宽度:", tableRealWidth);
+        } else {
+          tableRealWidth = layuiTableBox.scrollWidth;
+        }
+
+        console.log("开始计算表格缩放比例");
+        const windowWidth = window.innerWidth; // 手机屏幕或浏览器窗口的宽度
+        const containerWidth = tableContainer.offsetWidth;
+        console.log("表格真实宽度:", tableRealWidth, "窗口宽度:", windowWidth);
+
+        if (tableRealWidth > containerWidth) {
+          const scale = containerWidth / tableRealWidth;
+          console.log("需要缩放，缩放比例:", scale);
+          layuiTableBox.style.transform = `scale(${scale})`;
+          layuiTableBox.style.transformOrigin = "top left";
+          layuiTableBox.style.width = `${100 / scale}%`;
+        } else {
+          console.log("不需要缩放");
+          layuiTableBox.style.transform = `scale(1)`;
+          layuiTableBox.style.transformOrigin = "top left";
+          layuiTableBox.style.width = `100%`;
+        }
+      }
+      window.addEventListener("resize", scaleTableForMobile);
+      // layui.use(["table"], function () {
+      //   setTimeout(scaleTableForMobile, 100);
+      // });
       layui.use(["table", "appconfig", "form"], function () {
         var table = layui.table;
         var $ = layui.jquery;
@@ -667,6 +813,12 @@
         // 医嘱模板数据 - 从API获取
         var orderTemplates = [];
 
+        // 频率数据缓存
+        var frequencyData = [];
+
+        // 用法数据缓存
+        var supplyData = [];
+
         // 存储选择的模板数据
         var selectedCategoryData = null; // 一级分类数据
         var selectedDetailData = null; // 二级分类数据
@@ -688,10 +840,11 @@
             // // 医嘱类型显示转换：0-临时，1-长期
             {
               field: "long_once_flag",
-              title: "医嘱类型",
-              width: 100,
+              title: "类",
+              width: 40,
+              style: "overflow:visible;text-overflow:unset;white-space:nowrap;",
               templet: function (d) {
-                return d.long_once_flag == "1" ? "长期" : "临时";
+                return d.long_once_flag == "1" ? "长" : "临";
               },
             },
             { field: "start_time_mm_dd", title: "日期", width: 80 },
@@ -703,7 +856,15 @@
             { field: "charge_amount", title: "数量", width: 80 },
             { field: "frequ_name", title: "频率", width: 80 },
             { field: "supply_name", title: "用法", width: 80 },
-            { field: "order_doctor_name", title: "医生", width: 80 },
+            {
+              field: "order_doctor_name",
+              title: "医生",
+              width: 80,
+              templet: function (d) {
+                // 直接返回文本，在done回调中设置单元格背景色
+                return d.order_doctor_name || "";
+              },
+            },
             { field: "enter_time_mm_dd", title: "日期", width: 80 },
             { field: "end_time_mm_dd", title: "日期", width: 80 },
             {
@@ -744,6 +905,15 @@
             dataType: "json",
             success: function (res) {
               allYizhuData = res.Data || [];
+
+              // 在渲染表格之前对数据按 enter_time 排序
+              function sortYizhuDataByEnterTime(data) {
+                return data.sort(
+                  (a, b) => new Date(a.enter_time) - new Date(b.enter_time)
+                );
+              }
+              allYizhuData = sortYizhuDataByEnterTime(allYizhuData);
+
               renderYizhuTable(allYizhuData);
               if (typeof callback === "function") callback();
             },
@@ -953,6 +1123,110 @@
             },
           });
         }
+
+        // 加载频率数据
+        function loadFrequencyData(callback) {
+          $.ajax({
+            url:
+              tempAppconfig + "api/MobileWard/GetYzFrequency?long_once_flag=1",
+            method: "GET",
+            dataType: "json",
+            success: function (res) {
+              if (res && res.Status && res.Data) {
+                frequencyData = res.Data;
+                console.log("加载频率数据成功:", frequencyData);
+                // 更新频率选择框选项
+                updateFrequencyOptions();
+              } else {
+                console.warn("频率数据格式异常:", res);
+                frequencyData = [];
+              }
+              if (typeof callback === "function") callback();
+            },
+            error: function (xhr, status, error) {
+              console.error("加载频率数据失败:", error);
+              // 提供一些默认频率作为备用
+              frequencyData = [
+                { name: "每日一次", code: "QD", py_code: "MRYC" },
+                { name: "每日两次", code: "BID", py_code: "MRLC" },
+                { name: "每日三次", code: "TID", py_code: "MRSC" },
+                { name: "临时", code: "ONCE", py_code: "LS" },
+              ];
+              updateFrequencyOptions();
+              if (typeof callback === "function") callback();
+            },
+          });
+        }
+
+        // 更新频率选择框选项
+        function updateFrequencyOptions() {
+          var options = '<option value="">请选择频率</option>';
+          frequencyData.forEach(function (freq) {
+            options +=
+              '<option value="' +
+              freq.code +
+              '" title="编码：' +
+              freq.code +
+              '">' +
+              freq.name +
+              "</option>";
+          });
+          $("#frequ-select").html(options);
+
+          // 重新渲染表单以更新下拉框
+          form.render("select");
+        }
+        // 加载用法数据
+        function loadSupplyData(callback) {
+          $.ajax({
+            url: tempAppconfig + "api/MobileWard/GetYzSupplyList",
+            method: "GET",
+            dataType: "json",
+            success: function (res) {
+              if (res && res.Status && res.Data) {
+                supplyData = res.Data;
+                console.log("加载用法数据成功:", supplyData);
+                // 更新用法选择框选项
+                updateSupplyOptions();
+              } else {
+                console.warn("用法数据格式异常:", res);
+                supplyData = [];
+              }
+              if (typeof callback === "function") callback();
+            },
+            error: function (xhr, status, error) {
+              console.error("加载用法数据失败:", error);
+              // 提供一些默认用法作为备用
+              supplyData = [
+                { supply_name: "口服", supply_code: "PO", py_code: "KF" },
+                { supply_name: "静脉注射", supply_code: "IV", py_code: "JMZS" },
+                { supply_name: "肌肉注射", supply_code: "IM", py_code: "JRZS" },
+                { supply_name: "外用", supply_code: "TOP", py_code: "WY" },
+              ];
+              updateSupplyOptions();
+              if (typeof callback === "function") callback();
+            },
+          });
+        }
+
+        // 更新用法选择框选项
+        function updateSupplyOptions() {
+          var options = '<option value="">请选择用法</option>';
+          supplyData.forEach(function (supply) {
+            options +=
+              '<option value="' +
+              supply.supply_code +
+              '" title="编码：' +
+              supply.supply_code +
+              '">' +
+              supply.supply_name +
+              "</option>";
+          });
+          $("#supply-select").html(options);
+
+          // 重新渲染表单以更新下拉框
+          form.render("select");
+        }
         //获取二级模板详情
         function loadTemplateDetails(categoryId, callback) {
           var category = orderTemplates.find(
@@ -1019,7 +1293,7 @@
           layer.open({
             type: 1,
             title: "新增医嘱",
-            area: ["85%", "100%"],
+            area: ["100%", "100%"],
             maxmin: true,
             content: $("#add-order-modal"),
             success: function (layero, index) {
@@ -1037,188 +1311,223 @@
           var selectedCategory = null;
           var selectedTemplate = null;
 
-          // 渲染第一列：模板分类列表
-          function renderCategoryList() {
-            var html = "";
-            if (orderTemplates.length === 0) {
-              html = '<div class="no-data">暂无模板分类</div>';
-            } else {
-              orderTemplates.forEach(function (category) {
-                html +=
-                  '<div class="category-item" data-id="' +
-                  category.pattern_code +
-                  '">' +
-                  '<div class="category-name">' +
-                  category.pattern_name +
-                  "</div>" +
-                  '<div class="category-desc">创建者: ' +
-                  (category.create_name || "未知") +
-                  "</div>" +
-                  "</div>";
-              });
+          // 确保频率和用法数据已加载
+          var dataLoadCount = 0;
+          var totalDataTypes = 2; // 频率和用法两种数据
+
+          function checkDataLoaded() {
+            dataLoadCount++;
+            if (dataLoadCount >= totalDataTypes) {
+              initializeModalContent();
             }
-            $("#category-list").html(html);
           }
 
-          // 渲染第二列：具体模板列表
-          function renderTemplateList(category) {
-            var html = '<div class="no-selection">正在加载模板...</div>';
-            $("#template-list").html(html);
+          if (frequencyData.length === 0) {
+            loadFrequencyData(checkDataLoaded);
+          } else {
+            checkDataLoaded();
+          }
 
-            // 获取该分类下的具体模板
-            loadTemplateDetails(category.pattern_code, function (templates) {
-              html = "";
-              if (!templates || templates.length === 0) {
-                html = '<div class="no-selection">该分类下暂无可用模板</div>';
+          if (supplyData.length === 0) {
+            loadSupplyData(checkDataLoaded);
+          } else {
+            checkDataLoaded();
+          }
+
+          function initializeModalContent() {
+            // 更新频率和用法选择框
+            updateFrequencyOptions();
+            updateSupplyOptions();
+
+            // 渲染第一列：模板分类列表
+            function renderCategoryList() {
+              var html = "";
+              if (orderTemplates.length === 0) {
+                html = '<div class="no-data">暂无模板分类</div>';
               } else {
-                templates.forEach(function (template, index) {
+                orderTemplates.forEach(function (category) {
                   html +=
-                    '<div class="template-item" data-category="' +
+                    '<div class="category-item" data-id="' +
                     category.pattern_code +
-                    '" data-index="' +
-                    index +
                     '">' +
-                    '<div class="template-name">' +
-                    (template.order_name || "模板" + (index + 1)) +
+                    '<div class="category-name">' +
+                    category.pattern_name +
                     "</div>" +
-                    '<div class="template-desc">' +
-                    (template.instruction || "无描述") +
+                    '<div class="category-desc">创建者: ' +
+                    (category.create_name || "未知") +
                     "</div>" +
                     "</div>";
                 });
               }
-              $("#template-list").html(html);
-            });
-          }
-
-          // 渲染第三列：模板详情和表单
-          function renderTemplateDetails(template) {
-            if (!template) {
-              $("#template-info").html(
-                '<div class="no-template-selected">' +
-                  '<i class="layui-icon layui-icon-tips"></i>' +
-                  "<p>请先选择模板分类和具体模板</p>" +
-                  '<p class="tips">选择后将自动填充医嘱信息</p>' +
-                  "</div>"
-              );
-              $("#form-fields").hide();
-              return;
+              $("#category-list").html(html);
             }
 
-            // 显示模板信息
-            var infoHtml =
-              '<div class="info-title">已选模板信息</div>' +
-              '<div class="info-item"><strong>医嘱名称：</strong>' +
-              (template.order_name || "未知") +
-              "</div>" +
-              '<div class="info-item"><strong>医嘱类型：</strong>' +
-              (template.order_type === "3" ? "长期医嘱" : "临时医嘱") +
-              "</div>" +
-              '<div class="info-item"><strong>剂量：</strong>' +
-              (template.doseage || "未设置") +
-              " " +
-              (template.doseage_unit || "") +
-              "</div>" +
-              '<div class="info-item"><strong>说明：</strong>' +
-              (template.instruction || "无") +
-              "</div>";
+            // 渲染第二列：具体模板列表
+            function renderTemplateList(category) {
+              var html = '<div class="no-selection">正在加载模板...</div>';
+              $("#template-list").html(html);
 
-            $("#template-info").html(infoHtml);
-            $("#form-fields").show();
+              // 获取该分类下的具体模板
+              loadTemplateDetails(category.pattern_code, function (templates) {
+                html = "";
+                if (!templates || templates.length === 0) {
+                  html = '<div class="no-selection">该分类下暂无可用模板</div>';
+                } else {
+                  templates.forEach(function (template, index) {
+                    html +=
+                      '<div class="template-item" data-category="' +
+                      category.pattern_code +
+                      '" data-index="' +
+                      index +
+                      '">' +
+                      '<div class="template-name">' +
+                      (template.order_name || "模板" + (index + 1)) +
+                      "</div>" +
+                      '<div class="template-desc">' +
+                      (template.instruction || "无描述") +
+                      "</div>" +
+                      "</div>";
+                  });
+                }
+                $("#template-list").html(html);
+              });
+            }
 
-            // 自动填充表单数据
-            fillFormWithTemplate(template);
-          }
-
-          // 填充表单数据
-          function fillFormWithTemplate(template) {
-            var wardData = JSON.parse(localStorage.getItem("wardData") || "{}");
-
-            $('select[name="long_once_flag"]').val(
-              template.order_type === "3" ? "1" : "0"
-            );
-            $('input[name="order_name"]').val(template.order_name || "");
-            $('input[name="charge_amount"]').val(template.charge_amount || "1");
-            $('input[name="exec_unit"]').val(wardData.ward_sn || "");
-            $('input[name="doseage"]').val(template.doseage || "");
-            $('input[name="doseage_unit"]').val(template.doseage_unit || "");
-            $('textarea[name="instruction"]').val(template.instruction || "");
-            $('select[name="self_buy"]').val(template.self_buy || "0");
-
-            form.render();
-            layer.msg("已应用模板：" + (template.order_name || "模板数据"), {
-              icon: 1,
-              time: 2000,
-            });
-          }
-
-          // 事件绑定：分类选择
-          $(document)
-            .off("click", ".category-item")
-            .on("click", ".category-item", function () {
-              $(".category-item").removeClass("selected");
-              $(this).addClass("selected");
-
-              var categoryId = $(this).data("id");
-              selectedCategory = orderTemplates.find(
-                (t) => t.pattern_code === categoryId
-              );
-              selectedCategoryData = selectedCategory;
-
-              // 清空第二列和第三列
-              selectedTemplate = null;
-              selectedDetailData = null;
-              $("#template-list").html(
-                '<div class="no-selection">正在加载...</div>'
-              );
-              renderTemplateDetails(null);
-
-              // 加载第二列数据
-              if (selectedCategory) {
-                renderTemplateList(selectedCategory);
+            // 渲染第三列：模板详情和表单
+            function renderTemplateDetails(template) {
+              if (!template) {
+                $("#template-info").html(
+                  '<div class="no-template-selected">' +
+                    '<i class="layui-icon layui-icon-tips"></i>' +
+                    "<p>请先选择模板分类和具体模板</p>" +
+                    '<p class="tips">选择后将自动填充医嘱信息</p>' +
+                    "</div>"
+                );
+                $("#form-fields").hide();
+                return;
               }
-            });
 
-          // 事件绑定：模板选择
-          $(document)
-            .off("click", ".template-item")
-            .on("click", ".template-item", function () {
-              $(".template-item").removeClass("selected");
-              $(this).addClass("selected");
+              // 显示模板信息
+              var infoHtml =
+                '<div class="info-title">已选模板信息</div>' +
+                '<div class="info-item"><strong>医嘱名称：</strong>' +
+                (template.order_name || "未知") +
+                "</div>" +
+                '<div class="info-item"><strong>医嘱类型：</strong>' +
+                (template.order_type === "3" ? "长期医嘱" : "临时医嘱") +
+                "</div>" +
+                '<div class="info-item"><strong>剂量：</strong>' +
+                (template.doseage || "未设置") +
+                " " +
+                (template.doseage_unit || "") +
+                "</div>" +
+                '<div class="info-item"><strong>说明：</strong>' +
+                (template.instruction || "无") +
+                "</div>";
 
-              var categoryId = $(this).data("category");
-              var templateIndex = $(this).data("index");
+              $("#template-info").html("");
+              $("#form-fields").show();
 
-              var category = orderTemplates.find(
-                (t) => t.pattern_code === categoryId
+              // 自动填充表单数据
+              fillFormWithTemplate(template);
+            }
+
+            // 填充表单数据
+            function fillFormWithTemplate(template) {
+              var wardData = JSON.parse(
+                localStorage.getItem("wardData") || "{}"
               );
-              if (
-                category &&
-                category.details &&
-                category.details[templateIndex]
-              ) {
-                selectedTemplate = category.details[templateIndex];
-                selectedDetailData = selectedTemplate;
-                renderTemplateDetails(selectedTemplate);
-              }
+
+              $('select[name="long_once_flag"]').val(
+                template.order_type === "3" ? "1" : "0"
+              );
+              $('input[name="order_name"]').val(template.order_name || "");
+              $('input[name="charge_amount"]').val(
+                template.charge_amount || "1"
+              );
+              $('input[name="exec_unit"]').val(wardData.ward_sn || "");
+              $('input[name="doseage"]').val(template.doseage || "");
+              $('input[name="doseage_unit"]').val(template.doseage_unit || "");
+              $('select[name="frequ_code"]').val(template.frequ_code || "");
+              $('select[name="supply_code"]').val(template.supply_code || "");
+              $('textarea[name="instruction"]').val(template.instruction || "");
+              $('select[name="self_buy"]').val(template.self_buy || "0");
+
+              form.render();
+              layer.msg("已应用模板：" + (template.order_name || "模板数据"), {
+                icon: 1,
+                time: 2000,
+              });
+            }
+
+            // 事件绑定：分类选择
+            $(document)
+              .off("click", ".category-item")
+              .on("click", ".category-item", function () {
+                $(".category-item").removeClass("selected");
+                $(this).addClass("selected");
+
+                var categoryId = $(this).data("id");
+                selectedCategory = orderTemplates.find(
+                  (t) => t.pattern_code === categoryId
+                );
+                selectedCategoryData = selectedCategory;
+
+                // 清空第二列和第三列
+                selectedTemplate = null;
+                selectedDetailData = null;
+                $("#template-list").html(
+                  '<div class="no-selection">正在加载...</div>'
+                );
+                renderTemplateDetails(null);
+
+                // 加载第二列数据
+                if (selectedCategory) {
+                  renderTemplateList(selectedCategory);
+                }
+              });
+
+            // 事件绑定：模板选择
+            $(document)
+              .off("click", ".template-item")
+              .on("click", ".template-item", function () {
+                $(".template-item").removeClass("selected");
+                $(this).addClass("selected");
+
+                var categoryId = $(this).data("category");
+                var templateIndex = $(this).data("index");
+
+                var category = orderTemplates.find(
+                  (t) => t.pattern_code === categoryId
+                );
+                if (
+                  category &&
+                  category.details &&
+                  category.details[templateIndex]
+                ) {
+                  selectedTemplate = category.details[templateIndex];
+                  selectedDetailData = selectedTemplate;
+                  renderTemplateDetails(selectedTemplate);
+                }
+              });
+
+            // 事件绑定：取消按钮
+            $("#cancel-add-order")
+              .off("click")
+              .on("click", function () {
+                layer.close(layerIndex);
+              });
+
+            // 事件绑定：表单提交
+            form.on("submit(add-order)", function (data) {
+              submitNewOrder(data.field, layerIndex);
+              return false;
             });
 
-          // 事件绑定：取消按钮
-          $("#cancel-add-order")
-            .off("click")
-            .on("click", function () {
-              layer.close(layerIndex);
-            });
-
-          // 事件绑定：表单提交
-          form.on("submit(add-order)", function (data) {
-            submitNewOrder(data.field, layerIndex);
-            return false;
-          });
-
-          // 初始渲染分类列表
-          renderCategoryList();
-        }
+            // 初始渲染分类列表
+            renderCategoryList();
+          } // 关闭 initializeModalContent 函数
+        } // 关闭 initializeOrderModal 函数
 
         // 更新模板分类选项（已废弃，由三列布局代替）
         /*
@@ -1362,9 +1671,9 @@
             exec_unit: "",
             exclusive_type: "1",
             fit_flag: "1",
-            frequ_code: detailData.frequ_code || "ONCE",
+            frequ_code: formData.frequ_code || "ONCE",
             group_no: detailData.group_no || "000000",
-            instruction: detailData.instruction || "",
+            instruction: formData.instruction || "",
             is_new: true,
             long_once_flag: detailData.long_once_flag || "0",
             modify_price: "",
@@ -1377,12 +1686,12 @@
             patient_id: patient_id,
             prev_flag: "",
             Serial: "**",
-            self_buy: detailData.self_buy || "0",
-            skin_test_flag: detailData.skin_test_flag || "",
+            self_buy: formData.self_buy || "0",
+            skin_test_flag: formData.skin_test_flag || "",
             spinfo_type: formData.self_buy === "1" ? "0" : "1",
             start_time: currentTime,
             status_flag: "0",
-            supply_code: detailData.supply_code || "",
+            supply_code: formData.supply_code || "",
             ward_sn: categoryData.ward_sn || "",
           };
 
@@ -1390,7 +1699,8 @@
 
           // 显示加载提示
           var loadingIndex = layer.load(1, { shade: [0.3, "#000"] });
-
+          // console.log("apiParams:", apiParams);
+          // return;
           // 调用新增医嘱API
           $.ajax({
             url: appconfig.api + "/api/MobileWard/AddActYz",
@@ -1510,7 +1820,7 @@
                 success: function (response) {
                   layer.close(loadingIndex);
 
-                  if (response && response.Status) {
+                  if (response && response.Status == 1) {
                     layer.msg("医嘱撤销成功", { icon: 1 });
 
                     // 刷新表格数据
@@ -1572,6 +1882,11 @@
               none: "暂无医嘱数据",
             },
             done: function (res, curr, count) {
+              // 表格渲染完成后调用缩放函数
+              setTimeout(function () {
+                scaleTableForMobile();
+              }, 100);
+
               // 根据医嘱类型设置行背景色
               $("#yizhu-table")
                 .next(".layui-table-view")
@@ -1585,9 +1900,31 @@
                     $(tr).addClass("order-type-long");
                   } else if (row.long_once_flag == 0) {
                     $(tr).addClass("order-type-once");
+                    $(tr).addClass("font-red");
+                  }
+                  if (row.status_flag == 0) {
+                    $(tr).addClass("font-grey");
+                  } else if (row.status_flag == 2) {
+                    $(tr).addClass("font-green");
+                  } else if (row.status_flag == 5 || row.long_once_flag == 0) {
+                    $(tr).addClass("font-red");
+                  } else if (row.status_flag == 7) {
+                    $(tr).addClass("font-purple");
                   }
                   if (row.order_doctor_name) {
                     $(tr).addClass("myorder");
+                  }
+
+                  // 设置医生单元格背景色
+                  var doctorCell = $(tr).find(
+                    'td[data-field="order_doctor_name"]'
+                  );
+                  if (row.fit_flag == 1) {
+                    doctorCell.addClass("doctor-cell-primary");
+                  } else if (row.fit_flag == 0) {
+                    doctorCell.addClass("doctor-cell-nurse");
+                  } else if (row.fit_flag == 2) {
+                    doctorCell.addClass("doctor-cell-special");
                   }
                 });
             },
@@ -1673,7 +2010,11 @@
 
         // 默认加载全部并设置默认选中状态，首次加载后立即应用筛选条件
         loadOrderTemplates(function () {
-          loadYizhuData(applyFilters);
+          loadFrequencyData(function () {
+            loadSupplyData(function () {
+              loadYizhuData(applyFilters);
+            });
+          });
         });
 
         // 头工具栏事件
