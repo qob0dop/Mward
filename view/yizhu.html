@@ -459,7 +459,7 @@
 
       /* 医生单元格背景色样式 */
       .doctor-cell-primary {
-        background-color: LightGray !important;
+        /* background-color: LightGray !important; */
         /* color: #1e9fff !important; */
         font-weight: bold;
       }
@@ -481,7 +481,12 @@
       }
       .layui-table td,
       .layui-table th {
-        padding: 5px 8px; /* 自定义 padding 值 */
+        padding: 5px 8px;
+        border: 1px solid skyblue; /* 单元格边框 */
+        padding: 8px; /* 单元格内边距 */
+      }
+      .layui-table thead tr {
+        height: 30px; /* 设置行高为30px */
       }
     </style>
   </head>
@@ -778,7 +783,7 @@
     <script src="/js/lay-config.js?v=1.0.4" charset="utf-8"></script>
     <script>
       //js动态计算表格缩放比例
-      const tempAppconfig = "http://10.102.38.104:5251/";
+      const tempAppconfig = "http://10.102.38.108:5251/";
       function scaleTableForMobile() {
         const layuiTableBox = document.querySelector(".layui-table-box");
         if (!layuiTableBox) {
@@ -897,7 +902,7 @@
               title: "医嘱",
               align: "center",
             },
-            { field: "charge_amount", title: "数量", width: 30 },
+            { field: "charge_amount", title: "数量", width: 40 },
             { field: "frequ_name", title: "频率", width: 60 },
             { field: "supply_name", title: "用法", width: 80 },
             {
@@ -1003,6 +1008,7 @@
               icon: 3,
               title: "停止医嘱确认",
               btn: ["确定停止", "取消"],
+              area: ["400px", "200px"], // 设置对话框大小：宽度400px，高度200px
             },
             function (index) {
               // 构建API参数
@@ -1268,6 +1274,7 @@
         // 加载剂量单位数据
         function loadDoseageUnitData(templateData, callback) {
           // 从模板数据中获取 serial 和 order_code
+          doseageUnitData = [];
           var serial = templateData.Serial || templateData.serial || "00";
           var order_code = templateData.order_code;
 
@@ -1290,7 +1297,10 @@
                 // 解析返回的数据，提取四种单位类型
                 var unitOptions = [];
                 var data = res.Data[0];
-
+                if (!data) {
+                  updateDoseageUnitOptions();
+                  return;
+                }
                 // 检查并添加各种单位类型
                 if (data.mini_unit && data.mini1_name) {
                   unitOptions.push({
@@ -1549,7 +1559,7 @@
                       (template.order_name || "模板" + (index + 1)) +
                       "</div>" +
                       '<div class="template-desc">' +
-                      (template.instruction || "无描述") +
+                      (template.drug_specification || "无规格描述") +
                       "</div>" +
                       "</div>";
                   });
@@ -1949,6 +1959,7 @@
               icon: 3,
               title: "撤销医嘱确认",
               btn: ["确定撤销", "取消"],
+              area: ["400px", "250px"], // 设置对话框大小：宽度400px，高度250px（因为内容更多）
             },
             function (index) {
               // 构建API参数

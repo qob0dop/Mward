@@ -163,9 +163,6 @@
         align-items: center;
         margin-bottom: 8px;
       }
-      @media (max-width: 600px) {
-        /* 窄屏时取消列表宽度限制，主内容也不再右移 */
-      }
 
       /* 《======================底部区域样式======================》 */
       .bottom-tab-placeholder {
@@ -204,7 +201,7 @@
         display: none; /* 隐藏滚动条 */
       }
       .tab-btn {
-        min-width: 160px;
+        width: 160px;
         max-width: 160px;
         height: 40px;
         line-height: 100%;
@@ -287,6 +284,7 @@
         height: 28px;
         line-height: 28px;
         padding: 0 8px;
+        min-width: 60px;
         position: relative;
         overflow: hidden;
       }
@@ -392,7 +390,7 @@
       .btn-back {
         float: right;
         font-size: 13px;
-        margin-right: 15px;
+        /* margin-right: 15px; */
         font-weight: normal;
         height: 28px;
         line-height: 28px;
@@ -437,6 +435,22 @@
         }
         .layui-form-item .layui-input-inline {
           margin-left: 0 !important;
+        }
+        .bottom-tabs {
+          transform: scale(0.8);
+          transform-origin: bottom left;
+          width: 125%;
+        }
+        .tab-btn {
+          min-width: 70px;
+          font-size: 16px;
+        }
+        .layui-icon-form:before,
+        .layui-icon-return {
+          display: none;
+        }
+        .btn-switch-patient {
+          padding: 0;
         }
       }
 

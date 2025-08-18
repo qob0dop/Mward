@@ -3,7 +3,20 @@
   <head>
     <meta charset="utf-8" />
     <title>移动查房管理系统</title>
-    <!--<meta name="keywords" content="移动查房管理系统">
+    <!--<met          <button
+            type="button          <button
+            type="button"
+            class="layui-btn layui-btn-sm layui-btn-normal"
+            onclick="javascript: location.href = 'view/wardlist.html';"
+            style="font-size: 12px; flex-shrink: 0;"
+          >
+            <i class="layui-icon layui-icon-return"></i>返回
+          </button>       class="layui-btn layui-btn-sm layui-btn-normal"
+            onclick="javascript: location.href = 'view/wardlist.html';"
+            style="font-size: 12px;"
+          >
+            <i class="layui-icon layui-icon-return"></i>返回
+          </button>keywords" content="移动查房管理系统">
     <meta name="description" content="移动查房管理系统">
     <meta name="renderer" content="webkit">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
@@ -28,6 +41,13 @@
       content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
     />
     <style>
+      .layui-table,
+      .layui-table-view {
+        margin: 0;
+      }
+      .layui-table-tool {
+        padding: 0;
+      }
       .layui-btn:not(.layui-btn-lg):not(.layui-btn-sm):not(.layui-btn-xs) {
         height: 34px;
         line-height: 34px;
@@ -65,6 +85,51 @@
       body {
         background: #f4f8fb !important;
       }
+      .layui-btn-container .layui-btn {
+        margin: 0;
+        margin-bottom: 7px;
+      }
+      /* 响应式样式 */
+      @media screen and (max-width: 768px) {
+        .layui-elem-quote {
+          gap: 10px !important;
+        }
+
+        .layui-elem-quote > div:first-child {
+          gap: 8px !important;
+          min-width: 0 !important;
+        }
+
+        .layui-elem-quote > div:first-child span[id] {
+          max-width: 60px !important;
+          font-size: 0.8rem !important;
+        }
+
+        .layui-elem-quote button {
+          font-size: 11px !important;
+          padding: 0 8px !important;
+        }
+      }
+
+      @media screen and (max-width: 480px) {
+        .layui-elem-quote > div:first-child {
+          gap: 5px !important;
+        }
+
+        .layui-elem-quote > div:first-child span[id] {
+          max-width: 70px !important;
+          font-size: 0.75rem !important;
+        }
+
+        .layui-elem-quote > div:first-child > span:first-child {
+          font-size: 1rem !important;
+        }
+
+        .layui-elem-quote button {
+          font-size: 10px !important;
+          padding: 0 6px !important;
+        }
+      }
     </style>
   </head>
   <script>
@@ -91,50 +156,52 @@
       <div class="layui-btn-container">
         <blockquote
           class="layui-elem-quote"
-          style="font-size: 1.1rem; display: inline-block; line-height: 1.1; padding: 8px; font-weight: bold; padding-right: 20px;"
+          style="width: 100%; font-size: 1.1rem; display: flex; align-items: center; justify-content: space-between; font-weight: bold; padding: 0px; line-height: 1.2; min-height: 35px; flex-wrap: nowrap;"
         >
-          患者列表
+          <div
+            style="display: flex; align-items: center; gap: 15px; flex-wrap: nowrap; overflow: hidden; flex: 1; min-width: 0;"
+          >
+            <span>病区列表</span>
+            <span style="display: flex; align-items: center; min-width: 0;">
+              <i
+                class="layui-icon layui-icon-form"
+                style="color:blue; font-size: 12px; margin-right: 3px; flex-shrink: 0;"
+              ></i>
+              <span
+                id="btn_ward_name"
+                style="color: #1e9fff; font-weight: normal; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100px;"
+              >
+                病区名称
+              </span>
+            </span>
+            <span style="display: flex; align-items: center; min-width: 0;">
+              <i
+                class="layui-icon layui-icon-username"
+                style="color:blue; font-size: 12px; margin-right: 3px; flex-shrink: 0;"
+              ></i>
+              <span
+                id="btn_user_name"
+                style="color: #1e9fff; font-weight: normal; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 80px;"
+              >
+                管理员
+              </span>
+            </span>
+          </div>
+          <button
+            type="button"
+            class="layui-btn layui-btn-sm layui-btn-normal"
+            onclick="javascrript: location.href = 'view/wardlist.html';"
+            style="font-size:14px;float:right"
+          >
+            <i class="layui-icon"></i>返回
+          </button>
         </blockquote>
-        <i class="layui-icon layui-icon-form" style="color:blue"></i>
-        <button
-          type="button"
-          id="btn_ward_name"
-          class="layui-btn layui-btn-primary"
-          style="border-color:transparent"
-        >
-          病区名称
-        </button>
-        <i class="layui-icon layui-icon-username" style="color:blue"></i>
-        <button
-          type="button"
-          id="btn_user_name"
-          class="layui-btn layui-btn-primary"
-          style="border-color:transparent"
-        >
-          管理员
-        </button>
-        <button
-          class="layui-btn layui-btn-sm layui-bg-blue"
-          id="reloadTest"
-          style="display:none"
-        >
-          选择病区
-          <i class="layui-icon layui-icon-down layui-font-12"></i>
-        </button>
+
         <button class="layui-btn layui-btn-normal" lay-event="allPatient">
           全部患者
         </button>
         <button class="layui-btn layui-btn-primary" lay-event="myPatient">
           我的患者
-        </button>
-
-        <button
-          type="button"
-          class="layui-btn layui-btn-sm layui-btn-normal"
-          onclick="javascrript: location.href = 'view/wardlist.html';"
-          style="font-size:14px"
-        >
-          <i class="layui-icon"></i>返回
         </button>
       </div>
     </script>
@@ -198,6 +265,13 @@
         localStorage.ward_sn = jsonData.ward_sn;
         localStorage.ward_name = jsonData.ward_name;
 
+        // 设置病区名称显示
+        $("#btn_ward_name").text(jsonData.ward_name);
+        console.log(jsonData.ward_name);
+
+        // 设置管理员名称显示
+        $("#btn_user_name").text(loginUserData.user_name);
+        console.log(loginUserData.user_name);
         // 渲染
         table.render({
           elem: "#munu-table",
@@ -298,11 +372,11 @@
           success: function (data) {
             //方法一
             //ddl_data =[];
-            for (var i = 0; i < data.data.length; i++) {
+            for (var i = 0; i < data.Data.length; i++) {
               //sel_pward.options.add(new Option(data.data[i].ward_name, data.data[i].ward_sn));
               ddl_data.push({
-                id: data.data[i].ward_sn,
-                title: data.data[i].ward_name,
+                id: data.Data[i].ward_sn,
+                title: data.Data[i].ward_name,
               });
             }
             dropdown.render({
@@ -330,15 +404,15 @@
                 });
               },
             });
-            if (localStorage.ward_sn === undefined) {
-              $("#reloadTest").click();
-            } else if ($("#reloadTest").html().indexOf("选择科室") > -1) {
-              $("#reloadTest").data("wardsn", localStorage.ward_sn);
-              $("#reloadTest").html(
-                localStorage.ward_name +
-                  "<i class='layui-icon layui-icon-down layui-font-12'></i>"
-              );
-            }
+            // if (localStorage.ward_sn === undefined) {
+            //   $("#reloadTest").click();
+            // } else if ($("#reloadTest").html().indexOf("选择科室") > -1) {
+            //   $("#reloadTest").data("wardsn", localStorage.ward_sn);
+            //   $("#reloadTest").html(
+            //     localStorage.ward_name +
+            //       "<i class='layui-icon layui-icon-down layui-font-12'></i>"
+            //   );
+            // }
           },
           error: function (data) {
             layer.msg("访问数据失败！请检查网络链接是否畅通。");

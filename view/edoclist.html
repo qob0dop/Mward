@@ -91,9 +91,96 @@
         height: 26px;
         transform: scale(1.5);
       }
+
+      /* 导航栏切换样式 */
+      .nav-toggle-btn {
+        /* position: fixed;
+        top: 15px;
+        left: 15px; */
+        z-index: 9999;
+        background: #009688;
+        border: none;
+        color: white;
+        padding: 8px 12px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      }
+
+      .nav-toggle-btn:hover {
+        background: #00796b;
+        transform: scale(1.05);
+      }
+
+      /* 导航栏隐藏状态 */
+      .nav-hidden .layui-nav-side {
+        transform: translateX(-100%);
+      }
+
+      .nav-hidden .layui-body {
+        padding-left: 0 !important;
+      }
+
+      .nav-hidden .layuimini-main {
+        margin-left: 10px !important;
+      }
+
+      /* 导航栏动画 */
+      .layui-nav-side {
+        transition: transform 0.3s ease;
+      }
+
+      .layui-body {
+        transition: padding-left 0.3s ease;
+      }
+
+      .layuimini-main {
+        transition: margin-left 0.3s ease;
+      }
+
+      /* 响应式 */
+      @media screen and (max-width: 768px) {
+        .layui-nav-side {
+          width: 180px;
+        }
+
+        .layui-body {
+          padding-left: 180px;
+        }
+
+        .layuimini-main {
+          margin-left: 190px;
+        }
+      }
+
+      @media screen and (max-width: 480px) {
+        .layui-nav-side {
+          width: 160px;
+        }
+
+        .layui-body {
+          padding-left: 160px;
+        }
+
+        .layuimini-main {
+          margin-left: 170px;
+        }
+
+        .nav-toggle-btn {
+          padding: 6px 10px;
+          font-size: 14px;
+        }
+      }
     </style>
   </head>
   <body>
+    <!-- 导航栏切换按钮 -->
+    <!-- <button class="nav-toggle-btn" id="navToggleBtn" title="显示/隐藏导航栏">
+      <i class="layui-icon layui-icon-shrink-right" id="toggleIcon"></i>
+    </button> -->
+
     <div class="layuimini-container">
       <div class="layuimini-main">
         <div class="layui-btn-container">
@@ -107,6 +194,13 @@
               font-weight: bold;
             "
           >
+            <button
+              class="nav-toggle-btn"
+              id="navToggleBtn"
+              title="显示/隐藏导航栏"
+            >
+              <i class="layui-icon layui-icon-shrink-right" id="toggleIcon"></i>
+            </button>
             电子病历
           </blockquote>
           <i class="layui-icon layui-icon-form" style="color: blue"></i>
@@ -431,6 +525,56 @@
         }
 
         $(".layuimini-container").show();
+
+        // 导航栏切换功能
+        var isNavHidden = localStorage.getItem("navHidden") === "true";
+
+        // 初始化导航栏状态
+        if (isNavHidden) {
+          $("body").addClass("nav-hidden");
+          $("#toggleIcon")
+            .removeClass("layui-icon-shrink-right")
+            .addClass("layui-icon-spread-left");
+        }
+
+        // 切换按钮点击事件
+        $("#navToggleBtn").on("click", function () {
+          var body = $("body");
+          var icon = $("#toggleIcon");
+
+          if (body.hasClass("nav-hidden")) {
+            // 显示导航栏
+            body.removeClass("nav-hidden");
+            icon
+              .removeClass("layui-icon-spread-left")
+              .addClass("layui-icon-shrink-right");
+            localStorage.setItem("navHidden", "false");
+          } else {
+            // 隐藏导航栏
+            body.addClass("nav-hidden");
+            icon
+              .removeClass("layui-icon-shrink-right")
+              .addClass("layui-icon-spread-left");
+            localStorage.setItem("navHidden", "true");
+          }
+        });
+
+        // 响应式处理：窄屏时自动隐藏导航栏
+        function checkScreenSize() {
+          if (window.innerWidth <= 768) {
+            if (!$("body").hasClass("nav-hidden")) {
+              $("#navToggleBtn").click();
+            }
+          }
+        }
+
+        // 页面加载时检查屏幕大小
+        checkScreenSize();
+
+        // 监听窗口大小变化
+        $(window).on("resize", function () {
+          checkScreenSize();
+        });
       });
     </script>
   </body>

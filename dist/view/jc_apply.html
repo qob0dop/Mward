@@ -57,6 +57,17 @@
         align-items: center !important;
         justify-content: center !important;
       }
+
+      /* 添加表格缩放的平滑过渡效果 */
+      .layui-table-box {
+        transition: transform 0.2s ease, width 0.2s ease;
+      }
+
+      /* 确保表格内部元素在缩放时能够正常调整 */
+      .layui-table-header table,
+      .layui-table-body table {
+        transition: width 0.2s ease;
+      }
     </style>
   </head>
   <body>
@@ -132,6 +143,84 @@
     <script src="../lib/layui-v2.6.3/layui.js" charset="utf-8"></script>
     <script src="../js/lay-config.js?v=1.0.4" charset="utf-8"></script>
     <script>
+      // 防抖函数
+      function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+          const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+          };
+          clearTimeout(timeout);
+          timeout = setTimeout(later, wait);
+        };
+      }
+
+      function scaleTableForMobile() {
+        const layuiTableBox = document.querySelector(".layui-table-box");
+        const layuiTableTool = document.querySelector(".layui-table-tool");
+        const targetWidth = layuiTableTool.offsetWidth;
+        const tableHeader = layuiTableBox.querySelector(".layui-table-header");
+        const tableRealWidth = tableHeader.scrollWidth;
+        console.log(
+          "targetWidth:",
+          targetWidth,
+          "tableRealWidth:",
+          tableRealWidth
+        );
+
+        if (
+          tableRealWidth !== targetWidth &&
+          tableRealWidth > 0 &&
+          targetWidth > 0
+        ) {
+          const scale = targetWidth / tableRealWidth;
+          layuiTableBox.style.transform = `scale(${scale})`;
+          layuiTableBox.style.transformOrigin = "top left";
+          layuiTableBox.style.width = `${100 / scale}%`;
+
+          // 重要：确保内部表格元素不被固定宽度限制
+          const headerTable = layuiTableBox.querySelector(
+            ".layui-table-header table"
+          );
+          const bodyTable = layuiTableBox.querySelector(
+            ".layui-table-body table"
+          );
+          if (headerTable) {
+            headerTable.style.width = "100%";
+            headerTable.style.minWidth = "unset";
+          }
+          if (bodyTable) {
+            bodyTable.style.width = "100%";
+            bodyTable.style.minWidth = "unset";
+          }
+        } else {
+          // 重置缩放
+          layuiTableBox.style.transform = `scale(1)`;
+          layuiTableBox.style.transformOrigin = "top left";
+          layuiTableBox.style.width = `100%`;
+
+          // 重置内部表格元素的样式
+          const headerTable = layuiTableBox.querySelector(
+            ".layui-table-header table"
+          );
+          const bodyTable = layuiTableBox.querySelector(
+            ".layui-table-body table"
+          );
+          if (headerTable) {
+            headerTable.style.width = "";
+            headerTable.style.minWidth = "";
+          }
+          if (bodyTable) {
+            bodyTable.style.width = "";
+            bodyTable.style.minWidth = "";
+          }
+        }
+      }
+
+      // 使用防抖处理 resize 事件
+      const debouncedScale = debounce(scaleTableForMobile, 150);
+      window.addEventListener("resize", debouncedScale);
       layui.use(["table", "appconfig", "layer", "form"], function () {
         var table = layui.table;
         var $ = layui.jquery;
@@ -170,7 +259,7 @@
           $.ajax({
             url:
               appconfig.api +
-              "/api/JcJy/GetJianChaList?ward_sn=" +
+              "/api/JcJy/GetJianChaList?hospital_dept=" +
               (localStorage.ward_sn || ""),
             type: "GET",
             dataType: "json",
@@ -449,8 +538,8 @@
                 width: 80,
                 templet: "#statusTpl",
               },
-              { field: "exam_type_name", title: "检查类型", width: 100 },
-              { field: "exam_sub_type_name", title: "检查项目", minWidth: 180 },
+              { field: "exam_type_name", title: "检查类型" },
+              { field: "exam_sub_type_name", title: "检查项目" },
               { field: "charge_amount", title: "数量", width: 60 },
               {
                 field: "apply_date",
@@ -482,6 +571,12 @@
               count: res.Data ? res.Data.length : 0,
               data: res.Data || [],
             };
+          },
+          done: function (res, curr, count) {
+            // 表格渲染完成后调用缩放函数
+            setTimeout(function () {
+              scaleTableForMobile();
+            }, 100);
           },
         });
 
@@ -702,6 +797,7 @@
                                 end: function () {
                                   layer.close(index);
                                   table.reload("jiancha-table");
+                                  setTimeout(scaleTableForMobile, 100);
                                 },
                               });
                             }
@@ -756,7 +852,16 @@
                     reportUrl += "?view=inline&display=web";
                   }
                   // 统一用window.open新标签页打开，无论PC还是移动端
-                  window.open(reportUrl, "_blank", "noopener,noreferrer");
+                  // window.open(reportUrl, "_blank", "noopener,noreferrer");
+                  layer.open({
+                    type: 1,
+                    title: "报告预览",
+                    area: ["90%", "90%"], // 设置弹窗大小
+                    content:
+                      '<iframe src="' +
+                      reportUrl +
+                      '" style="width:100%;height:100%;border:none;"></iframe>',
+                  });
                 } else {
                   layer.alert("未获取到有效的报告链接", { icon: 5 });
                 }
@@ -792,6 +897,7 @@
                       if (res.Status === 1) {
                         layer.msg("删除成功", { icon: 1 });
                         table.reload("jiancha-table");
+                        setTimeout(scaleTableForMobile, 100);
                       } else {
                         layer.msg("删除失败: " + (res.msg || "未知错误"), {
                           icon: 5,
@@ -860,6 +966,7 @@
                         { icon: 1 }
                       );
                       table.reload("jiancha-table");
+                      setTimeout(scaleTableForMobile, 100);
                     }
                   },
                   error: function () {
@@ -874,6 +981,7 @@
                         { icon: 1 }
                       );
                       table.reload("jiancha-table");
+                      setTimeout(scaleTableForMobile, 100);
                     }
                   },
                 });

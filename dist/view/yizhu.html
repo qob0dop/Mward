@@ -94,7 +94,7 @@
         color: #333 !important;
         /* border: 1px solid #e6e6e6 !important; */
         border-radius: 2px !important;
-        width: 110px;
+        width: 105px;
       }
 
       .layui-form-select .layui-select-title input {
@@ -329,11 +329,13 @@
       }
       /* 让说明textarea独占一行 */
       .form-fields textarea.layui-textarea {
-        min-height: 40px;
+        min-height: 30px;
+        height: 34px;
         resize: vertical;
+        width: 150px;
       }
       .form-fields .layui-form-item-textarea {
-        grid-column: 1 / span 2;
+        /* grid-column: 1 / span 2; */
         align-items: flex-start;
       }
 
@@ -429,11 +431,35 @@
           transform-origin: top left;
           width: 200%;
         } */
+
+        /* 调整"类"列宽度为20px - 使用多种选择器确保生效 */
+        .layui-table-view th[data-field="long_once_flag"],
+        .layui-table-view td[data-field="long_once_flag"] {
+          width: 20px !important;
+          min-width: 20px !important;
+          max-width: 20px !important;
+        }
+        .layui-table-view th[data-field="start_time_mm_dd"],
+        .layui-table-view td[data-field="start_time_mm_dd"],
+        .layui-table-view th[data-field="enter_time_mm_dd"],
+        .layui-table-view td[data-field="enter_time_mm_dd"],
+        .layui-table-view th[data-field="end_time_mm_dd"],
+        .layui-table-view td[data-field="end_time_mm_dd"] {
+          width: 40px !important;
+          min-width: 40px !important;
+          max-width: 40px !important;
+        }
+        .layui-table-view th[data-field="order_doctor_name"],
+        .layui-table-view td[data-field="order_doctor_name"] {
+          width: 60px !important;
+          min-width: 60px !important;
+          max-width: 60px !important;
+        }
       }
 
       /* 医生单元格背景色样式 */
       .doctor-cell-primary {
-        background-color: LightGray !important;
+        /* background-color: LightGray !important; */
         /* color: #1e9fff !important; */
         font-weight: bold;
       }
@@ -452,6 +478,15 @@
       .layui-row {
         height: auto;
         min-height: auto;
+      }
+      .layui-table td,
+      .layui-table th {
+        padding: 5px 8px;
+        border: 1px solid skyblue; /* 单元格边框 */
+        padding: 8px; /* 单元格内边距 */
+      }
+      .layui-table thead tr {
+        height: 30px; /* 设置行高为30px */
       }
     </style>
   </head>
@@ -607,28 +642,7 @@
                         />
                       </div>
                     </div>
-                    <div class="layui-form-item">
-                      <label class="layui-form-label">数量</label>
-                      <div class="layui-input-block">
-                        <input
-                          type="text"
-                          name="charge_amount"
-                          placeholder="如：1"
-                          class="layui-input"
-                        />
-                      </div>
-                    </div>
-                    <!-- <div class="layui-form-item">
-                      <label class="layui-form-label">执行科室</label>
-                      <div class="layui-input-block">
-                        <input
-                          type="text"
-                          name="exec_unit"
-                          placeholder="如：2020100"
-                          class="layui-input"
-                        />
-                      </div>
-                    </div> -->
+
                     <div class="layui-form-item">
                       <label class="layui-form-label">剂量</label>
                       <div class="layui-input-block">
@@ -643,12 +657,13 @@
                     <div class="layui-form-item">
                       <label class="layui-form-label">剂量单位</label>
                       <div class="layui-input-block">
-                        <input
-                          type="text"
+                        <select
                           name="doseage_unit"
-                          placeholder="剂量单位"
-                          class="layui-input"
-                        />
+                          id="doseage-unit-select"
+                          lay-filter="doseage-unit-select"
+                        >
+                          <option value="">请选择单位</option>
+                        </select>
                       </div>
                     </div>
                     <div class="layui-form-item">
@@ -659,8 +674,19 @@
                           id="frequ-select"
                           lay-filter="frequ-select"
                         >
-                          <option value="">请选择频率</option>
+                          <option value="">请选频率</option>
                         </select>
+                      </div>
+                    </div>
+                    <div class="layui-form-item">
+                      <label class="layui-form-label">数量</label>
+                      <div class="layui-input-block">
+                        <input
+                          type="text"
+                          name="charge_amount"
+                          placeholder="如：1"
+                          class="layui-input"
+                        />
                       </div>
                     </div>
                     <div class="layui-form-item">
@@ -671,16 +697,49 @@
                           id="supply-select"
                           lay-filter="supply-select"
                         >
-                          <option value="">请选择用法</option>
+                          <option value="">请选用法</option>
                         </select>
                       </div>
                     </div>
+                    <div class="layui-form-item">
+                      <label class="layui-form-label">是否皮试</label>
+                      <div class="layui-input-block">
+                        <select name="skin_test_flag">
+                          <option value="">无需皮试</option>
+                          <option value="1">需要皮试</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="layui-form-item">
+                      <label class="layui-form-label">开始时间</label>
+                      <div class="layui-input-block">
+                        <input
+                          type="datetime-local"
+                          name="start_time"
+                          id="start-time-input"
+                          class="layui-input"
+                        />
+                      </div>
+                    </div>
+
+                    <!-- <div class="layui-form-item">
+                      <label class="layui-form-label">执行科室</label>
+                      <div class="layui-input-block">
+                        <input
+                          type="text"
+                          name="exec_unit"
+                          placeholder="如：2020100"
+                          class="layui-input"
+                        />
+                      </div>
+                    </div> -->
+
                     <div class="layui-form-item layui-form-item-textarea">
-                      <label class="layui-form-label">说明</label>
+                      <label class="layui-form-label">备注</label>
                       <div class="layui-input-block">
                         <textarea
                           name="instruction"
-                          placeholder="请输入说明"
+                          placeholder="请输入备注"
                           class="layui-textarea"
                         ></textarea>
                       </div>
@@ -691,15 +750,6 @@
                         <select name="self_buy">
                           <option value="0">否</option>
                           <option value="1">是</option>
-                        </select>
-                      </div>
-                    </div>
-                    <div class="layui-form-item">
-                      <label class="layui-form-label">是否皮试</label>
-                      <div class="layui-input-block">
-                        <select name="skin_test_flag">
-                          <option value="">无需皮试</option>
-                          <option value="1">需要皮试</option>
                         </select>
                       </div>
                     </div>
@@ -733,7 +783,7 @@
     <script src="../js/lay-config.js?v=1.0.4" charset="utf-8"></script>
     <script>
       //js动态计算表格缩放比例
-      const tempAppconfig = "http://10.102.38.104:5251/";
+      const tempAppconfig = "http://10.102.38.109:5251/";
       function scaleTableForMobile() {
         const layuiTableBox = document.querySelector(".layui-table-box");
         if (!layuiTableBox) {
@@ -753,36 +803,32 @@
         let tableRealWidth = 0;
         if (tableHeader) {
           tableRealWidth = tableHeader.offsetWidth;
-          console.log("使用表头宽度:", tableRealWidth);
         } else if (tableBody) {
           tableRealWidth = tableBody.offsetWidth;
-          console.log("使用表体宽度:", tableRealWidth);
         } else if (layuiTable) {
           tableRealWidth = layuiTable.scrollWidth; // 使用scrollWidth获取真实内容宽度
-          console.log("使用表格内容宽度:", tableRealWidth);
         } else {
           tableRealWidth = layuiTableBox.scrollWidth;
         }
 
-        console.log("开始计算表格缩放比例");
         const windowWidth = window.innerWidth; // 手机屏幕或浏览器窗口的宽度
         const containerWidth = tableContainer.offsetWidth;
-        console.log("表格真实宽度:", tableRealWidth, "窗口宽度:", windowWidth);
 
-        if (tableRealWidth > containerWidth) {
+        if (tableRealWidth != containerWidth) {
           const scale = containerWidth / tableRealWidth;
-          console.log("需要缩放，缩放比例:", scale);
           layuiTableBox.style.transform = `scale(${scale})`;
           layuiTableBox.style.transformOrigin = "top left";
           layuiTableBox.style.width = `${100 / scale}%`;
         } else {
-          console.log("不需要缩放");
           layuiTableBox.style.transform = `scale(1)`;
           layuiTableBox.style.transformOrigin = "top left";
           layuiTableBox.style.width = `100%`;
         }
       }
       window.addEventListener("resize", scaleTableForMobile);
+
+      // 添加窗口大小变化时的列宽调整
+      window.addEventListener("resize", function () {});
       // layui.use(["table"], function () {
       //   setTimeout(scaleTableForMobile, 100);
       // });
@@ -819,6 +865,9 @@
         // 用法数据缓存
         var supplyData = [];
 
+        // 剂量单位数据缓存
+        var doseageUnitData = [];
+
         // 存储选择的模板数据
         var selectedCategoryData = null; // 一级分类数据
         var selectedDetailData = null; // 二级分类数据
@@ -847,14 +896,14 @@
                 return d.long_once_flag == "1" ? "长" : "临";
               },
             },
-            { field: "start_time_mm_dd", title: "日期", width: 80 },
+            { field: "start_time_mm_dd", title: "日期", width: 60 },
             {
               field: "order_name",
               title: "医嘱",
               align: "center",
             },
-            { field: "charge_amount", title: "数量", width: 80 },
-            { field: "frequ_name", title: "频率", width: 80 },
+            { field: "charge_amount", title: "数量", width: 40 },
+            { field: "frequ_name", title: "频率", width: 60 },
             { field: "supply_name", title: "用法", width: 80 },
             {
               field: "order_doctor_name",
@@ -871,7 +920,7 @@
               // fixed: "right",
               title: "操作",
               toolbar: "#rowActionBar",
-              width: 120,
+              width: 80,
               align: "center",
             },
           ],
@@ -959,6 +1008,7 @@
               icon: 3,
               title: "停止医嘱确认",
               btn: ["确定停止", "取消"],
+              area: ["400px", "200px"], // 设置对话框大小：宽度400px，高度200px
             },
             function (index) {
               // 构建API参数
@@ -969,10 +1019,6 @@
                 stop_doctor: doctorCode,
                 stop_time: stopTime,
               };
-
-              // 调试信息
-              console.log("停止医嘱API参数:", apiParams);
-              console.log("医嘱数据:", orderData);
 
               // 验证必要参数
               if (
@@ -993,7 +1039,6 @@
 
               // 显示加载提示
               var loadingIndex = layer.load(1, { shade: [0.3, "#000"] });
-              console.log("apiParams:", apiParams);
 
               // 调用停止医嘱API
               $.ajax({
@@ -1134,7 +1179,6 @@
             success: function (res) {
               if (res && res.Status && res.Data) {
                 frequencyData = res.Data;
-                console.log("加载频率数据成功:", frequencyData);
                 // 更新频率选择框选项
                 updateFrequencyOptions();
               } else {
@@ -1185,7 +1229,6 @@
             success: function (res) {
               if (res && res.Status && res.Data) {
                 supplyData = res.Data;
-                console.log("加载用法数据成功:", supplyData);
                 // 更新用法选择框选项
                 updateSupplyOptions();
               } else {
@@ -1227,6 +1270,126 @@
           // 重新渲染表单以更新下拉框
           form.render("select");
         }
+
+        // 加载剂量单位数据
+        function loadDoseageUnitData(templateData, callback) {
+          // 从模板数据中获取 serial 和 order_code
+          doseageUnitData = [];
+          var serial = templateData.Serial || templateData.serial || "00";
+          var order_code = templateData.order_code;
+
+          if (!order_code) {
+            console.warn("缺少 order_code，无法加载剂量单位数据");
+            if (typeof callback === "function") callback();
+            return;
+          }
+
+          $.ajax({
+            url: tempAppconfig + "api/MobileWard/GetYzDictList",
+            method: "GET",
+            dataType: "json",
+            data: {
+              serial: serial,
+              order_code: order_code,
+            },
+            success: function (res) {
+              if (res && res.Status && res.Data) {
+                // 解析返回的数据，提取四种单位类型
+                var unitOptions = [];
+                var data = res.Data[0];
+                if (!data) {
+                  updateDoseageUnitOptions();
+                  return;
+                }
+                // 检查并添加各种单位类型
+                if (data.mini_unit && data.mini1_name) {
+                  unitOptions.push({
+                    unit_code: data.mini_unit,
+                    unit_name: data.mini1_name,
+                    unit_type: "mini",
+                  });
+                }
+
+                if (data.pack_unit && data.pack_name) {
+                  unitOptions.push({
+                    unit_code: data.pack_unit,
+                    unit_name: data.pack_name,
+                    unit_type: "pack",
+                  });
+                }
+
+                if (data.vol_unit && data.vol_name) {
+                  unitOptions.push({
+                    unit_code: data.vol_unit,
+                    unit_name: data.vol_name,
+                    unit_type: "vol",
+                  });
+                }
+
+                if (data.weight_unit && data.weight_name) {
+                  unitOptions.push({
+                    unit_code: data.weight_unit,
+                    unit_name: data.weight_name,
+                    unit_type: "weight",
+                  });
+                }
+
+                doseageUnitData = unitOptions;
+                // 更新剂量单位选择框选项
+                updateDoseageUnitOptions();
+              } else {
+                console.warn("剂量单位数据格式异常:", res);
+                doseageUnitData = [];
+                updateDoseageUnitOptions();
+              }
+              if (typeof callback === "function") callback();
+            },
+            error: function (xhr, status, error) {
+              console.error("加载剂量单位数据失败:", error);
+              // 提供一些默认剂量单位作为备用
+              doseageUnitData = [
+                {
+                  unit_code: "mg",
+                  unit_name: "毫克(mg)",
+                  unit_type: "default",
+                },
+                { unit_code: "g", unit_name: "克(g)", unit_type: "default" },
+                {
+                  unit_code: "ml",
+                  unit_name: "毫升(ml)",
+                  unit_type: "default",
+                },
+                { unit_code: "片", unit_name: "片", unit_type: "default" },
+                { unit_code: "粒", unit_name: "粒", unit_type: "default" },
+                { unit_code: "支", unit_name: "支", unit_type: "default" },
+              ];
+              updateDoseageUnitOptions();
+              if (typeof callback === "function") callback();
+            },
+          });
+        }
+
+        // 更新剂量单位选择框选项
+        function updateDoseageUnitOptions() {
+          var options = '<option value="">请选择剂量单位</option>';
+
+          doseageUnitData.forEach(function (unit) {
+            options +=
+              '<option value="' +
+              unit.unit_code +
+              '" title="编码：' +
+              unit.unit_code +
+              " | 类型：" +
+              unit.unit_type +
+              '">' +
+              unit.unit_name +
+              "</option>";
+          });
+          $("#doseage-unit-select").html(options);
+
+          // 重新渲染表单以更新下拉框
+          form.render("select");
+        }
         //获取二级模板详情
         function loadTemplateDetails(categoryId, callback) {
           var category = orderTemplates.find(
@@ -1258,7 +1421,6 @@
                 // 缓存详情数据供后续使用
                 category.details = res.Data;
 
-                console.log("加载模板详情成功:", res.Data);
                 if (typeof callback === "function") {
                   callback(res.Data);
                 }
@@ -1288,6 +1450,17 @@
 
           // 清空表单
           $("#add-order-form")[0].reset();
+
+          // 设置开始时间默认为当前时间
+          var now = new Date();
+          var year = now.getFullYear();
+          var month = String(now.getMonth() + 1).padStart(2, "0");
+          var day = String(now.getDate()).padStart(2, "0");
+          var hours = String(now.getHours()).padStart(2, "0");
+          var minutes = String(now.getMinutes()).padStart(2, "0");
+          var currentDateTime =
+            year + "-" + month + "-" + day + "T" + hours + ":" + minutes;
+          $("#start-time-input").val(currentDateTime);
 
           // 弹出新增医嘱表单
           layer.open({
@@ -1338,6 +1511,8 @@
             // 更新频率和用法选择框
             updateFrequencyOptions();
             updateSupplyOptions();
+            // 初始化剂量单位选择框（提供默认选项）
+            updateDoseageUnitOptions();
 
             // 渲染第一列：模板分类列表
             function renderCategoryList() {
@@ -1384,7 +1559,7 @@
                       (template.order_name || "模板" + (index + 1)) +
                       "</div>" +
                       '<div class="template-desc">' +
-                      (template.instruction || "无描述") +
+                      (template.drug_specification || "无规格描述") +
                       "</div>" +
                       "</div>";
                   });
@@ -1447,7 +1622,16 @@
               );
               $('input[name="exec_unit"]').val(wardData.ward_sn || "");
               $('input[name="doseage"]').val(template.doseage || "");
-              $('input[name="doseage_unit"]').val(template.doseage_unit || "");
+
+              // 加载剂量单位数据（基于模板中的 serial 和 order_code）
+              loadDoseageUnitData(template, function () {
+                // 设置剂量单位的值
+                $('select[name="doseage_unit"]').val(
+                  template.doseage_unit || ""
+                );
+                form.render("select");
+              });
+
               $('select[name="frequ_code"]').val(template.frequ_code || "");
               $('select[name="supply_code"]').val(template.supply_code || "");
               $('textarea[name="instruction"]').val(template.instruction || "");
@@ -1619,8 +1803,8 @@
           var detailData = selectedDetailData; // 二级分类数据
 
           // console.log("表单数据 formData:", formData);
-          console.log("一级分类数据 categoryData:", categoryData);
-          console.log("二级分类数据 detailData:", detailData);
+          // console.log("一级分类数据 categoryData:", categoryData);
+          // console.log("二级分类数据 detailData:", detailData);
 
           // 获取当前用户和时间信息
           var currentUser = JSON.parse(
@@ -1668,7 +1852,7 @@
             end_time_2: "",
             enter_oper: doctorCode,
             enter_time: currentTime,
-            exec_unit: "",
+            exec_unit: formData.doseage_unit || "", // 将选中的剂量单位代码传给exec_unit
             exclusive_type: "1",
             fit_flag: "1",
             frequ_code: formData.frequ_code || "ONCE",
@@ -1685,7 +1869,7 @@
             parent_no: "",
             patient_id: patient_id,
             prev_flag: "",
-            Serial: "**",
+            Serial: detailData.serial,
             self_buy: formData.self_buy || "0",
             skin_test_flag: formData.skin_test_flag || "",
             spinfo_type: formData.self_buy === "1" ? "0" : "1",
@@ -1775,6 +1959,7 @@
               icon: 3,
               title: "撤销医嘱确认",
               btn: ["确定撤销", "取消"],
+              area: ["400px", "250px"], // 设置对话框大小：宽度400px，高度250px（因为内容更多）
             },
             function (index) {
               // 构建API参数
@@ -1885,6 +2070,39 @@
               // 表格渲染完成后调用缩放函数
               setTimeout(function () {
                 scaleTableForMobile();
+
+                // 在小屏幕上强制调整"类"列宽度
+                // if (window.innerWidth <= 768) {
+                //   // 调整表头
+                //   $("#yizhu-table")
+                //     .next(".layui-table-view")
+                //     .find("th[data-field='long_once_flag']")
+                //     .css({
+                //       width: "20px",
+                //       "min-width": "20px",
+                //       "max-width": "20px",
+                //     });
+
+                //   // 调整表体
+                //   $("#yizhu-table")
+                //     .next(".layui-table-view")
+                //     .find("td[data-field='long_once_flag']")
+                //     .css({
+                //       width: "20px",
+                //       "min-width": "20px",
+                //       "max-width": "20px",
+                //     });
+
+                //   // 如果上面的选择器不生效，尝试使用第一列
+                //   $("#yizhu-table")
+                //     .next(".layui-table-view")
+                //     .find("th:first-child, td:first-child")
+                //     .css({
+                //       width: "20px",
+                //       "min-width": "20px",
+                //       "max-width": "20px",
+                //     });
+                // }
               }, 100);
 
               // 根据医嘱类型设置行背景色
@@ -2001,6 +2219,39 @@
           console.log("开嘱人类型select触发了:", data.value);
           currentFilters.roleType = data.value;
           applyFilters();
+        });
+
+        // 医嘱名称输入框变化事件 - 用于触发剂量单位数据加载
+        $(document).on("input blur", 'input[name="order_name"]', function () {
+          var orderName = $(this).val().trim();
+          if (
+            orderName &&
+            selectedDetailData &&
+            selectedDetailData.order_code
+          ) {
+            // 如果有订单名称且有选定的模板数据，重新加载剂量单位数据
+            loadDoseageUnitData(selectedDetailData);
+          }
+        });
+
+        // 剂量单位下拉框点击事件 - 当没有模板数据时提供手动加载选项
+        $(document).on("click", "#doseage-unit-select", function () {
+          if (doseageUnitData.length === 0 && !selectedDetailData) {
+            // 如果没有剂量单位数据且没有选定模板，提供一些默认选项
+            doseageUnitData = [
+              { unit_code: "mg", unit_name: "毫克(mg)", unit_type: "default" },
+              { unit_code: "g", unit_name: "克(g)", unit_type: "default" },
+              { unit_code: "ml", unit_name: "毫升(ml)", unit_type: "default" },
+              { unit_code: "L", unit_name: "升(L)", unit_type: "default" },
+              { unit_code: "片", unit_name: "片", unit_type: "default" },
+              { unit_code: "粒", unit_name: "粒", unit_type: "default" },
+              { unit_code: "支", unit_name: "支", unit_type: "default" },
+              { unit_code: "瓶", unit_name: "瓶", unit_type: "default" },
+              { unit_code: "盒", unit_name: "盒", unit_type: "default" },
+              { unit_code: "袋", unit_name: "袋", unit_type: "default" },
+            ];
+            updateDoseageUnitOptions();
+          }
         });
 
         // 新增医嘱按钮事件
