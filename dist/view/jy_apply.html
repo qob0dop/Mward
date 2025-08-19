@@ -362,6 +362,188 @@
         transition: width 0.2s ease;
       }
     </style> -->
+
+    <style>
+      /* 套餐选择弹窗样式（检验页面） */
+      .package-form {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .package-content {
+        flex: 1;
+        overflow: hidden;
+      }
+
+      .package-selector {
+        display: flex;
+        height: 100%;
+        gap: 1px;
+      }
+
+      .package-left {
+        flex: 0 0 220px;
+        border-right: 1px solid #e6e6e6;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .package-right {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .package-list {
+        flex: 1;
+        overflow-y: auto;
+        max-height: 280px;
+      }
+
+      .package-item {
+        padding: 10px;
+        border-bottom: 1px solid #f0f0f0;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .package-item:hover {
+        background: #f5f5f5;
+      }
+
+      .package-item.selected {
+        background: lightgray;
+        color: #fff;
+      }
+
+      .package-title {
+        font-weight: bold;
+        margin-bottom: 4px;
+        font-size: 13px;
+      }
+
+      .package-desc {
+        font-size: 12px;
+        color: #666;
+        line-height: 1.3;
+      }
+
+      .package-item.selected .package-desc {
+        color: rgba(255, 255, 255, 0.8);
+      }
+
+      .items-container {
+        flex: 1;
+        overflow-y: auto;
+        max-height: 280px;
+      }
+
+      .items-header {
+        padding: 8px;
+        background: #1e9fff;
+        color: #fff;
+        font-weight: bold;
+        text-align: center;
+        font-size: 13px;
+      }
+
+      .items-list {
+        padding: 10px;
+      }
+
+      .item-checkbox {
+        display: block;
+        padding: 8px 0;
+        border-bottom: 1px solid #f0f0f0;
+        cursor: pointer;
+      }
+
+      .item-checkbox:hover {
+        background: #f5f5f5;
+      }
+
+      .item-name {
+        margin-left: 8px;
+        font-size: 13px;
+      }
+
+      .no-package-selected {
+        text-align: center;
+        padding: 50px 20px;
+        color: #999;
+        font-size: 13px;
+      }
+
+      .dialog-buttons {
+        padding: 15px;
+        border-top: 1px solid #e6e6e6;
+        text-align: right;
+        flex-shrink: 0;
+      }
+
+      .dialog-buttons .layui-btn {
+        margin-left: 10px;
+      }
+
+      /* 窄屏响应式布局：上下分布 */
+      @media (max-width: 768px) {
+        .package-selector {
+          flex-direction: column;
+          gap: 0;
+        }
+
+        .package-left {
+          flex: 0 0 auto;
+          border-right: none;
+          border-bottom: 1px solid #e6e6e6;
+          height: 40%;
+          width: 100%;
+        }
+
+        .package-right {
+          flex: 1;
+          min-height: 200px;
+          width: 100%;
+        }
+
+        .items-container {
+          max-height: 180px;
+        }
+
+        .package-item {
+          padding: 8px;
+        }
+        .package-title {
+          font-size: 12px;
+        }
+        .package-desc {
+          font-size: 11px;
+        }
+        .items-header {
+          font-size: 12px;
+        }
+        .item-name {
+          font-size: 12px;
+        }
+      }
+
+      /* 更窄屏优化 */
+      @media (max-width: 480px) {
+        .items-container {
+          max-height: 150px;
+        }
+        .dialog-buttons {
+          padding: 10px;
+        }
+        .dialog-buttons .layui-btn {
+          font-size: 12px;
+          height: 32px;
+          line-height: 32px;
+          padding: 0 12px;
+        }
+      }
+    </style>
   </head>
   <body>
     <div class="layui-container">
@@ -951,7 +1133,8 @@
                     type: 1,
                     title:
                       '<i class="layui-icon layui-icon-add-1"></i> 选择检验项目',
-                    area: ["85%", "380px"] /* 调整弹窗高度为380px */,
+                    area: ["90%", "90%"],
+                    offset: window.innerWidth < 768 ? "10px" : "auto", // 移动端靠近顶部，桌面端居中
                     maxmin: true,
                     resize: false,
                     content:
