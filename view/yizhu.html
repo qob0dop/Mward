@@ -338,7 +338,7 @@
     </style>
   </head>
   <body>
-    <div class="layui-container">
+    <div class="layui-container" style="display: flex; flex-direction: column">
       <!-- 操作栏 -->
       <form class="layui-form">
         <div
@@ -427,6 +427,12 @@
               <i class="layui-icon layui-icon-template-1"></i>
               模板列表
             </div>
+            <input
+              type="search"
+              id="template-search"
+              placeholder="搜索模板..."
+              class="layui-input"
+            />
             <div class="category-list" id="category-list">
               <div class="no-data">正在加载分类...</div>
             </div>
@@ -472,7 +478,7 @@
     <script src="/js/lay-config.js?v=1.0.4" charset="utf-8"></script>
     <script>
       //js动态计算表格缩放比例
-      const tempAppconfig = "http://10.102.38.103:5251/";
+      const tempAppconfig = "http://10.102.38.107:5251/";
       function scaleTableForMobile() {
         const layuiTableBox = document.querySelector(".layui-table-box");
         if (!layuiTableBox) {
@@ -1236,7 +1242,45 @@
             },
           });
         }
-
+        function debounce(fn, wait) {
+          var t;
+          return function () {
+            var args = arguments,
+              ctx = this;
+            clearTimeout(t);
+            t = setTimeout(function () {
+              fn.apply(ctx, args);
+            }, wait);
+          };
+        }
+        function filterOrderTemplates(query) {
+          if (!query) return orderTemplates.slice(); // 返回所有
+          var q = query.trim().toLowerCase();
+          return orderTemplates.filter(function (item) {
+            if (!item) return false;
+            var name = (item.pattern_name || "").toLowerCase();
+            var py = (item.py_code || "").toLowerCase();
+            var d = (item.d_code || "").toLowerCase();
+            return (
+              name.indexOf(q) !== -1 ||
+              py.indexOf(q) !== -1 ||
+              d.indexOf(q) !== -1
+            );
+          });
+        }
+        $("#template-search")
+          .off("input")
+          .on(
+            "input",
+            function () {
+              console.log("搜索触发");
+            },
+            debounce(function (e) {
+              var q = $(this).val();
+              var filtered = filterOrderTemplates(q);
+              renderCategoryList(filtered);
+            }, 200)
+          );
         // 新增医嘱功能
         function addMedicalOrder() {
           // 清空之前的模板数据
@@ -1350,6 +1394,32 @@
               }
               $("#category-list").html(html);
             }
+            // 在 renderCategoryList 定义后立即添加：对外暴露一个可接收 filtered 参数的接口
+            window.renderCategoryList = function (filtered) {
+              // 如果传入数组则使用它，否则回退到原来的 orderTemplates
+              var list = Array.isArray(filtered)
+                ? filtered
+                : orderTemplates || [];
+              var html = "";
+              if (!list || list.length === 0) {
+                html = '<div class="no-data">暂无模板分类</div>';
+              } else {
+                list.forEach(function (category) {
+                  html +=
+                    '<div class="category-item" data-id="' +
+                    category.pattern_code +
+                    '">' +
+                    '<div class="category-name">' +
+                    category.pattern_name +
+                    "</div>" +
+                    '<div class="category-desc">创建者: ' +
+                    (category.create_name || "未知") +
+                    "</div>" +
+                    "</div>";
+                });
+              }
+              $("#category-list").html(html);
+            };
             // 渲染右侧：小医嘱表格（可勾选/编辑）
             function renderSubordersTable(suborders) {
               if (!suborders || suborders.length === 0) {
@@ -1383,6 +1453,7 @@
                   selected: true, // 自定义字段
                   LAY_CHECKED: true, // Layui 默认勾选
                   order_name: item.order_name || "",
+                  drug_specification: item.drug_specification || "",
                   doseage: item.doseage || "",
                   doseage_unit: item.doseage_unit || "",
                   doseage_unit_name: item.doseage_unit || "",
@@ -1443,6 +1514,14 @@
                       title: "医嘱",
                       minWidth: 160,
                       edit: "text",
+                    },
+                    {
+                      field: "drug_specification",
+                      title: "规格",
+                      width: 140,
+                      templet: function (d) {
+                        return d.drug_specification || "";
+                      },
                     },
                     {
                       field: "doseage",
@@ -1620,8 +1699,8 @@
                     start_time: currentTime,
                     status_flag: "0",
                     supply_code: row.supply_code || raw.supply_code || "",
-                    doseage: row.doseage || raw.doseage || "",
-                    doseage_unit: row.doseage_unit || raw.doseage_unit || "",
+                    doseage: row.doseage || raw.doseage || null,
+                    doseage_unit: row.doseage_unit || raw.doseage_unit || null,
                     frequ_code: row.frequ_code || raw.frequ_code || "ONCE",
                     ward_sn: wardData.ward_sn || "",
                   };
@@ -2317,6 +2396,9 @@
               supplyName +
               "</td>" +
               "<td>" +
+              it.drug_specification +
+              "</td>" +
+              "<td>" +
               (it.instruction || "") +
               "</td>" +
               '<td><button type="button" class="layui-btn layui-btn-xs layui-btn-danger btn-delete-draft">删除</button></td>' +
@@ -2939,6 +3021,7 @@
                   <col width="120" />
                   <col width="130" />
                   <col />
+                  <col />
                   <col width="80" />
                 </colgroup>
                 <thead>
@@ -2948,6 +3031,7 @@
                     <th>数量</th>
                     <th>频率</th>
                     <th>用法</th>
+                    <th>规格</th>
                     <th>嘱托</th>
                     <th>操作</th>
                   </tr>

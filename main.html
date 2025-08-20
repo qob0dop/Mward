@@ -133,9 +133,30 @@
     </style>
   </head>
   <script>
+    // Disable Service Worker: do not register, and proactively unregister existing ones
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", function () {
-        navigator.serviceWorker.register("service-worker.js");
+        // Unregister all existing service workers
+        navigator.serviceWorker
+          .getRegistrations()
+          .then(function (regs) {
+            regs.forEach(function (reg) {
+              reg.unregister();
+            });
+          })
+          .catch(function () {});
+
+        // Best-effort: clear caches created by previous SW versions
+        if (window.caches) {
+          caches
+            .keys()
+            .then(function (keys) {
+              keys.forEach(function (k) {
+                caches.delete(k);
+              });
+            })
+            .catch(function () {});
+        }
       });
     }
   </script>
