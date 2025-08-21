@@ -154,7 +154,9 @@
         background: #fff;
         border-right: none;
       }
-
+      .layui-table-body {
+        overflow-x: hidden;
+      }
       /* 区域标题样式 */
       .section-header {
         padding: 12px 16px;
@@ -278,7 +280,9 @@
           transform-origin: top left;
           width: 200%;
         } */
-
+        .layui-container .layui-table-view {
+          display: block;
+        }
         /* 调整"类"列宽度为20px - 使用多种选择器确保生效 */
         .layui-table-view th[data-field="long_once_flag"],
         .layui-table-view td[data-field="long_once_flag"] {
@@ -334,6 +338,10 @@
       }
       .layui-table thead tr {
         height: 30px; /* 设置行高为30px */
+      }
+      .layui-table-page {
+        /* position: absolute;
+        bottom: 0; */
       }
     </style>
   </head>
@@ -478,7 +486,7 @@
     <script src="/js/lay-config.js?v=1.0.4" charset="utf-8"></script>
     <script>
       //js动态计算表格缩放比例
-      const tempAppconfig = "http://10.102.38.107:5251/";
+      const tempAppconfig = "http://10.102.38.102:5251/";
       function scaleTableForMobile() {
         const layuiTableBox = document.querySelector(".layui-table-box");
         if (!layuiTableBox) {
@@ -514,6 +522,7 @@
           layuiTableBox.style.transform = `scale(${scale})`;
           layuiTableBox.style.transformOrigin = "top left";
           layuiTableBox.style.width = `${100 / scale}%`;
+          layuiTableBox.style.height = `${100 / scale}%`;
         } else {
           layuiTableBox.style.transform = `scale(1)`;
           layuiTableBox.style.transformOrigin = "top left";
@@ -2122,7 +2131,7 @@
             data: data,
             defaultToolbar: [],
             cols: tableCols,
-            height: "full-60", // 减去过滤按钮区域的高度
+            // height: 900, // 减去过滤按钮区域的高度
             page: true,
             limit: 50,
             text: {
@@ -2132,7 +2141,6 @@
               // 表格渲染完成后调用缩放函数
               setTimeout(function () {
                 scaleTableForMobile();
-
                 // 在小屏幕上强制调整"类"列宽度
                 // if (window.innerWidth <= 768) {
                 //   // 调整表头
@@ -2144,7 +2152,6 @@
                 //       "min-width": "20px",
                 //       "max-width": "20px",
                 //     });
-
                 //   // 调整表体
                 //   $("#yizhu-table")
                 //     .next(".layui-table-view")
@@ -2154,7 +2161,6 @@
                 //       "min-width": "20px",
                 //       "max-width": "20px",
                 //     });
-
                 //   // 如果上面的选择器不生效，尝试使用第一列
                 //   $("#yizhu-table")
                 //     .next(".layui-table-view")
@@ -2874,7 +2880,7 @@
                 lay-filter="manual-order-form"
               >
                 <div class="layui-form-item">
-                  <label class="layui-form-label">编码</label>
+                  <!-- <label class="layui-form-label">编码</label>
                   <div class="layui-input-block">
                     <input
                       type="text"
@@ -2884,7 +2890,7 @@
                       class="layui-input"
                       disabled
                     />
-                  </div>
+                  </div> -->
                   <label class="layui-form-label">医嘱名</label>
                   <div class="layui-input-block">
                     <input
@@ -2969,7 +2975,7 @@
                     </div>
                   </div>
                 </div>
-                <div class="layui-form-item">
+                <!-- <div class="layui-form-item">
                   <label class="layui-form-label">嘱托</label>
                   <div class="layui-input-block">
                     <input
@@ -2979,7 +2985,7 @@
                       class="layui-input"
                     />
                   </div>
-                </div>
+                </div> -->
                 <div class="layui-form-item full-row">
                   <div class="layui-input-block">
                     <button
