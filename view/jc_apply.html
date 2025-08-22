@@ -331,6 +331,42 @@
     <script src="/lib/layui-v2.6.3/layui.js" charset="utf-8"></script>
     <script src="/js/lay-config.js?v=1.0.4" charset="utf-8"></script>
     <script>
+      // HBuilder App环境下打开URL的通用工具函数
+      function openUrlInBrowser(url, options) {
+        options = options || {};
+        var title = options.title || "打开链接";
+        var confirmMessage = options.confirmMessage || "即将使用系统浏览器打开链接，确定继续吗？";
+        var showConfirm = options.showConfirm !== false; // 默认显示确认框
+        
+        function doOpen() {
+          if (window.plus) {
+            // HBuilder App环境：使用系统浏览器打开
+            try {
+              plus.runtime.openURL(url, function(error) {
+                layer.msg("无法打开链接：" + error.message, { icon: 5 });
+              });
+            } catch (e) {
+              layer.msg("打开链接失败：" + e.message, { icon: 5 });
+            }
+          } else if (window.cordova && window.cordova.InAppBrowser) {
+            // Cordova环境：使用InAppBrowser插件
+            cordova.InAppBrowser.open(url, '_system');
+          } else {
+            // 普通浏览器环境：新标签页打开
+            window.open(url, '_blank', 'noopener,noreferrer');
+          }
+        }
+        
+        if (showConfirm && window.plus) {
+          layer.confirm(confirmMessage, { icon: 3, title: title }, function(index) {
+            layer.close(index);
+            doOpen();
+          });
+        } else {
+          doOpen();
+        }
+      }
+
       // 防抖函数
       function debounce(func, wait) {
         let timeout;
@@ -1023,9 +1059,16 @@
 
           var loginUserData = JSON.parse(loginUser);
           if (layEvent === "detail") {
-            // 详情弹窗：请求接口获取报告URL并直接新标签页打开（SPA）
+            // 详情弹窗：请求接口获取报告URL并用设备浏览器打开
             var url =
               "http://10.101.199.142:5130/api/Third/GetTag20012?patient_id=001015074100&exam_no=2025072115484&exam_type=01";
+
+            // 显示加载提示
+            var loadingIndex = layer.msg("正在获取报告链接...", {
+              icon: 16,
+              shade: 0.3,
+              time: 0,
+            });
 
             $.ajax({
               url: url,
@@ -1033,6 +1076,8 @@
               dataType: "json",
               timeout: 15000, // 15秒超时
               success: function (res) {
+                layer.close(loadingIndex);
+                
                 if (res.status === 1 && res.data) {
                   var reportUrl = res.data;
                   if (reportUrl.indexOf("?") > -1) {
@@ -1040,22 +1085,38 @@
                   } else {
                     reportUrl += "?view=inline&display=web";
                   }
-                  // 统一用window.open新标签页打开，无论PC还是移动端
-                  // window.open(reportUrl, "_blank", "noopener,noreferrer");
-                  layer.open({
-                    type: 1,
-                    title: "报告预览",
-                    area: ["90%", "90%"], // 设置弹窗大小
-                    content:
-                      '<iframe src="' +
-                      reportUrl +
-                      '" style="width:100%;height:100%;border:none;"></iframe>',
-                  });
+                  
+                  // 检测运行环境并选择打开方式
+                  if (window.plus) {
+                    // HBuilder App环境：使用系统浏览器打开
+                    openUrlInBrowser(reportUrl, {
+                      title: "打开报告",
+                      confirmMessage: "即将使用系统浏览器打开报告，确定继续吗？"
+                    });
+                  } else {
+                    // 普通浏览器环境：使用弹窗预览或新标签页
+                    if (window.innerWidth < 768) {
+                      // 移动端：新标签页打开
+                      openUrlInBrowser(reportUrl, { showConfirm: false });
+                    } else {
+                      // 桌面端：弹窗预览
+                      layer.open({
+                        type: 1,
+                        title: "报告预览",
+                        area: ["90%", "90%"],
+                        content:
+                          '<iframe src="' +
+                          reportUrl +
+                          '" style="width:100%;height:100%;border:none;"></iframe>',
+                      });
+                    }
+                  }
                 } else {
                   layer.alert("未获取到有效的报告链接", { icon: 5 });
                 }
               },
               error: function (xhr) {
+                layer.close(loadingIndex);
                 layer.alert(
                   "获取报告链接失败：" + (xhr.statusText || "网络错误"),
                   { icon: 5 }
