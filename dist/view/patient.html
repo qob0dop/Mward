@@ -423,24 +423,72 @@
         }
         /* 窄屏时病人信息表单样式调整 */
         .layui-form-item {
-          flex-direction: column !important;
-          align-items: stretch !important;
+          flex-direction: row !important;
+          align-items: center !important;
+          flex-wrap: nowrap !important;
+          margin-bottom: 15px !important;
         }
-        .layui-form-item .layui-form-label,
+        .layui-form-item .layui-form-label {
+          width: 30% !important;
+          max-width: 80px !important;
+          text-align: left !important;
+          margin-bottom: 0 !important;
+          font-size: 13px;
+          padding: 9px 10px !important;
+          height: auto !important;
+          line-height: 1.4 !important;
+          display: flex !important;
+          align-items: center !important;
+        }
         .layui-form-item .layui-input-inline {
-          width: 100% !important;
-          max-width: 100% !important;
+          width: calc(70% - 8px) !important;
+          max-width: calc(100% - 88px) !important;
           text-align: left;
-          margin-bottom: 4px;
+          margin-bottom: 0 !important;
+          margin-left: 0 !important;
+          display: flex !important;
+          align-items: center !important;
+        }
+        
+        /* 窄屏时输入框样式优化 */
+        .layui-form-item .layui-input-inline .layui-input,
+        .layui-form-item .layui-input-inline .layui-select,
+        .layui-form-item .layui-input-inline .layui-textarea {
+          font-size: 13px !important;
+          padding: 9px 8px !important;
+          height: auto !important;
+          line-height: 1.4 !important;
+          border-radius: 4px !important;
+          margin: 0 !important;
+        }
+      }
+      
+      /* 超窄屏幕（小于480px）进一步优化 */
+      @media (max-width: 480px) {
+        .layui-form-item .layui-form-label {
+          width: 32% !important;
+          max-width: 70px !important;
+          font-size: 12px !important;
+          padding: 9px 8px !important;
         }
         .layui-form-item .layui-input-inline {
-          margin-left: 0 !important;
+          width: calc(68% - 8px) !important;
+          max-width: calc(100% - 78px) !important;
         }
+        
+        .layui-form-item .layui-input-inline .layui-input,
+        .layui-form-item .layui-input-inline .layui-select,
+        .layui-form-item .layui-input-inline .layui-textarea {
+          font-size: 12px !important;
+          padding: 9px 6px !important;
+        }
+        
         .bottom-tabs {
           transform: scale(0.8);
           transform-origin: bottom left;
           width: 125%;
         }
+        
         .tab-btn {
           min-width: 70px;
           font-size: 16px;
