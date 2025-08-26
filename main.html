@@ -41,6 +41,9 @@
       content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
     />
     <style>
+      .layui-elem-quote{
+        margin-bottom: 0;
+      }
       .layui-table,
       .layui-table-view {
         margin: 0;
@@ -86,8 +89,8 @@
         background: #f4f8fb !important;
       }
       .layui-btn-container .layui-btn {
-        margin: 0;
-        margin-bottom: 7px;
+        margin: 10px;
+        margin-top: 0;
       }
       /* 响应式样式 */
       @media screen and (max-width: 768px) {
@@ -182,7 +185,7 @@
           <div
             style="display: flex; align-items: center; gap: 15px; flex-wrap: nowrap; overflow: hidden; flex: 1; min-width: 0;"
           >
-            <span>病区列表</span>
+            <span style="margin-left: 5px;">病区列表</span>
             <span style="display: flex; align-items: center; min-width: 0;">
               <i
                 class="layui-icon layui-icon-form"
@@ -212,7 +215,7 @@
             type="button"
             class="layui-btn layui-btn-sm layui-btn-normal"
             onclick="javascrript: location.href = 'view/wardlist.html';"
-            style="font-size:14px;float:right"
+            style="font-size:14px;float:right;margin: 0;"
           >
             <i class="layui-icon"></i>返回
           </button>

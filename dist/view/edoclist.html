@@ -175,7 +175,7 @@
       }
     </style>
   </head>
-  <body>
+  <body class="nav-hidden">
     <!-- 导航栏切换按钮 -->
     <!-- <button class="nav-toggle-btn" id="navToggleBtn" title="显示/隐藏导航栏">
       <i class="layui-icon layui-icon-shrink-right" id="toggleIcon"></i>
@@ -399,7 +399,7 @@
                 return;
               }
 
-              console.log(records);
+              // console.log(records);
               const groupMap = {};
               records.forEach((record) => {
                 if (!groupMap[record.parent_name])
@@ -526,16 +526,27 @@
 
         $(".layuimini-container").show();
 
-        // 导航栏切换功能
-        var isNavHidden = localStorage.getItem("navHidden") === "true";
-
-        // 初始化导航栏状态
-        if (isNavHidden) {
-          $("body").addClass("nav-hidden");
-          $("#toggleIcon")
-            .removeClass("layui-icon-shrink-right")
-            .addClass("layui-icon-spread-left");
-        }
+        // 导航栏切换功能（默认隐藏，按本地偏好/屏幕宽度恢复）
+        (function initNavHidden() {
+          var body = $("body");
+          var icon = $("#toggleIcon");
+          var pref = localStorage.getItem("navHidden");
+          var shouldHide = true; // 默认隐藏
+          if (pref === "false" && window.innerWidth > 768) {
+            shouldHide = false;
+          }
+          if (shouldHide) {
+            body.addClass("nav-hidden");
+            icon
+              .removeClass("layui-icon-shrink-right")
+              .addClass("layui-icon-spread-left");
+          } else {
+            body.removeClass("nav-hidden");
+            icon
+              .removeClass("layui-icon-spread-left")
+              .addClass("layui-icon-shrink-right");
+          }
+        })();
 
         // 切换按钮点击事件
         $("#navToggleBtn").on("click", function () {

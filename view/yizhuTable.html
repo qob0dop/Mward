@@ -7,9 +7,9 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
     />
-    <link rel="stylesheet" href="../lib/layui-v2.6.3/css/layui.css" media="all" />
-    <link rel="stylesheet" href="../css/public.css" media="all" />
-    <link rel="stylesheet" href="../css/table/iframe.css" media="all" />
+    <link rel="stylesheet" href="/lib/layui-v2.6.3/css/layui.css" media="all" />
+    <link rel="stylesheet" href="/css/public.css" media="all" />
+    <link rel="stylesheet" href="/css/table/iframe.css" media="all" />
     <style>
       .layui-layer-setwin {
         display: none;
@@ -566,11 +566,11 @@
       </div>
     </div>
 
-    <script src="../lib/layui-v2.6.3/layui.js" charset="utf-8"></script>
-    <script src="../js/lay-config.js?v=1.0.4" charset="utf-8"></script>
+    <script src="/lib/layui-v2.6.3/layui.js" charset="utf-8"></script>
+    <script src="/js/lay-config.js?v=1.0.4" charset="utf-8"></script>
     <script>
       //js动态计算表格缩放比例
-      const tempAppconfig = "http://10.102.38.106:5251/";
+      const tempAppconfig = "http://10.102.38.107:5251/";
       function scaleTableForMobile() {
         const layuiTableBox = document.querySelector(".layui-table-box");
         if (!layuiTableBox) {
@@ -707,7 +707,7 @@
         };
         var tableCols = [
           [
-            { title: "开始", colspan: 7, align: "center" },
+            { title: "开始", colspan: 8, align: "center" },
             { title: "录入", colspan: 1, align: "center" },
             { title: "停止", colspan: 1, align: "center" },
             { title: "操作", colspan: 1, align: "center" },
@@ -729,6 +729,19 @@
               field: "order_name",
               title: "医嘱",
               align: "center",
+            },
+            { 
+              field: "doseage", 
+              title: "剂量", 
+              width: 60,
+              templet: function(d) {
+                var doseage = d.doseage || "";
+                var unit = d.doseage_unit || "";
+                if (!doseage && !unit) return "";
+                if (!doseage) return unit;
+                if (!unit) return doseage;
+                return doseage + " " + unit;
+              }
             },
             { field: "charge_amount", title: "数量", width: 40 },
             { field: "frequ_name", title: "频率", width: 60 },
@@ -1102,7 +1115,11 @@
         function supplyCodeToName(code) {
           if (!code) return "";
           var list = Array.isArray(supplyData) ? supplyData : [];
+          console.log(list);
+          
           var it = list.find(function (s) {
+            console.log(String(s.supply_code || "").toUpperCase(), String(code).toUpperCase());
+
             return (
               String(s.supply_code || "").toUpperCase() ===
               String(code).toUpperCase()
@@ -1790,6 +1807,7 @@
                     supply_code: row.supply_code || raw.supply_code || "",
                     doseage: row.doseage || raw.doseage || null,
                     doseage_unit: row.doseage_unit || raw.doseage_unit || null,
+                    doseage_unit_name: row.doseage_unit_name || raw.doseage_unit_name || row.doseage_unit || raw.doseage_unit || null,
                     frequ_code: row.frequ_code || raw.frequ_code || "ONCE",
                     ward_sn: wardData.ward_sn || "",
                   };
@@ -2554,6 +2572,16 @@
           }
         }
 
+        // 获取选择框选中项的显示文本
+        function getSelectedOptionText(selector) {
+          var $select = $(selector);
+          if (!$select.length) return "";
+          var selectedValue = $select.val();
+          if (!selectedValue) return "";
+          var $selectedOption = $select.find('option[value="' + selectedValue + '"]');
+          return $selectedOption.length ? $selectedOption.text() : "";
+        }
+
         // 表单 -> 草稿对象
         function manualFormToOrder() {
           var currentUser = JSON.parse(
@@ -2628,6 +2656,7 @@
             // 附带前端表单专用字段，便于显示
             doseage: doseage,
             doseage_unit: doseage_unit,
+            doseage_unit_name: getSelectedOptionText("#manual-unit-select") || doseage_unit,
           };
         }
 
@@ -2670,6 +2699,7 @@
           if (!unitVal)
             unitVal = ($("#manual-doseage-unit").val() || "").trim();
           d.doseage_unit = unitVal;
+          d.doseage_unit_name = getSelectedOptionText("#manual-unit-select") || unitVal;
           d.charge_amount = $("#manual-charge-amount").val().trim() || "1";
           d.long_once_flag = $("#manual-long-flag").val() || "1";
           d.frequ_code = $("#manual-frequ-select").val() || "";
@@ -2921,7 +2951,8 @@
             var dosePart = it.doseage
               ? "<span>剂量：" +
                 (it.doseage || "") +
-                (it.doseage_unit ? " " + it.doseage_unit : "") +
+                (it.doseage_unit_name ? " " + it.doseage_unit_name : 
+                 it.doseage_unit ? " " + it.doseage_unit : "") +
                 "</span>"
               : "";
 

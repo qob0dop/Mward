@@ -335,14 +335,15 @@
       function openUrlInBrowser(url, options) {
         options = options || {};
         var title = options.title || "打开链接";
-        var confirmMessage = options.confirmMessage || "即将使用系统浏览器打开链接，确定继续吗？";
+        var confirmMessage =
+          options.confirmMessage || "即将使用系统浏览器打开链接，确定继续吗？";
         var showConfirm = options.showConfirm !== false; // 默认显示确认框
-        
+
         function doOpen() {
           if (window.plus) {
             // HBuilder App环境：使用系统浏览器打开
             try {
-              plus.runtime.openURL(url, function(error) {
+              plus.runtime.openURL(url, function (error) {
                 layer.msg("无法打开链接：" + error.message, { icon: 5 });
               });
             } catch (e) {
@@ -350,18 +351,22 @@
             }
           } else if (window.cordova && window.cordova.InAppBrowser) {
             // Cordova环境：使用InAppBrowser插件
-            cordova.InAppBrowser.open(url, '_system');
+            cordova.InAppBrowser.open(url, "_system");
           } else {
             // 普通浏览器环境：新标签页打开
-            window.open(url, '_blank', 'noopener,noreferrer');
+            window.open(url, "_blank", "noopener,noreferrer");
           }
         }
-        
+
         if (showConfirm && window.plus) {
-          layer.confirm(confirmMessage, { icon: 3, title: title }, function(index) {
-            layer.close(index);
-            doOpen();
-          });
+          layer.confirm(
+            confirmMessage,
+            { icon: 3, title: title },
+            function (index) {
+              layer.close(index);
+              doOpen();
+            }
+          );
         } else {
           doOpen();
         }
@@ -1077,7 +1082,7 @@
               timeout: 15000, // 15秒超时
               success: function (res) {
                 layer.close(loadingIndex);
-                
+
                 if (res.status === 1 && res.data) {
                   var reportUrl = res.data;
                   if (reportUrl.indexOf("?") > -1) {
@@ -1085,13 +1090,14 @@
                   } else {
                     reportUrl += "?view=inline&display=web";
                   }
-                  
+
                   // 检测运行环境并选择打开方式
                   if (window.plus) {
                     // HBuilder App环境：使用系统浏览器打开
                     openUrlInBrowser(reportUrl, {
                       title: "打开报告",
-                      confirmMessage: "即将使用系统浏览器打开报告，确定继续吗？"
+                      confirmMessage:
+                        "即将使用系统浏览器打开报告，确定继续吗？",
                     });
                   } else {
                     // 普通浏览器环境：使用弹窗预览或新标签页
