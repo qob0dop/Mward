@@ -11,146 +11,150 @@
     <link rel="stylesheet" href="/css/public.css" media="all" />
     <link rel="stylesheet" href="/css/table/iframe.css" media="all" />
     <style>
-      body {
-        background-color: transparent;
-        padding: 10px;
-        margin: 0;
-      }
-      .layui-container {
-        width: 100%;
-        max-width: 100%;
-        padding: 0;
-        margin: 0;
-      }
+body
+{
+    margin: 0;  padding: 0;  background-color: transparent;
+}
+.layui-container
+{
+    width: 100%;  max-width: 100%;  margin: 0;  padding: 0;
+}
 
-      /* 头部操作区域样式 */
-      .header-controls {
-        background: #f8f9fa;
-        padding: 15px;
-        border-radius: 6px;
-        border: 1px solid #e9ecef;
-        margin-bottom: 20px;
-        display: flex;
-        gap: 10px;
-        align-items: center;
-        justify-content: space-between;
-        flex-wrap: wrap;
-      }
+/* 头部操作区域样式 */
+.header-controls
+{
+    display: flex;  align-items: center;  flex-wrap: wrap;  justify-content: space-between;  box-sizing: border-box;height: 10%; padding: 8px;  border: 1px solid #e9ecef;  border-radius: 6px;  background: #f8f9fa;  gap: 10px;
+}
 
-      .page-title {
-        font-size: 18px;
-        font-weight: bold;
-        color: #333;
-        margin: 0;
-      }
+.page-title
+{
+    font-size: 18px;  font-weight: bold;  margin: 0;  color: #333;
+}
 
-      /* 查房记录列表样式 */
-      .record-list {
-        background: #fff;
-        border-radius: 8px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        padding: 20px;
-        height: 100%;
-        overflow-y: auto;
-      }
+/* 查房记录列表样式 */
+.record-list
+{
+    overflow-y: auto;  box-sizing: border-box;height: 90%;  padding: 20px;  border-radius: 8px;  background: #fff;  box-shadow: 0 2px 8px rgba(0, 0, 0, .1);
+}
 
-      .ward-record-item {
-        display: flex;
-        align-items: flex-start;
-        gap: 15px;
-        padding: 20px;
-        border-bottom: 1px solid #f0f0f0;
-        transition: background-color 0.2s;
-        border-left: 4px solid #1e9fff;
-        margin-bottom: 15px;
-        border-radius: 6px;
-        background: #fafafa;
-      }
+.ward-record-item
+{
+    display: flex;  align-items: flex-start;  margin-bottom: 15px;  padding: 20px;  transition: background-color .2s;  border-bottom: 1px solid #f0f0f0;  border-left: 4px solid #1e9fff;  border-radius: 6px;  background: #fafafa;  gap: 15px;
+}
 
-      .ward-record-item:hover {
-        background-color: #f0f9ff;
-      }
+.ward-record-item:hover
+{
+    background-color: #f0f9ff;
+}
 
-      .ward-record-info {
-        flex: 1;
-      }
+.ward-record-info
+{
+    flex: 1;
+}
 
-      .ward-record-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        margin-bottom: 10px;
-      }
+.ward-record-header
+{
+    display: flex;  align-items: flex-start;  justify-content: space-between;  margin-bottom: 10px;
+}
 
-      .ward-record-title {
-        font-weight: bold;
-        color: #333;
-        font-size: 16px;
-        margin-bottom: 5px;
-      }
+.ward-record-title
+{
+    font-size: 16px;  font-weight: bold;  margin-bottom: 5px;  color: #333;
+}
 
-      .ward-record-meta {
-        font-size: 12px;
-        color: #666;
-        display: flex;
-        gap: 15px;
-        margin-bottom: 10px;
-      }
+.ward-record-meta
+{
+    font-size: 12px;  display: flex;  margin-bottom: 10px;  color: #666;  gap: 15px;
+}
 
-      .ward-record-content {
-        color: #555;
-        line-height: 1.6;
-        margin-bottom: 10px;
-        background: #fff;
-        padding: 10px;
-        border-radius: 4px;
-        border: 1px solid #eee;
-      }
+.ward-record-content
+{
+    line-height: 1.6;  margin-bottom: 10px;  padding: 10px;  color: #555;  border: 1px solid #eee;  border-radius: 4px;  background: #fff;
+}
 
-      .ward-record-actions {
-        display: flex;
-        gap: 10px;
-        align-items: center;
-      }
+.ward-record-actions
+{
+    display: flex;  align-items: center;  gap: 10px;
+}
 
-      /* 录音控件样式 */
-      .recording-section {
-        margin-top: 15px;
-        padding: 10px;
-        background: #f8f9fa;
-        border-radius: 4px;
-        border: 1px solid #e9ecef;
-      }
+/* 录音控件样式 */
+.recording-section
+{
+    margin-top: 15px;  padding: 10px;  border: 1px solid #e9ecef;  border-radius: 4px;  background: #f8f9fa;
+}
 
-      .recording-controls {
-        display: flex;
-        gap: 10px;
-        align-items: center;
-        margin-bottom: 10px;
-      }
+.recording-controls
+{
+    display: flex;  align-items: center;  margin-bottom: 10px;  gap: 10px;
+}
 
-      /* 音频播放器样式 */
-      audio {
-        width: 100%;
-        max-width: 300px;
-        height: 30px;
-      }
+/* 音频播放器样式 */
+audio
+{
+    width: 100%;  max-width: 300px;  height: 30px;
+}
 
-      /* 表单样式优化 */
-      .layui-form-item {
-        margin-bottom: 20px;
-      }
+/* 表单样式优化 */
+.layui-form-item
+{
+    margin-bottom: 20px;
+}
 
-      .layui-textarea {
-        min-height: 120px;
-      }
-      .layui-layer {
-        top: 0;
-        left: 0;
-      }
-      .ward-record-list-container {
-        overflow-y: auto;
-      }
+.layui-textarea
+{
+    min-height: 120px;
+}
+.layui-layer
+{
+    top: 0;  left: 0;
+}
+.ward-record-list-container
+{
+    overflow-y: auto;
+}
+#btn-add-record
+{
+    font-size: 16px;  line-height: 25px;  width: auto;  height: 25px;padding: 0 5px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     </style>
   </head>
   <body>
@@ -199,8 +203,10 @@
         var loginUser = JSON.parse(localStorage.getItem("loginUser") || "{}");
 
         // 查房记录存储
-        let wardRecords = JSON.parse(
-          localStorage.getItem("wardRecords") || "[]"
+        // let wardRecords = JSON.parse(
+        //   localStorage.getItem("wardRecords") || "[]"
+        // );
+        let wardRecords = JSON.parse("[]"
         );
 
         // 录音功能变量
@@ -215,10 +221,11 @@
         function init() {
           renderWardRecordList();
           bindEvents();
+          // 注意：不在初始化时清理音频，而是在获取记录列表后清理
         }
 
         // 注释掉API获取查房记录列表，暂时只与本地localStorage交互
-        /*
+        
         $.ajax({
           url: appconfig.api + "/api/MobileWard/GetWardRoundsRecordList",
           type: "GET",
@@ -231,12 +238,14 @@
               wardRecords = res.Data || [];
               localStorage.setItem("wardRecords", JSON.stringify(wardRecords));
               renderWardRecordList();
+              // 在获取到记录列表后，清理未使用的音频数据
+              cleanupUnusedAudios();
             } else {
               layer.msg("获取查房记录失败：" + res.Message, { icon: 2 });
             }
           },
         });
-        */
+        
         // 绑定事件
         function bindEvents() {
           // 新建查房记录按钮
@@ -299,20 +308,6 @@
                   </div>
                 </div>
 
-                <div class="layui-form-item">
-                  <label class="layui-form-label">查房主题</label>
-                  <div class="layui-input-block">
-                    <input type="text" name="record_title" lay-verify="required" placeholder="请输入查房主题" class="layui-input">
-                  </div>
-                </div>
-
-                <div class="layui-form-item">
-                  <label class="layui-form-label">查房记录</label>
-                  <div class="layui-input-block">
-                    <textarea name="record_content" lay-verify="required" placeholder="请详细记录查房情况、患者状态、处理意见等..." class="layui-textarea"></textarea>
-                  </div>
-                </div>
-
                 <!-- 录音功能区域 -->
                 <div class="layui-form-item">
                   <label class="layui-form-label">录音记录</label>
@@ -322,11 +317,10 @@
                         <button type="button" id="btn-record-audio" class="layui-btn layui-btn-sm layui-btn-normal">
                           <i class="layui-icon layui-icon-mike"></i> 开始录音
                         </button>
-                        <button type="button" id="btn-save-audio" class="layui-btn layui-btn-sm layui-btn-primary" style="display: none;">
-                          <i class="layui-icon layui-icon-download-circle"></i> 保存录音
-                        </button>
+                        
                         <span id="recording-status" style="color: #666; font-size: 12px;"></span>
                       </div>
+                      
                       <audio id="audio-preview" controls style="display: none; width: 100%; max-width: 400px;"></audio>
                       <div id="saved-audio-list" style="margin-top: 10px;"></div>
                     </div>
@@ -368,11 +362,10 @@
         // 绑定录音功能事件
         function bindRecordingEvents() {
           const recordBtn = document.getElementById("btn-record-audio");
-          const saveBtn = document.getElementById("btn-save-audio");
           const audioPreview = document.getElementById("audio-preview");
           const statusSpan = document.getElementById("recording-status");
 
-          if (recordBtn && saveBtn && audioPreview) {
+          if (recordBtn   && audioPreview) {
             recordBtn.onclick = async function () {
               if (!isRecording) {
                 await startRecording();
@@ -381,9 +374,7 @@
               }
             };
 
-            saveBtn.onclick = function () {
-              saveRecordingToList();
-            };
+            
           }
         }
 
@@ -395,20 +386,21 @@
           }
 
           try {
+            // 获取用户媒体流
             const stream = await navigator.mediaDevices.getUserMedia({
               audio: true,
             });
-
+            //创建MediaRecorder实例
             mediaRecorder = new MediaRecorder(stream);
-            audioChunks = [];
+            audioChunks = []; // 存储音频数据块的数组
             recordingStartTime = new Date();
-
+            //设置数据处理回调
             mediaRecorder.ondataavailable = function (e) {
               if (e.data.size > 0) {
-                audioChunks.push(e.data);
+                audioChunks.push(e.data);//收集音频数据
               }
             };
-
+            //设置录音结束回调
             mediaRecorder.onstop = function () {
               audioBlob = new Blob(audioChunks, { type: "audio/webm" });
 
@@ -417,11 +409,9 @@
                 .then((wavBlob) => {
                   audioBlob = wavBlob; // 更新为WAV格式
                   const audioPreview = document.getElementById("audio-preview");
-                  const saveBtn = document.getElementById("btn-save-audio");
 
                   audioPreview.src = URL.createObjectURL(audioBlob);
                   audioPreview.style.display = "block";
-                  saveBtn.style.display = "inline-block";
 
                   // 停止所有音频轨道
                   stream.getTracks().forEach((track) => track.stop());
@@ -438,11 +428,9 @@
 
                   // 如果转换失败，继续使用原格式
                   const audioPreview = document.getElementById("audio-preview");
-                  const saveBtn = document.getElementById("btn-save-audio");
 
                   audioPreview.src = URL.createObjectURL(audioBlob);
                   audioPreview.style.display = "block";
-                  saveBtn.style.display = "inline-block";
 
                   // 停止所有音频轨道
                   stream.getTracks().forEach((track) => track.stop());
@@ -460,7 +448,6 @@
             recordBtn.className = "layui-btn layui-btn-sm layui-btn-danger";
             statusSpan.textContent = "正在录音中...";
 
-            document.getElementById("btn-save-audio").style.display = "none";
             document.getElementById("audio-preview").style.display = "none";
           } catch (err) {
             console.error("录音错误:", err);
@@ -481,7 +468,7 @@
           recordBtn.innerHTML =
             '<i class="layui-icon layui-icon-mike"></i> 开始录音';
           recordBtn.className = "layui-btn layui-btn-sm layui-btn-normal";
-          statusSpan.textContent = "录音已停止，请试听后保存";
+          statusSpan.textContent = "录音完成，可保存或者重新录制";
         }
         // 将音频转换为WAV格式
         function convertToWav(audioBlob) {
@@ -696,33 +683,57 @@
           const recordName = "录音_" + formatTime(recordTime);
           const duration = calculateDuration();
 
-          // 保存到临时存储
-          const audioRecord = {
-            id: "audio_" + recordTime.getTime(),
-            name: recordName,
-            time: recordTime.toISOString(),
-            duration: duration,
-            blob: audioBlob,
-            url: URL.createObjectURL(audioBlob),
+          // 将音频转换为Base64字符串存储到localStorage
+          const reader = new FileReader();
+          reader.onload = function() {
+            const audioBase64 = reader.result;
+            const audioId = "audio_" + recordTime.getTime();
+            
+            // 保存音频数据到localStorage
+            const audioData = {
+              id: audioId,
+              name: recordName,
+              time: recordTime.toISOString(),
+              duration: duration,
+              data: audioBase64, // Base64格式的音频数据
+              type: audioBlob.type
+            };
+            
+            // 存储到localStorage中的音频库
+            let storedAudios = JSON.parse(localStorage.getItem("wardAudios") || "{}");
+            storedAudios[audioId] = audioData;
+            localStorage.setItem("wardAudios", JSON.stringify(storedAudios));
+
+            // 保存到临时存储（用于当前编辑会话）
+            const audioRecord = {
+              id: audioId,
+              name: recordName,
+              time: recordTime.toISOString(),
+              duration: duration,
+              blob: audioBlob,
+              url: URL.createObjectURL(audioBlob),
+            };
+
+            // 添加到当前记录的录音列表
+            if (!window.tempAudioRecords) {
+              window.tempAudioRecords = [];
+            }
+            window.tempAudioRecords.push(audioRecord);
+
+            // 更新显示
+            updateSavedAudioList();
+
+            // 清理当前录音状态
+            audioBlob = null;
+            document.getElementById("audio-preview").style.display = "none";
+            document.getElementById("audio-preview").src = "";
+            document.getElementById("recording-status").textContent = "";
+
+            layer.msg("录音已保存到本地存储", { icon: 1, time: 1500 });
           };
-
-          // 添加到当前记录的录音列表
-          if (!window.tempAudioRecords) {
-            window.tempAudioRecords = [];
-          }
-          window.tempAudioRecords.push(audioRecord);
-
-          // 更新显示
-          updateSavedAudioList();
-
-          // 清理当前录音状态
-          audioBlob = null;
-          document.getElementById("audio-preview").style.display = "none";
-          document.getElementById("btn-save-audio").style.display = "none";
-          document.getElementById("audio-preview").src = "";
-          document.getElementById("recording-status").textContent = "";
-
-          layer.msg("录音已添加到记录中", { icon: 1, time: 1500 });
+          
+          // 读取音频文件为Base64
+          reader.readAsDataURL(audioBlob);
         }
 
         // 更新已保存的录音列表显示
@@ -780,6 +791,32 @@
           }
         };
 
+        // 转换记录列表中的音频为文字
+        window.convertRecordAudioToText = function (audioId) {
+          const storedAudios = JSON.parse(localStorage.getItem("wardAudios") || "{}");
+          if (!storedAudios[audioId]) {
+            layer.msg("音频文件不存在", { icon: 2 });
+            return;
+          }
+          
+          const audioData = storedAudios[audioId];
+          // 将Base64转换回Blob
+          const byteCharacters = atob(audioData.data.split(',')[1]);
+          const byteNumbers = new Array(byteCharacters.length);
+          for (let i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i);
+          }
+          const byteArray = new Uint8Array(byteNumbers);
+          const audioBlob = new Blob([byteArray], { type: audioData.type });
+          
+          layer.msg("正在转换音频为文字，请稍候...", {
+            icon: 16,
+            time: 2000,
+          });
+          
+          transformAudio(audioBlob);
+        };
+
         // 清理录音状态
         function cleanupRecording() {
           if (mediaRecorder && mediaRecorder.state === "recording") {
@@ -801,27 +838,99 @@
         // 保存查房记录
         function saveWardRecord(formData, layerIndex) {
           console.log("saveWardRecord called");
+          
+          // 检查是否正在录音中
+          if (isRecording) {
+            layer.msg("请先停止录音再保存记录", { icon: 2 });
+            return;
+          }
+          
+          // 检查是否有录音内容
+          const hasCurrentRecording = audioBlob !== null; // 当前有未保存的录音
+          const hasSavedRecordings = window.tempAudioRecords && window.tempAudioRecords.length > 0; // 有已保存的录音
+          
+          if (!hasCurrentRecording && !hasSavedRecordings) {
+            layer.msg("请先录制音频再保存查房记录", { icon: 2 });
+            return;
+          }
+          
+          // 如果有未保存的录音，先自动保存
+          if (hasCurrentRecording) {
+            layer.msg("正在自动保存录音...", { icon: 16, time: 1000 });
+            
+            // 调用保存录音的逻辑，但不显示消息
+            const recordTime = new Date();
+            const recordName = "录音_" + formatTime(recordTime);
+            const duration = calculateDuration();
 
+            const reader = new FileReader();
+            reader.onload = function() {
+              const audioBase64 = reader.result;
+              const audioId = "audio_" + recordTime.getTime();
+              
+              // 保存音频数据到localStorage
+              const audioData = {
+                id: audioId,
+                name: recordName,
+                time: recordTime.toISOString(),
+                duration: duration,
+                data: audioBase64,
+                type: audioBlob.type
+              };
+              
+              let storedAudios = JSON.parse(localStorage.getItem("wardAudios") || "{}");
+              storedAudios[audioId] = audioData;
+              localStorage.setItem("wardAudios", JSON.stringify(storedAudios));
+
+              // 保存到临时存储
+              const audioRecord = {
+                id: audioId,
+                name: recordName,
+                time: recordTime.toISOString(),
+                duration: duration,
+                blob: audioBlob,
+                url: URL.createObjectURL(audioBlob),
+              };
+
+              if (!window.tempAudioRecords) {
+                window.tempAudioRecords = [];
+              }
+              window.tempAudioRecords.push(audioRecord);
+
+              // 清理当前录音状态
+              audioBlob = null;
+              document.getElementById("audio-preview").style.display = "none";
+              document.getElementById("audio-preview").src = "";
+              document.getElementById("recording-status").textContent = "";
+
+              // 更新显示
+              updateSavedAudioList();
+              
+              // 录音保存完成后，继续保存查房记录
+              proceedToSaveWardRecord(formData, layerIndex);
+            };
+            
+            reader.readAsDataURL(audioBlob);
+          } else {
+            // 没有当前录音，直接保存查房记录
+            proceedToSaveWardRecord(formData, layerIndex);
+          }
+        }
+        
+        // 实际保存查房记录的函数
+        function proceedToSaveWardRecord(formData, layerIndex) {
           const recordTime = new Date();
           const recordId = "ward_" + recordTime.getTime();
           const currentTime = recordTime.toISOString();
-          const newRecord = {
-            id: recordId,
-            patient_name: formData.patient_name || "未知患者",
-            bed_no: formData.bed_no || "未知床号",
-            doctor_name:
-              formData.doctor_name || loginUser.user_name || "未知医生",
-            visit_time: formData.visit_time || formatDateTime(recordTime),
-            record_title: formData.record_title || "查房记录",
-            record_content: formData.record_content || "",
-            create_time: recordTime.toISOString(),
-            audio_records: window.tempAudioRecords
-              ? [...window.tempAudioRecords]
-              : [],
-          };
+          
+          // 生成音频URL集合，用于绑定当前记录的所有音频
+          let soundUrlArray = [];
+          if (window.tempAudioRecords && window.tempAudioRecords.length > 0) {
+            soundUrlArray = window.tempAudioRecords.map(audio => audio.id);
+          }
+          const soundUrl = soundUrlArray.join(','); // 多个音频ID用逗号分隔
 
           // 注释掉API保存查房记录，暂时只与本地localStorage交互
-          /*
           const ajaxData = {
             patient_id: userData.patient_id || "",
             admiss_times: userData.admiss_times || "",
@@ -831,7 +940,8 @@
             emp_sn: loginUser.user_mi,
             emp_name: loginUser.name,
             exec_date: currentTime,
-            sound: formData.audio_records,
+            sound: formData.record_content || "查房记录",
+            sound_url: soundUrl, // 使用音频ID作为soundurl
           };
           $.ajax({
             url: appconfig.api + "/api/MobileWard/AddWardRoundsRecord",
@@ -841,24 +951,125 @@
             success: function (res) {
               if (res.Status == 1) {
                 layer.msg("查房记录保存成功", { icon: 1 });
+                
+                // API保存成功后，将新记录添加到本地数组中
+                const newRecord = {
+                  id: res.Data ? res.Data.id : recordId, // 使用API返回的ID，如果没有则使用本地生成的ID
+                  patient_id: ajaxData.patient_id,
+                  admiss_times: ajaxData.admiss_times,
+                  name: ajaxData.name,
+                  exec_dept: ajaxData.exec_dept,
+                  exec_ward: ajaxData.exec_ward,
+                  emp_sn: ajaxData.emp_sn,
+                  emp_name: ajaxData.emp_name,
+                  exec_date: ajaxData.exec_date,
+                  sound: ajaxData.sound,
+                  sound_url: ajaxData.sound_url,
+                  create_time: ajaxData.exec_date
+                };
+                
+                // 将新记录添加到数组开头
+                wardRecords.unshift(newRecord);
+                localStorage.setItem("wardRecords", JSON.stringify(wardRecords));
+                
+                // 立即更新界面显示
+                renderWardRecordList();
+                
+                // 关闭弹窗和清理状态
+                layer.close(layerIndex);
+                
+                // 清理临时状态
+                window.tempAudioRecords = [];
+                
               } else {
                 layer.msg("查房记录保存失败", { icon: 2 });
               }
             },
+            error: function(xhr, status, error) {
+              layer.msg("保存请求失败，请检查网络连接", { icon: 2 });
+              console.error("保存查房记录错误：", error);
+            }
           });
-          */
+        }
 
-          wardRecords.unshift(newRecord);
-          localStorage.setItem("wardRecords", JSON.stringify(wardRecords));
+        // 从localStorage中根据soundurl加载音频数据
+        function loadAudioFromStorage(soundUrl) {
+          if (!soundUrl) return [];
+          console.log("拥有url并触发");
+          
+          const storedAudios = JSON.parse(localStorage.getItem("wardAudios") || "{}");
+          const audioIds = soundUrl.split(',');
+          const audioList = [];
+          
+          audioIds.forEach(audioId => {
+            if (audioId && storedAudios[audioId]) {
+              const audioData = storedAudios[audioId];
+              // 创建Blob对象用于播放
+              const byteCharacters = atob(audioData.data.split(',')[1]);
+              const byteNumbers = new Array(byteCharacters.length);
+              for (let i = 0; i < byteCharacters.length; i++) {
+                byteNumbers[i] = byteCharacters.charCodeAt(i);
+              }
+              const byteArray = new Uint8Array(byteNumbers);
+              const blob = new Blob([byteArray], { type: audioData.type });
+              
+              audioList.push({
+                id: audioData.id,
+                name: audioData.name,
+                duration: audioData.duration,
+                time: audioData.time,
+                url: URL.createObjectURL(blob)
+              });
+            }
+          });
+          
+          return audioList;
+        }
 
-          // 更新界面
-          renderWardRecordList();
-
-          layer.close(layerIndex);
-          layer.msg("查房记录保存成功", { icon: 1 });
-
-          // 清理临时状态
-          window.tempAudioRecords = [];
+        // 清理未使用的音频数据
+        function cleanupUnusedAudios() {
+          console.log('开始清理未使用的音频数据...');
+          
+          const storedAudios = JSON.parse(localStorage.getItem("wardAudios") || "{}");
+          const usedAudioIds = new Set();
+          
+          console.log('当前存储的音频数量:', Object.keys(storedAudios).length);
+          console.log('当前记录数量:', wardRecords.length);
+          
+          // 收集所有被使用的音频ID
+          wardRecords.forEach((record, index) => {
+            console.log(`记录${index}: sound_url = "${record.sound_url || ''}"`);
+            if (record.sound_url && record.sound_url.trim()) {
+              const audioIds = record.sound_url.split(',');
+              audioIds.forEach(id => {
+                const trimmedId = id.trim();
+                if (trimmedId) {
+                  usedAudioIds.add(trimmedId);
+                  console.log(`标记音频ID为使用中: ${trimmedId}`);
+                }
+              });
+            }
+          });
+          
+          console.log('使用中的音频ID集合:', Array.from(usedAudioIds));
+          
+          // 删除未使用的音频
+          const audioKeys = Object.keys(storedAudios);
+          let cleanedCount = 0;
+          audioKeys.forEach(audioId => {
+            if (!usedAudioIds.has(audioId)) {
+              console.log(`删除未使用的音频: ${audioId}`);
+              delete storedAudios[audioId];
+              cleanedCount++;
+            }
+          });
+          
+          if (cleanedCount > 0) {
+            localStorage.setItem("wardAudios", JSON.stringify(storedAudios));
+            console.log(`清理了 ${cleanedCount} 个未使用的音频文件`);
+          } else {
+            console.log('没有需要清理的音频文件');
+          }
         }
 
         // 渲染查房记录列表
@@ -866,6 +1077,7 @@
           const container = document.getElementById(
             "ward-record-list-container"
           );
+          console.log(wardRecords);
 
           if (wardRecords.length === 0) {
             container.innerHTML = `
@@ -879,61 +1091,63 @@
 
           let html = "";
           wardRecords.forEach((record, index) => {
-            const createDate = new Date(record.create_time);
+            const createDate = new Date(record.exec_date || record.create_time);
             const timeStr = createDate.toLocaleString();
+            
+            // 根据sound_url加载音频数据
+            const audioList = loadAudioFromStorage(record.sound_url || '');
 
             html += `
               <div class="ward-record-item">
                 <div class="ward-record-info">
                   <div class="ward-record-header">
-                    <div class="ward-record-title">${record.record_title}</div>
+                    <div class="ward-record-title">${record.emp_name || '未知医生'}</div>
                     <div class="ward-record-actions">
-                      <button class="layui-btn layui-btn-xs layui-btn-normal" onclick="viewRecord('${
-                        record.id
-                      }')">
-                        <i class="layui-icon layui-icon-search"></i> 查看详情
-                      </button>
                       <button class="layui-btn layui-btn-xs layui-btn-danger" onclick="deleteWardRecord('${
-                        record.id
+                        record.id || index
                       }')">
                         <i class="layui-icon layui-icon-delete"></i> 删除
                       </button>
                     </div>
                   </div>
                   <div class="ward-record-meta">
-                   
-                    <span><i class="layui-icon layui-icon-home"></i> 床号：${
-                      record.bed_no
-                    }</span>
-                    <span><i class="layui-icon layui-icon-username"></i> 医生：${
-                      record.doctor_name
-                    }</span>
-                    <span><i class="layui-icon layui-icon-time"></i> 查房时间：${
-                      record.visit_time
-                    }</span>
+                    
+                    <span><i class="layui-icon layui-icon-time"></i> 查房时间：${timeStr}</span>
                   </div>
                   <div class="ward-record-content">
                     ${
-                      record.record_content &&
-                      record.record_content.length > 200
-                        ? record.record_content.substring(0, 200) + "..."
-                        : record.record_content || "暂无记录内容"
+                      record.sound &&
+                      record.sound.length > 200
+                        ? record.sound.substring(0, 200) + "..."
+                        : record.sound || "暂无记录内容"
                     }
-                  </div>
-                  ${
-                    record.audio_records && record.audio_records.length > 0
-                      ? `
-                    <div style="margin-top: 10px;">
-                      <span style="color: #666; font-size: 12px;">
-                        <i class="layui-icon layui-icon-voice"></i> 包含 ${record.audio_records.length} 个录音文件
-                      </span>
-                    </div>
-                  `
-                      : ""
-                  }
-                  <div style="color: #999; font-size: 11px; margin-top: 8px;">
-                    创建时间：${timeStr}
-                  </div>
+                  </div>`;
+            
+            // 显示绑定的音频文件
+            if (audioList && audioList.length > 0) {
+              // html += `
+              //   <div style="margin-top: 15px; padding: 10px; background: #f8f9fa; border-radius: 4px;">
+              //     <div style="margin-bottom: 10px; color: #666; font-size: 12px;">
+              //       <i class="layui-icon layui-icon-voice"></i> 录音文件 (${audioList.length}个)
+              //     </div>`;
+              
+              audioList.forEach((audio, audioIndex) => {
+                html += `
+                  <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px; padding: 8px; background: #fff; border-radius: 4px;">
+                    <audio controls style="width: 200px; height: 30px;">
+                      <source src="${audio.url}" type="audio/wav">
+                      您的浏览器不支持音频播放
+                    </audio>
+                    <button type="button" class="layui-btn layui-btn-xs layui-btn-normal" onclick="convertRecordAudioToText('${audio.id}')" title="转换为文字">
+                      <i class="layui-icon layui-icon-edit"></i> 转文字
+                    </button>
+                  </div>`;
+              });
+              
+              html += `</div>`;
+            }
+            
+            html += `
                 </div>
               </div>
             `;
@@ -942,96 +1156,81 @@
           container.innerHTML = html;
         }
 
-        // 查看记录详情
-        window.viewRecord = function (recordId) {
-          const record = wardRecords.find((r) => r.id === recordId);
-          if (!record) {
-            layer.msg("记录不存在", { icon: 2 });
-            return;
-          }
-
-          let audioHtml = "";
-          if (record.audio_records && record.audio_records.length > 0) {
-            audioHtml =
-              "<div style='margin-top: 15px;'><strong>录音文件：</strong>";
-            record.audio_records.forEach((audio, index) => {
-              audioHtml += `
-                <div style="margin-top: 8px; padding: 8px; background: #f8f9fa; border-radius: 4px;">
-                  <div style="font-size: 12px; color: #666; margin-bottom: 5px;">${audio.name} (${audio.duration})</div>
-                  <audio controls style="width: 100%; max-width: 400px;">
-                    <source src="${audio.url}" type="audio/wav">
-                  </audio>
-                </div>
-              `;
-            });
-            audioHtml += "</div>";
-          }
-
-          layer.open({
-            type: 1,
-            title: "查房记录详情",
-            area: ["100%", "85%"],
-            content: `
-              <div style="padding: 20px;">
-                <h3 style="margin-bottom: 15px; color: #333;">${
-                  record.record_title
-                }</h3>
-                <div style="background: #f8f9fa; padding: 15px; border-radius: 6px; margin-bottom: 15px;">
-                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 14px;">
-                    <div><strong>患者姓名：</strong>${record.patient_name}</div>
-                    <div><strong>床号：</strong>${record.bed_no}</div>
-                    <div><strong>查房医生：</strong>${record.doctor_name}</div>
-                    <div><strong>查房时间：</strong>${record.visit_time}</div>
-                  </div>
-                </div>
-                <div style="margin-bottom: 15px;">
-                  <strong>查房记录：</strong>
-                  <div style="margin-top: 8px; padding: 15px; background: #fff; border: 1px solid #e6e6e6; border-radius: 4px; line-height: 1.6;">
-                    ${(record.record_content || "暂无记录内容").replace(
-                      /\n/g,
-                      "<br>"
-                    )}
-                  </div>
-                </div>
-                ${audioHtml}
-                <div style="text-align: center; margin-top: 20px;">
-                  <button type="button" class="layui-btn layui-btn-primary" onclick="layer.closeAll()">关闭</button>
-                </div>
-              </div>
-            `,
-          });
-        };
-
+        
         // 删除查房记录
         window.deleteWardRecord = function (recordId) {
+          console.log(typeof(recordId));
+
           layer.confirm(
-            "确定要删除这条查房记录吗？",
+            "确定要删除这条查房记录吗？相关的录音文件也会被删除。",
             {
               icon: 3,
               title: "删除确认",
             },
             function (index) {
-              // 找到记录并清理音频URL
+              // 先找到要删除的记录，保存音频ID信息
               const recordIndex = wardRecords.findIndex(
                 (r) => r.id === recordId
               );
+              let audioIdsToDelete = [];
               if (recordIndex !== -1) {
                 const record = wardRecords[recordIndex];
-                if (record.audio_records) {
-                  record.audio_records.forEach((audio) => {
-                    if (audio.url) {
-                      URL.revokeObjectURL(audio.url);
-                    }
-                  });
+                if (record.sound_url) {
+                  audioIdsToDelete = record.sound_url.split(',').filter(id => id.trim());
                 }
-
-                wardRecords.splice(recordIndex, 1);
-                localStorage.setItem(
-                  "wardRecords",
-                  JSON.stringify(wardRecords)
-                );
-                renderWardRecordList();
               }
+
+              $.ajax({
+                url:appconfig.api+"/api/MobileWard/DelWardRoundsRecordById",
+                method:"GET",
+                data: {
+                  id: recordId
+                },
+                success:function(res){
+                  if(res.Status==1){
+                    layer.msg("查房记录删除成功",{icon:1});
+                    
+                    // API删除成功后，清理本地数据
+                    if (recordIndex !== -1) {
+                      const record = wardRecords[recordIndex];
+                      
+                      // 清理绑定的音频文件
+                      if (audioIdsToDelete.length > 0) {
+                        const storedAudios = JSON.parse(localStorage.getItem("wardAudios") || "{}");
+                        
+                        audioIdsToDelete.forEach(audioId => {
+                          if (audioId && storedAudios[audioId]) {
+                            delete storedAudios[audioId];
+                            console.log(`删除音频文件: ${audioId}`);
+                          }
+                        });
+                        
+                        localStorage.setItem("wardAudios", JSON.stringify(storedAudios));
+                      }
+                      
+                      // 清理旧的audio_records（如果存在）
+                      if (record.audio_records) {
+                        record.audio_records.forEach((audio) => {
+                          if (audio.url) {
+                            URL.revokeObjectURL(audio.url);
+                          }
+                        });
+                      }
+
+                      // 从本地记录数组中删除
+                      wardRecords.splice(recordIndex, 1);
+                      localStorage.setItem("wardRecords", JSON.stringify(wardRecords));
+                      renderWardRecordList();
+                    }
+                    
+                  } else {
+                    layer.msg("查房记录删除失败",{icon:2});
+                  }
+                },
+                error: function(xhr, status, error) {
+                  layer.msg("删除请求失败，请检查网络连接",{icon:2});
+                }
+              })
 
               layer.close(index);
               layer.msg("查房记录已删除", { icon: 1 });

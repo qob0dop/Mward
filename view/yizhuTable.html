@@ -10,14 +10,19 @@
     <link rel="stylesheet" href="/lib/layui-v2.6.3/css/layui.css" media="all" />
     <link rel="stylesheet" href="/css/public.css" media="all" />
     <link rel="stylesheet" href="/css/table/iframe.css" media="all" />
+    <link
+      rel="stylesheet"
+      href="/css/cardLists/ordercardlists.css"
+      media="all"
+    />
     <style>
       .layui-layer-setwin {
         display: none;
       }
       .layui-layer-msg {
         line-height: 1.5 !important;
-        padding: 10px !important;
         max-height: 100px; /* 限制最大高度 */
+        padding: 10px !important;
       }
       .font-grey {
         color: #999;
@@ -45,32 +50,32 @@
       } */
       /* 选中按钮高亮样式，兼容不同色系 */
       .btn-active {
+        font-weight: bold !important;
         position: relative;
         z-index: 1;
-        font-weight: bold !important;
         border-width: 2.5px !important;
-        box-shadow: 0 2px 8px rgba(30, 185, 90, 0.18), 0 0 0 2px #b2f0c0 inset !important;
         outline: none !important;
+        box-shadow: 0 2px 8px rgba(30, 185, 90, 0.18), 0 0 0 2px #b2f0c0 inset !important;
       }
       /* 针对绿色按钮（layui-btn-warm）选中时加深色 */
       .layui-btn-warm.btn-active {
-        background-color: #3ec97c !important;
-        border-color: #1eae5b !important;
         color: #fff !important;
+        border-color: #1eae5b !important;
+        background-color: #3ec97c !important;
       }
       /* 针对红色按钮（layui-btn-danger）选中时加深色 */
       .layui-btn-danger.btn-active {
-        background-color: #e74c3c !important;
-        border-color: #c0392b !important;
         color: #fff !important;
+        border-color: #c0392b !important;
+        background-color: #e74c3c !important;
       }
       /* 针对蓝色按钮（layui-btn-primary/normal/cyan）选中时加深色 */
       .layui-btn-primary.btn-active,
       .layui-btn-normal.btn-active,
       .layui-btn-cyan.btn-active {
-        background-color: #1e9fff !important;
-        border-color: #1786d4 !important;
         color: #fff !important;
+        border-color: #1786d4 !important;
+        background-color: #1e9fff !important;
       }
       /* 兼容小屏幕按钮点击反馈 */
       .btn-active:active {
@@ -79,60 +84,60 @@
 
       /* 按钮悬停效果 */
       .layui-btn:not(.btn-active):hover {
+        transition: all 0.2s ease;
         transform: translateY(-1px);
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-        transition: all 0.2s ease;
       }
 
       /* select框样式优化 */
       .layui-form-select {
-        height: auto !important;
         width: auto !important;
+        height: auto !important;
       }
 
       .layui-form-select .layui-select-title {
-        height: 38px !important;
-        line-height: 38px !important;
         font-size: 14px !important;
+        line-height: 38px !important;
+        position: relative;
+        width: auto !important;
+        height: 38px !important;
         color: #333 !important;
         border-radius: 2px !important;
-        width: auto !important;
-        position: relative;
       }
 
       .layui-form-select .layui-select-title input {
-        height: 36px !important;
-        line-height: 36px !important;
         font-size: 14px !important;
-        color: #333 !important;
+        line-height: 36px !important;
+        height: 36px !important;
         padding-right: 30px !important;
+        color: #333 !important;
       }
 
       /* 确保箭头图标正确定位 */
       .layui-form-select .layui-select-title i {
-        position: absolute !important;
-        right: 10px !important;
-        top: 65% !important;
-        transform: translateY(-50%) !important;
         font-size: 14px !important;
+        position: absolute !important;
+        top: 65% !important;
+        right: 10px !important;
+        transform: translateY(-50%) !important;
       }
 
       .layui-form-select dl {
-        max-height: 200px;
         font-size: 14px !important;
+        max-height: 200px;
       }
 
       /* 兼容不同浏览器的select样式 */
       .layui-form-select .layui-select-title {
-        box-sizing: border-box !important;
         overflow: hidden !important;
+        box-sizing: border-box !important;
       }
 
       /* 修复Edge浏览器箭头错位问题 */
       @supports (-ms-ime-align: auto) {
         .layui-form-select .layui-select-title i {
-          right: 8px !important;
           top: 12px !important;
+          right: 8px !important;
           transform: none !important;
         }
       }
@@ -140,8 +145,8 @@
       /* 修复Edge Legacy浏览器兼容性 */
       @media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
         .layui-form-select .layui-select-title i {
-          right: 8px !important;
           top: 12px !important;
+          right: 8px !important;
           transform: none !important;
         }
       }
@@ -159,18 +164,18 @@
 
       /* 弹窗两列布局容器样式（疗程 + 小医嘱表格） */
       .order-form-container {
-        width: 100%;
-        height: 100%;
         display: flex;
         flex-direction: column;
+        width: 100%;
+        height: 100%;
       }
 
       .order-selector {
         display: flex;
+        overflow: hidden;
         height: 80vh;
         min-height: 420px;
         border-radius: 4px;
-        overflow: hidden;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
       }
 
@@ -188,23 +193,23 @@
 
       .order-right {
         flex: 1;
-        background: #fff;
         border-right: none;
+        background: #fff;
       }
       .layui-container .layui-table-body {
         overflow-x: hidden;
       }
       /* 区域标题样式 */
       .section-header {
-        padding: 12px 16px;
-        background: #1e9fff;
-        color: #fff;
-        font-weight: bold;
         font-size: 14px;
-        text-align: center;
+        font-weight: bold;
         display: flex;
         align-items: center;
         justify-content: center;
+        padding: 12px 16px;
+        text-align: center;
+        color: #fff;
+        background: #1e9fff;
         gap: 6px;
       }
       .layui-form-select .layui-edge {
@@ -216,18 +221,18 @@
 
       /* 分类列表样式 */
       .category-list {
-        flex: 1;
         overflow-y: auto;
+        flex: 1;
         padding: 8px 0;
       }
 
       .category-item {
-        padding: 12px 16px;
-        cursor: pointer;
-        border-bottom: 1px solid #e6e6e6;
-        transition: all 0.2s ease;
         font-size: 13px;
         line-height: 1.4;
+        padding: 12px 16px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border-bottom: 1px solid #e6e6e6;
       }
 
       .category-item:hover {
@@ -235,9 +240,9 @@
       }
 
       .category-item.selected {
-        background-color: lightgray;
         /* color: #fff; */
         font-weight: bold;
+        background-color: lightgray;
       }
 
       .category-item .category-name {
@@ -246,17 +251,17 @@
       }
 
       .category-item .category-desc {
-        color: #999;
         font-size: 12px;
+        color: #999;
       }
 
       /* 无选择状态样式 */
       .no-data,
       .no-selection {
+        font-size: 13px;
         padding: 40px 20px;
         text-align: center;
         color: #999;
-        font-size: 13px;
       }
       /* 按钮区域样式 */
       .dialog-buttons {
@@ -280,15 +285,15 @@
       .category-list::-webkit-scrollbar-track,
       .template-list::-webkit-scrollbar-track,
       .form-content::-webkit-scrollbar-track {
-        background: #f1f1f1;
         border-radius: 3px;
+        background: #f1f1f1;
       }
 
       .category-list::-webkit-scrollbar-thumb,
       .template-list::-webkit-scrollbar-thumb,
       .form-content::-webkit-scrollbar-thumb {
-        background: #c1c1c1;
         border-radius: 3px;
+        background: #c1c1c1;
       }
 
       .category-list::-webkit-scrollbar-thumb:hover,
@@ -311,9 +316,9 @@
         }
         .order-right {
           width: 100%;
-          border: none;
-          margin-top: 8px;
           height: 70%;
+          margin-top: 8px;
+          border: none;
         }
         /* .layui-table-box {
           transform: scale(0.5);
@@ -373,32 +378,31 @@
       .layui-table td,
       .layui-table th {
         padding: 5px 8px;
-        border: 1px solid skyblue; /* 单元格边框 */
         padding: 8px; /* 单元格内边距 */
+        border: 1px solid skyblue; /* 单元格边框 */
       }
       .layui-table thead tr {
         height: 30px; /* 设置行高为30px */
       }
 
-      
       /* 搜索框样式 */
       #yizhu-search-input {
         transition: all 0.3s ease;
       }
-      
+
       #yizhu-search-input:focus {
         border-color: #1e9fff;
         box-shadow: 0 0 5px rgba(30, 159, 255, 0.3);
       }
-      
+
       #clear-search-btn {
-        background-color: transparent;
-        border: none;
-        color: #999;
         cursor: pointer;
         transition: all 0.3s ease;
+        color: #999;
+        border: none;
+        background-color: transparent;
       }
-      
+
       #clear-search-btn:hover {
         color: #1e9fff;
         background-color: rgba(30, 159, 255, 0.1);
@@ -475,22 +479,34 @@
 
           <!-- 搜索框 -->
           <div style="display: flex; gap: 8px; align-items: center">
-            <span style="font-size: 13px; color: #666; font-weight: bold; white-space: nowrap;">
+            <span
+              style="
+                font-size: 13px;
+                color: #666;
+                font-weight: bold;
+                white-space: nowrap;
+              "
+            >
               搜索：
             </span>
-            <div style="position: relative; display: flex; align-items: center;">
+            <div style="position: relative; display: flex; align-items: center">
               <input
                 id="yizhu-search-input"
                 type="text"
                 placeholder="医嘱名称/医生姓名/备注"
                 class="layui-input"
-                style="width: 200px; font-size: 13px; padding-right: 30px;"
+                style="width: 200px; font-size: 13px; padding-right: 30px"
               />
               <button
                 type="button"
                 id="clear-search-btn"
                 class="layui-btn layui-btn-xs"
-                style="position: absolute; right: 5px; padding: 2px 6px; display: none;"
+                style="
+                  position: absolute;
+                  right: 5px;
+                  padding: 2px 6px;
+                  display: none;
+                "
                 title="清空搜索"
               >
                 ✕
@@ -499,8 +515,50 @@
           </div>
         </div>
       </form>
-      <!-- 医嘱表格容器 -->
-      <div class="table-container">
+      <!-- 医嘱信息卡片容器 -->
+      <div class="ordercardlists-container">
+        <div class="order-card">
+          <div class="order-card-header">
+            <span class="order-name">医嘱名</span>
+            <span class="order-type">类型</span>
+          </div>
+          <div class="order-card-body">
+            <div class="field"><label>开始日期</label></div>
+            <div class="field"><label>剂量</label><span>单位</span></div>
+            <div class="field"><label>数量</label></div>
+            <div class="field"><label>用法</label></div>
+            <div class="field"><label>频率</label></div>
+            <div class="field"><label>医生</label></div>
+            <div class="field"><label>录入日期</label></div>
+            <div class="field"><label>停止日期</label></div>
+            <div class="field"><label>嘱托</label></div>
+          </div>
+          <div class="order-card-actions">
+            <button class="layui-btn layui-btn-danger">删除</button>
+            <button class="layui-btn layui-btn-warn">撤销</button>
+          </div>
+        </div>
+        <div class="order-card">
+          <div class="order-card-header">
+            <span class="order-name">医嘱名</span>
+            <span class="order-type">类型</span>
+          </div>
+          <div class="order-card-body">
+            <div class="field"><label>开始日期</label></div>
+            <div class="field"><label>剂量</label><span>单位</span></div>
+            <div class="field"><label>数量</label></div>
+            <div class="field"><label>频率</label></div>
+            <div class="field"><label>医生</label></div>
+            <div class="field"><label>录入日期</label></div>
+            <div class="field"><label>停止日期</label></div>
+          </div>
+          <div class="order-card-actions">
+            <button class="layui-btn layui-btn-danger">删除</button>
+            <button class="layui-btn layui-btn-warn">撤销</button>
+          </div>
+        </div>
+      </div>
+      <div class="table-container" style="display: none">
         <table
           class="layui-hide"
           id="yizhu-table"
@@ -730,18 +788,18 @@
               title: "医嘱",
               align: "center",
             },
-            { 
-              field: "doseage", 
-              title: "剂量", 
+            {
+              field: "doseage",
+              title: "剂量",
               width: 60,
-              templet: function(d) {
+              templet: function (d) {
                 var doseage = d.doseage || "";
                 var unit = d.doseage_unit || "";
                 if (!doseage && !unit) return "";
                 if (!doseage) return unit;
                 if (!unit) return doseage;
                 return doseage + " " + unit;
-              }
+              },
             },
             { field: "charge_amount", title: "数量", width: 40 },
             { field: "frequ_name", title: "频率", width: 60 },
@@ -1116,9 +1174,12 @@
           if (!code) return "";
           var list = Array.isArray(supplyData) ? supplyData : [];
           console.log(list);
-          
+
           var it = list.find(function (s) {
-            console.log(String(s.supply_code || "").toUpperCase(), String(code).toUpperCase());
+            console.log(
+              String(s.supply_code || "").toUpperCase(),
+              String(code).toUpperCase()
+            );
 
             return (
               String(s.supply_code || "").toUpperCase() ===
@@ -1807,7 +1868,12 @@
                     supply_code: row.supply_code || raw.supply_code || "",
                     doseage: row.doseage || raw.doseage || null,
                     doseage_unit: row.doseage_unit || raw.doseage_unit || null,
-                    doseage_unit_name: row.doseage_unit_name || raw.doseage_unit_name || row.doseage_unit || raw.doseage_unit || null,
+                    doseage_unit_name:
+                      row.doseage_unit_name ||
+                      raw.doseage_unit_name ||
+                      row.doseage_unit ||
+                      raw.doseage_unit ||
+                      null,
                     frequ_code: row.frequ_code || raw.frequ_code || "ONCE",
                     ward_sn: wardData.ward_sn || "",
                   };
@@ -2341,19 +2407,23 @@
             // 'all-role' 不需要筛选条件
 
             // 搜索筛选
-            if (currentFilters.searchQuery && currentFilters.searchQuery.trim()) {
+            if (
+              currentFilters.searchQuery &&
+              currentFilters.searchQuery.trim()
+            ) {
               var query = currentFilters.searchQuery.trim().toLowerCase();
               var orderName = (item.order_name || "").toLowerCase();
               var orderText = (item.order_text || "").toLowerCase();
               var doctorName = (item.order_doctor_name || "").toLowerCase();
               var instruction = (item.instruction || "").toLowerCase();
               var drugSpec = (item.drug_specification || "").toLowerCase();
-              
-              matchSearch = orderName.indexOf(query) !== -1 ||
-                           orderText.indexOf(query) !== -1 ||
-                           doctorName.indexOf(query) !== -1 ||
-                           instruction.indexOf(query) !== -1 ||
-                           drugSpec.indexOf(query) !== -1;
+
+              matchSearch =
+                orderName.indexOf(query) !== -1 ||
+                orderText.indexOf(query) !== -1 ||
+                doctorName.indexOf(query) !== -1 ||
+                instruction.indexOf(query) !== -1 ||
+                drugSpec.indexOf(query) !== -1;
             }
 
             return matchOrderType && matchRoleType && matchSearch;
@@ -2377,13 +2447,17 @@
               ? "我的医嘱"
               : "全部";
 
-          var hasFilters = currentFilters.orderType !== "all" || 
-                          currentFilters.roleType !== "all-role" || 
-                          (currentFilters.searchQuery && currentFilters.searchQuery.trim());
+          var hasFilters =
+            currentFilters.orderType !== "all" ||
+            currentFilters.roleType !== "all-role" ||
+            (currentFilters.searchQuery && currentFilters.searchQuery.trim());
 
           if (hasFilters) {
             var msgParts = [`${orderTypeText} - ${roleTypeText}`];
-            if (currentFilters.searchQuery && currentFilters.searchQuery.trim()) {
+            if (
+              currentFilters.searchQuery &&
+              currentFilters.searchQuery.trim()
+            ) {
               msgParts.push(`搜索"${currentFilters.searchQuery.trim()}"`);
             }
             msgParts.push(`(${filtered.length}条)`);
@@ -2392,7 +2466,10 @@
               time: 1500,
             });
           } else {
-            layer.msg(`已显示全部医嘱 (${filtered.length}条)`, { icon: 1, time: 1000 });
+            layer.msg(`已显示全部医嘱 (${filtered.length}条)`, {
+              icon: 1,
+              time: 1000,
+            });
           }
         }
 
@@ -2412,19 +2489,19 @@
 
         // 搜索功能
         var searchTimer = null;
-        
+
         // 搜索输入事件（防抖处理）
         $(document).on("input", "#yizhu-search-input", function () {
           var query = $(this).val();
           var $clearBtn = $("#clear-search-btn");
-          
+
           // 显示/隐藏清空按钮
           if (query.trim()) {
             $clearBtn.show();
           } else {
             $clearBtn.hide();
           }
-          
+
           // 防抖搜索
           clearTimeout(searchTimer);
           searchTimer = setTimeout(function () {
@@ -2578,7 +2655,9 @@
           if (!$select.length) return "";
           var selectedValue = $select.val();
           if (!selectedValue) return "";
-          var $selectedOption = $select.find('option[value="' + selectedValue + '"]');
+          var $selectedOption = $select.find(
+            'option[value="' + selectedValue + '"]'
+          );
           return $selectedOption.length ? $selectedOption.text() : "";
         }
 
@@ -2656,7 +2735,8 @@
             // 附带前端表单专用字段，便于显示
             doseage: doseage,
             doseage_unit: doseage_unit,
-            doseage_unit_name: getSelectedOptionText("#manual-unit-select") || doseage_unit,
+            doseage_unit_name:
+              getSelectedOptionText("#manual-unit-select") || doseage_unit,
           };
         }
 
@@ -2699,7 +2779,8 @@
           if (!unitVal)
             unitVal = ($("#manual-doseage-unit").val() || "").trim();
           d.doseage_unit = unitVal;
-          d.doseage_unit_name = getSelectedOptionText("#manual-unit-select") || unitVal;
+          d.doseage_unit_name =
+            getSelectedOptionText("#manual-unit-select") || unitVal;
           d.charge_amount = $("#manual-charge-amount").val().trim() || "1";
           d.long_once_flag = $("#manual-long-flag").val() || "1";
           d.frequ_code = $("#manual-frequ-select").val() || "";
@@ -2951,8 +3032,11 @@
             var dosePart = it.doseage
               ? "<span>剂量：" +
                 (it.doseage || "") +
-                (it.doseage_unit_name ? " " + it.doseage_unit_name : 
-                 it.doseage_unit ? " " + it.doseage_unit : "") +
+                (it.doseage_unit_name
+                  ? " " + it.doseage_unit_name
+                  : it.doseage_unit
+                  ? " " + it.doseage_unit
+                  : "") +
                 "</span>"
               : "";
 
@@ -3032,9 +3116,9 @@
     <style id="manual-order-style">
       /* 宽度与居中 */
       #manual-order-modal .layui-row {
+        width: 100%;
         max-width: 1200px;
         margin: 0 auto;
-        width: 100%;
       }
       /* 表单紧凑样式 */
       #manual-order-modal .layui-form .layui-form-item {
@@ -3053,8 +3137,8 @@
       }
       #manual-order-modal .layui-col-sm5,
       #manual-order-modal .layui-col-sm7 {
-        max-height: 50%;
         width: 100%;
+        max-height: 50%;
         padding: 6px;
       }
 
@@ -3062,53 +3146,53 @@
 
       #manual-order-form {
         display: grid;
+        align-content: start;
+        width: 100%;
         grid-template-columns: 1fr 1fr; /* 固定两列 */
         gap: 15px;
-        width: 100%;
-        align-content: start;
       }
 
       /* 简化后的字段容器样式 */
       #manual-order-form .layui-inline {
         display: flex !important;
         align-items: center !important;
-        gap: 8px !important;
         width: 100% !important; /* Grid子项占满网格单元 */
         margin: 0 !important;
         padding: 0 !important;
+        gap: 8px !important;
       }
 
       #manual-order-form .layui-form-label {
+        font-size: 14px !important;
+        line-height: 38px !important;
         width: auto !important;
         min-width: 60px !important;
-        padding: 0 !important;
         margin: 0 !important;
-        line-height: 38px !important;
-        font-size: 14px !important;
-        color: #333 !important;
+        padding: 0 !important;
         white-space: nowrap !important;
+        color: #333 !important;
       }
 
       #manual-order-form .layui-input,
       #manual-order-form select {
+        font-size: 14px !important;
+        line-height: 38px !important;
         flex: 1 !important;
         min-width: 0 !important;
         height: 38px !important;
-        line-height: 38px !important;
+        padding: 0 10px !important;
         border: 1px solid #e6e6e6 !important;
         border-radius: 2px !important;
-        padding: 0 10px !important;
-        font-size: 14px !important;
       }
 
       /* 按钮行样式 - 跨越两列 */
       #manual-order-form .form-buttons {
-        grid-column: 1 / -1; /* 跨越所有列 */
         display: flex;
-        gap: 8px;
         flex-wrap: wrap;
         justify-content: flex-start;
         margin-top: 5px;
+        grid-column: 1 / -1; /* 跨越所有列 */
+        gap: 8px;
       }
 
       /* 基本信息表单中的select样式修复 */
@@ -3118,16 +3202,16 @@
       }
 
       #manual-order-form .layui-form-select .layui-select-title {
+        line-height: 38px !important;
         width: 100% !important;
         height: 38px !important;
-        line-height: 38px !important;
         border: 1px solid #e6e6e6 !important;
         border-radius: 2px !important;
       }
 
       #manual-order-form .layui-form-select .layui-select-title input {
-        height: 36px !important;
         line-height: 36px !important;
+        height: 36px !important;
         padding-right: 30px !important;
       }
 
@@ -3153,62 +3237,62 @@
         }
       }
       #manual-order-modal .draft-card {
+        display: flex;
+        flex-direction: column;
+        padding: 10px 12px;
+        cursor: pointer;
         border: 1px solid #e6e6e6;
         border-radius: 6px;
         background: #fff;
-        padding: 10px 12px;
-        display: flex;
-        flex-direction: column;
         gap: 6px;
-        cursor: pointer;
       }
       #manual-order-modal .draft-card .title {
-        font-weight: 600;
         font-size: 14px;
-        color: #333;
+        font-weight: 600;
         line-height: 1.4;
         display: flex;
         align-items: center;
+        color: #333;
         gap: 8px;
       }
       #manual-order-modal .draft-card .badge {
+        font-size: 12px;
+        line-height: 18px;
         display: inline-block;
         padding: 0 6px;
-        line-height: 18px;
-        font-size: 12px;
-        border-radius: 3px;
-        background: #f0f7ff;
         color: #1e9fff;
         border: 1px solid #d6ecff;
+        border-radius: 3px;
+        background: #f0f7ff;
       }
       #manual-order-modal .draft-card .meta {
+        font-size: 12px;
         display: flex;
         flex-wrap: wrap;
-        gap: 10px 16px;
-        font-size: 12px;
         color: #666;
+        gap: 10px 16px;
       }
       #manual-order-modal .draft-card .meta span {
         white-space: nowrap;
       }
       #manual-order-modal .draft-card .desc {
         font-size: 12px;
-        color: #666;
-        white-space: nowrap;
         overflow: hidden;
+        white-space: nowrap;
         text-overflow: ellipsis;
+        color: #666;
       }
       #manual-order-modal .draft-card .actions {
-        margin-top: 4px;
         display: flex;
         justify-content: flex-end;
+        margin-top: 4px;
         gap: 8px;
       }
       #manual-order-modal .draft-card .layui-btn {
-        height: 24px;
-        line-height: 24px;
-        padding: 0 10px;
         font-size: 12px;
+        line-height: 24px;
+        height: 24px;
+        padding: 0 10px;
       }
       #manual-order-modal .draft-card.selected {
         outline: 2px solid #1e9fff;
@@ -3232,8 +3316,8 @@
         }
 
         #manual-order-form .layui-form-label {
-          min-width: 40px !important; /* 缩小标签宽度 */
           font-size: 13px !important; /* 缩小字体 */
+          min-width: 40px !important; /* 缩小标签宽度 */
         }
 
         #manual-order-form .layui-input,

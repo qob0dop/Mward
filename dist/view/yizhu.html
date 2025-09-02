@@ -101,10 +101,12 @@
       }
 
       .layui-form-select .layui-select-title input {
+        width: 100px;
         height: 36px !important;
         line-height: 36px !important;
         font-size: 14px !important;
         color: #333 !important;
+        padding-left: 7px;
         padding-right: 30px !important;
       }
 
@@ -415,6 +417,24 @@
         min-height: 20px;
         word-break: break-word;
       }
+      
+      /* 草稿卡片不完整状态样式 */
+      .draft-card.incomplete {
+        border-color: #ff5722 !important;
+        background: #fff3f0 !important;
+        box-shadow: 0 2px 8px rgba(255, 87, 34, 0.15) !important;
+      }
+      
+      .draft-card.incomplete .title {
+        color: #ff5722;
+      }
+      
+      .draft-card.incomplete .title::after {
+        content: " ⚠️";
+        color: #ff5722;
+        font-weight: bold;
+        margin-left: 8px;
+      }
       @media (max-width: 768px) {
         .layui-table-page {
           visibility: hidden;
@@ -541,10 +561,33 @@
             type="button"
             id="btn-add-order"
             class="layui-btn layui-btn-sm layui-btn-primary"
+            style="width: auto;"
           >
             <i class="layui-icon layui-icon-add-1"></i> 新增医嘱
           </button>
-
+<div style="display: flex; gap: 8px; align-items: center">
+            <span style="font-size: 13px; color: #666; font-weight: bold; white-space: nowrap;">
+              搜索：
+            </span>
+            <div style="position: relative; display: flex; align-items: center;">
+              <input
+                id="yizhu-search-input"
+                type="text"
+                placeholder="医嘱名称/医生姓名/备注"
+                class="layui-input"
+                style="width: 160px; font-size: 13px; "
+              />
+              <button
+                type="button"
+                id="clear-search-btn"
+                class="layui-btn layui-btn-xs"
+                style="position: absolute; right: 5px; padding: 2px 6px; display: none;"
+                title="清空搜索"
+              >
+                ✕
+              </button>
+            </div>
+          </div>
           <!-- 医嘱类型筛选 -->
           <div style="display: flex; gap: 8px; align-items: center">
             <span
@@ -591,29 +634,7 @@
           </div>
 
           <!-- 搜索框 -->
-          <div style="display: flex; gap: 8px; align-items: center">
-            <span style="font-size: 13px; color: #666; font-weight: bold; white-space: nowrap;">
-              搜索：
-            </span>
-            <div style="position: relative; display: flex; align-items: center;">
-              <input
-                id="yizhu-search-input"
-                type="text"
-                placeholder="医嘱名称/医生姓名/备注"
-                class="layui-input"
-                style="width: 200px; font-size: 13px; padding-right: 30px;"
-              />
-              <button
-                type="button"
-                id="clear-search-btn"
-                class="layui-btn layui-btn-xs"
-                style="position: absolute; right: 5px; padding: 2px 6px; display: none;"
-                title="清空搜索"
-              >
-                ✕
-              </button>
-            </div>
-          </div>
+          
         </div>
       </form>
       <!-- 医嘱表格容器 -->
@@ -687,7 +708,7 @@
     <script src="../js/lay-config.js?v=1.0.4" charset="utf-8"></script>
     <script>
       //js动态计算表格缩放比例
-      const tempAppconfig = "http://10.102.38.107:5251/";
+      const tempAppconfig = "http://10.102.38.109:5251/";
       function scaleTableForMobile() {
         const layuiTableBox = document.querySelector(".layui-table-box");
         if (!layuiTableBox) {
@@ -1515,6 +1536,9 @@
             $("#add-order-form")[0].reset();
           }
 
+          // 清空模板搜索框
+          $("#template-search").val("");
+
           // 设置开始时间默认为当前时间
           var now = new Date();
           if ($("#start-time-input").length) {
@@ -1562,6 +1586,9 @@
                 .removeData("tableId")
                 .removeData("tableData")
                 .removeData("detailMap");
+              
+              // 清空模板搜索框，避免下次打开时显示上次的搜索内容
+              $("#template-search").val("");
             },
           });
         }
@@ -1740,13 +1767,13 @@
                         '</div>' +
                         '<div class="suborder-field">' +
                           '<span class="suborder-field-label">剂量:</span>' +
-                          '<span class="suborder-field-value editable" contenteditable="true" data-field="doseage" data-index="' + idx + '">' + 
+                          '<span class="suborder-field-value " contenteditable="false" data-field="doseage" data-index="' + idx + '">' + 
                             doseageText + 
                           '</span>' +
                         '</div>' +
                         '<div class="suborder-field">' +
                           '<span class="suborder-field-label">数量:</span>' +
-                          '<span class="suborder-field-value editable" contenteditable="true" data-field="charge_amount" data-index="' + idx + '">' + 
+                          '<span class="suborder-field-value" contenteditable="false" data-field="charge_amount" data-index="' + idx + '">' + 
                             (item.charge_amount || "1") + 
                           '</span>' +
                         '</div>' +
@@ -1760,7 +1787,7 @@
                         '</div>' +
                         '<div class="suborder-field suborder-instruction">' +
                           '<span class="suborder-field-label">嘱托:</span>' +
-                          '<div class="suborder-field-value editable" contenteditable="true" data-field="instruction" data-index="' + idx + '">' + 
+                          '<div class="suborder-field-value" contenteditable="false" data-field="instruction" data-index="' + idx + '">' + 
                             (item.instruction || "无特殊嘱托") + 
                           '</div>' +
                         '</div>' +
@@ -1991,17 +2018,19 @@
                 submitBatchSuborders(todoList, layerIndex);
               });
 
-            // 初始渲染分类列表；若尚未加载则先拉取
-            if (orderTemplates.length === 0) {
-              $("#category-list").html(
-                '<div class="no-data">正在加载分类...</div>'
-              );
-              loadOrderTemplates(function () {
-                renderCategoryList();
-              });
-            } else {
-              renderCategoryList();
-            }
+              // 初始渲染分类列表；若尚未加载则先拉取
+              if (orderTemplates.length === 0) {
+                $("#category-list").html(
+                  '<div class="no-data">正在加载分类...</div>'
+                );
+                loadOrderTemplates(function () {
+                  // 重新渲染完整的分类列表，清除之前的搜索过滤
+                  window.renderCategoryList(orderTemplates);
+                });
+              } else {
+                // 重新渲染完整的分类列表，清除之前的搜索过滤
+                window.renderCategoryList(orderTemplates);
+              }
           } // 关闭 initializeModalContent 函数
         } // 关闭 initializeOrderModal 函数
 
@@ -2979,6 +3008,67 @@
             );
         })();
 
+        // 通用的医嘱剂量和单位验证函数
+        function validateOrdersCompleteness(orders, orderType) {
+          var validationErrors = [];
+          var incompleteOrders = [];
+          
+          orders.forEach(function(order, index) {
+            var orderName = order.order_name || "";
+            var doseage = (order.doseage || "").toString().trim();
+            var doseageUnit = (order.doseage_unit || "").toString().trim();
+            var doseageUnitName = (order.doseage_unit_name || "").toString().trim();
+            
+            // 检查是否需要剂量（通常药品类医嘱需要剂量）
+            var needsDoseage = true; // 默认都需要剂量
+            
+            // 某些特殊医嘱可能不需要剂量，比如检查类、手术类等
+            var nonDoseageKeywords = ['检查', '拍片', '心电图', 'CT', 'MRI', 'B超', '手术', '换药', '护理', '观察'];
+            nonDoseageKeywords.forEach(function(keyword) {
+              if (orderName.indexOf(keyword) !== -1) {
+                needsDoseage = false;
+              }
+            });
+            
+            if (needsDoseage) {
+              var hasValidDoseage = doseage && doseage !== "" && doseage !== "0";
+              var hasValidUnit = (doseageUnit && doseageUnit !== "") || (doseageUnitName && doseageUnitName !== "");
+              
+              if (!hasValidDoseage || !hasValidUnit) {
+                incompleteOrders.push({
+                  index: index + 1,
+                  name: orderName || "未命名医嘱",
+                  missingDoseage: !hasValidDoseage,
+                  missingUnit: !hasValidUnit
+                });
+              }
+            }
+          });
+          
+          // 如果有不完整的医嘱，返回错误信息
+          if (incompleteOrders.length > 0) {
+            var errorMessages = ["以下" + orderType + "缺少必要的剂量或单位信息：<br><br>"];
+            incompleteOrders.forEach(function(order) {
+              var missing = [];
+              if (order.missingDoseage) missing.push("剂量");
+              if (order.missingUnit) missing.push("单位");
+              
+              errorMessages.push(
+                "• <strong>" + order.name + "</strong><br>" +
+                "  缺少：<span style='color: #ff5722;'>" + missing.join("、") + "</span><br>"
+              );
+            });
+            
+            return {
+              isValid: false,
+              errorMessage: errorMessages.join(""),
+              incompleteCount: incompleteOrders.length
+            };
+          }
+          
+          return { isValid: true };
+        }
+
         // 事件：提交全部草稿
         $(document)
           .off("click", "#btn-submit-all-drafts")
@@ -2987,6 +3077,20 @@
               layer.msg("暂无可提交的医嘱", { icon: 2 });
               return;
             }
+            
+            // 验证剂量和单位完整性
+            var validation = validateOrdersCompleteness(draftOrders, "草稿医嘱");
+            if (!validation.isValid) {
+              layer.alert(validation.errorMessage + "<br><span style='color: #666; font-size: 12px;'>请在草稿列表中补充完整信息后再提交</span>", {
+                icon: 2,
+                title: "草稿医嘱信息不完整",
+                area: ["450px", "auto"],
+                btn: ["我知道了"],
+                btnAlign: 'c'
+              });
+              return;
+            }
+            
             // 简单校验：提示缺少编码的条目数量
             var missing = draftOrders.filter(function (x) {
               return !x.order_code;
@@ -2995,7 +3099,7 @@
               ? "\n其中 " + missing + " 条缺少编码，可能提交失败"
               : "";
             layer.confirm(
-              "确定提交全部 " + draftOrders.length + " 条医嘱？" + tip,
+              "确定提交全部 " + draftOrders.length + " 条医嘱？" + tip + "\n\n✅ 保存区医嘱的剂量和单位信息均已完整",
               { icon: 3, title: "确认提交" },
               function (index) {
                 layer.close(index);
@@ -3111,17 +3215,47 @@
             var supplyName =
               supplyCodeToName(it.supply_code) || it.supply_code || "";
             var selectedCls = idx === selectedDraftIndex ? " selected" : "";
-            var dosePart = it.doseage
-              ? "<span>剂量：" +
-                (it.doseage || "") +
-                (it.doseage_unit_name ? " " + it.doseage_unit_name : 
-                 it.doseage_unit ? " " + it.doseage_unit : "") +
-                "</span>"
-              : "";
+            
+            // 检查剂量和单位是否完整
+            var orderName = it.order_name || "";
+            var doseage = (it.doseage || "").toString().trim();
+            var doseageUnit = (it.doseage_unit || "").toString().trim();
+            var doseageUnitName = (it.doseage_unit_name || "").toString().trim();
+            
+            // 判断是否需要剂量
+            var needsDoseage = true;
+            var nonDoseageKeywords = ['检查', '拍片', '心电图', 'CT', 'MRI', 'B超', '手术', '换药', '护理', '观察'];
+            nonDoseageKeywords.forEach(function(keyword) {
+              if (orderName.indexOf(keyword) !== -1) {
+                needsDoseage = false;
+              }
+            });
+            
+            var hasValidDoseage = !needsDoseage || (doseage && doseage !== "" && doseage !== "0");
+            var hasValidUnit = !needsDoseage || (doseageUnit && doseageUnit !== "") || (doseageUnitName && doseageUnitName !== "");
+            var isIncomplete = needsDoseage && (!hasValidDoseage || !hasValidUnit);
+            var incompleteCls = isIncomplete ? " incomplete" : "";
+            
+            var dosePart = "";
+            if (needsDoseage) {
+              if (it.doseage || it.doseage_unit || it.doseage_unit_name) {
+                dosePart = "<span" + (!hasValidDoseage || !hasValidUnit ? ' style="color: #ff5722; font-weight: bold;"' : "") + ">剂量：" +
+                  (it.doseage || "<span style='color: #ff5722;'>缺少剂量</span>") +
+                  (it.doseage_unit_name ? " " + it.doseage_unit_name : 
+                   it.doseage_unit ? " " + it.doseage_unit : 
+                   "<span style='color: #ff5722;'> 缺少单位</span>") +
+                  "</span>";
+              } else {
+                dosePart = "<span style='color: #ff5722; font-weight: bold;'>剂量：缺少剂量和单位</span>";
+              }
+            } else {
+              dosePart = "<span style='color: #999;'>剂量：不适用</span>";
+            }
 
             html +=
               '<div class="draft-card' +
               selectedCls +
+              incompleteCls +
               '" data-index="' +
               idx +
               '">' +
@@ -3142,9 +3276,13 @@
               "<span>频率：" +
               freqName +
               "</span>" +
+              (supplyName
+                ? 
               "<span>用法：" +
               supplyName +
-              "</span>" +
+              "</span>"
+                : "")
+               +
               (it.drug_specification
                 ? "<span>规格：" + it.drug_specification + "</span>"
                 : "") +
@@ -3254,15 +3392,17 @@
 
       #manual-order-form .layui-input,
       #manual-order-form select {
+        width: 100%;
         flex: 1 !important;
         min-width: 0 !important;
         height: 38px !important;
         line-height: 38px !important;
-        border: 1px solid #e6e6e6 !important;
+        border: 1px solid #e6e6e6 ;
         border-radius: 2px !important;
         padding: 0 10px !important;
         font-size: 14px !important;
       }
+      
 
       /* 按钮行样式 - 跨越两列 */
       #manual-order-form .form-buttons {
@@ -3270,7 +3410,7 @@
         display: flex;
         gap: 8px;
         flex-wrap: wrap;
-        justify-content: flex-start;
+        justify-content: space-around;
         margin-top: 5px;
       }
 

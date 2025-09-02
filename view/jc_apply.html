@@ -1082,7 +1082,6 @@
               timeout: 15000, // 15秒超时
               success: function (res) {
                 layer.close(loadingIndex);
-
                 if (res.status === 1 && res.data) {
                   var reportUrl = res.data;
                   if (reportUrl.indexOf("?") > -1) {
