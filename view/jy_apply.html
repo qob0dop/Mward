@@ -378,59 +378,121 @@
 
       .package-selector {
         display: flex;
+        flex-direction: column;
         height: 100%;
-        gap: 1px;
+        gap: 15px;
       }
 
-      .package-left {
-        flex: 0 0 220px;
-        border-right: 1px solid #e6e6e6;
-        display: flex;
-        flex-direction: column;
+      .package-select-area {
+        flex: 0 0 auto;
+        padding: 15px;
+        border-bottom: 1px solid #e6e6e6;
+        background: #f8f9fa;
       }
 
-      .package-right {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
+      .package-select-label {
+        font-size: 14px;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 8px;
+        display: block;
       }
 
-      .package-list {
-        flex: 1;
-        overflow-y: auto;
-        max-height: 280px;
-      }
-
-      .package-item {
-        padding: 10px;
-        border-bottom: 1px solid #f0f0f0;
+      .package-select {
+        position: relative;
+        width: 100%;
+        height: 36px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        background: white;
         cursor: pointer;
-        transition: all 0.2s;
       }
 
-      .package-item:hover {
+      .package-select-display {
+        width: 100%;
+        height: 100%;
+        padding: 0 30px 0 10px;
+        font-size: 13px;
+        line-height: 36px;
+        color: #333;
+        border: none;
+        outline: none;
+        background: transparent;
+        cursor: pointer;
+        user-select: none;
+      }
+
+      .package-select-display.placeholder {
+        color: #999;
+      }
+
+      .package-select-arrow {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 12px;
+        color: #666;
+        pointer-events: none;
+        transition: transform 0.2s ease;
+      }
+
+      .package-select.open .package-select-arrow {
+        transform: translateY(-50%) rotate(180deg);
+      }
+
+      .package-select:focus {
+        border-color: #1e9fff;
+        box-shadow: 0 0 3px rgba(30, 159, 255, 0.3);
+      }
+
+      .package-dropdown {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: white;
+        border: 1px solid #ddd;
+        border-top: none;
+        border-radius: 0 0 4px 4px;
+        max-height: 200px;
+        overflow-y: auto;
+        z-index: 1000;
+        display: none;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .package-dropdown.show {
+        display: block;
+      }
+
+      .package-option {
+        padding: 8px 10px;
+        font-size: 13px;
+        color: #333;
+        cursor: pointer;
+        border-bottom: 1px solid #f5f5f5;
+        transition: background-color 0.2s ease;
+      }
+
+      .package-option:hover {
         background: #f5f5f5;
       }
 
-      .package-item.selected {
-        background: lightgray;
-        color: #fff;
+      .package-option:last-child {
+        border-bottom: none;
       }
 
-      .package-title {
-        font-weight: bold;
-        margin-bottom: 4px;
-        font-size: 13px;
+      .package-option.selected {
+        background: #1e9fff;
+        color: white;
       }
 
-      .package-desc {
-        font-size: 12px;
-        color: #666;
-        line-height: 1.3;
-      }
-
-      .package-item.selected .package-desc {
-        color: rgba(255, 255, 255, 0.8);
+      .package-items-area {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
       }
 
       .items-container {
@@ -486,43 +548,46 @@
         margin-left: 10px;
       }
 
-      /* 窄屏响应式布局：上下分布 */
+      /* 窄屏响应式布局 */
       @media (max-width: 768px) {
-        .package-selector {
-          flex-direction: column;
-          gap: 0;
+        .package-content {
+          padding: 0;
+        }
+        
+        .package-select-area {
+          padding: 10px;
         }
 
-        .package-left {
-          flex: 0 0 auto;
-          border-right: none;
-          border-bottom: 1px solid #e6e6e6;
-          height: 40%;
-          width: 100%;
+        .package-select-label {
+          font-size: 13px;
         }
 
-        .package-right {
-          flex: 1;
-          min-height: 200px;
-          width: 100%;
+        .package-select {
+          height: 32px;
+        }
+
+        .package-select-display {
+          font-size: 12px;
+          line-height: 32px;
+        }
+
+        .package-dropdown {
+          max-height: 150px;
+        }
+
+        .package-option {
+          padding: 6px 8px;
+          font-size: 12px;
         }
 
         .items-container {
-          max-height: 180px;
+          max-height: 200px;
         }
 
-        .package-item {
-          padding: 8px;
-        }
-        .package-title {
-          font-size: 12px;
-        }
-        .package-desc {
-          font-size: 11px;
-        }
         .items-header {
           font-size: 12px;
         }
+
         .item-name {
           font-size: 12px;
         }
@@ -1113,19 +1178,16 @@
                     return;
                   }
 
-                  // 生成套餐选择HTML
-                  var packageHtml = "";
+                  // 生成套餐选择下拉选项
+                  var packageOptionsHtml = '';
                   testPackages.forEach(function (pkg) {
-                    packageHtml +=
-                      '<div class="package-item" data-id="' +
+                    packageOptionsHtml +=
+                      '<div class="package-option" data-id="' +
                       pkg.id +
+                      '" data-value="' + 
+                      (pkg.value || '') + 
                       '">' +
-                      '<div class="package-title">' +
                       (pkg.name || "未命名套餐") +
-                      "</div>" +
-                      '<div class="package-desc">' +
-                      (pkg.value || "无描述") +
-                      "</div>" +
                       "</div>";
                   });
 
@@ -1141,17 +1203,21 @@
                       '<div class="package-form">' +
                       '<div class="package-content">' +
                       '<div class="package-selector">' +
-                      '<div class="package-left">' +
-                      '<div style="padding: 8px; background: #1e9fff; color: #fff; font-weight: bold; text-align: center; font-size: 13px;">检验套餐</div>' +
-                      '<div class="package-list">' +
-                      packageHtml +
-                      "</div>" +
-                      "</div>" +
-                      '<div class="package-right">' +
+                      '<div class="package-select-area">' +
+                      '<label class="package-select-label">选择检验套餐：</label>' +
+                      '<div class="package-select" id="package-select" tabindex="0">' +
+                      '<div class="package-select-display placeholder">请选择检验套餐</div>' +
+                      '<i class="layui-icon layui-icon-down package-select-arrow"></i>' +
+                      '<div class="package-dropdown">' +
+                      packageOptionsHtml +
+                      '</div>' +
+                      '</div>' +
+                      '</div>' +
+                      '<div class="package-items-area">' +
                       '<div class="items-container">' +
                       '<div class="no-package-selected">' +
                       '<i class="layui-icon layui-icon-file" style="font-size: 36px; display: block; margin-bottom: 8px;"></i>' +
-                      "请先选择左侧的检验套餐" +
+                      "请先选择检验套餐" +
                       "</div>" +
                       "</div>" +
                       "</div>" +
@@ -1260,19 +1326,60 @@
                       }
 
                       // 套餐选择事件
-                      $(layero)
-                        .find(".package-item")
-                        .click(function () {
-                          $(layero)
-                            .find(".package-item")
-                            .removeClass("selected");
-                          $(this).addClass("selected");
+                      var $packageSelect = $(layero).find("#package-select");
+                      var $packageDisplay = $packageSelect.find(".package-select-display");
+                      var $packageDropdown = $packageSelect.find(".package-dropdown");
+
+                      // 点击显示/隐藏下拉框
+                      $packageSelect.on("click", function(e) {
+                        e.stopPropagation();
+                        if ($packageDropdown.hasClass("show")) {
+                          $packageDropdown.removeClass("show");
+                          $packageSelect.removeClass("open");
+                        } else {
+                          $packageDropdown.addClass("show");
+                          $packageSelect.addClass("open");
+                        }
+                      });
+
+                      // 选择选项
+                      $packageDropdown.on("click", ".package-option", function(e) {
+                        e.stopPropagation();
+                        var packageId = $(this).data("id");
+                        var packageName = $(this).text();
+                        
+                        // 更新显示
+                        $packageDisplay.text(packageName).removeClass("placeholder");
+                        $packageDropdown.find(".package-option").removeClass("selected");
+                        $(this).addClass("selected");
+                        
+                        // 隐藏下拉框
+                        $packageDropdown.removeClass("show");
+                        $packageSelect.removeClass("open");
+                        
+                        // 处理选择逻辑
+                        if (packageId) {
                           selectedPackage = testPackages.find(
-                            (pkg) => pkg.id == $(this).data("id")
+                            (pkg) => pkg.id == packageId
                           );
                           selectedItems = []; // 切换套餐时清空已选项目
                           showItems(selectedPackage);
-                        });
+                        }
+                      });
+
+                      // 点击其他地方关闭下拉框
+                      $(document).on("click", function() {
+                        $packageDropdown.removeClass("show");
+                        $packageSelect.removeClass("open");
+                      });
+
+                      // 键盘支持
+                      $packageSelect.on("keydown", function(e) {
+                        if (e.keyCode === 13 || e.keyCode === 32) { // Enter或Space
+                          e.preventDefault();
+                          $(this).click();
+                        }
+                      });
 
                       // 确认申请
                       $(layero)

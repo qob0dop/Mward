@@ -17,11 +17,11 @@
       }
 
       .layui-table-fixed-r .layui-table-cell {
-        height: auto !important;
-        white-space: normal !important;
-        padding: 12px 8px !important;
         font-size: 14px !important;
         line-height: 1.4 !important;
+        height: auto !important;
+        padding: 12px 8px !important;
+        white-space: normal !important;
       }
 
       /* 确保固定列头部单元格与普通列保持一致 */
@@ -34,11 +34,11 @@
 
       /* 操作按钮样式优化 */
       .layui-table .layui-btn-xs {
-        height: 24px !important;
-        line-height: 24px !important;
-        padding: 0 8px !important;
         font-size: 12px !important;
+        line-height: 24px !important;
+        height: 24px !important;
         margin: 2px !important;
+        padding: 0 8px !important;
       }
 
       /* 确保固定列不会产生滚动条 */
@@ -71,86 +71,148 @@
 
       /* 套餐选择样式 */
       .package-form {
-        height: 100%;
         display: flex;
         flex-direction: column;
+        height: 100%;
       }
 
       .package-content {
-        flex: 1;
         overflow: hidden;
+        flex: 1;
       }
 
       .package-selector {
         display: flex;
+        flex-direction: column;
         height: 100%;
-        gap: 1px;
+        gap: 15px;
       }
 
-      .package-left {
-        flex: 0 0 220px;
-        border-right: 1px solid #e6e6e6;
-        display: flex;
-        flex-direction: column;
+      .package-select-area {
+        flex: 0 0 auto;
+        padding: 15px;
+        border-bottom: 1px solid #e6e6e6;
+        background: #f8f9fa;
       }
 
-      .package-right {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
+      .package-select-label {
+        font-size: 14px;
+        font-weight: bold;
+        display: block;
+        margin-bottom: 8px;
+        color: #333;
       }
 
-      .package-list {
-        flex: 1;
-        overflow-y: auto;
-        max-height: 280px;
-      }
-
-      .package-item {
-        padding: 10px;
-        border-bottom: 1px solid #f0f0f0;
+      .package-select {
+        position: relative;
+        width: 100%;
+        height: 36px;
         cursor: pointer;
-        transition: all 0.2s;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        background: white;
       }
 
-      .package-item:hover {
+      .package-select-display {
+        font-size: 13px;
+        line-height: 36px;
+        width: 100%;
+        height: 100%;
+        padding: 0 30px 0 10px;
+        cursor: pointer;
+        user-select: none;
+        color: #333;
+        border: none;
+        outline: none;
+        background: transparent;
+      }
+
+      .package-select-display.placeholder {
+        color: #999;
+      }
+
+      .package-select-arrow {
+        font-size: 12px;
+        position: absolute;
+        top: 50%;
+        right: 10px;
+        transition: transform 0.2s ease;
+        transform: translateY(-50%);
+        pointer-events: none;
+        color: #666;
+      }
+
+      .package-select.open .package-select-arrow {
+        transform: translateY(-50%) rotate(180deg);
+      }
+
+      .package-select:focus {
+        border-color: #1e9fff;
+        box-shadow: 0 0 3px rgba(30, 159, 255, 0.3);
+      }
+
+      .package-dropdown {
+        position: absolute;
+        z-index: 1000;
+        top: 100%;
+        right: 0;
+        left: 0;
+        display: none;
+        overflow-y: auto;
+        max-height: 200px;
+        border: 1px solid #ddd;
+        border-top: none;
+        border-radius: 0 0 4px 4px;
+        background: white;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .package-dropdown.show {
+        display: block;
+      }
+
+      .package-option {
+        font-size: 13px;
+        padding: 8px 10px;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+        color: #333;
+        border-bottom: 1px solid #f5f5f5;
+      }
+
+      .package-option:hover {
         background: #f5f5f5;
       }
 
-      .package-item.selected {
-        background: lightgray;
+      .package-option:last-child {
+        border-bottom: none;
+      }
+
+      .package-option.selected {
         color: white;
+        background: #1e9fff;
       }
 
-      .package-title {
-        font-weight: bold;
-        margin-bottom: 4px;
-        font-size: 13px;
-      }
-
-      .package-desc {
-        font-size: 12px;
-        color: #666;
-        line-height: 1.3;
-      }
-
-      .package-item.selected .package-desc {
-        color: rgba(255, 255, 255, 0.8);
+      .package-items-area {
+        display: flex;
+        flex: 1;
+        flex-direction: column;
+        min-height: 0;
       }
 
       .items-container {
-        flex: 1;
         overflow-y: auto;
+        flex: 1;
         max-height: 280px;
       }
 
       .items-header {
-        padding: 8px;
-        background: #1e9fff;
-        color: #fff;
-        font-weight: bold;
-        text-align: center;
         font-size: 13px;
+        font-weight: bold;
+        padding: 8px;
+        text-align: center;
+        color: #fff;
+        background: #1e9fff;
       }
 
       .items-list {
@@ -160,8 +222,8 @@
       .item-checkbox {
         display: block;
         padding: 8px 0;
-        border-bottom: 1px solid #f0f0f0;
         cursor: pointer;
+        border-bottom: 1px solid #f0f0f0;
       }
 
       .item-checkbox:hover {
@@ -169,22 +231,22 @@
       }
 
       .item-name {
-        margin-left: 8px;
         font-size: 13px;
+        margin-left: 8px;
       }
 
       .no-package-selected {
-        text-align: center;
-        padding: 50px 20px;
-        color: #999;
         font-size: 13px;
+        padding: 50px 20px;
+        text-align: center;
+        color: #999;
       }
 
       .dialog-buttons {
-        padding: 15px;
-        border-top: 1px solid #e6e6e6;
-        text-align: right;
         flex-shrink: 0;
+        padding: 15px;
+        text-align: right;
+        border-top: 1px solid #e6e6e6;
       }
 
       .dialog-buttons .layui-btn {
@@ -196,39 +258,35 @@
         .package-content {
           padding: 0;
         }
-        .package-selector {
-          flex-direction: column;
-          gap: 0;
+
+        .package-select-area {
+          padding: 10px;
         }
 
-        .package-left {
-          flex: 0 0 auto;
-          border-right: none;
-          border-bottom: 1px solid #e6e6e6;
-          height: 50%;
-          width: 100%;
+        .package-select-label {
+          font-size: 13px;
         }
 
-        .package-right {
-          flex: 1;
-          min-height: 50%;
-          width: 100%;
+        .package-select {
+          height: 32px;
+        }
+
+        .package-select-display {
+          font-size: 12px;
+          line-height: 32px;
+        }
+
+        .package-dropdown {
+          max-height: 150px;
+        }
+
+        .package-option {
+          font-size: 12px;
+          padding: 6px 8px;
         }
 
         .items-container {
-          max-height: 180px;
-        }
-
-        .package-item {
-          padding: 8px;
-        }
-
-        .package-title {
-          font-size: 12px;
-        }
-
-        .package-desc {
-          font-size: 11px;
+          max-height: 200px;
         }
 
         .items-header {
@@ -239,7 +297,9 @@
           font-size: 12px;
         }
       }
-
+      /* .layui-table-box {
+        height: 100%;
+      } */
       /* 更窄屏幕优化 */
       @media (max-width: 480px) {
         .items-container {
@@ -252,17 +312,17 @@
 
         .dialog-buttons .layui-btn {
           font-size: 12px;
-          height: 32px;
           line-height: 32px;
+          height: 32px;
           padding: 0 12px;
         }
       }
     </style>
   </head>
   <body>
-    <div class="layui-container">
-      <div class="layui-row">
-        <div class="layui-col-md12">
+    <div class="layui-container" style="height: 100%">
+      <div class="layui-row" style="height: 100%">
+        <div class="layui-col-md12" style="height: 100%">
           <!-- <blockquote class="layui-elem-quote">
                     <i class="layui-icon layui-icon-list" style="font-size: 18px; margin-right: 8px;"></i>
                     检查申请信息
@@ -407,7 +467,8 @@
           layuiTableBox.style.transform = `scale(${scale})`;
           layuiTableBox.style.transformOrigin = "top left";
           layuiTableBox.style.width = `${100 / scale}%`;
-
+          // layuiTableBox.style.height = `${100 / scale}%`;
+          console.log("高度", layuiTableBox.style.height);
           // 重要：确保内部表格元素不被固定宽度限制
           const headerTable = layuiTableBox.querySelector(
             ".layui-table-header table"
@@ -788,7 +849,7 @@
               },
             ],
           ],
-          height: "full-42",
+          height: "100%",
           text: {
             none: '<div style="text-align: center; padding: 20px; color: #999; font-size: 13px;"><i class="layui-icon layui-icon-file" style="font-size: 36px; display: block; margin-bottom: 8px;"></i>暂无检查申请数据</div>',
           },
@@ -835,19 +896,16 @@
                     return;
                   }
 
-                  // 生成套餐选择HTML
-                  var packageHtml = "";
+                  // 生成套餐选择下拉选项
+                  var packageOptionsHtml = "";
                   examPackages.forEach(function (pkg) {
-                    packageHtml +=
-                      '<div class="package-item" data-id="' +
+                    packageOptionsHtml +=
+                      '<div class="package-option" data-id="' +
                       pkg.id +
+                      '" data-value="' +
+                      (pkg.value || "") +
                       '">' +
-                      '<div class="package-title">' +
                       (pkg.name || "未命名套餐") +
-                      "</div>" +
-                      '<div class="package-desc">' +
-                      (pkg.value || "无描述") +
-                      "</div>" +
                       "</div>";
                   });
 
@@ -863,17 +921,21 @@
                       '<div class="package-form">' +
                       '<div class="package-content">' +
                       '<div class="package-selector">' +
-                      '<div class="package-left">' +
-                      '<div style="padding: 8px; background: #1e9fff; color: #fff; font-weight: bold; text-align: center; font-size: 13px;">检查套餐</div>' +
-                      '<div class="package-list">' +
-                      packageHtml +
+                      '<div class="package-select-area">' +
+                      '<label class="package-select-label">选择检查套餐：</label>' +
+                      '<div class="package-select" id="package-select" tabindex="0">' +
+                      '<div class="package-select-display placeholder">请选择检查套餐</div>' +
+                      '<i class="layui-icon layui-icon-down package-select-arrow"></i>' +
+                      '<div class="package-dropdown">' +
+                      packageOptionsHtml +
                       "</div>" +
                       "</div>" +
-                      '<div class="package-right">' +
+                      "</div>" +
+                      '<div class="package-items-area">' +
                       '<div class="items-container">' +
                       '<div class="no-package-selected">' +
                       '<i class="layui-icon layui-icon-file" style="font-size: 36px; display: block; margin-bottom: 8px;"></i>' +
-                      "请先选择左侧的检查套餐" +
+                      "请先选择检查套餐" +
                       "</div>" +
                       "</div>" +
                       "</div>" +
@@ -982,19 +1044,72 @@
                       }
 
                       // 套餐选择事件
-                      $(layero)
-                        .find(".package-item")
-                        .click(function () {
-                          $(layero)
-                            .find(".package-item")
+                      var $packageSelect = $(layero).find("#package-select");
+                      var $packageDisplay = $packageSelect.find(
+                        ".package-select-display"
+                      );
+                      var $packageDropdown =
+                        $packageSelect.find(".package-dropdown");
+
+                      // 点击显示/隐藏下拉框
+                      $packageSelect.on("click", function (e) {
+                        e.stopPropagation();
+                        if ($packageDropdown.hasClass("show")) {
+                          $packageDropdown.removeClass("show");
+                          $packageSelect.removeClass("open");
+                        } else {
+                          $packageDropdown.addClass("show");
+                          $packageSelect.addClass("open");
+                        }
+                      });
+
+                      // 选择选项
+                      $packageDropdown.on(
+                        "click",
+                        ".package-option",
+                        function (e) {
+                          e.stopPropagation();
+                          var packageId = $(this).data("id");
+                          var packageName = $(this).text();
+
+                          // 更新显示
+                          $packageDisplay
+                            .text(packageName)
+                            .removeClass("placeholder");
+                          $packageDropdown
+                            .find(".package-option")
                             .removeClass("selected");
                           $(this).addClass("selected");
-                          selectedPackage = examPackages.find(
-                            (pkg) => pkg.id == $(this).data("id")
-                          );
-                          selectedItems = []; // 切换套餐时清空已选项目
-                          showItems(selectedPackage);
-                        });
+
+                          // 隐藏下拉框
+                          $packageDropdown.removeClass("show");
+                          $packageSelect.removeClass("open");
+
+                          // 处理选择逻辑
+                          if (packageId) {
+                            selectedPackage = examPackages.find(
+                              (pkg) => pkg.id == packageId
+                            );
+                            selectedItems = []; // 切换套餐时清空已选项目
+                            showItems(selectedPackage);
+                          }
+                        }
+                      );
+
+                      // 点击其他地方关闭下拉框
+                      $(document).on("click", function () {
+                        $packageDropdown.removeClass("show");
+                        $packageSelect.removeClass("open");
+                      });
+
+                      // 键盘支持
+                      $packageSelect.on("keydown", function (e) {
+                        if (e.keyCode === 13 || e.keyCode === 32) {
+                          // Enter或Space
+                          e.preventDefault();
+                          $(this).click();
+                        }
+                      });
 
                       // 确认申请
                       $(layero)
@@ -1065,69 +1180,134 @@
           var loginUserData = JSON.parse(loginUser);
           if (layEvent === "detail") {
             // 详情弹窗：请求接口获取报告URL并用设备浏览器打开
-            var url =
-              "http://10.101.199.142:5130/api/Third/GetTag20012?patient_id=001015074100&exam_no=2025072115484&exam_type=01";
+            var url = "http://10.101.199.142:5130/api/Third/GetTag20012";
 
             // 显示加载提示
-            var loadingIndex = layer.msg("正在获取报告链接...", {
+            var loadingIndex = layer.msg("正在获取报告...", {
               icon: 16,
               shade: 0.3,
               time: 0,
             });
 
-            $.ajax({
-              url: url,
-              type: "GET",
-              dataType: "json",
-              timeout: 15000, // 15秒超时
-              success: function (res) {
-                layer.close(loadingIndex);
-                if (res.status === 1 && res.data) {
-                  var reportUrl = res.data;
-                  if (reportUrl.indexOf("?") > -1) {
-                    reportUrl += "&view=inline&display=web";
-                  } else {
-                    reportUrl += "?view=inline&display=web";
-                  }
+            // 使用原生XMLHttpRequest避免Layui jQuery的responseText问题
+            var xhr = new XMLHttpRequest();
+            xhr.open(
+              "GET",
+              appconfig.api +
+                "/api/JcJy/GetJCPdfStreamFile?patientId=001015074100&examNo=2025072115484&examType=01",
+              true
+            );
+            xhr.responseType = "blob";
+            xhr.timeout = 15000;
 
-                  // 检测运行环境并选择打开方式
+            xhr.onload = function () {
+              layer.close(loadingIndex);
+
+              if (xhr.status === 200) {
+                // 检查响应类型
+                var contentType = xhr.getResponseHeader("Content-Type");
+                console.log("Content-Type:", contentType);
+
+                if (contentType && contentType.includes("application/pdf")) {
+                  // ✅ 使用PDF.js渲染PDF
+                  var pdfBlob = xhr.response;
+                  var pdfUrl = URL.createObjectURL(pdfBlob);
+
+                  // 根据环境选择打开方式
                   if (window.plus) {
-                    // HBuilder App环境：使用系统浏览器打开
-                    openUrlInBrowser(reportUrl, {
-                      title: "打开报告",
-                      confirmMessage:
-                        "即将使用系统浏览器打开报告，确定继续吗？",
-                    });
+                    console.log("HBuilder App环境，使用系统浏览器打开PDF");
+                    // HBuilder App环境：保存并打开
+                    layer.confirm(
+                      "是否用系统浏览器打开PDF报告？",
+                      {
+                        icon: 3,
+                        title: "打开报告",
+                      },
+                      function (index) {
+                        layer.close(index);
+                        plus.runtime.openURL(pdfUrl);
+                      }
+                    );
                   } else {
-                    // 普通浏览器环境：使用弹窗预览或新标签页
+                    console.log("使用PDF.js渲染PDF");
+                    // 普通浏览器环境：使用PDF.js渲染
                     if (window.innerWidth < 768) {
-                      // 移动端：新标签页打开
-                      openUrlInBrowser(reportUrl, { showConfirm: false });
+                      // 移动端：使用PDF.js的viewer页面
+                      var pdfViewerUrl =
+                        "/lib/pdfjs/web/viewer.html?file=" +
+                        encodeURIComponent(pdfUrl);
+                      window.open(pdfViewerUrl, "_blank");
                     } else {
-                      // 桌面端：弹窗预览
+                      // 桌面端：弹窗中使用PDF.js viewer
+                      var pdfViewerUrl =
+                        "/lib/pdfjs/web/viewer.html?file=" +
+                        encodeURIComponent(pdfUrl);
                       layer.open({
                         type: 1,
-                        title: "报告预览",
-                        area: ["90%", "90%"],
+                        title: "检查报告预览",
+                        area: ["95%", "95%"],
                         content:
                           '<iframe src="' +
-                          reportUrl +
+                          pdfViewerUrl +
                           '" style="width:100%;height:100%;border:none;"></iframe>',
+                        end: function () {
+                          URL.revokeObjectURL(pdfUrl); // 清理内存
+                        },
                       });
                     }
                   }
                 } else {
-                  layer.alert("未获取到有效的报告链接", { icon: 5 });
+                  // 可能是重定向或错误响应
+                  var reader = new FileReader();
+                  reader.onload = function () {
+                    try {
+                      var jsonResponse = JSON.parse(reader.result);
+                      if (jsonResponse.data) {
+                        var reportUrl = jsonResponse.data;
+                        if (reportUrl.indexOf("?") > -1) {
+                          reportUrl += "&view=inline&display=web";
+                        } else {
+                          reportUrl += "?view=inline&display=web";
+                        }
+                        window.open(reportUrl, "_blank");
+                      } else {
+                        layer.alert("响应格式异常", { icon: 5 });
+                      }
+                    } catch (e) {
+                      layer.alert("无法解析响应", { icon: 5 });
+                    }
+                  };
+                  reader.readAsText(xhr.response);
                 }
-              },
-              error: function (xhr) {
-                layer.close(loadingIndex);
-                layer.alert(
-                  "获取报告链接失败：" + (xhr.statusText || "网络错误"),
-                  { icon: 5 }
-                );
-              },
-            });
+              } else if (xhr.status === 302 || xhr.status === 301) {
+                // 处理重定向
+                var location = xhr.getResponseHeader("Location");
+                if (location) {
+                  window.open(location, "_blank");
+                }
+              } else if (xhr.status === 400) {
+                // 处理400错误（业务逻辑错误）
+                var reader = new FileReader();
+                reader.onload = function () {
+                  layer.alert("获取报告失败: " + reader.result, { icon: 5 });
+                };
+                reader.readAsText(xhr.response);
+              } else {
+                layer.alert("获取报告失败: HTTP " + xhr.status, { icon: 5 });
+              }
+            };
+
+            xhr.onerror = function () {
+              layer.close(loadingIndex);
+              layer.alert("网络错误，无法获取报告", { icon: 5 });
+            };
+
+            xhr.ontimeout = function () {
+              layer.close(loadingIndex);
+              layer.alert("请求超时，请重试", { icon: 5 });
+            };
+
+            xhr.send();
           } else if (layEvent === "delRow") {
             // 删除前先检查状态
             if (data.exam_status == 0) {

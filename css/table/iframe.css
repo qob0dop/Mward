@@ -1,9 +1,7 @@
 /* APK WebView兼容性设置 */
 html
-{ position: relative !important;
- overflow: hidden !important; 
-
-    height: 100% !important;  max-height: 100vh !important; 
+{
+    position: relative !important;  overflow: hidden !important;  height: 100% !important;  max-height: 100vh !important;
 }
 
 html,
@@ -13,28 +11,26 @@ body
 }
 
 body
-{ font-size: 14px;  position: relative !important;
- display: flex;  overflow: hidden !important;  flex-direction: column;  box-sizing: border-box;  height: 100% !important;  max-height: 100vh !important;  margin: 0;  padding: 0;  -webkit-transform: translateZ(0);                  transform: translateZ(0);
+{
+    font-size: 14px;  position: relative !important;  display: flex;  overflow: hidden !important;  flex-direction: column;  box-sizing: border-box;  height: 100% !important;  max-height: 100vh !important;  margin: 0;  padding: 0;          -webkit-transform: translateZ(0);                  transform: translateZ(0);  background-color: transparent;
 
-    background-color: transparent; 
 /* APK WebView强制约束 */
 
-    -webkit-overflow-scrolling: touch; 
+    -webkit-overflow-scrolling: touch;
 }
 
 /* Pad端优化样式 */
 .layui-table-cell
-{ font-size: 14px;  line-height: 1.4;
-
-    height: auto;  padding: 2px 2px;  white-space: normal; 
+{
+    font-size: 14px;  line-height: 1.4;  height: auto;  padding: 2px 2px;  white-space: normal;
 }
 /* 容器全宽设置 */
 .layui-container
-{ overflow: auto;  box-sizing: border-box;
-    width: 100%;  max-width: 100%;
- height: 100%;  max-height: 100%; 
+{
+    overflow: auto;  box-sizing: border-box;  width: 100%;  max-width: 100%;  height: 100%;  max-height: 100%;
+
 /* padding: 5px; */
-    margin: 0; 
+    margin: 0;
 }
 .layui-tab-content
 {
@@ -42,42 +38,41 @@ body
 }
 .layui-row,
 .layui-col-md12
-{ display: flex;  flex-direction: column;
-    /* height: 100% !important;
+{
+    display: flex;  flex-direction: column;
+
+/* height: 100% !important;
   min-height: 100%; */
 
-    box-sizing: border-box;  margin: 0;  padding: 0; 
+    box-sizing: border-box;  margin: 0;  padding: 0;
 }
 
 /* 过滤按钮区域固定高度 */
 .filter-buttons
 {
-    flex-shrink: 0;  margin-bottom: 6px;
- padding: 8px;  border: 1px solid #e9ecef;  border-radius: 6px;  background: #f8f9fa; 
+    flex-shrink: 0;  margin-bottom: 6px;  padding: 8px;  border: 1px solid #e9ecef;  border-radius: 6px;  background: #f8f9fa;
 }
 
 /* 表格区域占用剩余空间 */
 .table-container
-{ display: flex;  overflow: hidden; 
-    flex: 1;  flex-direction: column;
+{
+    display: flex;  overflow: hidden;  flex: 1;  flex-direction: column;
 }
 
 /* 隐藏表格的类名改为容器 */
 .layui-hide
-{ overflow: hidden;
-    flex: 1;  min-height: 0; 
+{
+    overflow: hidden;  flex: 1;  min-height: 0;
 }
 
 /* 状态颜色 */
 .status-pending
-{ font-weight: bold;
-
-    color: #ff5722; 
+{
+    font-weight: bold;  color: #ff5722;
 }
 .status-completed
-{ font-weight: bold;
-
-    color: #009688; 
+{
+    font-weight: bold;  color: #009688;
 }
 .status-cancelled
 {
@@ -86,10 +81,8 @@ body
 
 /* 工具栏按钮优化 */
 .layui-btn-container .layui-btn
-{ font-size: 13px;  line-height: 28px; 
-
-    display: flex;  height: 28px;  margin: 0 2px;
- padding: 0 10px; 
+{
+    font-size: 13px;  line-height: 28px;  display: flex;  height: 28px;  margin: 0 2px;  padding: 0 10px;
 }
 
 /* 表格头部优化 */
@@ -100,9 +93,8 @@ body
 
 /* 患者信息栏优化 */
 .layui-elem-quote
-{ font-size: 16px;  margin-bottom: 0; 
-    padding: 15px;  color: #fff;
- border-radius: 0;  background-color: #1e9fff; 
+{
+    font-size: 16px;  margin-bottom: 0;  padding: 15px;  color: #fff;  border-radius: 0;  background-color: #1e9fff;
 }
 
 #patient-info
@@ -112,9 +104,8 @@ body
 
 /* 套餐选择弹窗优化 */
 .package-form .layui-form-label
-{ font-size: 16px; 
-
-    width: 100px;  padding: 15px;
+{
+    font-size: 16px;  width: 100px;  padding: 15px;
 }
 
 .package-form .layui-input-block
@@ -124,23 +115,19 @@ body
 
 .package-form .layui-input,
 .package-form .layui-select
-{ font-size: 16px;  line-height: 50px; 
-
-    height: 50px;  border-radius: 8px;
+{
+    font-size: 16px;  line-height: 50px;  height: 50px;  border-radius: 8px;
 }
 
 .package-form .layui-btn
-{ font-size: 18px;  line-height: 50px; 
-
-    height: 50px;  margin: 0 10px;
- padding: 0 30px;  border-radius: 8px; 
+{
+    font-size: 18px;  line-height: 50px;  height: 50px;  margin: 0 10px;  padding: 0 30px;  border-radius: 8px;
 }
 
 /* 套餐选择器样式 */
 .package-selector
-{ display: flex;  overflow: hidden;
-
-    height: 100%;  border: 1px solid #e6e6e6;  border-radius: 8px; 
+{
+    display: flex;  overflow: hidden;  height: 100%;  border: 1px solid #e6e6e6;  border-radius: 8px;
 }
 .layui-layer-content
 {
@@ -157,14 +144,13 @@ body
 }
 
 .package-list
-{ overflow-y: auto; 
-
-    height: 100%;  padding: 10px;
+{
+    overflow-y: auto;  height: 100%;  padding: 10px;
 }
 
 .package-item
-{ margin-bottom: 5px; 
-    padding: 12px 15px;  cursor: pointer;  transition: all .3s ease;  border: 1px solid #e6e6e6;  border-radius: 6px;  background: #fff;
+{
+    margin-bottom: 5px;  padding: 12px 15px;  cursor: pointer;  transition: all .3s ease;  border: 1px solid #e6e6e6;  border-radius: 6px;  background: #fff;
 }
 
 .package-item:hover
@@ -173,20 +159,18 @@ body
 }
 
 .package-item.selected
-{ color: #1e9fff;
-    border-color: #1e9fff;  background-color: #e8f4fd; 
+{
+    color: #1e9fff;  border-color: #1e9fff;  background-color: #e8f4fd;
 }
 
 .package-title
 {
-    font-size: 15px;  font-weight: bold;  margin-bottom: 3px;
- color: #333; 
+    font-size: 15px;  font-weight: bold;  margin-bottom: 3px;  color: #333;
 }
 
 .package-desc
 {
-    font-size: 12px;  line-height: 1.3;
- color: #666; 
+    font-size: 12px;  line-height: 1.3;  color: #666;
 }
 
 .package-item.selected .package-title
@@ -196,9 +180,8 @@ body
 
 /* 项目列表样式 */
 .items-container
-{ overflow-y: auto; 
-
-    height: 100%;  padding: 15px;
+{
+    overflow-y: auto;  height: 100%;  padding: 15px;
 }
 
 .items-header
@@ -207,39 +190,36 @@ body
 }
 
 .items-list
-{ overflow-y: auto;
-
-    max-height: 320px; 
+{
+    overflow-y: auto;  max-height: 320px;
 }
 
 /* 弹窗按钮区域固定在底部 */
 .dialog-buttons
-{ text-align: center;
+{
+    text-align: center;
 
 /* padding: 15px 20px; */
 
-    border-top: 1px solid #e6e6e6; 
-    background: #fff;
+    border-top: 1px solid #e6e6e6;  background: #fff;
+
     /* margin-top: 20px; */
 }
 
 /* 弹窗整体布局 */
 .package-form
-{ display: flex;  overflow: hidden;
- flex-direction: column; 
-
-    height: 100%; 
+{
+    display: flex;  overflow: hidden;  flex-direction: column;  height: 100%;
 }
 
 .package-content
-{ overflow: hidden; 
-    flex: 1;  padding: 20px;  padding-bottom: 0;
+{
+    overflow: hidden;  flex: 1; padding-bottom: 0;
 }
 
 .item-checkbox
 {
-    display: flex;  align-items: center;  padding: 10px 0;  cursor: pointer;
- border-bottom: 1px solid #f0f0f0; 
+    display: flex;  align-items: center;  padding: 10px 0;  cursor: pointer;  border-bottom: 1px solid #f0f0f0;
 }
 
 .item-checkbox:hover
@@ -254,15 +234,12 @@ body
 
 .item-name
 {
-    font-size: 14px;  flex: 1;
- color: #333; 
+    font-size: 14px;  flex: 1;  color: #333;
 }
 
 .no-package-selected
-{ font-size: 14px;
- padding: 100px 20px; 
-
-    text-align: center;  color: #999; 
+{
+    font-size: 14px;  padding: 100px 20px;  text-align: center;  color: #999;
 }
 
 /* 响应式优化 */
@@ -270,7 +247,7 @@ body
 {
     .layui-btn-container .layui-btn
     {
-        width: 100%;  margin-right: 0;
+        margin-right: 0;
     }
     .layui-container
     {
@@ -285,13 +262,13 @@ body
 }
 
 ::-webkit-scrollbar-track
-{ border-radius: 4px;
-    background: #f1f1f1; 
+{
+    border-radius: 4px;  background: #f1f1f1;
 }
 
 ::-webkit-scrollbar-thumb
-{ border-radius: 4px;
-    background: #c1c1c1; 
+{
+    border-radius: 4px;  background: #c1c1c1;
 }
 
 ::-webkit-scrollbar-thumb:hover
@@ -306,23 +283,22 @@ body
 }
 
 .layui-table-view
-{ display: flex;  overflow: hidden;  flex-direction: column;
+{
+    display: flex;  overflow: hidden;  flex-direction: column;
 
 /* height: 100% !important; */
 
-    min-height: 0;  max-height: 100%; 
-    margin: 0;
+    min-height: 0;  max-height: 100%;  margin: 0;
 }
 
 .layui-table-tool
 {
-    flex-shrink: 0;  min-height: 34px;
- padding: 1px; 
+    flex-shrink: 0;  min-height: 34px;  padding: 1px;
 }
 
 .layui-table-box
-{ display: flex;  overflow: hidden; 
-    flex: 1;  flex-direction: column;
+{
+    display: flex;  overflow: hidden;  flex: 1;  flex-direction: column;
 }
 
 .layui-table-header
@@ -331,20 +307,18 @@ body
 }
 
 .layui-table-body
-{ overflow-x: auto;
- overflow-y: auto; 
-    flex: 1; 
+{
+    overflow-x: auto;  overflow-y: auto;  flex: 1;
 }
 
 .layui-table-tool
-{ min-height: 34px;
-    padding: 1px; 
+{
+    min-height: 34px;  padding: 1px;
 }
 
 .layui-btn-container
 {
-    display: flex;  flex-wrap: nowrap;  padding: 4px 0;
- gap: 8px; 
+    display: flex;  flex-wrap: nowrap;  padding: 4px 0;  gap: 8px;
 }
 
 /* .layui-btn i {
@@ -357,10 +331,10 @@ body
 }
 
 .layui-table-tool .layui-btn-container .layui-btn
-{ font-size: 13px;  line-height: 28px; 
+{
+    font-size: 13px;  line-height: 28px;  height: 28px;  margin-bottom: 10px;  padding: 0 10px;border-radius: 10px;
 
-    height: 28px;  margin: 0 2px;
- padding: 0 10px; 
+background-color: skyblue;
 }
 
 .layui-table-tool .layui-btn-container .layui-btn i
@@ -368,7 +342,28 @@ body
     font-size: 13px;
 }
 .table-title
-{ font-size: 18px;  font-weight: bold;
- padding: 10px 15px;  color: #fff; 
-    background-color: #1e9fff; 
+{
+    font-size: 18px;  font-weight: bold;  padding: 10px 15px;  color: #fff;  background-color: #1e9fff;
+}
+
+.layui-table-cell .layui-btn
+{
+    width: 50px;  height: 30px;  border-radius: 10px !important;
+}
+/* 弹窗优化 */
+.layui-layer-title
+{
+    display: none;
+}
+.layui-layer-setwin
+{
+    display: none;
+}
+#layui-layer2
+{
+    padding: 10px;  border-radius: 20px;
+}
+#layui-layer2 .layui-layer-content
+{
+    height: 100% !important;
 }

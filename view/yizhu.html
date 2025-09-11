@@ -11,603 +11,659 @@
     <link rel="stylesheet" href="/css/public.css" media="all" />
     <link rel="stylesheet" href="/css/table/iframe.css" media="all" />
     <style>
-.layui-layer-setwin
-{
-    display: none;
-}
-.layui-layer-msg
-{
-    line-height: 1.5 !important;  max-height: 100px; /* 限制最大高度 */  padding: 10px !important;
-}
-.font-grey
-{
-    color: #999;
-}
-.font-black
-{
-    color: #333;
-}
-.font-green
-{
-    color: #52c41a;
-}
-.font-red
-{
-    color: #e74c3c;
-}
-.font-purple
-{
-    color: rgb(255, 0, 255); /* 紫色字体 */
-}
-.order-type-long
-{
-    background-color: rgb(192, 220, 192); /* 浅绿色背景 */
-}
-.order-type-once
-{
-    background-color: rgb(238, 251, 250); /* 浅黄色背景 */
-}
+      .layui-layer-setwin {
+        display: none;
+      }
+      .layui-layer-msg {
+        line-height: 1.5 !important;
+        max-height: 100px; /* 限制最大高度 */
+        padding: 10px !important;
+      }
+      .font-grey {
+        color: #999;
+      }
+      .font-black {
+        color: #333;
+      }
+      .font-green {
+        color: #52c41a;
+      }
+      .font-red {
+        color: #e74c3c;
+      }
+      .font-purple {
+        color: rgb(255, 0, 255); /* 紫色字体 */
+      }
+      .order-type-long {
+        background-color: rgb(192, 220, 192); /* 浅绿色背景 */
+      }
+      .order-type-once {
+        background-color: rgb(238, 251, 250); /* 浅黄色背景 */
+      }
 
-/* 父子医嘱样式 */
-.parent-order-row
-{
-    font-weight: bold;  box-sizing: border-box;border-left: 4px solid #1890ff !important; /* 蓝色左边框 */  background-color: #e6f7ff !important; /* 浅蓝色背景 */
-}
+      /* 父子医嘱样式 */
+      .parent-order-row {
+        font-weight: bold;
+        box-sizing: border-box;
+        border-top: 4px solid #1890ff !important; /* 蓝色左边框 */
+        border-left: 4px solid #1890ff !important;
+        background-color: #e6f7ff !important; /* 浅蓝色背景 */
+      }
 
-.child-order-row
-{
-    position: relative;
+      .child-order-row {
+        position: relative;
 
-/* padding-left: 20px !important; 左边缩进 */
+        /* padding-left: 20px !important; 左边缩进 */
 
-    box-sizing: border-box;border-left: 4px solid #52c41a !important; /* 绿色左边框 */  background-color: #f6ffed !important; /* 浅绿色背景 */
-}
+        box-sizing: border-box;
+        border-left: 4px solid #52c41a !important; /* 绿色左边框 */
+        background-color: #f6ffed !important; /* 浅绿色背景 */
+      }
 
-/* 为子医嘱添加连接线 */
-/* .child-order-row::before
+      /* 为子医嘱添加连接线 */
+      /* .child-order-row::before
 {
     font-weight: bold;  position: absolute;  left: 5px;  content: '├─';  color: #52c41a;
 } */
 
-/* 最后一个子医嘱的连接线样式 */
-.child-order-row.last-child::before
-{
-    content: '└─';
-}
-/* .myorder {
+      /* 最后一个子医嘱的连接线样式 */
+      .child-order-row.last-child {
+        border-bottom: 4px solid #52c41a !important;
+        border-radius: 10px;
+      }
+      /* .myorder {
         background-color: rgb(206, 227, 236);
       } */
-/* 选中按钮高亮样式，兼容不同色系 */
-.btn-active
-{
-    font-weight: bold !important;  position: relative;  z-index: 1;  border-width: 2.5px !important;  outline: none !important;  box-shadow: 0 2px 8px rgba(30, 185, 90, .18), 0 0 0 2px #b2f0c0 inset !important;
-}
-/* 针对绿色按钮（layui-btn-warm）选中时加深色 */
-.layui-btn-warm.btn-active
-{
-    color: #fff !important;  border-color: #1eae5b !important;  background-color: #3ec97c !important;
-}
-/* 针对红色按钮（layui-btn-danger）选中时加深色 */
-.layui-btn-danger.btn-active
-{
-    color: #fff !important;  border-color: #c0392b !important;  background-color: #e74c3c !important;
-}
-/* 针对蓝色按钮（layui-btn-primary/normal/cyan）选中时加深色 */
-.layui-btn-primary.btn-active,
-.layui-btn-normal.btn-active,
-.layui-btn-cyan.btn-active
-{
-    color: #fff !important;  border-color: #1786d4 !important;  background-color: #1e9fff !important;
-}
-/* 兼容小屏幕按钮点击反馈 */
-.btn-active:active
-{
-    box-shadow: 0 1px 4px rgba(30, 185, 90, .12) !important;
-}
+      /* 选中按钮高亮样式，兼容不同色系 */
+      .btn-active {
+        font-weight: bold !important;
+        position: relative;
+        z-index: 1;
+        border-width: 2.5px !important;
+        outline: none !important;
+        box-shadow: 0 2px 8px rgba(30, 185, 90, 0.18), 0 0 0 2px #b2f0c0 inset !important;
+      }
+      /* 针对绿色按钮（layui-btn-warm）选中时加深色 */
+      .layui-btn-warm.btn-active {
+        color: #fff !important;
+        border-color: #1eae5b !important;
+        background-color: #3ec97c !important;
+      }
+      /* 针对红色按钮（layui-btn-danger）选中时加深色 */
+      .layui-btn-danger.btn-active {
+        color: #fff !important;
+        border-color: #c0392b !important;
+        background-color: #e74c3c !important;
+      }
+      /* 针对蓝色按钮（layui-btn-primary/normal/cyan）选中时加深色 */
+      .layui-btn-primary.btn-active,
+      .layui-btn-normal.btn-active,
+      .layui-btn-cyan.btn-active {
+        color: #fff !important;
+        border-color: #1786d4 !important;
+        background-color: #1e9fff !important;
+      }
+      /* 兼容小屏幕按钮点击反馈 */
+      .btn-active:active {
+        box-shadow: 0 1px 4px rgba(30, 185, 90, 0.12) !important;
+      }
 
-/* 按钮悬停效果 */
-.layui-btn:not(.btn-active):hover
-{
-    transition: all .2s ease;  transform: translateY(-1px);  box-shadow: 0 2px 4px rgba(0, 0, 0, .2);
-}
+      /* 按钮悬停效果 */
+      .layui-btn:not(.btn-active):hover {
+        transition: all 0.2s ease;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      }
 
-/* select框样式优化 */
-.layui-form-select
-{
-    width: auto !important;  height: auto !important;
-}
+      /* select框样式优化 */
+      .layui-form-select {
+        width: auto !important;
+        height: auto !important;
+      }
 
-.layui-form-select .layui-select-title
-{
-    font-size: 14px !important;  line-height: 38px !important;  position: relative;  width: auto !important;  height: 38px !important;  color: #333 !important;  border-radius: 2px !important;
-}
+      .layui-form-select .layui-select-title {
+        font-size: 14px !important;
+        line-height: 38px !important;
+        position: relative;
+        width: auto !important;
+        height: 38px !important;
+        color: #333 !important;
+        border-radius: 2px !important;
+      }
 
-.layui-form-select .layui-select-title input
-{
-    font-size: 14px !important;  line-height: 36px !important;  width: 100px;  height: 36px !important;  padding-right: 30px !important;  padding-left: 7px;  color: #333 !important;
-}
+      .layui-form-select .layui-select-title input {
+        font-size: 14px !important;
+        line-height: 36px !important;
+        width: 100px;
+        height: 36px !important;
+        padding-right: 30px !important;
+        padding-left: 7px;
+        color: #333 !important;
+      }
 
-.layui-form-select dl
-{
-    font-size: 14px !important;  max-height: 200px;
-}
+      .layui-form-select dl {
+        font-size: 14px !important;
+        max-height: 200px;
+      }
 
-/* 兼容不同浏览器的select样式 */
-.layui-form-select .layui-select-title
-{
-    overflow: hidden !important;  box-sizing: border-box !important;
-}
+      /* 兼容不同浏览器的select样式 */
+      .layui-form-select .layui-select-title {
+        overflow: hidden !important;
+        box-sizing: border-box !important;
+      }
 
-/* 修复Edge浏览器箭头错位问题 */
-@supports (-ms-ime-align: auto)
-{
-    .layui-form-select .layui-select-title i
-    {
-        top: 12px !important;  right: 8px !important;  transform: none !important;
-    }
-}
+      /* 修复Edge浏览器箭头错位问题 */
+      @supports (-ms-ime-align: auto) {
+        .layui-form-select .layui-select-title i {
+          top: 12px !important;
+          right: 8px !important;
+          transform: none !important;
+        }
+      }
 
-/* 修复Edge Legacy浏览器兼容性 */
-@media screen and (-ms-high-contrast: active), (-ms-high-contrast: none)
-{
-    .layui-form-select .layui-select-title i
-    {
-        top: 12px !important;  right: 8px !important;  transform: none !important;
-    }
-}
+      /* 修复Edge Legacy浏览器兼容性 */
+      @media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
+        .layui-form-select .layui-select-title i {
+          top: 12px !important;
+          right: 8px !important;
+          transform: none !important;
+        }
+      }
 
-.layui-form-select dl dd
-{
-    line-height: 36px !important;  color: #333 !important;
-}
+      .layui-form-select dl dd {
+        line-height: 36px !important;
+        color: #333 !important;
+      }
 
-/* 新增医嘱弹窗样式 */
-#add-order-modal
-{
-    width: 100%;  height: 100%;
-}
+      /* 新增医嘱弹窗样式 */
+      #add-order-modal {
+        width: 100%;
+        height: 100%;
+      }
 
-/* 弹窗两列布局容器样式（疗程 + 小医嘱卡片） */
-.order-form-container
-{
-    display: flex;  flex-direction: column;  width: 100%;  height: 100%;
-}
+      /* 弹窗两列布局容器样式（疗程 + 小医嘱卡片） */
+      .order-form-container {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        height: 100%;
+      }
 
-.order-selector
-{
-    display: flex;  overflow: hidden;  height: 80vh;  min-height: 420px;  border-radius: 4px;  box-shadow: 0 2px 8px rgba(0, 0, 0, .1);
-}
+      .order-selector {
+        display: flex;
+        overflow: hidden;
+        height: 80vh;
+        min-height: 420px;
+        border-radius: 4px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
 
-/* 两列布局通用样式 */
-.order-left,
-.order-right
-{
-    display: flex;  flex-direction: column;  border-right: 1px solid #e6e6e6;
-}
-.order-left
-{
-    flex: 0 0 240px;  background: #fafafa;
-}
+      /* 两列布局通用样式 */
+      .order-left,
+      .order-right {
+        display: flex;
+        flex-direction: column;
+        border-right: 1px solid #e6e6e6;
+      }
+      .order-left {
+        flex: 0 0 240px;
+        background: #fafafa;
+      }
 
-.order-right
-{
-    flex: 1;  border-right: none;  background: #fff;
-}
-.layui-container .layui-table-body
-{
-    overflow-x: hidden;
-}
-/* 区域标题样式 */
-.section-header
-{
-    font-size: 14px;  font-weight: bold;  display: flex;  align-items: center;  justify-content: center;  padding: 12px 16px;  text-align: center;  color: #fff;  background: #1e9fff;  gap: 6px;
-}
+      .order-right {
+        flex: 1;
+        border-right: none;
+        background: #fff;
+      }
+      .layui-container .layui-table-body {
+        overflow-x: hidden;
+      }
+      /* 区域标题样式 */
+      .section-header {
+        font-size: 14px;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 12px 16px;
+        text-align: center;
+        color: #fff;
+        background: #1e9fff;
+        gap: 6px;
+      }
 
-.section-header i
-{
-    font-size: 16px;
-}
+      .section-header i {
+        font-size: 16px;
+      }
 
-/* 分类列表样式 */
-.category-list
-{
-    overflow-y: auto;  flex: 1;  padding: 8px 0;
-}
+      /* 分类列表样式 */
+      .category-list {
+        overflow-y: auto;
+        flex: 1;
+        padding: 8px 0;
+      }
 
-.category-item
-{
-    font-size: 13px;  line-height: 1.4;  padding: 12px 16px;  cursor: pointer;  transition: all .2s ease;  border-bottom: 1px solid #e6e6e6;
-}
+      .category-item {
+        font-size: 13px;
+        line-height: 1.4;
+        padding: 12px 16px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border-bottom: 1px solid #e6e6e6;
+      }
 
-.category-item:hover
-{
-    background-color: #e1f3ff;
-}
+      .category-item:hover {
+        background-color: #e1f3ff;
+      }
 
-.category-item.selected
-{
-    /* color: #fff; */
-    font-weight: bold;  background-color: lightgray;
-}
+      .category-item.selected {
+        /* color: #fff; */
+        font-weight: bold;
+        background-color: lightgray;
+      }
 
-.category-item .category-name
-{
-    font-weight: bold;  margin-bottom: 4px;
-}
+      .category-item .category-name {
+        font-weight: bold;
+        margin-bottom: 4px;
+      }
 
-.category-item .category-desc
-{
-    font-size: 12px;  color: #999;
-}
+      .category-item .category-desc {
+        font-size: 12px;
+        color: #999;
+      }
 
-/* 无选择状态样式 */
-.no-data,
-.no-selection
-{
-    font-size: 13px;  padding: 40px 20px;  text-align: center;  color: #999;
-}
-/* 按钮区域样式 */
-.dialog-buttons
-{
-    padding: 10px;  text-align: center;  border-top: 1px solid #e6e6e6;  background: #fafafa;
-}
+      /* 无选择状态样式 */
+      .no-data,
+      .no-selection {
+        font-size: 13px;
+        padding: 40px 20px;
+        text-align: center;
+        color: #999;
+      }
+      /* 按钮区域样式 */
+      .dialog-buttons {
+        padding: 10px;
+        text-align: center;
+        border-top: 1px solid #e6e6e6;
+        background: #fafafa;
+      }
 
-.dialog-buttons .layui-btn
-{
-    margin: 0 8px;
-}
+      .dialog-buttons .layui-btn {
+        margin: 0 8px;
+      }
 
-/* 滚动条美化 */
-.category-list::-webkit-scrollbar,
-.template-list::-webkit-scrollbar,
-.form-content::-webkit-scrollbar
-{
-    width: 6px;
-}
+      /* 滚动条美化 */
+      .category-list::-webkit-scrollbar,
+      .template-list::-webkit-scrollbar,
+      .form-content::-webkit-scrollbar {
+        width: 6px;
+      }
 
-.category-list::-webkit-scrollbar-track,
-.template-list::-webkit-scrollbar-track,
-.form-content::-webkit-scrollbar-track
-{
-    border-radius: 3px;  background: #f1f1f1;
-}
+      .category-list::-webkit-scrollbar-track,
+      .template-list::-webkit-scrollbar-track,
+      .form-content::-webkit-scrollbar-track {
+        border-radius: 3px;
+        background: #f1f1f1;
+      }
 
-.category-list::-webkit-scrollbar-thumb,
-.template-list::-webkit-scrollbar-thumb,
-.form-content::-webkit-scrollbar-thumb
-{
-    border-radius: 3px;  background: #c1c1c1;
-}
+      .category-list::-webkit-scrollbar-thumb,
+      .template-list::-webkit-scrollbar-thumb,
+      .form-content::-webkit-scrollbar-thumb {
+        border-radius: 3px;
+        background: #c1c1c1;
+      }
 
-.category-list::-webkit-scrollbar-thumb:hover,
-.template-list::-webkit-scrollbar-thumb:hover,
-.form-content::-webkit-scrollbar-thumb:hover
-{
-    background: #a8a8a8;
-}
+      .category-list::-webkit-scrollbar-thumb:hover,
+      .template-list::-webkit-scrollbar-thumb:hover,
+      .form-content::-webkit-scrollbar-thumb:hover {
+        background: #a8a8a8;
+      }
 
-/* 响应式优化：上下分布 */
+      /* 响应式优化：上下分布 */
 
-/* 小医嘱卡片样式 */
-.suborder-cards-container
-{
-    /* max-height: 420px; */
-    overflow-y: auto;  padding: 12px;
-}
+      /* 小医嘱卡片样式 */
+      .suborder-cards-container {
+        /* max-height: 420px; */
+        overflow-y: auto;
+        padding: 12px;
+      }
 
-.suborder-card
-{
-    position: relative;  margin-bottom: 12px;  padding: 16px;  transition: all .2s ease;  border: 1px solid #e6e6e6;  border-radius: 8px;  background: #fff;  box-shadow: 0 2px 4px rgba(0, 0, 0, .05);
-}
+      .suborder-card {
+        position: relative;
+        margin-bottom: 12px;
+        padding: 16px;
+        transition: all 0.2s ease;
+        border: 1px solid #e6e6e6;
+        border-radius: 8px;
+        background: #fff;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      }
 
-.suborder-card:hover
-{
-    transform: translateY(-1px);  border-color: #1e9fff;  box-shadow: 0 4px 12px rgba(30, 159, 255, .15);
-}
+      .suborder-card:hover {
+        transform: translateY(-1px);
+        border-color: #1e9fff;
+        box-shadow: 0 4px 12px rgba(30, 159, 255, 0.15);
+      }
 
-.suborder-card.selected
-{
-    border-color: #1e9fff;  background: #f8fcff;  box-shadow: 0 4px 12px rgba(30, 159, 255, .2);
-}
+      .suborder-card.selected {
+        border-color: #1e9fff;
+        background: #f8fcff;
+        box-shadow: 0 4px 12px rgba(30, 159, 255, 0.2);
+      }
 
-.suborder-card-header
-{
-    display: flex;  align-items: center;  justify-content: space-between;  margin-bottom: 12px;
-}
+      .suborder-card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 12px;
+      }
 
-.suborder-checkbox
-{
-    margin-right: 12px;
-}
+      .suborder-checkbox {
+        margin-right: 12px;
+      }
 
-.suborder-name
-{
-    font-size: 14px;  font-weight: bold;  flex: 1;  cursor: pointer;  color: #333;
-}
+      .suborder-name {
+        font-size: 14px;
+        font-weight: bold;
+        flex: 1;
+        cursor: pointer;
+        color: #333;
+      }
 
-.suborder-type
-{
-    font-size: 12px;  margin-left: 8px;  padding: 2px 8px;  color: white;  border-radius: 12px;  background: #1e9fff;
-}
+      .suborder-type {
+        font-size: 12px;
+        margin-left: 8px;
+        padding: 2px 8px;
+        color: white;
+        border-radius: 12px;
+        background: #1e9fff;
+      }
 
-.suborder-body
-{
-    display: grid;  margin-bottom: 12px;  grid-template-columns: 1fr 1fr;  gap: 8px 16px;
-}
+      .suborder-body {
+        display: grid;
+        margin-bottom: 12px;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px 16px;
+      }
 
-.suborder-field
-{
-    font-size: 13px;  display: flex;  align-items: center;
-}
+      .suborder-field {
+        font-size: 13px;
+        display: flex;
+        align-items: center;
+      }
 
-.suborder-field-label
-{
-    font-weight: 500;  min-width: 40px;  margin-right: 8px;  color: #666;
-}
+      .suborder-field-label {
+        font-weight: 500;
+        min-width: 40px;
+        margin-right: 8px;
+        color: #666;
+      }
 
-.suborder-field-value
-{
-    flex: 1;  word-break: break-all;  color: #333;
-}
+      .suborder-field-value {
+        flex: 1;
+        word-break: break-all;
+        color: #333;
+      }
 
-.suborder-field-value.editable
-{
-    padding: 2px 6px;  cursor: text;  transition: all .2s ease;  border: 1px solid transparent;  border-radius: 3px;  background: #f9f9f9;
-}
+      .suborder-field-value.editable {
+        padding: 2px 6px;
+        cursor: text;
+        transition: all 0.2s ease;
+        border: 1px solid transparent;
+        border-radius: 3px;
+        background: #f9f9f9;
+      }
 
-.suborder-field-value.editable:hover
-{
-    border-color: #d9d9d9;  background: #fff;
-}
+      .suborder-field-value.editable:hover {
+        border-color: #d9d9d9;
+        background: #fff;
+      }
 
-.suborder-field-value.editable:focus
-{
-    border-color: #1e9fff;  outline: none;  box-shadow: 0 0 0 2px rgba(30, 159, 255, .1);
-}
+      .suborder-field-value.editable:focus {
+        border-color: #1e9fff;
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(30, 159, 255, 0.1);
+      }
 
-.suborder-instruction
-{
-    margin-top: 8px;  grid-column: 1 / -1;
-}
+      .suborder-instruction {
+        margin-top: 8px;
+        grid-column: 1 / -1;
+      }
 
-.suborder-instruction .suborder-field-value
-{
-    min-height: 20px;  padding: 8px;  word-break: break-word;  border-radius: 4px;  background: #f5f5f5;
-}
+      .suborder-instruction .suborder-field-value {
+        min-height: 20px;
+        padding: 8px;
+        word-break: break-word;
+        border-radius: 4px;
+        background: #f5f5f5;
+      }
 
-/* 草稿卡片不完整状态样式 */
-.draft-card.incomplete
-{
-    border-color: #ff5722 !important;  background: #fff3f0 !important;  box-shadow: 0 2px 8px rgba(255, 87, 34, .15) !important;
-}
+      /* 草稿卡片不完整状态样式 */
+      .draft-card.incomplete {
+        border-color: #ff5722 !important;
+        background: #fff3f0 !important;
+        box-shadow: 0 2px 8px rgba(255, 87, 34, 0.15) !important;
+      }
 
-.draft-card.incomplete .title
-{
-    color: #ff5722;
-}
+      .draft-card.incomplete .title {
+        color: #ff5722;
+      }
 
-.draft-card.incomplete .title::after
-{
-    font-weight: bold;  margin-left: 8px;  content: ' ⚠️';  color: #ff5722;
-}
-@media (max-width: 768px)
-{
-    .layui-table-page
-    {
-        visibility: hidden;
-    }
-    .order-selector
-    {
-        flex-direction: column;  height: 100%;
-    }
-    .order-left
-    {
-        height: 40%;
-    }
-    .order-right
-    {
-        width: 100%;  height: 60%;  margin-top: 8px;  border: none;
-    }
-    /* .layui-table-box {
+      .draft-card.incomplete .title::after {
+        font-weight: bold;
+        margin-left: 8px;
+        content: " ⚠️";
+        color: #ff5722;
+      }
+      @media (max-width: 768px) {
+        .layui-table-page {
+          visibility: hidden;
+        }
+        .order-selector {
+          flex-direction: column;
+          height: 100%;
+        }
+        .order-left {
+          height: 40%;
+        }
+        .order-right {
+          width: 100%;
+          height: 60%;
+          margin-top: 8px;
+          border: none;
+        }
+        /* .layui-table-box {
           transform: scale(0.5);
           transform-origin: top left;
           width: 200%;
         } */
-    .layui-container .layui-table-view
-    {
-        display: block;
-    }
-    /* 调整"类"列宽度为20px - 使用多种选择器确保生效 */
-    .layui-table-view th[data-field='long_once_flag'],
-    .layui-table-view td[data-field='long_once_flag']
-    {
-        width: 20px !important;  min-width: 20px !important;  max-width: 20px !important;
-    }
-    .layui-table-view th[data-field='start_time_mm_dd'],
-    .layui-table-view td[data-field='start_time_mm_dd'],
-    .layui-table-view th[data-field='enter_time_mm_dd'],
-    .layui-table-view td[data-field='enter_time_mm_dd'],
-    .layui-table-view th[data-field='end_time_mm_dd'],
-    .layui-table-view td[data-field='end_time_mm_dd']
-    {
-        width: 40px !important;  min-width: 40px !important;  max-width: 40px !important;
-    }
-    .layui-table-view th[data-field='order_doctor_name'],
-    .layui-table-view td[data-field='order_doctor_name']
-    {
-        width: 60px !important;  min-width: 60px !important;  max-width: 60px !important;
-    }
-}
+        .layui-container .layui-table-view {
+          display: block;
+        }
+        /* 调整"类"列宽度为20px - 使用多种选择器确保生效 */
+        .layui-table-view th[data-field="long_once_flag"],
+        .layui-table-view td[data-field="long_once_flag"] {
+          width: 20px !important;
+          min-width: 20px !important;
+          max-width: 20px !important;
+        }
+        .layui-table-view th[data-field="start_time_mm_dd"],
+        .layui-table-view td[data-field="start_time_mm_dd"],
+        .layui-table-view th[data-field="enter_time_mm_dd"],
+        .layui-table-view td[data-field="enter_time_mm_dd"],
+        .layui-table-view th[data-field="end_time_mm_dd"],
+        .layui-table-view td[data-field="end_time_mm_dd"] {
+          width: 40px !important;
+          min-width: 40px !important;
+          max-width: 40px !important;
+        }
+        .layui-table-view th[data-field="order_doctor_name"],
+        .layui-table-view td[data-field="order_doctor_name"] {
+          width: 60px !important;
+          min-width: 60px !important;
+          max-width: 60px !important;
+        }
+      }
 
-/* 医生单元格背景色样式 */
-.doctor-cell-primary
-{
-    /* background-color: LightGray !important; */
-    /* color: #1e9fff !important; */
-    font-weight: bold;
-}
-.doctor-cell-nurse
-{
-    background-color: #f6ffed !important;
-    /* color: #52c41a !important; */
-}
-.doctor-cell-special
-{
-    background-color: #fff1f0 !important;
-    /* color: #e74c3c !important; */
-}
+      /* 医生单元格背景色样式 */
+      .doctor-cell-primary {
+        /* background-color: LightGray !important; */
+        /* color: #1e9fff !important; */
+        font-weight: bold;
+      }
+      .doctor-cell-nurse {
+        background-color: #f6ffed !important;
+        /* color: #52c41a !important; */
+      }
+      .doctor-cell-special {
+        background-color: #fff1f0 !important;
+        /* color: #e74c3c !important; */
+      }
 
-#layui-layer2
-{
-    height: 100%;
-}
-.layui-row
-{
-    height: auto;  min-height: auto;
-}
-.layui-table td,
-.layui-table th
-{
-      padding: 5px 8px;      padding: 8px; /* 单元格内边距 */  border: 1px solid skyblue; /* 单元格边框 */
-}
-.layui-table thead tr
-{
-    height: 30px; /* 设置行高为30px */  border-left: 4px solid #fff !important;
-}
+      #layui-layer2 {
+        height: 100%;
+      }
+      .layui-row {
+        height: auto;
+        min-height: auto;
+      }
+      .layui-table td,
+      .layui-table th {
+        padding: 5px 8px;
+        padding: 8px; /* 单元格内边距 */
+        border: 1px solid skyblue; /* 单元格边框 */
+      }
+      .layui-table th:nth-child(3) {
+        padding-left: 10px !important;
+      }
+      .layui-table thead tr {
+        height: 30px; /* 设置行高为30px */
+      }
 
-/* 搜索框样式 */
-#yizhu-search-input
-{
-    padding-left: 0;  transition: all .3s ease;
-}
+      /* 搜索框样式 */
+      #yizhu-search-input {
+        padding-left: 0;
+        transition: all 0.3s ease;
+      }
 
-#yizhu-search-input:focus
-{
-    border-color: #1e9fff;  box-shadow: 0 0 5px rgba(30, 159, 255, .3);
-}
+      #yizhu-search-input:focus {
+        border-color: #1e9fff;
+        box-shadow: 0 0 5px rgba(30, 159, 255, 0.3);
+      }
 
-#clear-search-btn
-{
-    cursor: pointer;  transition: all .3s ease;  color: #999;  border: none;  background-color: transparent;
-}
+      #clear-search-btn {
+        cursor: pointer;
+        transition: all 0.3s ease;
+        color: #999;
+        border: none;
+        background-color: transparent;
+      }
 
-#clear-search-btn:hover
-{
-    color: #1e9fff;  background-color: rgba(30, 159, 255, .1);
-}
+      #clear-search-btn:hover {
+        color: #1e9fff;
+        background-color: rgba(30, 159, 255, 0.1);
+      }
 
-/* 表格缩放优化样式 */
-.layui-table-box
-{
-    opacity: 0;  /* 初始状态隐藏，避免加载时闪烁 */
-    transition: opacity 0.3s ease;
-}
+      /* 表格缩放优化样式 */
+      .layui-table-box {
+        transition: opacity 0.3s ease;
+        opacity: 0; /* 初始状态隐藏，避免加载时闪烁 */
+      }
 
-.layui-table-box.table-ready
-{
-    opacity: 1;  /* 准备完成后显示 */
-}
+      .layui-table-box.table-ready {
+        opacity: 1; /* 准备完成后显示 */
+      }
 
-.layui-icon-add-circle-fine
-{
-    font-size: 30px;
-}
-#search-icon
-{
-    line-height: 38px;  height: 38px;  padding: 0 5px;  cursor: pointer;  cursor: pointer;  text-align: center;  border-right: 0;  border-radius: 15px 0 0 15px;  background-color: #fff;
-}
-.role-label
-{
-    font-size: 14px;  font-weight: bold;  line-height: 36px;  height: 36px;  white-space: nowrap;  text-overflow: ellipsis;  color: #666;
-}
-.filter-condition
-{
-    font-size: 16px;  display: flex; justify-content: center; width: 100%;  height: 30px;
-}
-.filter-condition span
-{
-  margin-right: 15px;
-    line-height: 30px;
-}
-.filter-condition label
-{
-    line-height: 30px;  height: 30px;  padding: 0 5px;  color: #333;  border-radius: 5px;  background-color: #f0f0f0;
-}
-.filter-condition .layui-icon
-{
-    display: none;
-}
-.filter-condition .layui-form-radio *
-{
-    font-size: 14px;
-}
-.filter-condition .layui-form-radio:hover *{
-  color: rgb(36, 67, 119);
-}
-.filter-condition .layui-form-radio
-{
-  border: 1px solid gray;
-    line-height: 30px;  height: 30px;  margin: 0 10px;  padding: 0 5px; border-radius: 10px; background-color: #fff;
-}
-.filter-condition .layui-form-radioed ,.layui-form-radioed>i
-{
-    background-color:rgb(189, 203, 248);
-    color: rgb(36, 67, 119);
-}
+      .layui-icon-add-circle-fine {
+        font-size: 30px;
+      }
+      #search-icon {
+        line-height: 38px;
+        height: 38px;
+        padding: 0 5px;
+        cursor: pointer;
+        cursor: pointer;
+        text-align: center;
+        border-right: 0;
+        border-radius: 15px 0 0 15px;
+        background-color: #fff;
+      }
+      .role-label {
+        font-size: 14px;
+        font-weight: bold;
+        line-height: 36px;
+        height: 36px;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        color: #666;
+      }
+      .filter-condition {
+        font-size: 16px;
+        display: flex;
+        justify-content: center;
+        width: 100%;
+        height: 30px;
+      }
+      .filter-condition span {
+        line-height: 30px;
+        margin-right: 15px;
+      }
+      .filter-condition label {
+        line-height: 30px;
+        height: 30px;
+        padding: 0 5px;
+        color: #333;
+        border-radius: 5px;
+        background-color: #f0f0f0;
+      }
+      .filter-condition .layui-icon {
+        display: none;
+      }
+      .filter-condition .layui-form-radio * {
+        font-size: 14px;
+      }
+      .filter-condition .layui-form-radio:hover * {
+        color: rgb(36, 67, 119);
+      }
+      .filter-condition .layui-form-radio {
+        line-height: 30px;
+        height: 30px;
+        margin: 0 10px;
+        padding: 0 5px;
+        border: 1px solid gray;
+        border-radius: 10px;
+        background-color: #fff;
+      }
+      .filter-condition .layui-form-radioed,
+      .layui-form-radioed > i {
+        color: rgb(36, 67, 119);
+        background-color: rgb(189, 203, 248);
+      }
+      .parent-first-cell-custom {
+        padding-left: 10px !important;
+        background-image: url(/images/connectup.png);
+        background-repeat: no-repeat;
+        background-position: bottom left;
+        background-size: 10px 50%;
+      }
+      .child-first-cell-custom {
+        padding-left: 10px !important;
+        background-image: url(/images/connectmiddle.png);
+        background-repeat: no-repeat;
+        background-position: left;
+        background-size: 10px 100%;
+      }
+      .last-child-first-cell-custom {
+        padding-left: 10px !important;
+        background-image: url(/images/connectdown.png);
+        background-repeat: no-repeat;
+        background-position: top left;
+        background-size: 10px 50%;
+      }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+      .layui-table-cell .layui-btn {
+        width: 40px;
+      }
     </style>
   </head>
   <body>
@@ -699,9 +755,31 @@
               <label for="order-type2">临时</label>
               <label for="order-type3">长期</label> -->
               <div>
-                <input type="radio" id="order-type1" name="order-type" value="1" title="全部" lay-filter="order-type">
-                <input type="radio" id="order-type2" name="order-type" value="2" title="临时" checked lay-filter="order-type">
-                <input type="radio" id="order-type3" name="order-type" value="3" title="长期" lay-filter="order-type">
+                <input
+                  type="radio"
+                  id="order-type1"
+                  name="order-type"
+                  value="1"
+                  title="全部"
+                  lay-filter="order-type"
+                />
+                <input
+                  type="radio"
+                  id="order-type2"
+                  name="order-type"
+                  value="2"
+                  title="临时"
+                  checked
+                  lay-filter="order-type"
+                />
+                <input
+                  type="radio"
+                  id="order-type3"
+                  name="order-type"
+                  value="3"
+                  title="长期"
+                  lay-filter="order-type"
+                />
               </div>
             </div>
             <div class="filter-condition">
@@ -710,9 +788,31 @@
               <label for="data-source2">医生</label>
               <label for="data-source3">护士</label> -->
               <div>
-                <input type="radio" id="data-source1" name="data-source" value="1" title="全部" lay-filter="data-source">
-                <input type="radio" id="data-source2" name="data-source" value="2" title="医生" checked lay-filter="data-source">
-                <input type="radio" id="data-source3" name="data-source" value="3" title="护士" lay-filter="data-source">
+                <input
+                  type="radio"
+                  id="data-source1"
+                  name="data-source"
+                  value="1"
+                  title="全部"
+                  lay-filter="data-source"
+                />
+                <input
+                  type="radio"
+                  id="data-source2"
+                  name="data-source"
+                  value="2"
+                  title="医生"
+                  checked
+                  lay-filter="data-source"
+                />
+                <input
+                  type="radio"
+                  id="data-source3"
+                  name="data-source"
+                  value="3"
+                  title="护士"
+                  lay-filter="data-source"
+                />
               </div>
             </div>
             <!-- <span class="role-label">类型:</span>
@@ -815,7 +915,6 @@
     <script src="/js/lay-config.js?v=1.0.4" charset="utf-8"></script>
     <script>
       //js动态计算表格缩放比例
-      const tempAppconfig = "http://10.102.38.101:5251/";
       let scaleTimeout = null;
       function scaleTableForMobile() {
         const layuiTableBox = document.querySelector(".layui-table-box");
@@ -823,17 +922,17 @@
           console.log("未找到 .layui-table-box 元素");
           return;
         }
-        
+
         // 清除之前的延时器，防抖处理
         if (scaleTimeout) {
           clearTimeout(scaleTimeout);
         }
-        
+
         const tableContainer = document.querySelector(".table-container");
-        
+
         // 先移除ready类，隐藏表格
-        layuiTableBox.classList.remove('table-ready');
-        
+        layuiTableBox.classList.remove("table-ready");
+
         // 延时处理，避免频繁调用
         scaleTimeout = setTimeout(() => {
           // 使用 requestAnimationFrame 确保隐藏效果生效后再进行缩放计算
@@ -872,10 +971,10 @@
               layuiTableBox.style.transformOrigin = "top left";
               layuiTableBox.style.width = `100%`;
             }
-            
+
             // 缩放完成后，添加ready类显示表格
             requestAnimationFrame(() => {
-              layuiTableBox.classList.add('table-ready');
+              layuiTableBox.classList.add("table-ready");
             });
           });
         }, 50); // 50ms防抖延时
@@ -887,6 +986,7 @@
         var $ = layui.jquery;
         var appconfig = layui.appconfig;
         var form = layui.form;
+        const tempAppconfig = appconfig.api;
 
         // 草稿区 - 暂存未正式提交的医嘱
         var draftOrders = [];
@@ -1066,15 +1166,15 @@
         // 父子医嘱排序函数
         function sortYizhuDataWithParentChild(data) {
           if (!data || data.length === 0) return data;
-          
+
           console.log("排序前医嘱数量:", data.length);
-          
+
           // 首先创建父子医嘱映射
           const childrenMap = new Map();
           const processedIds = new Set();
-          
+
           // 收集所有有parent_no的医嘱（子医嘱）
-          data.forEach(order => {
+          data.forEach((order) => {
             if (order.parent_no && order.parent_no.trim()) {
               const parentKey = order.parent_no.trim();
               if (!childrenMap.has(parentKey)) {
@@ -1083,46 +1183,46 @@
               childrenMap.get(parentKey).push(order);
             }
           });
-          
+
           // 创建医嘱组（每个组要么是单个普通医嘱，要么是父医嘱+子医嘱的组合）
           const orderGroups = [];
-          
-          data.forEach(order => {
+
+          data.forEach((order) => {
             const orderId = order.act_order_no || order.order_no;
-            
+
             // 如果已经处理过这个医嘱，跳过
             if (processedIds.has(orderId)) {
               return;
             }
-            
+
             // 如果这个医嘱是子医嘱，跳过（会在处理父医嘱时一起处理）
             if (order.parent_no && order.parent_no.trim()) {
               return;
             }
-            
+
             // 检查这个医嘱是否是父医嘱
             const children = childrenMap.get(orderId) || [];
-            
+
             if (children.length > 0) {
               // 这是父医嘱，创建一个父子医嘱组
               const group = {
                 sortTime: new Date(order.enter_time),
                 isParentGroup: true,
                 orders: [
-                  {...order, _isParent: true},
+                  { ...order, _isParent: true },
                   ...children.map((child, index) => ({
-                    ...child, 
+                    ...child,
                     _isChild: true,
-                    _isLastChild: index === children.length - 1
-                  }))
-                ]
+                    _isLastChild: index === children.length - 1,
+                  })),
+                ],
               };
-              
+
               orderGroups.push(group);
               processedIds.add(orderId);
-              
+
               // 标记所有子医嘱为已处理
-              children.forEach(child => {
+              children.forEach((child) => {
                 const childId = child.act_order_no || child.order_no;
                 processedIds.add(childId);
               });
@@ -1131,47 +1231,65 @@
               const group = {
                 sortTime: new Date(order.enter_time),
                 isParentGroup: false,
-                orders: [{...order, _isNormal: true}]
+                orders: [{ ...order, _isNormal: true }],
               };
-              
+
               orderGroups.push(group);
               processedIds.add(orderId);
             }
           });
-          
+
           // 处理可能遗漏的孤儿子医嘱
-          data.forEach(order => {
+          data.forEach((order) => {
             const orderId = order.act_order_no || order.order_no;
-            
-            if (!processedIds.has(orderId) && order.parent_no && order.parent_no.trim()) {
-              console.warn("发现孤儿子医嘱:", order.order_name, "parent_no:", order.parent_no);
+
+            if (
+              !processedIds.has(orderId) &&
+              order.parent_no &&
+              order.parent_no.trim()
+            ) {
+              console.warn(
+                "发现孤儿子医嘱:",
+                order.order_name,
+                "parent_no:",
+                order.parent_no
+              );
               const group = {
                 sortTime: new Date(order.enter_time),
                 isParentGroup: false,
-                orders: [{...order, _isOrphan: true}]
+                orders: [{ ...order, _isOrphan: true }],
               };
               orderGroups.push(group);
               processedIds.add(orderId);
             }
           });
-          
+
           // 按日期对所有医嘱组进行排序
           orderGroups.sort((a, b) => a.sortTime - b.sortTime);
-          
+
           // 将所有组的医嘱合并成最终结果
           const result = [];
-          orderGroups.forEach(group => {
+          orderGroups.forEach((group) => {
             result.push(...group.orders);
           });
-          
+
           console.log("排序后医嘱数量:", result.length);
           console.log("医嘱组数量:", orderGroups.length);
-          console.log("父医嘱组数量:", orderGroups.filter(g => g.isParentGroup).length);
-          console.log("父医嘱数量:", result.filter(r => r._isParent).length);
-          console.log("子医嘱数量:", result.filter(r => r._isChild).length);
-          console.log("普通医嘱数量:", result.filter(r => r._isNormal).length);
-          console.log("孤儿医嘱数量:", result.filter(r => r._isOrphan).length);
-          
+          console.log(
+            "父医嘱组数量:",
+            orderGroups.filter((g) => g.isParentGroup).length
+          );
+          console.log("父医嘱数量:", result.filter((r) => r._isParent).length);
+          console.log("子医嘱数量:", result.filter((r) => r._isChild).length);
+          console.log(
+            "普通医嘱数量:",
+            result.filter((r) => r._isNormal).length
+          );
+          console.log(
+            "孤儿医嘱数量:",
+            result.filter((r) => r._isOrphan).length
+          );
+
           return result;
         }
 
@@ -1191,7 +1309,7 @@
 
               // 对数据按父子关系排序
               console.log(allYizhuData);
-              
+
               allYizhuData = sortYizhuDataWithParentChild(allYizhuData);
               console.log(allYizhuData);
 
@@ -1405,7 +1523,7 @@
         function loadFrequencyData(callback) {
           $.ajax({
             url:
-              tempAppconfig + "api/MobileWard/GetYzFrequency?long_once_flag=1",
+              appconfig.api + "/api/MobileWard/GetYzFrequency?long_once_flag=1",
             method: "GET",
             dataType: "json",
             success: function (res) {
@@ -1454,7 +1572,7 @@
         // 加载用法数据
         function loadSupplyData(callback) {
           $.ajax({
-            url: tempAppconfig + "api/MobileWard/GetYzSupplyList",
+            url: appconfig.api + "/api/MobileWard/GetYzSupplyList",
             method: "GET",
             dataType: "json",
             success: function (res) {
@@ -1549,7 +1667,7 @@
           }
 
           $.ajax({
-            url: tempAppconfig + "api/MobileWard/GetYzDictList",
+            url: appconfig.api + "/api/MobileWard/GetYzDictList",
             method: "GET",
             dataType: "json",
             data: {
@@ -1647,7 +1765,7 @@
             return;
           }
           $.ajax({
-            url: tempAppconfig + "api/MobileWard/GetYzDictList",
+            url: appconfig.api + "/api/MobileWard/GetYzDictList",
             method: "GET",
             dataType: "json",
             data: { serial: serial || "00", order_code: order_code },
@@ -2293,7 +2411,7 @@
                       (row.long_once_flag || raw.long_once_flag) === "1"
                         ? "3"
                         : "4",
-                    parent_no: "",
+                    parent_no: "65965879",
                     patient_id: patientData.patient_id || "00000",
                     prev_flag: "",
                     Serial: row.serial || raw.serial || "",
@@ -2509,7 +2627,7 @@
 
           // 构建API参数
           var apiParams = {
-            act_order_no: detailData.act_order_no || "", // 后端生成
+            act_order_no: "", // 后端生成
             add_opera: doctorCode,
             // add_time: "",
             admiss_times: admiss_times,
@@ -2806,16 +2924,20 @@
 
                   // 添加父子医嘱样式
                   if (row._isParent) {
-                    $(tr).addClass("parent-order-row");
+                    // $(tr).addClass("parent-order-row");
+                    $(tr).find("td").eq(2).addClass("parent-first-cell-custom");
+
                     // 在医嘱内容前添加父医嘱标识
-                    var contentCell = $(tr).find('td[data-field="order_content"]');
+                    var contentCell = $(tr).find(
+                      'td[data-field="order_content"]'
+                    );
                     var originalContent = contentCell.html();
-                    if (originalContent && !originalContent.includes('📋')) {
-                      contentCell.html('📋 ' + originalContent);
+                    if (originalContent && !originalContent.includes("📋")) {
+                      contentCell.html("📋 " + originalContent);
                     }
                   }
                   if (row._isChild) {
-                    $(tr).addClass("child-order-row");
+                    // $(tr).addClass("child-order-row");
                     // 在医嘱内容前添加子医嘱连接符
                     // var contentCell = $(tr).find('td[data-field="order_content"]');
                     // var originalContent = contentCell.html();
@@ -2823,10 +2945,19 @@
                     // if (originalContent && !originalContent.includes('├─') && !originalContent.includes('└─')) {
                     //   contentCell.html(prefix + originalContent);
                     // }
-                    
-                    // if (row._isLastChild) {
-                    //   $(tr).addClass("last-child");
-                    // }
+
+                    if (row._isLastChild) {
+                      $(tr).addClass("last-child");
+                      $(tr)
+                        .find("td")
+                        .eq(2)
+                        .addClass("last-child-first-cell-custom");
+                    } else {
+                      $(tr)
+                        .find("td")
+                        .eq(2)
+                        .addClass("child-first-cell-custom");
+                    }
                   }
 
                   // 设置医生单元格背景色
@@ -2895,7 +3026,7 @@
           });
 
           // 对筛选后的数据进行父子医嘱排序
-          console.log("筛选器",filtered)
+          console.log("筛选器", filtered);
           var sortedData = sortYizhuDataWithParentChild(filtered);
           renderYizhuTable(sortedData);
 
@@ -2945,7 +3076,7 @@
         // form.on("select(order-type-select)", function (data) {
         //   console.log("医嘱类型select触发了:", data.value);
         //   currentFilters.orderType = data.value;
-          
+
         //   // 同步更新单选框的值
         //   var radioValue = "";
         //   switch(data.value) {
@@ -2956,7 +3087,7 @@
         //   }
         //   $('input[name="order-type"][value="' + radioValue + '"]').prop('checked', true);
         //   form.render('radio');
-          
+
         //   applyFilters();
         // });
 
@@ -2964,7 +3095,7 @@
         // form.on("select(role-type-select)", function (data) {
         //   console.log("开嘱人类型select触发了:", data.value);
         //   currentFilters.roleType = data.value;
-          
+
         //   // 同步更新单选框的值
         //   var radioValue = "";
         //   switch(data.value) {
@@ -2976,7 +3107,7 @@
         //   }
         //   $('input[name="data-source"][value="' + radioValue + '"]').prop('checked', true);
         //   form.render('radio');
-          
+
         //   applyFilters();
         // });
 
@@ -2984,18 +3115,25 @@
         form.on("radio(order-type)", function (data) {
           console.log("医嘱类型radio触发了:", data.value);
           var orderType = "";
-          switch(data.value) {
-            case "1": orderType = "all"; break;
-            case "2": orderType = "temp"; break;
-            case "3": orderType = "long"; break;
-            default: orderType = "all";
+          switch (data.value) {
+            case "1":
+              orderType = "all";
+              break;
+            case "2":
+              orderType = "temp";
+              break;
+            case "3":
+              orderType = "long";
+              break;
+            default:
+              orderType = "all";
           }
           currentFilters.orderType = orderType;
-          
+
           // 同步更新下拉框的值
           $("#order-type-select").val(orderType);
-          form.render('select');
-          
+          form.render("select");
+
           applyFilters();
         });
 
@@ -3003,18 +3141,25 @@
         form.on("radio(data-source)", function (data) {
           console.log("数据来源radio触发了:", data.value);
           var roleType = "";
-          switch(data.value) {
-            case "1": roleType = "all-role"; break;
-            case "2": roleType = "doctor"; break;
-            case "3": roleType = "nurse"; break;
-            default: roleType = "doctor";
+          switch (data.value) {
+            case "1":
+              roleType = "all-role";
+              break;
+            case "2":
+              roleType = "doctor";
+              break;
+            case "3":
+              roleType = "nurse";
+              break;
+            default:
+              roleType = "doctor";
           }
           currentFilters.roleType = roleType;
-          
+
           // 同步更新下拉框的值
           $("#role-type-select").val(roleType);
-          form.render('select');
-          
+          form.render("select");
+
           applyFilters();
         });
 
@@ -3588,12 +3733,13 @@
         loadOrderTemplates(function () {
           loadFrequencyData(function () {
             loadSupplyData(function () {
-              loadYizhuData(function() {
+              loadYizhuData(function () {
                 // 首次加载完成后，确保表格显示
                 setTimeout(() => {
-                  const layuiTableBox = document.querySelector(".layui-table-box");
+                  const layuiTableBox =
+                    document.querySelector(".layui-table-box");
                   if (layuiTableBox) {
-                    layuiTableBox.classList.add('table-ready');
+                    layuiTableBox.classList.add("table-ready");
                   }
                 }, 100);
                 applyFilters();
@@ -3814,219 +3960,213 @@
     </script>
     <!-- 静态：用于“新增医嘱（草稿）”的样式，已替代动态注入 ensureManualStyles -->
     <style id="manual-order-style">
-/* 宽度与居中 */
-#manual-order-modal .layui-row
-{
-    width: 100%;  max-width: 1200px;  margin: 0 auto;
-}
-/* 表单紧凑样式 */
-#manual-order-modal .layui-form .layui-form-item
-{
-    margin-bottom: 8px;
-}
-#manual-order-modal .layui-form-label
-{
-    width: 70px;  padding: 6px 8px;
-}
-#manual-order-modal .layui-input
-{
-    min-width: 100px;
-}
-/* 若需要可在此处调整 input-block 的 margin/padding */
-#manual-order-modal .layui-field-box
-{
-    padding: 10px;
-}
-#manual-order-modal .layui-col-sm5,
-#manual-order-modal .layui-col-sm7
-{
-    width: 100%;  max-height: 50%;  padding: 6px;
-}
-
-/* 保存区高亮 */
-
-#manual-order-form
-{
-    display: grid;  align-content: start;  width: 100%;  grid-template-columns: 1fr 1fr; /* 固定两列 */  gap: 15px;
-}
-
-/* 简化后的字段容器样式 */
-#manual-order-form .layui-inline
-{
-    display: flex !important;  align-items: center !important;  width: 100% !important; /* Grid子项占满网格单元 */  margin: 0 !important;  padding: 0 !important;  gap: 8px !important;
-}
-
-#manual-order-form .layui-form-label
-{
-    font-size: 14px !important;  line-height: 38px !important;  width: auto !important;  min-width: 60px !important;  margin: 0 !important;  padding: 0 !important;  white-space: nowrap !important;  color: #333 !important;
-}
-
-#manual-order-form .layui-input,
-#manual-order-form select
-{
-    font-size: 14px !important;  line-height: 38px !important;  flex: 1 !important;  width: 100%;  min-width: 0 !important;  height: 38px !important;  padding: 0 10px !important;  border: 1px solid #e6e6e6;  border-radius: 2px !important;
-}
-
-/* 按钮行样式 - 跨越两列 */
-#manual-order-form .form-buttons
-{
-    display: flex;  flex-wrap: wrap;  justify-content: space-around;  margin-top: 5px;  grid-column: 1 / -1; /* 跨越所有列 */  gap: 8px;
-}
-
-/* 基本信息表单中的select样式修复 */
-#manual-order-form .layui-form-select
-{
-    flex: 1 !important;  min-width: 0 !important;
-}
-
-#manual-order-form .layui-form-select .layui-select-title
-{
-    line-height: 38px !important;  width: 100% !important;  height: 38px !important;  border: 1px solid #e6e6e6 !important;  border-radius: 2px !important;
-}
-
-#manual-order-form .layui-form-select .layui-select-title input
-{
-    line-height: 36px !important;  height: 36px !important;  padding-right: 30px !important;
-}
-
-/* 确保select在flex容器中正常显示 */
-#manual-order-form .layui-inline .layui-form-select
-{
-    display: block !important;  flex: 1 !important;
-}
-/* 保存区：卡片列表 */
-#manual-order-modal #manual-draft-list
-{
-    display: grid;  grid-template-columns: 1fr;  gap: 8px;
-}
-@media (min-width: 992px)
-{
-    #manual-order-modal #manual-draft-list
-    {
-        grid-template-columns: 1fr 1fr;
-    }
-}
-#manual-order-modal .draft-card
-{
-    display: flex;  flex-direction: column;  padding: 10px 12px;  cursor: pointer;  border: 1px solid #e6e6e6;  border-radius: 6px;  background: #fff;  gap: 6px;
-}
-#manual-order-modal .draft-card .title
-{
-    font-size: 14px;  font-weight: 600;  line-height: 1.4;  display: flex;  align-items: center;  color: #333;  gap: 8px;
-}
-#manual-order-modal .draft-card .badge
-{
-    font-size: 12px;  line-height: 18px;  display: inline-block;  padding: 0 6px;  color: #1e9fff;  border: 1px solid #d6ecff;  border-radius: 3px;  background: #f0f7ff;
-}
-#manual-order-modal .draft-card .meta
-{
-    font-size: 12px;  display: flex;  flex-wrap: wrap;  color: #666;  gap: 10px 16px;
-}
-#manual-order-modal .draft-card .meta span
-{
-    white-space: nowrap;
-}
-#manual-order-modal .draft-card .desc
-{
-    font-size: 12px;  overflow: hidden;  white-space: nowrap;  text-overflow: ellipsis;  color: #666;
-}
-#manual-order-modal .draft-card .actions
-{
-    display: flex;  justify-content: flex-end;  margin-top: 4px;  gap: 8px;
-}
-#manual-order-modal .draft-card .layui-btn
-{
-    font-size: 12px;  line-height: 24px;  height: 24px;  padding: 0 10px;
-}
-#manual-order-modal .draft-card.selected
-{
-    outline: 2px solid #1e9fff;  background: #f0f7ff;
-}
-/* ...existing code... */
-/* 在小屏幕上调整布局，left/right 垂直堆叠 */
-@media (max-width: 640px)
-{
-    #manual-order-modal .layui-col-sm5,
-    #manual-order-modal .layui-col-sm7
-    {
+      /* 宽度与居中 */
+      #manual-order-modal .layui-row {
         width: 100%;
-    }
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+      /* 表单紧凑样式 */
+      #manual-order-modal .layui-form .layui-form-item {
+        margin-bottom: 8px;
+      }
+      #manual-order-modal .layui-form-label {
+        width: 70px;
+        padding: 6px 8px;
+      }
+      #manual-order-modal .layui-input {
+        min-width: 100px;
+      }
+      /* 若需要可在此处调整 input-block 的 margin/padding */
+      #manual-order-modal .layui-field-box {
+        padding: 10px;
+      }
+      #manual-order-modal .layui-col-sm5,
+      #manual-order-modal .layui-col-sm7 {
+        width: 100%;
+        max-height: 50%;
+        padding: 6px;
+      }
 
-    /* 小屏幕下保持双列，但调整间距和标签宽度 */
-    #manual-order-form
-    {
-        gap: 10px !important; /* 减小间距 */
-    }
+      /* 保存区高亮 */
 
-    #manual-order-form .layui-inline
-    {
-        gap: 4px !important; /* 减小内部间距 */
-    }
+      #manual-order-form {
+        display: grid;
+        align-content: start;
+        width: 100%;
+        grid-template-columns: 1fr 1fr; /* 固定两列 */
+        gap: 15px;
+      }
 
-    #manual-order-form .layui-form-label
-    {
-        font-size: 13px !important; /* 缩小字体 */  min-width: 40px !important; /* 缩小标签宽度 */
-    }
+      /* 简化后的字段容器样式 */
+      #manual-order-form .layui-inline {
+        display: flex !important;
+        align-items: center !important;
+        width: 100% !important; /* Grid子项占满网格单元 */
+        margin: 0 !important;
+        padding: 0 !important;
+        gap: 8px !important;
+      }
 
-    #manual-order-form .layui-input,
-    #manual-order-form select
-    {
-        font-size: 13px !important; /* 缩小输入框字体 */
-    }
-}
+      #manual-order-form .layui-form-label {
+        font-size: 14px !important;
+        line-height: 38px !important;
+        width: auto !important;
+        min-width: 60px !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        white-space: nowrap !important;
+        color: #333 !important;
+      }
 
+      #manual-order-form .layui-input,
+      #manual-order-form select {
+        font-size: 14px !important;
+        line-height: 38px !important;
+        flex: 1 !important;
+        width: 100%;
+        min-width: 0 !important;
+        height: 38px !important;
+        padding: 0 10px !important;
+        border: 1px solid #e6e6e6;
+        border-radius: 2px !important;
+      }
 
+      /* 按钮行样式 - 跨越两列 */
+      #manual-order-form .form-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-around;
+        margin-top: 5px;
+        grid-column: 1 / -1; /* 跨越所有列 */
+        gap: 8px;
+      }
 
+      /* 基本信息表单中的select样式修复 */
+      #manual-order-form .layui-form-select {
+        flex: 1 !important;
+        min-width: 0 !important;
+      }
 
+      #manual-order-form .layui-form-select .layui-select-title {
+        line-height: 38px !important;
+        width: 100% !important;
+        height: 38px !important;
+        border: 1px solid #e6e6e6 !important;
+        border-radius: 2px !important;
+      }
 
+      #manual-order-form .layui-form-select .layui-select-title input {
+        line-height: 36px !important;
+        height: 36px !important;
+        padding-right: 30px !important;
+      }
 
+      /* 确保select在flex容器中正常显示 */
+      #manual-order-form .layui-inline .layui-form-select {
+        display: block !important;
+        flex: 1 !important;
+      }
+      /* 保存区：卡片列表 */
+      #manual-order-modal #manual-draft-list {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+      @media (min-width: 992px) {
+        #manual-order-modal #manual-draft-list {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+      #manual-order-modal .draft-card {
+        display: flex;
+        flex-direction: column;
+        padding: 10px 12px;
+        cursor: pointer;
+        border: 1px solid #e6e6e6;
+        border-radius: 6px;
+        background: #fff;
+        gap: 6px;
+      }
+      #manual-order-modal .draft-card .title {
+        font-size: 14px;
+        font-weight: 600;
+        line-height: 1.4;
+        display: flex;
+        align-items: center;
+        color: #333;
+        gap: 8px;
+      }
+      #manual-order-modal .draft-card .badge {
+        font-size: 12px;
+        line-height: 18px;
+        display: inline-block;
+        padding: 0 6px;
+        color: #1e9fff;
+        border: 1px solid #d6ecff;
+        border-radius: 3px;
+        background: #f0f7ff;
+      }
+      #manual-order-modal .draft-card .meta {
+        font-size: 12px;
+        display: flex;
+        flex-wrap: wrap;
+        color: #666;
+        gap: 10px 16px;
+      }
+      #manual-order-modal .draft-card .meta span {
+        white-space: nowrap;
+      }
+      #manual-order-modal .draft-card .desc {
+        font-size: 12px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        color: #666;
+      }
+      #manual-order-modal .draft-card .actions {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 4px;
+        gap: 8px;
+      }
+      #manual-order-modal .draft-card .layui-btn {
+        font-size: 12px;
+        line-height: 24px;
+        height: 24px;
+        padding: 0 10px;
+      }
+      #manual-order-modal .draft-card.selected {
+        outline: 2px solid #1e9fff;
+        background: #f0f7ff;
+      }
+      /* ...existing code... */
+      /* 在小屏幕上调整布局，left/right 垂直堆叠 */
+      @media (max-width: 640px) {
+        #manual-order-modal .layui-col-sm5,
+        #manual-order-modal .layui-col-sm7 {
+          width: 100%;
+        }
 
+        /* 小屏幕下保持双列，但调整间距和标签宽度 */
+        #manual-order-form {
+          gap: 10px !important; /* 减小间距 */
+        }
 
+        #manual-order-form .layui-inline {
+          gap: 4px !important; /* 减小内部间距 */
+        }
 
+        #manual-order-form .layui-form-label {
+          font-size: 13px !important; /* 缩小字体 */
+          min-width: 40px !important; /* 缩小标签宽度 */
+        }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        #manual-order-form .layui-input,
+        #manual-order-form select {
+          font-size: 13px !important; /* 缩小输入框字体 */
+        }
+      }
     </style>
 
     <!-- 静态：新增医嘱（草稿）弹窗 DOM，已替代动态注入 ensureManualModalDom -->

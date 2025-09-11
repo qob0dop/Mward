@@ -9,7 +9,7 @@
     <title>查房记录</title>
     <link rel="stylesheet" href="/lib/layui-v2.6.3/css/layui.css" media="all" />
     <link rel="stylesheet" href="/css/public.css" media="all" />
-    <link rel="stylesheet" href="/css/table/iframe.css" media="all" />
+    <!-- <link rel="stylesheet" href="/css/table/iframe.css" media="all" /> -->
     <style>
 body
 {
@@ -80,24 +80,51 @@ body
 /* 录音控件样式 */
 .recording-section
 {
-    margin-top: 15px;  padding: 10px;  border: 1px solid #e9ecef;  border-radius: 4px;  background: #f8f9fa;
+    margin-top: 5px;  padding: 10px;
 }
 
 .recording-controls
 {
-    display: flex;  align-items: center;  margin-bottom: 10px;  gap: 10px;
+    display: flex;  align-items: center;  flex-wrap: wrap; justify-content: center; margin-bottom: 10px;  gap: 10px;
 }
-
+.recording-controls span
+{
+    width: 100%;  text-align: center;
+}
 /* 音频播放器样式 */
 audio
 {
     width: 100%;  max-width: 300px;  height: 30px;
 }
 
+/* 音频控制区域样式 */
+.audio-controls
+{
+    display: flex;  align-items: center;  flex-wrap: wrap;  justify-content: center;  margin-top: 10px;  gap: 10px;
+}
+
+.audio-controls audio
+{
+    flex: 1;  min-width: 200px;
+}
+
+/* 转文字按钮样式 */
+.convert-text-btn
+{font-weight: bold;  
+
+    flex-shrink: 0;  transition: all .3s ease; color: white;  border: none;  background: linear-gradient(45deg, #1e9fff, #26c6da);  
+}
+
+.convert-text-btn:hover
+{transform: translateY(-1px);  
+
+    background: linear-gradient(45deg, #0d8bf0, #1eb8cc);  box-shadow: 0 4px 8px rgba(30, 159, 255, .3);
+}
+
 /* 表单样式优化 */
 .layui-form-item
 {
-    margin-bottom: 20px;
+    margin-bottom: 5px;
 }
 
 .layui-textarea
@@ -114,8 +141,40 @@ audio
 }
 #btn-add-record
 {
-    font-size: 16px;  line-height: 25px;  width: auto;  height: 25px;padding: 0 5px;
+    font-size: 16px;  line-height: 30px;  width: auto;  height: 30px;padding: 0 5px;border-radius: 10px;
 }
+
+#btn-record-audio
+{
+    width: 100px;  height: 100px;  border-radius: 50px;
+}
+.layui-layer-page .layui-layer-content
+{
+    overflow: hidden;  height: auto;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -265,11 +324,11 @@ audio
           layer.open({
             type: 1,
             title: "新建查房记录",
-            area: ["100%", "80%"], // 使用百分比高度，自适应父页面
+            area: ["100%", "auto"], // 使用百分比高度，自适应父页面
             maxHeight: "90%", // 最大高度不超过父页面90%
             offset: "auto",
             content: `
-              <form class="layui-form" style="padding: 20px;" id="ward-record-form">
+              <form class="layui-form" style="box-sizing: border-box; padding: 18px;" id="ward-record-form">
                 <div class="layui-row">
                   <div class="layui-col-md6">
                     <div class="layui-form-item">
@@ -310,24 +369,28 @@ audio
 
                 <!-- 录音功能区域 -->
                 <div class="layui-form-item">
-                  <label class="layui-form-label">录音记录</label>
-                  <div class="layui-input-block">
+                  <div class="layui-input-block" style="margin:0 10px">
                     <div class="recording-section">
+                      <div id="audio-container" style="visibility: hidden;">
+                        <div class="audio-controls">
+                          <audio id="audio-preview" controls style="flex: 1; min-width: 200px;"></audio>
+                        </div>
+                      </div>
+                      
                       <div class="recording-controls">
                         <button type="button" id="btn-record-audio" class="layui-btn layui-btn-sm layui-btn-normal">
                           <i class="layui-icon layui-icon-mike"></i> 开始录音
                         </button>
                         
-                        <span id="recording-status" style="color: #666; font-size: 12px;"></span>
+                        <span id="recording-status" style="color: #666; font-size: 12px;height:16px"></span>
                       </div>
                       
-                      <audio id="audio-preview" controls style="display: none; width: 100%; max-width: 400px;"></audio>
                       <div id="saved-audio-list" style="margin-top: 10px;"></div>
                     </div>
                   </div>
                 </div>
 
-                <div class="layui-form-item" style="text-align: center; margin-top: 30px;">
+                <div class="layui-form-item" id="btn-confirm-record" style="width:100%;text-align: center; margin-top: 10px; display: none;">
                   <button class="layui-btn layui-btn-normal" lay-submit lay-filter="save-record">
                     <i class="layui-icon layui-icon-ok"></i> 保存查房记录
                   </button>
@@ -386,6 +449,17 @@ audio
           }
 
           try {
+            // 清理之前的音频和按钮
+            const audioContainer = document.getElementById("audio-container");
+            if (audioContainer) {
+              audioContainer.style.visibility = "hidden";
+              // 清除之前的转文字按钮
+              const convertBtn = audioContainer.querySelector('.convert-text-btn');
+              if (convertBtn) {
+                convertBtn.remove();
+              }
+            }
+
             // 获取用户媒体流
             const stream = await navigator.mediaDevices.getUserMedia({
               audio: true,
@@ -409,9 +483,14 @@ audio
                 .then((wavBlob) => {
                   audioBlob = wavBlob; // 更新为WAV格式
                   const audioPreview = document.getElementById("audio-preview");
+                  const audioContainer = document.getElementById("audio-container");
+                  const audioControls = audioContainer.querySelector(".audio-controls");
 
                   audioPreview.src = URL.createObjectURL(audioBlob);
-                  audioPreview.style.display = "block";
+                  audioContainer.style.visibility = "visible";
+
+                  // 添加转文字按钮
+                  addConvertTextButton(audioControls);
 
                   // 停止所有音频轨道
                   stream.getTracks().forEach((track) => track.stop());
@@ -428,9 +507,14 @@ audio
 
                   // 如果转换失败，继续使用原格式
                   const audioPreview = document.getElementById("audio-preview");
+                  const audioContainer = document.getElementById("audio-container");
+                  const audioControls = audioContainer.querySelector(".audio-controls");
 
                   audioPreview.src = URL.createObjectURL(audioBlob);
-                  audioPreview.style.display = "block";
+                  audioContainer.style.visibility = "visible";
+
+                  // 添加转文字按钮（即使转换失败也显示，让用户尝试）
+                  addConvertTextButton(audioControls);
 
                   // 停止所有音频轨道
                   stream.getTracks().forEach((track) => track.stop());
@@ -448,7 +532,8 @@ audio
             recordBtn.className = "layui-btn layui-btn-sm layui-btn-danger";
             statusSpan.textContent = "正在录音中...";
 
-            document.getElementById("audio-preview").style.display = "none";
+            // 隐藏音频容器（在录音过程中）
+            document.getElementById("audio-container").style.visibility = "hidden";
           } catch (err) {
             console.error("录音错误:", err);
             layer.msg("无法访问麦克风，请检查权限设置", { icon: 2 });
@@ -464,12 +549,83 @@ audio
 
           const recordBtn = document.getElementById("btn-record-audio");
           const statusSpan = document.getElementById("recording-status");
-
+          const confirmBtn = document.getElementById("btn-confirm-record");
+          const layer = document.getElementsByClassName("layui-layer-content")[0];
           recordBtn.innerHTML =
             '<i class="layui-icon layui-icon-mike"></i> 开始录音';
           recordBtn.className = "layui-btn layui-btn-sm layui-btn-normal";
           statusSpan.textContent = "录音完成，可保存或者重新录制";
+          confirmBtn.style.display = "inline-block";
+          layer.style.height = "auto";
         }
+
+        // 添加转文字按钮
+        function addConvertTextButton(audioControls) {
+          // 检查是否已经存在转文字按钮，避免重复添加
+          if (audioControls.querySelector('.convert-text-btn')) {
+            return;
+          }
+
+          const convertBtn = document.createElement('button');
+          convertBtn.type = 'button';
+          convertBtn.className = 'layui-btn layui-btn-sm convert-text-btn';
+          convertBtn.innerHTML = '<i class="layui-icon layui-icon-fonts"></i> 转文字';
+          convertBtn.title = '将录音转换为文字';
+
+          // 绑定点击事件
+          convertBtn.addEventListener('click', function() {
+            convertAudioToText();
+          });
+
+          audioControls.appendChild(convertBtn);
+        }
+
+        // 音频转文字功能
+        function convertAudioToText() {
+          if (!audioBlob) {
+            layer.msg('没有可转换的音频数据', { icon: 5 });
+            return;
+          }
+
+          // 显示转换进度
+          const loadingIndex = layer.msg('正在转换音频为文字，请稍候...', {
+            icon: 16,
+            shade: 0.3,
+            time: 0
+          });
+
+          // 创建FormData对象
+          const formData = new FormData();
+          formData.append('audio', audioBlob, 'recording.wav');
+
+          // 调用后端转换API
+          fetch('/api/audio/convert-to-text', {
+            method: 'POST',
+            body: formData
+          })
+          .then(response => {
+            if (!response.ok) {
+              throw new Error('网络请求失败');
+            }
+            return response.json();
+          })
+          .then(data => {
+            layer.close(loadingIndex);
+            
+            if (data.success && data.text) {
+              insertConvertedText(data.text);
+            } else {
+              layer.msg('音频转文字失败：' + (data.message || '未知错误'), { icon: 5 });
+            }
+          })
+          .catch(error => {
+            layer.close(loadingIndex);
+            console.error('转换错误:', error);
+            
+            
+          });
+        }
+
         // 将音频转换为WAV格式
         function convertToWav(audioBlob) {
           return new Promise((resolve, reject) => {

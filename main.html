@@ -41,98 +41,246 @@
       content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
     />
     <style>
-      .layui-elem-quote{
-        margin-bottom: 0;
-      }
-      .layui-table,
-      .layui-table-view {
-        margin: 0;
-      }
-      .layui-table-tool {
-        padding: 0;
-      }
-      .layui-btn:not(.layui-btn-lg):not(.layui-btn-sm):not(.layui-btn-xs) {
-        height: 34px;
-        line-height: 34px;
-        padding: 0 8px;
-      }
+.layui-table-box
+{
+    overflow: visible;  height: 80vh;
+}
+.layui-table-body
+{
+    height: 100%;
+}
+.layui-elem-quote
+{
+    margin-bottom: 0;
+}
+.layui-table,
+.layui-table-view
+{
+    position: relative;  margin: 0;
+}
+.layui-table-tool
+{
+    padding: 0;
+}
+.layui-btn:not(.layui-btn-lg):not(.layui-btn-sm):not(.layui-btn-xs)
+{
+    line-height: 34px;  height: 34px;  padding: 0 8px;
+}
 
-      .layui-table-tool-temp {
-        padding-right: 0px;
-      }
+.layui-table-tool-temp
+{
+    padding-right: 0;
+}
 
-      .layui-table-cell {
-        padding: 0 10px;
-      }
+.layui-table-cell
+{
+    padding: 0 10px;
+}
 
-      .layui-table-tool {
-        padding-left: 0;
-      }
-      .layui-table tr.status-normal {
-        background: #fff !important;
-      }
-      .layui-table tr.status-danger {
-        background: #fff0f0 !important;
-      }
-      .layui-table tr.status-urgent {
-        background: #f7f0ff !important;
-      }
-      .layui-table tr.status-heavy {
-        background: #f0f7ff !important;
-      }
-      .layui-table tr.status-other {
-        background: #fffbe6 !important;
-      }
-      .layuimini-container,
-      .layuimini-main,
-      body {
-        background: #f4f8fb !important;
-      }
-      .layui-btn-container .layui-btn {
-        margin: 10px;
-        margin-top: 0;
-      }
-      /* 响应式样式 */
-      @media screen and (max-width: 768px) {
-        .layui-elem-quote {
-          gap: 10px !important;
-        }
+.layui-table-tool
+{
+    padding-left: 0;
+}
+.layui-table tr.status-normal
+{
+    background: #fff !important;
+}
+.layui-table tr.status-danger
+{
+    background: #fff0f0 !important;
+}
+.layui-table tr.status-urgent
+{
+    background: #f7f0ff !important;
+}
+.layui-table tr.status-heavy
+{
+    background: #f0f7ff !important;
+}
+.layui-table tr.status-other
+{
+    background: #fffbe6 !important;
+}
+.layuimini-container,
+.layuimini-main,
+body
+{
+    background: #f4f8fb !important;
+}
+.layui-btn-container .layui-btn
+{
+    margin: 10px;  margin-top: 0;
+}
+/* 响应式样式 */
+@media screen and (max-width: 768px)
+{
+    .layui-elem-quote
+    {
+        gap: 10px !important;
+    }
 
-        .layui-elem-quote > div:first-child {
-          gap: 8px !important;
-          min-width: 0 !important;
-        }
+    .layui-elem-quote > div:first-child
+    {
+        min-width: 0 !important;  gap: 8px !important;
+    }
 
-        .layui-elem-quote > div:first-child span[id] {
-          max-width: 60px !important;
-          font-size: 0.8rem !important;
-        }
+    .layui-elem-quote > div:first-child span[id]
+    {
+        font-size: .8rem !important;  max-width: 60px !important;
+    }
 
-        .layui-elem-quote button {
-          font-size: 11px !important;
-          padding: 0 8px !important;
-        }
-      }
+    /* .layui-elem-quote button
+    {
+        font-size: 11px !important;  padding: 0 8px !important;
+    } */
 
-      @media screen and (max-width: 480px) {
-        .layui-elem-quote > div:first-child {
-          gap: 5px !important;
-        }
+    /* 移动端搜索框样式 */
+    /* #patient-search
+    {
+        font-size: 11px !important;  width: 100px !important;  height: 24px !important;  padding: 3px 6px !important;
+    } */
+}
 
-        .layui-elem-quote > div:first-child span[id] {
-          max-width: 70px !important;
-          font-size: 0.75rem !important;
-        }
+@media screen and (max-width: 480px)
+{
+    .layui-elem-quote > div:first-child
+    {
+        gap: 5px !important;
+    }
 
-        .layui-elem-quote > div:first-child > span:first-child {
-          font-size: 1rem !important;
-        }
+    .layui-elem-quote > div:first-child span[id]
+    {
+        font-size: .75rem !important;  max-width: 70px !important;
+    }
 
-        .layui-elem-quote button {
-          font-size: 10px !important;
-          padding: 0 6px !important;
-        }
-      }
+    .layui-elem-quote > div:first-child > span:first-child
+    {
+        font-size: 1rem !important;
+    }
+
+    /* .layui-elem-quote button
+    {
+        font-size: 10px !important;  padding: 0 6px !important;
+    } */
+
+    /* 超小屏搜索框样式 */
+    /* #patient-search
+    {
+        font-size: 10px !important;  width: 80px !important;  height: 22px !important;  padding: 2px 5px !important;
+    } */
+}
+
+/* 搜索结果高亮样式 */
+.search-highlight
+{
+    animation: search-blink 2s ease-in-out;  border-left: 4px solid #ffc107 !important;  background-color: #fff3cd !important;
+}
+
+.search-highlight td
+{
+    font-weight: bold !important;  color: #856404 !important;  background-color: #fff3cd !important;
+}
+
+tr.search-highlight
+{
+    border-left: 4px solid #ffc107 !important;  background-color: #fff3cd !important;
+}
+
+tr.search-highlight:hover
+{
+    background-color: #ffeaa7 !important;
+}
+
+/* 闪烁动画 - 2秒内闪烁4次 */
+@keyframes search-blink
+{
+    0%,
+    100%
+    {
+        opacity: 1;  background-color: #fff3cd !important;  box-shadow: 0 0 0 rgba(255, 193, 7, .3);
+    }
+    12.5%
+    {
+        transform: scale(1.02);  opacity: .9;  background-color: #ff6b6b !important;  box-shadow: 0 0 10px rgba(255, 107, 107, .6);
+    }
+    25%
+    {
+        transform: scale(1);  opacity: 1;  background-color: #fff3cd !important;  box-shadow: 0 0 5px rgba(255, 193, 7, .3);
+    }
+    37.5%
+    {
+        transform: scale(1.02);  opacity: .9;  background-color: #ff6b6b !important;  box-shadow: 0 0 10px rgba(255, 107, 107, .6);
+    }
+    50%
+    {
+        transform: scale(1);  opacity: 1;  background-color: #fff3cd !important;  box-shadow: 0 0 5px rgba(255, 193, 7, .3);
+    }
+    62.5%
+    {
+        transform: scale(1.02);  opacity: .9;  background-color: #ff6b6b !important;  box-shadow: 0 0 10px rgba(255, 107, 107, .6);
+    }
+    75%
+    {
+        transform: scale(1);  opacity: 1;  background-color: #fff3cd !important;  box-shadow: 0 0 5px rgba(255, 193, 7, .3);
+    }
+    87.5%
+    {
+        transform: scale(1.02);  opacity: .9;  background-color: #ff6b6b !important;  box-shadow: 0 0 10px rgba(255, 107, 107, .6);
+    }
+}
+
+/* 搜索框样式优化 */
+#patient-search:hover
+{
+    border-color: #1e9fff !important;
+}
+
+#clear-search:hover
+{
+    transform: scale(1.1);  color: #ff4757 !important;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     </style>
   </head>
   <script>
@@ -210,29 +358,52 @@
                 管理员
               </span>
             </span>
+            
           </div>
           <button
             type="button"
             class="layui-btn layui-btn-sm layui-btn-normal"
             onclick="javascrript: location.href = 'view/wardlist.html';"
-            style="font-size:14px;float:right;margin: 0;"
+            style="font-size:14px;float:right;margin: 0;border-radius: 5px;"
           >
             <i class="layui-icon"></i>返回
           </button>
         </blockquote>
-
-        <button class="layui-btn layui-btn-normal" lay-event="allPatient">
+        <!-- 患者搜索框 -->
+            <div style="display: flex; align-items: center; position: relative; min-width: 0;justify-content: center;margin :5px 0 15px 0;">
+              <i
+                class="layui-icon layui-icon-search"
+                style="color: #1e9fff; font-size: 25px; margin-right: 5px; flex-shrink: 0;"
+              ></i>
+              <input
+                type="text"
+                id="patient-search"
+                placeholder="搜索患者"
+                style="border: 1px solid #e6e6e6; border-radius: 15px; padding: 4px 15px; width: 200px; height: 30px; font-size: 16px; outline: none; transition: all 0.3s ease;"
+                onkeyup="searchPatient(this.value)"
+                onfocus="this.style.borderColor='#1e9fff'; this.style.boxShadow='0 0 0 2px rgba(30,136,229,0.1)'"
+                onblur="this.style.borderColor='#e6e6e6'; this.style.boxShadow='none'"
+              />
+              <!-- 清空按钮 -->
+              <span
+                id="clear-search"
+                onclick="clearSearch()"
+                style="position: absolute; right: 15px; cursor: pointer; color: #999; font-size: 16px; display: none;"
+                title="清空搜索"
+              >✕</span>
+            </div>
+        <!-- <button class="layui-btn layui-btn-normal" lay-event="allPatient">
           全部患者
         </button>
         <button class="layui-btn layui-btn-primary" lay-event="myPatient">
           我的患者
-        </button>
+        </button> -->
       </div>
     </script>
     <script type="text/html" id="auth-state">
       <a
         class="layui-btn layui-btn-primary layui-btn-sm layui-bg-blue"
-        style="font-size:14px"
+        style="font-size:14px;"
         lay-event="detail"
         >详情</a
       >
@@ -329,7 +500,7 @@
             [
               { field: "inpatient_no", title: "住院号", width: 90, sort: true }, // unresize: true,
               { field: "bed_no", title: "床号", width: 70, sort: true },
-              { field: "name", title: "姓名" },
+              { field: "name", title: "姓名" ,width:100},
               {
                 field: "sex_name",
                 title: "性别",
@@ -348,7 +519,7 @@
                 templet: "#statusTpl",
               },
               { field: "nursing", title: "护理级别" },
-              { fixed: "right", title: "操作", toolbar: "#auth-state" },
+              // { fixed: "right", title: "操作", toolbar: "#auth-state" },
             ],
           ],
           //height: 315
@@ -520,6 +691,217 @@
           }
         });
       });
+      
+      // 患者搜索功能
+      function searchPatient(searchValue) {
+        searchValue = searchValue.trim();
+        var clearBtn = document.getElementById('clear-search');
+        
+        console.log('搜索关键词:', searchValue);
+        
+        // 显示/隐藏清空按钮
+        if (searchValue) {
+          clearBtn.style.display = 'block';
+        } else {
+          clearBtn.style.display = 'none';
+        }
+        
+        // 如果搜索值为空，显示所有数据
+        if (!searchValue) {
+          // 移除所有高亮
+          removeAllHighlight();
+          return;
+        }
+        
+        // 获取表格数据进行搜索
+        var tableData = layui.table.cache['munu-table'] || [];
+        console.log('表格数据:', tableData);
+        
+        var matchedRows = [];
+        
+        // 搜索匹配的行（支持姓名、床号、住院号搜索）
+        tableData.forEach(function(row, index) {
+          var isMatch = false;
+          var searchFields = ['name', 'bed_no', 'inpatient_no'];
+          
+          for (var i = 0; i < searchFields.length; i++) {
+            var fieldValue = row[searchFields[i]] || '';
+            if (fieldValue.toString().toLowerCase().indexOf(searchValue.toLowerCase()) !== -1) {
+              isMatch = true;
+              console.log('匹配行:', index, '字段:', searchFields[i], '值:', fieldValue);
+              break;
+            }
+          }
+          
+          if (isMatch) {
+            matchedRows.push(index);
+          }
+        });
+        
+        console.log('匹配的行索引:', matchedRows);
+        
+        // 高亮匹配的行
+        highlightSearchResults(matchedRows);
+        
+        // 如果有匹配结果，滚动到第一个匹配项
+        if (matchedRows.length > 0) {
+          scrollToRow(matchedRows[0]);
+        } else if (searchValue) {
+          // console.log('没有找到匹配结果');
+          // // 可选：显示没有找到结果的提示
+          // layui.layer && layui.layer.msg('没有找到匹配的患者', {icon: 0, time: 1500});
+        }
+      }
+      
+      // 清空搜索
+      function clearSearch() {
+        document.getElementById('patient-search').value = '';
+        document.getElementById('clear-search').style.display = 'none';
+        removeAllHighlight();
+      }
+      
+      // 高亮搜索结果
+      function highlightSearchResults(matchedRows) {
+        // 先移除所有高亮
+        removeAllHighlight();
+        
+        // 尝试多种可能的表格行选择器
+        var possibleSelectors = [
+          '#munu-table + .layui-table-view .layui-table-body tbody tr',
+          '.layui-table-view .layui-table-body tbody tr',
+          '#munu-table ~ .layui-table-view .layui-table-body tbody tr',
+          '.layui-table tbody tr'
+        ];
+        
+        var tableRows = null;
+        for (var i = 0; i < possibleSelectors.length; i++) {
+          tableRows = document.querySelectorAll(possibleSelectors[i]);
+          if (tableRows && tableRows.length > 0) {
+            console.log('找到表格行，使用选择器:', possibleSelectors[i]);
+            break;
+          }
+        }
+        
+        if (!tableRows || tableRows.length === 0) {
+          console.log('未找到表格行，尝试延迟执行');
+          setTimeout(function() {
+            highlightSearchResults(matchedRows);
+          }, 500);
+          return;
+        }
+        
+        // 高亮匹配的行
+        matchedRows.forEach(function(rowIndex) {
+          if (tableRows[rowIndex]) {
+            var row = tableRows[rowIndex];
+            row.classList.add('search-highlight');
+            console.log('高亮行:', rowIndex);
+            
+            // 2秒后移除闪烁动画，但保持高亮
+            setTimeout(function() {
+              row.style.animation = 'none';
+              row.style.backgroundColor = '#fff3cd';
+            }, 2000);
+          }
+        });
+        
+        console.log('匹配行数:', matchedRows.length);
+      }
+      
+      // 移除所有高亮
+      function removeAllHighlight() {
+        // 尝试多种可能的高亮元素选择器
+        var possibleSelectors = [
+          '.search-highlight',
+          'tr.search-highlight',
+          '.layui-table tbody tr.search-highlight'
+        ];
+        
+        possibleSelectors.forEach(function(selector) {
+          var highlightedRows = document.querySelectorAll(selector);
+          highlightedRows.forEach(function(row) {
+            row.classList.remove('search-highlight');
+          });
+        });
+      }
+      
+      // 滚动到指定行
+      function scrollToRow(rowIndex) {
+        console.log('开始滚动到行:', rowIndex);
+        
+        // 等待一下确保DOM已更新
+        setTimeout(function() {
+          // 找到正确的滚动容器 - layui-table-body 和 layui-table-main
+          var tableBody = document.querySelector('.layui-table-body');
+          var tableMain = document.querySelector('.layui-table-main');
+          var scrollContainer = tableMain || tableBody; // 优先使用 table-main
+          
+          console.log('容器元素:', {
+            tableBody: !!tableBody,
+            tableMain: !!tableMain,
+            scrollContainer: !!scrollContainer
+          });
+          
+          var possibleSelectors = [
+            '.layui-table-main tbody tr',
+            '.layui-table-body tbody tr',
+            '#munu-table + .layui-table-view .layui-table-body tbody tr',
+            '.layui-table-view .layui-table-body tbody tr',
+            '.layui-table tbody tr'
+          ];
+          
+          var tableRows = null;
+          var usedSelector = '';
+          for (var i = 0; i < possibleSelectors.length; i++) {
+            tableRows = document.querySelectorAll(possibleSelectors[i]);
+            if (tableRows && tableRows.length > 0) {
+              usedSelector = possibleSelectors[i];
+              console.log('滚动使用选择器:', usedSelector, '找到行数:', tableRows.length);
+              break;
+            }
+          }
+          
+          if (tableRows && tableRows[rowIndex]) {
+            var targetRow = tableRows[rowIndex];
+            console.log('找到目标行，开始滚动');
+            
+            // 使用 layui-table-main 或 layui-table-body 容器
+            if (scrollContainer) {
+              console.log('在', scrollContainer.className, '容器内滚动');
+              // 计算目标行相对于容器顶部的位置
+              var rowRect = targetRow.getBoundingClientRect();
+              var containerRect = scrollContainer.getBoundingClientRect();
+              var scrollTop = scrollContainer.scrollTop;
+              var targetScrollTop = scrollTop + rowRect.top - containerRect.top - (scrollContainer.clientHeight / 2) + (targetRow.offsetHeight / 2);
+              
+              console.log('滚动计算:', {
+                rowRect: rowRect,
+                containerRect: containerRect,
+                scrollTop: scrollTop,
+                targetScrollTop: targetScrollTop
+              });
+              
+              // 平滑滚动到目标位置
+              scrollContainer.scrollTo({
+                top: Math.max(0, targetScrollTop),
+                behavior: 'smooth'
+              });
+            } 
+            // 否则使用默认的页面滚动
+            else {
+              console.log('使用默认页面滚动');
+              targetRow.scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'center' 
+              });
+            }
+            
+            console.log('滚动完成');
+          } else {
+            console.log('未找到目标行:', rowIndex, '总行数:', tableRows ? tableRows.length : 0);
+          }
+        }, 100);
+      }
     </script>
   </body>
 </html>
