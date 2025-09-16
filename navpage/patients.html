@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/lib/layui-v2.6.3/css/layui.css" media="all" />
+    <link rel="stylesheet" href="/css/navpage/patients.css" />
+    <title>Document</title>
+    <style></style>
+  </head>
+  <body>
+    <header>
+      <div class="wardlist-switch" id="wardlist-switch">病区选择</div>
+      <div id="search-container">
+        <i class="layui-icon layui-icon-search"></i>
+        <input
+          type="text"
+          id="patient-search"
+          placeholder="搜索患者"
+          onfocus="this.style.borderColor='#1e9fff'; this.style.boxShadow='0 0 0 2px rgba(30,136,229,0.1)'"
+          onblur="this.style.borderColor='#e6e6e6'; this.style.boxShadow='none'"
+        />
+      </div>
+    </header>
+    <div class="tool">
+      <label for="" id="all-patients-label">全部患者</label>
+      <label for="" id="my-patients-label">我的患者</label>
+      <!-- <label id="filter-label" for="">筛选</label> -->
+    </div>
+    <main>
+      <div class="patients-cardlist">
+        <div class="patient-card">
+          <div class="patient-card-header">
+            <label>床号</label>
+            <label>姓名</label>
+          </div>
+          <div class="patient-card-body">
+            <label>住院号</label>
+            <label>状态</label>
+            <label>年龄</label>
+            <label>性别</label>
+            <label>管床医生</label>
+            <label>管床护士</label>
+          </div>
+        </div>
+      </div>
+      <div class="overlay"></div>
+      <!-- 新增遮罩层 -->
+    </main>
+    <!-- 病区列表面板 -->
+    <div class="ward-list">
+      <div class="ward-list-header">
+        共xx个科室
+        <span class="close-btn" id="wardlist-close">×</span>
+      </div>
+      <div class="ward-list-body"></div>
+    </div>
+    <script src="/lib/layui-v2.6.3/layui.js" charset="utf-8"></script>
+    <script src="/js/lay-config.js?v=1.0.4" charset="utf-8"></script>
+
+    <script>
+      layui.use(["jquery", "appconfig"], function () {
+        const $ = layui.$;
+        const appconfig = layui.appconfig;
+        const loginUser = JSON.parse(localStorage.getItem("loginUser"));
+        const patients = [];
+        let allPatients = []; // 存储所有患者数据
+        let showMyPatientsOnly = false; // 标记是否只显示我的患者
+        let searchKeyword = ""; // 搜索关键词
+
+        //加载患者信息
+        function loadPatients(dept_sn) {
+          $.ajax({
+            url:
+              appconfig.api +
+              `/api/MobileWard/GetActPatientLists?ward=${dept_sn}&inout=I`,
+            method: "GET",
+            success: function (res) {
+              if (res.Status === 1) {
+                console.log(res.Data);
+                allPatients = res.Data; // 存储所有患者数据
+                renderPatients(); // 根据当前显示模式渲染
+              }
+            },
+          });
+        }
+        //渲染患者信息卡片列表
+        function renderPatients() {
+          const patientList = $(".patients-cardlist");
+          patientList.empty(); // 清空现有内容
+
+          // 根据当前显示模式过滤患者
+          let loadedPatients = allPatients;
+          if (showMyPatientsOnly) {
+            loadedPatients = allPatients.filter(
+              (patient) => patient.refer_physician == loginUser.user_mi
+            );
+          }
+
+          // 根据搜索关键词过滤
+          if (searchKeyword.trim() !== "") {
+            loadedPatients = loadedPatients.filter((patient) => {
+              const keyword = searchKeyword.toLowerCase();
+              return (
+                patient.name.toLowerCase().includes(keyword) ||
+                patient.bed_no.toString().includes(keyword) ||
+                patient.inpatient_no.toLowerCase().includes(keyword) ||
+                (patient.refer_physician_name &&
+                  patient.refer_physician_name
+                    .toLowerCase()
+                    .includes(keyword)) ||
+                (patient.refer_nurse_name &&
+                  patient.refer_nurse_name.toLowerCase().includes(keyword))
+              );
+            });
+          }
+
+          if (loadedPatients.length === 0) {
+            let emptyMessage = "该病区暂无患者";
+            if (showMyPatientsOnly) {
+              emptyMessage = "您暂无负责的患者";
+            }
+            if (searchKeyword.trim() !== "") {
+              emptyMessage = "未找到匹配的患者";
+            }
+            patientList.append(
+              `<div style="padding:20px; text-align:center; color:#888;">${emptyMessage}</div>`
+            );
+            return;
+          }
+          let html = "";
+          loadedPatients.forEach((patient) => {
+            html += `
+        <div class="patient-card" data-patient-id="${patient.inpatient_no}">
+          <div class="patient-card-header">
+            <label>${patient.bed_no}床</label>
+            <label>${patient.name}</label>
+          </div>
+          <div class="patient-card-body">
+            <label>病号：${patient.inpatient_no}</label>
+            <label>状态：${patient.admiss_status_name}</label>
+            <label>年龄：${patient.age}</label>
+            <label>性别：${patient.sex_name}</label>
+            <label>管床医生：${patient.refer_physician_name}</label>
+            <label>管床护士：${patient.refer_nurse_name}</label>
+          </div>
+        </div>
+            `;
+          });
+          patientList.append(html);
+        }
+
+        loadPatients(loginUser.dept_sn);
+
+        //监听病区切换按钮
+        $("#wardlist-switch").on("click", function () {
+          $(".ward-list").fadeToggle(300);
+          $(".overlay").fadeToggle(300); // 同时切换遮罩
+        });
+
+        //加载病区列表
+        function loadWards() {
+          $.ajax({
+            url:
+              appconfig.api +
+              "/api/MobileWard/GetYzUnitList?usermi=" +
+              loginUser.user_mi +
+              "&subsys_id=yz",
+            method: "GET",
+            success: function (res) {
+              if (res.Status === 1) {
+                console.log(res.Data);
+
+                renderWards(res.Data);
+              }
+            },
+          });
+        }
+
+        //渲染病区列表
+        function renderWards(loadedWards) {
+          $(".ward-list-header").text(`共${loadedWards.length}个科室`);
+          const wardList = $(".ward-list-body");
+          wardList.empty(); // 清空现有内容
+          let html = "";
+          loadedWards.forEach((ward) => {
+            html += `
+              <div class="ward-item" data-ward-id="${ward.ward_sn}">
+                <label>${ward.ward_name}</label>
+              </div>
+            `;
+          });
+          wardList.append(html);
+        }
+
+        //关闭病区列表
+        $("#wardlist-close").on("click", function () {
+          $(".ward-list").fadeOut(300);
+          $(".overlay").fadeOut(300); // 同时关闭遮罩
+        });
+        // 点击遮罩关闭面板（可选）
+        $(".overlay").on("click", function () {
+          $(".ward-list").fadeOut(300);
+          $(".overlay").fadeOut(300); // 同时关闭遮罩
+        });
+        loadWards();
+        //病区切换点击事件
+        $(".ward-list-body").on("click", ".ward-item", function () {
+          const wardId = $(this).data("ward-id");
+          console.log("选中病区 ID:", wardId);
+          $("#wardlist-switch").text($(this).text()); // 更新按钮文本为选中病区名称
+          loadPatients(wardId); // 加载选中病区的患者
+          $(".ward-list").fadeOut(300);
+          $(".overlay").fadeOut(300);
+        });
+
+        // 全部患者/我的患者切换功能
+        $("#all-patients-label").on("click", function () {
+          showMyPatientsOnly = false;
+          $("#all-patients-label").addClass("active");
+          $("#my-patients-label").removeClass("active");
+          renderPatients(); // 重新渲染
+        });
+
+        $("#my-patients-label").on("click", function () {
+          showMyPatientsOnly = true;
+          $("#my-patients-label").addClass("active");
+          $("#all-patients-label").removeClass("active");
+          renderPatients(); // 重新渲染
+        });
+
+        // 初始化时设置默认选中状态
+        $("#all-patients-label").addClass("active");
+
+        // 搜索功能
+        $("#patient-search").on("input", function () {
+          searchKeyword = $(this).val();
+          renderPatients(); // 重新渲染患者列表
+        });
+
+        // 清空搜索框时也重新渲染
+        $("#patient-search").on("blur", function () {
+          if ($(this).val().trim() === "") {
+            searchKeyword = "";
+            renderPatients();
+          }
+        });
+        $(".patients-cardlist").on("click", ".patient-card", function () {
+          const patientId = $(this).data("patient-id");
+          const selectedPatient = allPatients.find(
+            (patient) => patient.inpatient_no === patientId
+          );
+          localStorage.setItem("PatientData", JSON.stringify(selectedPatient));
+          location.href = "../view/patient.html";
+          // 这里可以添加跳转到患者详情页的逻辑
+        });
+      });
+    </script>
+  </body>
+</html>
