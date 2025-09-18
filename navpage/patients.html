@@ -29,7 +29,7 @@
     </div>
     <main>
       <div class="patients-cardlist">
-        <div class="patient-card">
+        <!-- <div class="patient-card">
           <div class="patient-card-header">
             <label>床号</label>
             <label>姓名</label>
@@ -42,7 +42,7 @@
             <label>管床医生</label>
             <label>管床护士</label>
           </div>
-        </div>
+        </div> -->
       </div>
       <div class="overlay"></div>
       <!-- 新增遮罩层 -->
@@ -248,9 +248,10 @@
         $(".patients-cardlist").on("click", ".patient-card", function () {
           const patientId = $(this).data("patient-id");
           const selectedPatient = allPatients.find(
-            (patient) => patient.inpatient_no === patientId
+            (patient) => patient.inpatient_no == patientId
           );
-          localStorage.setItem("PatientData", JSON.stringify(selectedPatient));
+          console.log("选中患者:", selectedPatient);
+          localStorage.setItem("userData", JSON.stringify(selectedPatient));
           location.href = "../view/patient.html";
           // 这里可以添加跳转到患者详情页的逻辑
         });

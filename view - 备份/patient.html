@@ -57,11 +57,11 @@
         height: 35px;
         min-height: 35px;
         border: none;
-        background-color: rgb(4, 46, 167);
+        background: linear-gradient(135deg, #1e88e5 0%, #1565c0 100%);
         color: #fff;
         font-weight: bold;
         font-size: 1rem;
-        box-shadow: 0 2px 8px rgba(66, 165, 245, 0.3);
+        box-shadow: 0 2px 10px rgba(30, 136, 229, 0.3);
       }
       /* 《======================中间区域样式======================》 */
       .tab-content-area {
@@ -73,8 +73,6 @@
         min-height: 0;
         max-height: 100%;
         isolation: isolate;
-        /* 精确计算可用高度，避免多重滚动条 */
-        height: calc(100vh - 80px); /* 顶部导航栏35px + 选项卡栏45px */
       }
       /* 病人切换列表样式 */
       #patient-switch-list {
@@ -126,30 +124,6 @@
       #tab-patient {
         overflow-y: auto !important;
         overflow-x: hidden !important;
-        /* 确保滚动容器不会超出可视区域 */
-        height: 100% !important;
-        box-sizing: border-box !important;
-        /* 美化滚动条样式 */
-        scrollbar-width: thin;
-        scrollbar-color: rgba(66, 165, 245, 0.3) transparent;
-      }
-
-      /* Webkit浏览器滚动条样式 */
-      #tab-patient::-webkit-scrollbar {
-        width: 6px;
-      }
-
-      #tab-patient::-webkit-scrollbar-track {
-        background: transparent;
-      }
-
-      #tab-patient::-webkit-scrollbar-thumb {
-        background: rgba(66, 165, 245, 0.3);
-        border-radius: 3px;
-      }
-
-      #tab-patient::-webkit-scrollbar-thumb:hover {
-        background: rgba(66, 165, 245, 0.5);
       }
       /* iframe容器样式*/
       .tab-iframe-container {
@@ -175,489 +149,89 @@
         /* 强制iframe不能超出父容器 */
         overflow: hidden;
       }
-      /* 患者信息卡片样式 */
-      .patient-info-container {
+      /* 患者信息表单样式 */
+      .layui-form {
         margin: 0;
-        padding: 15px;
-        height: auto;
+        padding: 10px;
+        height: auto; /* 改为自动高度 */
+        min-height: 100%; /* 确保至少填满容器 */
         box-sizing: border-box;
-        /* 移除容器级别的滚动条，只在整个选项卡级别滚动 */
       }
-
-      .patient-main-card {
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        overflow: hidden;
-        transition: all 0.3s ease;
-      }
-
-      .patient-header {
-        background: linear-gradient(135deg, #42a5f5 0%, #1e88e5 100%);
-        padding: 16px 20px;
-        color: white;
-        cursor: pointer;
-        user-select: none;
-        position: relative;
-      }
-
-      .patient-header:hover {
-        background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
-      }
-
-      .patient-name-section {
+      .layui-form-item {
         display: flex;
+        justify-content: center;
         align-items: center;
-        justify-content: space-between;
-        margin-bottom: 6px;
-      }
-
-      .patient-name {
-        font-size: 1.5rem;
-        font-weight: 600;
-        margin: 0;
-      }
-
-      .expand-icon {
-        font-size: 1.1rem;
-        transition: transform 0.3s ease;
-      }
-
-      .expand-icon.expanded {
-        transform: rotate(180deg);
-      }
-
-      .patient-meta {
-        display: flex;
-        gap: 16px;
-        font-size: 0.85rem;
-        opacity: 0.9;
-        flex-wrap: wrap;
-      }
-
-      .patient-details {
-        padding: 0;
-        max-height: 0;
-        overflow: hidden;
-        transition: all 0.3s ease;
-        background: #fafafa;
-      }
-
-      .patient-details.expanded {
-        max-height: none; /* 移除高度限制，让内容自然展开 */
-        padding: 18px 20px;
-        /* 移除内部滚动条 */
-      }
-
-      .details-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 12px;
-      }
-
-      .detail-section {
-        background: white;
-        border-radius: 6px;
-        padding: 12px 14px;
-        border-left: 3px solid #42a5f5;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-      }
-
-      .section-title {
-        font-size: 0.9rem;
-        font-weight: 600;
-        color: #37474f;
-        margin-bottom: 8px;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-      }
-
-      .section-title i {
-        color: #42a5f5;
-        font-size: 1rem;
-      }
-
-      .info-item {
-        display: flex;
-        flex-direction: column;
         margin-bottom: 8px;
       }
 
-      .info-item:last-child {
-        margin-bottom: 0;
-      }
-
-      .info-label {
-        font-size: 0.72rem;
-        color: #5f6368;
-        margin-bottom: 2px;
-        font-weight: 500;
-      }
-
-      .info-value {
-        font-size: 0.8rem;
-        color: #37474f;
-        font-weight: 600;
-        word-break: break-all;
-      }
-
-      /* 响应式布局 */
-      @media (max-width: 768px) {
-        .details-grid {
-          grid-template-columns: 1fr;
-        }
-
-        .patient-meta {
-          flex-direction: column;
-          gap: 6px;
-        }
-
-        .patient-name {
-          font-size: 1.3rem;
-        }
-      } /* 《======================顶部导航区域样式======================》 */
-      .bottom-tabs {
-        position: relative;
-        top: 0;
+      /* 《======================底部区域样式======================》 */
+      .bottom-tab-placeholder {
         width: 100%;
-        height: 45px;
-        background-color: #fff;
-        border-bottom: 1px solid #e1e5e9;
+        height: 40px; /* 占位高度 */
+      }
+      .bottom-tabs {
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        height: 55px;
+        background-color: transparent;
+        /* background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); */
+        /* border-top: 2px solid #4facfe; */
+        /* box-shadow: 0 -4px 20px rgba(79, 172, 254, 0.3); */
         z-index: 1000;
         margin: 0;
         padding: 0;
-        overflow: hidden;
+        overflow-x: scroll;
+        scrollbar-width: none; /* 隐藏滚动条 */
       }
       .option-bar {
-        position: relative;
-        top: 0;
+        position: absolute;
+        bottom: 0;
         display: flex;
-        height: 44px;
+        height: 40px;
         width: 100%;
-        padding: 0;
-        gap: 0;
+        /* background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); */
+        padding: 0 0 0 8px;
+        box-shadow: 0 -2px 8px rgba(79, 172, 254, 0.2);
+        gap: 6px;
+        /* border-top: 2px solid #4facfe; */
         white-space: nowrap;
-        justify-content: space-between;
       }
       .option-bar::-webkit-scrollbar {
         display: none; /* 隐藏滚动条 */
       }
       .tab-btn {
-        flex: 1;
-        min-width: 100px;
-        max-width: 180px;
-        height: 44px;
-        line-height: 44px;
-        margin: 0;
-        padding: 0 12px;
-        background: transparent;
+        width: 160px;
+        max-width: 160px;
+        height: 40px;
+        line-height: 100%;
+        margin-top: 2px;
+        padding: 5px;
+        background: rgba(255, 255, 255, 0.9);
         border: none;
-        border-radius: 0;
-        font-size: 1rem;
-        color: #5f6368;
+        border-radius: 8px 8px 0 0;
+        font-size: 1.5rem;
+        color: #2d3748;
         cursor: pointer;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         outline: none;
-        transition: all 0.2s ease;
-        text-align: center;
-        position: relative;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(10px);
       }
       .tab-btn.layui-this,
       .tab-btn.active {
-        color: #42a5f5;
-        font-weight: 600;
-      }
-      .tab-btn.layui-this::after,
-      .tab-btn.active::after {
-        content: "";
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        height: 3px;
-        background: #42a5f5;
-      }
-      .tab-btn:hover {
-        color: #42a5f5;
-        background: rgba(66, 165, 245, 0.05);
-      }
-
-      /* 《======================功能区域样式======================》 */
-      .function-area {
-        padding: 8px 15px;
-        border-top: 1px solid #e1e5e9;
-        background: #fff;
-        margin-top: 0;
-      }
-      .function-title {
-        font-size: 1.1rem;
-        font-weight: 600;
-        color: #37474f;
-        margin-bottom: 8px;
-        display: flex;
-        align-items: center;
-      }
-      .function-title::before {
-        content: "";
-        width: 3px;
-        height: 16px;
-        background: #42a5f5;
-        margin-right: 8px;
-        border-radius: 2px;
-      }
-      .function-buttons {
-        display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
-      }
-      .function-btn {
-        flex: 1;
-        min-width: 100px;
-        height: 32px;
-        background: linear-gradient(135deg, #42a5f5 0%, #1976d2 100%);
+        height: 50px;
+        background: linear-gradient(135deg, #1e88e5 0%, #1565c0 100%);
         color: #fff;
-        border: none;
-        border-radius: 5px;
-        font-size: 0.85rem;
-        font-weight: 500;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 5px;
+        font-weight: bold;
+        transform: translateY(-10px);
       }
-      .function-btn:hover {
-        background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
+      /* .tab-btn:hover {
+        background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+        color: #2d3748;
         transform: translateY(-1px);
-        box-shadow: 0 3px 8px rgba(66, 165, 245, 0.3);
-      }
-      .function-btn:active {
-        transform: translateY(0);
-      }
-      .function-btn i {
-        font-size: 1.1rem;
-      }
-
-      /* 《======================患者资料区域样式======================》 */
-      .patient-info-section {
-        background: #fff;
-        border-radius: 6px;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-        margin-top: 8px;
-        padding: 12px 15px;
-      }
-
-      .patient-info-title {
-        font-size: 1.1rem;
-        font-weight: 600;
-        color: #37474f;
-        margin-bottom: 10px;
-        display: flex;
-        align-items: center;
-      }
-
-      .patient-info-title::before {
-        content: "";
-        width: 3px;
-        height: 16px;
-        background: #66bb6a;
-        margin-right: 8px;
-        border-radius: 2px;
-      }
-
-      .contact-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-        gap: 10px;
-      }
-
-      .contact-item {
-        background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
-        padding: 10px 14px;
-        border-radius: 6px;
-        border-left: 3px solid #66bb6a;
-        transition: all 0.2s ease;
-      }
-
-      .contact-item:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 2px 6px rgba(102, 187, 106, 0.2);
-      }
-
-      .contact-label {
-        font-size: 0.75rem;
-        color: #5f6368;
-        margin-bottom: 2px;
-        font-weight: 500;
-        display: flex;
-        align-items: center;
-        gap: 4px;
-      }
-
-      .contact-value {
-        font-size: 0.85rem;
-        color: #37474f;
-        font-weight: 600;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-      }
-
-      .call-btn {
-        background: #66bb6a;
-        color: white;
-        border: none;
-        border-radius: 3px;
-        padding: 2px 5px;
-        font-size: 0.7rem;
-        cursor: pointer;
-        transition: all 0.2s ease;
-      }
-
-      .call-btn:hover {
-        background: #5cb85c;
-        transform: scale(1.05);
-      }
-
-      /* 响应式布局 */
-      @media (max-width: 768px) {
-        .contact-grid {
-          grid-template-columns: 1fr;
-        }
-      }
-
-      /* 《======================费用明细区域样式======================》 */
-      .expense-area {
-        background: #fff;
-        border-radius: 6px;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-        margin-top: 8px;
-        overflow: hidden;
-        transition: all 0.3s ease;
-      }
-
-      .expense-header {
-        padding: 10px 15px;
-        background: linear-gradient(135deg, #26c6da 0%, #00acc1 100%);
-        color: white;
-        cursor: pointer;
-        user-select: none;
-        position: relative;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-
-      .expense-header:hover {
-        background: linear-gradient(135deg, #00acc1 0%, #0097a7 100%);
-      }
-
-      .expense-title {
-        font-size: 1rem;
-        font-weight: 600;
-        color: white;
-        margin: 0;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-      }
-
-      .expense-expand-icon {
-        font-size: 1.1rem;
-        transition: transform 0.3s ease;
-      }
-
-      .expense-expand-icon.expanded {
-        transform: rotate(180deg);
-      }
-
-      .expense-content {
-        padding: 0;
-        max-height: 0;
-        overflow: hidden;
-        transition: all 0.3s ease;
-        background: #fafafa;
-      }
-
-      .expense-content.expanded {
-        max-height: none; /* 移除高度限制，让内容自然展开 */
-        padding: 12px 15px;
-        /* 移除内部滚动条 */
-      }
-
-      .expense-summary {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        background: linear-gradient(135deg, #e0f2f1 0%, #b2dfdb 100%);
-        padding: 10px 14px;
-        border-radius: 6px;
-        margin-bottom: 10px;
-        border-left: 3px solid #26c6da;
-      }
-
-      .total-expense {
-        font-size: 1.1rem;
-        font-weight: 700;
-        color: #00695c;
-      }
-
-      .expense-status {
-        font-size: 0.75rem;
-        color: #5f6368;
-        display: flex;
-        align-items: center;
-        gap: 3px;
-      }
-
-      .expense-details {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-        gap: 6px;
-      }
-
-      .expense-item {
-        background: #f9f9f9;
-        padding: 8px 10px;
-        border-radius: 5px;
-        border-left: 3px solid #42a5f5;
-        transition: all 0.2s ease;
-      }
-
-      .expense-item:hover {
-        background: #f0f0f0;
-        transform: translateY(-1px);
-      }
-
-      .expense-item-name {
-        font-size: 0.72rem;
-        color: #5f6368;
-        margin-bottom: 2px;
-      }
-
-      .expense-item-amount {
-        font-size: 0.85rem;
-        font-weight: 600;
-        color: #37474f;
-      }
-
-      /* 响应式布局 */
-      @media (max-width: 768px) {
-        .expense-details {
-          grid-template-columns: repeat(2, 1fr);
-        }
-
-        .expense-summary {
-          flex-direction: column;
-          align-items: flex-start;
-          gap: 6px;
-        }
-      }
-
+        box-shadow: 0 4px 15px rgba(168, 237, 234, 0.3);
+      } */
       /* 《======================主区域样式结束======================》 */
 
       /* 病人信息字体颜色 */
@@ -678,22 +252,22 @@
       #switch-patient-table + div .layui-table-body table tbody tr.selected {
         background: linear-gradient(
           135deg,
-          rgba(66, 165, 245, 0.15) 0%,
-          rgba(25, 118, 210, 0.15) 100%
+          rgba(30, 136, 229, 0.2) 0%,
+          rgba(21, 101, 192, 0.2) 100%
         ) !important;
-        color: #42a5f5;
+        color: #1e88e5;
         font-weight: bold;
-        border-left: 3px solid #42a5f5;
+        border-left: 4px solid #1e88e5;
       }
 
       #switch-patient-table + div .layui-table-body table tbody tr:hover {
         background: linear-gradient(
           135deg,
-          rgba(66, 165, 245, 0.1) 0%,
-          rgba(42, 165, 245, 0.1) 100%
+          rgba(33, 150, 243, 0.2) 0%,
+          rgba(30, 136, 229, 0.2) 100%
         ) !important;
         cursor: pointer;
-        transform: translateX(2px);
+        transform: translateX(3px);
         transition: all 0.3s ease;
       }
       /* 患者详情页专用样式 */
@@ -756,16 +330,16 @@
         align-items: center;
         position: sticky;
         top: 0;
-        padding: 10px 16px;
+        padding: 12px 16px;
         height: 12px;
         border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-        background: linear-gradient(135deg, #42a5f5 0%, #1976d2 100%);
+        background: linear-gradient(135deg, #1e88e5 0%, #1565c0 100%);
         font-weight: bold;
-        font-size: 1rem;
+        font-size: 1.1rem;
         z-index: 10;
         color: #fff;
         border-radius: 0 12px 0 0;
-        box-shadow: 0 2px 8px rgba(66, 165, 245, 0.3);
+        box-shadow: 0 2px 15px rgba(30, 136, 229, 0.3);
       }
       #patient-switch-list .list-header .close-btn {
         cursor: pointer;
@@ -919,10 +493,9 @@
           min-width: 70px;
           font-size: 16px;
         }
-        /* 超小屏幕下的图标样式调整 */
         .layui-icon-form:before,
         .layui-icon-return {
-          font-size: 14px;
+          /* display: none; */
         }
         .btn-switch-patient {
           padding: 0;
@@ -984,7 +557,7 @@
       <div class="main-content">
         <!-- 顶部区域开始 -->
         <blockquote class="layui-elem-quote">
-          <!-- <button
+          <button
             type="button"
             class="layui-btn layui-btn-sm layui-btn-warm btn-switch-patient"
             id="btn-switch-patient"
@@ -999,13 +572,15 @@
             "
           >
             <i class="layui-icon layui-icon-form"></i>
-          </button> -->
+          </button>
+
+          <span id="patient-header-info">患者详细信息</span>
           <button
             type="button"
             class="layui-btn layui-btn-sm layui-btn-normal btn-back"
-            onclick="window.location.href='../navpage/patients.html'"
+            onclick="window.location.href='../main.html'"
             style="
-              background-color: transparent;
+              background: linear-gradient(135deg, #1e88e5 0%, #1565c0 100%);
               border: none;
               border-radius: 8px;
               color: #fff;
@@ -1014,40 +589,10 @@
               transition: all 0.3s ease;
             "
           >
-            <i class="layui-icon layui-icon-return"></i>
+            <i class="layui-icon layui-icon-return"></i>返回
           </button>
-          <span id="patient-header-info">患者详细信息</span>
         </blockquote>
         <!-- 顶部区域结束 -->
-        <!-- 导航选项栏开始 -->
-        <div class="bottom-tabs">
-          <div class="option-bar" id="tab-btn-bar">
-            <!-- 
-            ========== 动态生成的选项卡按钮DOM结构示例 ==========
-            
-            generateTabButtons() 函数会在此位置动态生成所有选项卡按钮：
-            
-            <button class="tab-btn layui-this" data-index="0">患者信息</button>
-            <button class="tab-btn" data-index="1">医嘱</button>
-            <button class="tab-btn" data-index="2">检验</button>
-            <button class="tab-btn" data-index="3">检查</button>
-            <button class="tab-btn" data-index="4">电子病历</button>
-            <button class="tab-btn" data-index="5">医生文书</button>
-            <button class="tab-btn" data-index="6">护理文书</button>
-            <button class="tab-btn" data-index="7">护理记录</button>
-            <button class="tab-btn" data-index="8">体温单</button>
-            <button class="tab-btn" data-index="9">手术信息</button>
-            
-            生成逻辑：
-            - 遍历 tabConfigs 数组中的每个配置项
-            - 为每个配置创建 <button> 元素，设置 data-index 和标题
-            - 第一个按钮 (index=0) 会有 layui-this 激活样式
-            
-            ========== 动态生成选项卡按钮DOM结构示例结束 ==========
-            -->
-          </div>
-        </div>
-        <!-- 导航选项栏结束 -->
         <!-- 中间区域开始 -->
         <div class="tab-content-area">
           <!-- 切换患者栏 -->
@@ -1067,169 +612,49 @@
           <div class="layui-tab-content">
             <!-- 患者信息选项卡 -->
             <div class="layui-tab-item layui-show" id="tab-patient">
-              <div class="patient-info-container" id="patient-info-container">
-                <!-- 患者信息大卡片 -->
-                <div class="patient-main-card">
-                  <!-- 卡片头部（可点击展开/收缩） -->
-                  <div class="patient-header" id="patient-header">
-                    <div class="patient-name-section">
-                      <h2 class="patient-name" id="patient-display-name">
-                        患者姓名
-                      </h2>
-                      <i
-                        class="layui-icon layui-icon-down expand-icon"
-                        id="expand-icon"
-                      ></i>
-                    </div>
-                    <div class="patient-meta">
-                      <span id="patient-meta-info">基本信息</span>
-                    </div>
+              <form
+                class="layui-form layui-form-pane"
+                action=""
+                id="patient-info-form"
+              >
+                <!-- 
+                ========== 动态生成的患者信息表单DOM结构示例 ==========
+                
+                generatePatientForm() 函数会在此位置动态生成患者表单字段：
+                
+                <div class="layui-form-item">
+                  <label class="layui-form-label">患者姓名</label>
+                  <div class="layui-input-inline">
+                    <input type="text" name="pname" autocomplete="off" placeholder="" class="layui-input" readonly />
                   </div>
-
-                  <!-- 详细信息（默认收缩） -->
-                  <div class="patient-details" id="patient-details">
-                    <div class="details-grid" id="details-grid">
-                      <!-- 详细信息将通过JavaScript动态生成 -->
-                    </div>
+                  <label class="layui-form-label">次数</label>
+                  <div class="layui-input-inline">
+                    <input type="text" name="admiss_times" autocomplete="off" placeholder="" class="layui-input" readonly />
                   </div>
                 </div>
-              </div>
-              <!-- 功能区域 -->
-              <div class="function-area">
-                <div class="function-title">
-                  <span>快捷功能</span>
-                </div>
-                <div class="function-buttons">
-                  <button
-                    class="function-btn"
-                    id="btn-temperature"
-                    data-index="8"
-                  >
-                    <i class="layui-icon layui-icon-chart"></i>
-                    体温单
-                  </button>
-                  <button
-                    class="function-btn"
-                    id="btn-electronic-medical"
-                    data-index="4"
-                  >
-                    <i class="layui-icon layui-icon-file"></i>
-                    电子病历
-                  </button>
-                  <button
-                    class="function-btn"
-                    id="btn-ward-records"
-                    data-index="7"
-                  >
-                    <i class="layui-icon layui-icon-edit"></i>
-                    查房记录
-                  </button>
-                </div>
-              </div>
-
-              <!-- 患者资料区域 -->
-              <div class="patient-info-section">
-                <div class="patient-info-title">
-                  <span>联系信息</span>
-                </div>
-                <div class="contact-grid">
-                  <div class="contact-item">
-                    <div class="contact-label">
-                      <i class="layui-icon layui-icon-cellphone"></i>
-                      患者电话
-                    </div>
-                    <div class="contact-value">
-                      138-8888-8888
-                      <button
-                        class="call-btn"
-                        onclick="window.open('tel:13888888888')"
-                      >
-                        <i class="layui-icon layui-icon-cellphone"></i>
-                      </button>
-                    </div>
+                
+                <div class="layui-form-item">
+                  <label class="layui-form-label">入院日期</label>
+                  <div class="layui-input-inline">
+                    <input type="text" name="admiss_date" autocomplete="off" placeholder="" class="layui-input" readonly />
                   </div>
-                  <div class="contact-item">
-                    <div class="contact-label">
-                      <i class="layui-icon layui-icon-user"></i>
-                      联系人电话
-                    </div>
-                    <div class="contact-value">
-                      张三（配偶）139-9999-9999
-                      <button
-                        class="call-btn"
-                        onclick="window.open('tel:13999999999')"
-                      >
-                        <i class="layui-icon layui-icon-cellphone"></i>
-                      </button>
-                    </div>
+                  <label class="layui-form-label">入院天数</label>
+                  <div class="layui-input-inline">
+                    <input type="text" name="admiss_days" autocomplete="off" placeholder="" class="layui-input" readonly />
                   </div>
                 </div>
-              </div>
-
-              <!-- 费用明细区域 -->
-              <div class="expense-area">
-                <!-- 费用明细头部（可点击展开/收缩） -->
-                <div class="expense-header" id="expense-header">
-                  <div class="expense-title">
-                    <i class="layui-icon layui-icon-dollar"></i>
-                    <span>费用明细</span>
-                  </div>
-                  <i
-                    class="layui-icon layui-icon-down expense-expand-icon"
-                    id="expense-expand-icon"
-                  ></i>
-                </div>
-
-                <!-- 费用详细内容（默认收缩） -->
-                <div class="expense-content" id="expense-content">
-                  <!-- 费用总览 -->
-                  <div class="expense-summary">
-                    <div>
-                      <div class="total-expense">¥ 15,680.50</div>
-                      <div
-                        style="font-size: 0.9rem; color: #666; margin-top: 2px"
-                      >
-                        住院总费用
-                      </div>
-                    </div>
-                    <div class="expense-status">
-                      <i
-                        class="layui-icon layui-icon-ok-circle"
-                        style="color: #4caf50"
-                      ></i>
-                      <span>已缴费</span>
-                    </div>
-                  </div>
-
-                  <!-- 费用明细项目 -->
-                  <div class="expense-details">
-                    <div class="expense-item">
-                      <div class="expense-item-name">药品费</div>
-                      <div class="expense-item-amount">¥ 6,850.20</div>
-                    </div>
-                    <div class="expense-item">
-                      <div class="expense-item-name">检查费</div>
-                      <div class="expense-item-amount">¥ 3,120.00</div>
-                    </div>
-                    <div class="expense-item">
-                      <div class="expense-item-name">治疗费</div>
-                      <div class="expense-item-amount">¥ 2,890.30</div>
-                    </div>
-                    <div class="expense-item">
-                      <div class="expense-item-name">护理费</div>
-                      <div class="expense-item-amount">¥ 1,560.00</div>
-                    </div>
-                    <div class="expense-item">
-                      <div class="expense-item-name">床位费</div>
-                      <div class="expense-item-amount">¥ 980.00</div>
-                    </div>
-                    <div class="expense-item">
-                      <div class="expense-item-name">其他费用</div>
-                      <div class="expense-item-amount">¥ 280.00</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+                
+                ... 以此类推，每行两个字段 ...
+                
+                生成逻辑：
+                - 遍历 patientFields 二维数组
+                - 每个子数组生成一个 .layui-form-item 行
+                - 每行包含两个字段：label + input
+                - 响应式：宽屏一行两个，窄屏(@media max-width: 600px)一行一个
+                
+                ========== 动态生成患者信息表单DOM结构示例结束 ==========
+                -->
+              </form>
             </div>
             <!-- 医嘱选项卡 -->
             <div class="layui-tab-item" id="tab-yizhu">
@@ -1343,6 +768,35 @@
           </div>
         </div>
         <!-- 中间区域结束 -->
+        <!-- 底部区域开始 -->
+        <div class="bottom-tabs">
+          <div class="option-bar" id="tab-btn-bar">
+            <!-- 
+            ========== 动态生成的选项卡按钮DOM结构示例 ==========
+            
+            generateTabButtons() 函数会在此位置动态生成所有选项卡按钮：
+            
+            <button class="tab-btn layui-this" data-index="0">患者信息</button>
+            <button class="tab-btn" data-index="1">医嘱</button>
+            <button class="tab-btn" data-index="2">检验</button>
+            <button class="tab-btn" data-index="3">检查</button>
+            <button class="tab-btn" data-index="4">电子病历</button>
+            <button class="tab-btn" data-index="5">医生文书</button>
+            <button class="tab-btn" data-index="6">护理文书</button>
+            <button class="tab-btn" data-index="7">护理记录</button>
+            <button class="tab-btn" data-index="8">体温单</button>
+            <button class="tab-btn" data-index="9">手术信息</button>
+            
+            生成逻辑：
+            - 遍历 tabConfigs 数组中的每个配置项
+            - 为每个配置创建 <button> 元素，设置 data-index 和标题
+            - 第一个按钮 (index=0) 会有 layui-this 激活样式
+            
+            ========== 动态生成选项卡按钮DOM结构示例结束 ==========
+            -->
+          </div>
+        </div>
+        <div class="bottom-tab-placeholder"></div>
       </div>
     </div>
 
@@ -1365,11 +819,75 @@
           var patientListLoaded = false;
           var showingMyPatients = false; // 当前是否显示我的病人
 
+          // 患者信息字段配置 - 用于动态生成表单
+          var patientFields = [
+            [
+              { label: "患者姓名", name: "pname", dataKey: "name" },
+              { label: "次数", name: "admiss_times", dataKey: "admiss_times" },
+            ],
+            [
+              {
+                label: "入院日期",
+                name: "admiss_date",
+                dataKey: "admiss_date_text2",
+              },
+              {
+                label: "入院天数",
+                name: "admiss_days",
+                dataKey: "admiss_days",
+              },
+            ],
+            [
+              { label: "性别", name: "sex_name", dataKey: "sex_name" },
+              { label: "年龄", name: "ages", dataKey: "ages" },
+            ],
+            [
+              {
+                label: "住院号",
+                name: "inpatient_no",
+                dataKey: "inpatient_no",
+              },
+              { label: "床号", name: "bed_no", dataKey: "bed_no" },
+            ],
+            [
+              {
+                label: "管床医生",
+                name: "refer_physician_name",
+                dataKey: "refer_physician_name",
+              },
+              {
+                label: "管床护士",
+                name: "refer_nurse_name",
+                dataKey: "refer_nurse_name",
+              },
+            ],
+            [
+              {
+                label: "诊断代码",
+                name: "admiss_diag",
+                dataKey: "admiss_diag",
+              },
+              {
+                label: "诊断名称",
+                name: "admiss_diag_name",
+                dataKey: "admiss_diag_name",
+              },
+            ],
+            [
+              { label: "护理级别", name: "nursing", dataKey: "nursing" },
+              {
+                label: "身份",
+                name: "responce_type_name",
+                dataKey: "responce_type_name",
+              },
+            ],
+          ];
+
           // 选项卡配置 - 用于动态生成选项卡和处理逻辑
           var tabConfigs = [
             {
               index: 0,
-              title: "主页",
+              title: "患者信息",
               type: "form",
               tabId: "tab-patient",
               contentId: "patientinfo-content",
@@ -1401,19 +919,22 @@
               src: "jc_apply.html",
             },
             {
-              index: 9,
-              title: "手术信息",
+              index: 4,
+              title: "电子病历",
               type: "iframe",
-              tabId: "tab-opinfo",
-              contentId: "opinfo-content",
-              src: "oplist.html",
-              dynamic: true, // 需要动态创建选项卡
+              tabId: "tab-dianzibingli",
+              contentId: "dianzibingli-content",
+              src: "edoclist.html",
             },
-          ];
-
-          // 单独存储被移到功能区的配置，用于功能按钮处理
-          var functionConfigs = {
-            temperature: {
+            {
+              index: 7,
+              title: "查房记录",
+              type: "iframe",
+              tabId: "tab-chafangjilu",
+              contentId: "chafangjilu-content",
+              src: "ward_records.html",
+            },
+            {
               index: 8,
               title: "体温单",
               type: "popup",
@@ -1447,23 +968,16 @@
                 });
               },
             },
-            electronic: {
-              index: 4,
-              title: "电子病历",
+            {
+              index: 9,
+              title: "手术信息",
               type: "iframe",
-              tabId: "tab-dianzibingli",
-              contentId: "dianzibingli-content",
-              src: "edoclist.html",
+              tabId: "tab-opinfo",
+              contentId: "opinfo-content",
+              src: "oplist.html",
+              dynamic: true, // 需要动态创建选项卡
             },
-            wardRecords: {
-              index: 7,
-              title: "查房记录",
-              type: "iframe",
-              tabId: "tab-chafangjilu",
-              contentId: "chafangjilu-content",
-              src: "ward_records.html",
-            },
-          };
+          ];
 
           // 动态生成选项卡按钮
           function generateTabButtons() {
@@ -1528,135 +1042,40 @@
             }
           }
 
-          // 患者信息卡片配置
-          var patientCardConfigs = [
-            {
-              title: "基本信息",
-              icon: "layui-icon-user",
-              fields: [
-                { label: "患者姓名", dataKey: "name" },
-                { label: "性别", dataKey: "sex_name" },
-                { label: "年龄", dataKey: "ages" },
-                { label: "就诊次数", dataKey: "admiss_times" },
-              ],
-            },
-            {
-              title: "住院信息",
-              icon: "layui-icon-home",
-              fields: [
-                { label: "住院号", dataKey: "inpatient_no" },
-                { label: "床号", dataKey: "bed_no" },
-                { label: "入院日期", dataKey: "admiss_date_text2" },
-                { label: "入院天数", dataKey: "admiss_days" },
-              ],
-            },
-            {
-              title: "医护信息",
-              icon: "layui-icon-group",
-              fields: [
-                { label: "管床医生", dataKey: "refer_physician_name" },
-                { label: "管床护士", dataKey: "refer_nurse_name" },
-                { label: "护理级别", dataKey: "nursing" },
-                { label: "身份", dataKey: "responce_type_name" },
-              ],
-            },
-            {
-              title: "诊断信息",
-              icon: "layui-icon-file-b",
-              fields: [
-                { label: "诊断代码", dataKey: "admiss_diag" },
-                { label: "诊断名称", dataKey: "admiss_diag_name" },
-              ],
-            },
-          ];
-
-          // 动态生成患者详细信息
-          function generatePatientDetails() {
-            var detailsHtml = "";
-            patientCardConfigs.forEach(function (section) {
-              detailsHtml += '<div class="detail-section">';
-              detailsHtml += '<div class="section-title">';
-              detailsHtml += '<i class="layui-icon ' + section.icon + '"></i>';
-              detailsHtml += section.title;
-              detailsHtml += "</div>";
-
-              section.fields.forEach(function (field) {
-                detailsHtml += '<div class="info-item">';
-                detailsHtml +=
-                  '<div class="info-label">' + field.label + "</div>";
-                detailsHtml +=
-                  '<div class="info-value" data-key="' +
-                  field.dataKey +
-                  '">-</div>';
-                detailsHtml += "</div>";
+          // 动态生成患者信息表单
+          function generatePatientForm() {
+            var formHtml = "";
+            // 每行两个字段，宽屏一行两个，窄屏自动一行一个
+            patientFields.forEach(function (row) {
+              formHtml += '<div class="layui-form-item">';
+              row.forEach(function (field) {
+                formHtml +=
+                  '<label class="layui-form-label">' +
+                  field.label +
+                  "</label>" +
+                  '<div class="layui-input-inline">' +
+                  '<input type="text" name="' +
+                  field.name +
+                  '" autocomplete="off" placeholder="" class="layui-input" readonly />' +
+                  "</div>";
               });
-
-              detailsHtml += "</div>";
+              formHtml += "</div>";
             });
-
-            $("#details-grid").html(detailsHtml);
-          }
-
-          // 展开/收缩控制
-          function initExpandControl() {
-            // 患者详细信息展开/收缩
-            $("#patient-header").on("click", function () {
-              var $details = $("#patient-details");
-              var $icon = $("#expand-icon");
-
-              if ($details.hasClass("expanded")) {
-                // 收缩
-                $details.removeClass("expanded");
-                $icon.removeClass("expanded");
-              } else {
-                // 展开
-                $details.addClass("expanded");
-                $icon.addClass("expanded");
-              }
-            });
-
-            // 费用明细展开/收缩
-            $("#expense-header").on("click", function () {
-              var $content = $("#expense-content");
-              var $icon = $("#expense-expand-icon");
-
-              if ($content.hasClass("expanded")) {
-                // 收缩
-                $content.removeClass("expanded");
-                $icon.removeClass("expanded");
-              } else {
-                // 展开
-                $content.addClass("expanded");
-                $icon.addClass("expanded");
-              }
-            });
+            $("#patient-info-form").html(formHtml);
           }
 
           // 填充患者信息数据
           function fillPatientData(jsonData) {
-            // 填充头部信息
-            $("#patient-display-name").text(jsonData.name || "未知患者");
-            $("#patient-meta-info").html(
-              '<i class="layui-icon layui-icon-male" style="margin-right: 4px;"></i>' +
-                (jsonData.sex_name || "未知") +
-                " · " +
-                (jsonData.ages || "未知") +
-                " · " +
-                "住院号: " +
-                (jsonData.inpatient_no || "未知")
-            );
-
-            // 填充卡片数据
-            $(".info-value").each(function () {
-              var dataKey = $(this).data("key");
-              var value = jsonData[dataKey] || "-";
-              $(this).text(value);
+            patientFields.forEach(function (row) {
+              row.forEach(function (field) {
+                var value = jsonData[field.dataKey] || "";
+                $("input[name='" + field.name + "']").val(value);
+              });
             });
           }
 
           // 初始化表单和选项卡
-          generatePatientDetails();
-          initExpandControl();
+          generatePatientForm();
           generateTabButtons();
 
           if (userData === null) {
@@ -1751,56 +1170,6 @@
                 }
                 var jsonData = JSON.parse(userData);
                 config.handler(jsonData);
-                break;
-            }
-          });
-
-          // 功能区按钮点击事件
-          $(".function-btn").on("click", function () {
-            var buttonId = $(this).attr("id");
-            var dataIndex = $(this).data("index");
-            var userData = localStorage.getItem("userData");
-
-            if (!userData) {
-              layer.msg("请先选择患者！");
-              return;
-            }
-
-            var jsonData = JSON.parse(userData);
-            var patientParams =
-              "?patient_id=" +
-              jsonData.patient_id +
-              "&admiss_times=" +
-              jsonData.admiss_times +
-              "&ticks=" +
-              new Date().getTime();
-
-            switch (buttonId) {
-              case "btn-temperature":
-                // 体温单 - 使用弹窗
-                functionConfigs.temperature.handler(jsonData);
-                break;
-
-              case "btn-electronic-medical":
-                // 电子病历 - 使用iframe在新页面打开
-                var config = functionConfigs.electronic;
-                window.parent.layui.layer.open({
-                  type: 2,
-                  area: ["100%", "100%"],
-                  title: config.title + " - " + jsonData.name,
-                  content: config.src + patientParams,
-                });
-                break;
-
-              case "btn-ward-records":
-                // 查房记录 - 使用iframe在新页面打开
-                var config = functionConfigs.wardRecords;
-                window.parent.layui.layer.open({
-                  type: 2,
-                  area: ["100%", "100%"],
-                  title: config.title + " - " + jsonData.name,
-                  content: config.src + patientParams,
-                });
                 break;
             }
           });

@@ -16,786 +16,397 @@
       media="all"
     />
     <style>
-.layui-layer-setwin
-{
-    display: none;
-}
-.layui-layer-msg
-{
-    line-height: 1.5 !important;  max-height: 100px; /* 限制最大高度 */  padding: 10px !important;
-}
-.font-grey
-{
-    color: #999;
-}
-.font-black
-{
-    color: #333;
-}
-.font-green
-{
-    color: #52c41a;
-}
-.font-red
-{
-    color: #e74c3c;
-}
-.font-purple
-{
-    color: rgb(255, 0, 255); /* 紫色字体 */
-}
-.order-type-long
-{
-    background-color: rgb(192, 220, 192); /* 浅绿色背景 */
-}
-.order-type-once
-{
-    background-color: rgb(238, 251, 250); /* 浅黄色背景 */
-}
-
-/* 父子医嘱样式 */
-.parent-order-row
-{
-    font-weight: bold;  box-sizing: border-box;  border-top: 4px solid #1890ff !important; /* 蓝色左边框 */  border-left: 4px solid #1890ff !important;  background-color: #e6f7ff !important; /* 浅蓝色背景 */
-}
-
-.child-order-row
-{
-    position: relative;
-
-/* padding-left: 20px !important; 左边缩进 */
-
-    box-sizing: border-box;  border-left: 4px solid #52c41a !important; /* 绿色左边框 */  background-color: #f6ffed !important; /* 浅绿色背景 */
-}
-
-/* 为子医嘱添加连接线 */
-/* .child-order-row::before
-{
-    font-weight: bold;  position: absolute;  left: 5px;  content: '├─';  color: #52c41a;
-} */
-
-/* 最后一个子医嘱的连接线样式 */
-.child-order-row.last-child
-{
-    border-bottom: 4px solid #52c41a !important;  border-radius: 10px;
-}
-/* .myorder {
+      .layui-layer-setwin {
+        display: none;
+      }
+      .layui-layer-msg {
+        line-height: 1.5 !important;
+        max-height: 100px; /* 限制最大高度 */
+        padding: 10px !important;
+      }
+      .font-grey {
+        color: #999;
+      }
+      .font-black {
+        color: #333;
+      }
+      .font-green {
+        color: #52c41a;
+      }
+      .font-red {
+        color: #e74c3c;
+      }
+      .font-purple {
+        color: rgb(255, 0, 255); /* 紫色字体 */
+      }
+      .order-type-long {
+        background-color: rgb(192, 220, 192); /* 浅绿色背景 */
+      }
+      .order-type-once {
+        background-color: rgb(238, 251, 250); /* 浅黄色背景 */
+      }
+      /* .myorder {
         background-color: rgb(206, 227, 236);
       } */
-/* 选中按钮高亮样式，兼容不同色系 */
-.btn-active
-{
-    font-weight: bold !important;  position: relative;  z-index: 1;  border-width: 2.5px !important;  outline: none !important;  box-shadow: 0 2px 8px rgba(30, 185, 90, .18), 0 0 0 2px #b2f0c0 inset !important;
-}
-/* 针对绿色按钮（layui-btn-warm）选中时加深色 */
-.layui-btn-warm.btn-active
-{
-    color: #fff !important;  border-color: #1eae5b !important;  background-color: #3ec97c !important;
-}
-/* 针对红色按钮（layui-btn-danger）选中时加深色 */
-.layui-btn-danger.btn-active
-{
-    color: #fff !important;  border-color: #c0392b !important;  background-color: #e74c3c !important;
-}
-/* 针对蓝色按钮（layui-btn-primary/normal/cyan）选中时加深色 */
-.layui-btn-primary.btn-active,
-.layui-btn-normal.btn-active,
-.layui-btn-cyan.btn-active
-{
-    color: #fff !important;  border-color: #1786d4 !important;  background-color: #1e9fff !important;
-}
-/* 兼容小屏幕按钮点击反馈 */
-.btn-active:active
-{
-    box-shadow: 0 1px 4px rgba(30, 185, 90, .12) !important;
-}
+      /* 选中按钮高亮样式，兼容不同色系 */
+      .btn-active {
+        font-weight: bold !important;
+        position: relative;
+        z-index: 1;
+        border-width: 2.5px !important;
+        outline: none !important;
+        box-shadow: 0 2px 8px rgba(30, 185, 90, 0.18), 0 0 0 2px #b2f0c0 inset !important;
+      }
+      /* 针对绿色按钮（layui-btn-warm）选中时加深色 */
+      .layui-btn-warm.btn-active {
+        color: #fff !important;
+        border-color: #1eae5b !important;
+        background-color: #3ec97c !important;
+      }
+      /* 针对红色按钮（layui-btn-danger）选中时加深色 */
+      .layui-btn-danger.btn-active {
+        color: #fff !important;
+        border-color: #c0392b !important;
+        background-color: #e74c3c !important;
+      }
+      /* 针对蓝色按钮（layui-btn-primary/normal/cyan）选中时加深色 */
+      .layui-btn-primary.btn-active,
+      .layui-btn-normal.btn-active,
+      .layui-btn-cyan.btn-active {
+        color: #fff !important;
+        border-color: #1786d4 !important;
+        background-color: #1e9fff !important;
+      }
+      /* 兼容小屏幕按钮点击反馈 */
+      .btn-active:active {
+        box-shadow: 0 1px 4px rgba(30, 185, 90, 0.12) !important;
+      }
 
-/* 按钮悬停效果 */
-.layui-btn:not(.btn-active):hover
-{
-    transition: all .2s ease;  transform: translateY(-1px);  box-shadow: 0 2px 4px rgba(0, 0, 0, .2);
-}
+      /* 按钮悬停效果 */
+      .layui-btn:not(.btn-active):hover {
+        transition: all 0.2s ease;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      }
 
-/* select框样式优化 */
-.layui-form-select
-{
-    width: auto !important;  height: auto !important;
-}
+      /* select框样式优化 */
+      .layui-form-select {
+        width: auto !important;
+        height: auto !important;
+      }
 
-.layui-form-select .layui-select-title
-{
-    font-size: 14px !important;  line-height: 38px !important;  position: relative;  width: auto !important;  height: 38px !important;  color: #333 !important;  border-radius: 2px !important;
-}
+      .layui-form-select .layui-select-title {
+        font-size: 14px !important;
+        line-height: 38px !important;
+        position: relative;
+        width: auto !important;
+        height: 38px !important;
+        color: #333 !important;
+        border-radius: 2px !important;
+      }
 
-.layui-form-select .layui-select-title input
-{
-    font-size: 14px !important;  line-height: 36px !important;  width: 100px;  height: 36px !important;  padding-right: 30px !important;  padding-left: 7px;  color: #333 !important;
-}
+      .layui-form-select .layui-select-title input {
+        font-size: 14px !important;
+        line-height: 36px !important;
+        height: 36px !important;
+        padding-right: 30px !important;
+        color: #333 !important;
+      }
 
-.layui-form-select dl
-{
-    font-size: 14px !important;  max-height: 200px;
-}
+      /* 确保箭头图标正确定位 */
+      .layui-form-select .layui-select-title i {
+        font-size: 14px !important;
+        position: absolute !important;
+        top: 65% !important;
+        right: 10px !important;
+        transform: translateY(-50%) !important;
+      }
 
-/* 兼容不同浏览器的select样式 */
-.layui-form-select .layui-select-title
-{
-    overflow: hidden !important;  box-sizing: border-box !important;
-}
+      .layui-form-select dl {
+        font-size: 14px !important;
+        max-height: 200px;
+      }
 
-/* 修复Edge浏览器箭头错位问题 */
-@supports (-ms-ime-align: auto)
-{
-    .layui-form-select .layui-select-title i
-    {
-        top: 12px !important;  right: 8px !important;  transform: none !important;
-    }
-}
+      /* 兼容不同浏览器的select样式 */
+      .layui-form-select .layui-select-title {
+        overflow: hidden !important;
+        box-sizing: border-box !important;
+      }
 
-/* 修复Edge Legacy浏览器兼容性 */
-@media screen and (-ms-high-contrast: active), (-ms-high-contrast: none)
-{
-    .layui-form-select .layui-select-title i
-    {
-        top: 12px !important;  right: 8px !important;  transform: none !important;
-    }
-}
+      /* 修复Edge浏览器箭头错位问题 */
+      @supports (-ms-ime-align: auto) {
+        .layui-form-select .layui-select-title i {
+          top: 12px !important;
+          right: 8px !important;
+          transform: none !important;
+        }
+      }
 
-.layui-form-select dl dd
-{
-    line-height: 36px !important;  color: #333 !important;
-}
+      /* 修复Edge Legacy浏览器兼容性 */
+      @media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
+        .layui-form-select .layui-select-title i {
+          top: 12px !important;
+          right: 8px !important;
+          transform: none !important;
+        }
+      }
 
-/* 新增医嘱弹窗样式 */
-#add-order-modal
-{
-    width: 100%;  height: 100%;
-}
+      .layui-form-select dl dd {
+        line-height: 36px !important;
+        color: #333 !important;
+      }
 
-/* 弹窗两列布局容器样式（疗程 + 小医嘱卡片） */
-.order-form-container
-{
-    display: flex;  flex-direction: column;  width: 100%;  height: 100%;
-}
+      /* 新增医嘱弹窗样式 */
+      #add-order-modal {
+        width: 100%;
+        height: 100%;
+      }
 
-.order-selector
-{
-    display: flex;  overflow: hidden;  height: 80vh;  min-height: 420px;  border-radius: 4px;  box-shadow: 0 2px 8px rgba(0, 0, 0, .1);
-}
+      /* 弹窗两列布局容器样式（疗程 + 小医嘱表格） */
+      .order-form-container {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        height: 100%;
+      }
 
-/* 两列布局通用样式 */
-.order-left,
-.order-right
-{
-    display: flex;  flex-direction: column;  border-right: 1px solid #e6e6e6;
-}
-.order-left
-{
-    flex: 0 0 240px;  background: #fafafa;
-}
+      .order-selector {
+        display: flex;
+        overflow: hidden;
+        height: 80vh;
+        min-height: 420px;
+        border-radius: 4px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
 
-.order-right
-{
-    flex: 1;  border-right: none;  background: #fff;
-}
-.layui-container .layui-table-body
-{
-    overflow-x: hidden;
-}
-/* 区域标题样式 */
-.section-header
-{
-    font-size: 14px;  font-weight: bold;  display: flex;  align-items: center;  justify-content: center;  padding: 12px 16px;  text-align: center;  color: #fff;  background: #1e9fff;  gap: 6px;
-}
+      /* 两列布局通用样式 */
+      .order-left,
+      .order-right {
+        display: flex;
+        flex-direction: column;
+        border-right: 1px solid #e6e6e6;
+      }
+      .order-left {
+        flex: 0 0 240px;
+        background: #fafafa;
+      }
 
-.section-header i
-{
-    font-size: 16px;
-}
+      .order-right {
+        flex: 1;
+        border-right: none;
+        background: #fff;
+      }
+      .layui-container .layui-table-body {
+        overflow-x: hidden;
+      }
+      /* 区域标题样式 */
+      .section-header {
+        font-size: 14px;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 12px 16px;
+        text-align: center;
+        color: #fff;
+        background: #1e9fff;
+        gap: 6px;
+      }
+      .layui-form-select .layui-edge {
+        right: 0;
+      }
+      .section-header i {
+        font-size: 16px;
+      }
 
-/* 分类列表样式 */
-.category-list
-{
-    overflow-y: auto;  flex: 1;  padding: 8px 0;
-}
+      /* 分类列表样式 */
+      .category-list {
+        overflow-y: auto;
+        flex: 1;
+        padding: 8px 0;
+      }
 
-.category-item
-{
-    font-size: 13px;  line-height: 1.4;  padding: 12px 16px;  cursor: pointer;  transition: all .2s ease;  border-bottom: 1px solid #e6e6e6;
-}
+      .category-item {
+        font-size: 13px;
+        line-height: 1.4;
+        padding: 12px 16px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border-bottom: 1px solid #e6e6e6;
+      }
 
-.category-item:hover
-{
-    background-color: #e1f3ff;
-}
+      .category-item:hover {
+        background-color: #e1f3ff;
+      }
 
-.category-item.selected
-{
-    /* color: #fff; */
-    font-weight: bold;  background-color: lightgray;
-}
+      .category-item.selected {
+        /* color: #fff; */
+        font-weight: bold;
+        background-color: lightgray;
+      }
 
-.category-item .category-name
-{
-    font-weight: bold;  margin-bottom: 4px;
-}
+      .category-item .category-name {
+        font-weight: bold;
+        margin-bottom: 4px;
+      }
 
-.category-item .category-desc
-{
-    font-size: 12px;  color: #999;
-}
+      .category-item .category-desc {
+        font-size: 12px;
+        color: #999;
+      }
 
-/* 无选择状态样式 */
-.no-data,
-.no-selection
-{
-    font-size: 13px;  padding: 40px 20px;  text-align: center;  color: #999;
-}
-/* 按钮区域样式 */
-.dialog-buttons
-{
-    padding: 10px;  text-align: center;  border-top: 1px solid #e6e6e6;  background: #fafafa;
-}
+      /* 无选择状态样式 */
+      .no-data,
+      .no-selection {
+        font-size: 13px;
+        padding: 40px 20px;
+        text-align: center;
+        color: #999;
+      }
+      /* 按钮区域样式 */
+      .dialog-buttons {
+        padding: 16px;
+        text-align: center;
+        border-top: 1px solid #e6e6e6;
+        background: #fafafa;
+      }
 
-.dialog-buttons .layui-btn
-{
-    margin: 0 8px;
-}
+      .dialog-buttons .layui-btn {
+        margin: 0 8px;
+      }
 
-/* 滚动条美化 */
-.category-list::-webkit-scrollbar,
-.template-list::-webkit-scrollbar,
-.form-content::-webkit-scrollbar
-{
-    width: 6px;
-}
+      /* 滚动条美化 */
+      .category-list::-webkit-scrollbar,
+      .template-list::-webkit-scrollbar,
+      .form-content::-webkit-scrollbar {
+        width: 6px;
+      }
 
-.category-list::-webkit-scrollbar-track,
-.template-list::-webkit-scrollbar-track,
-.form-content::-webkit-scrollbar-track
-{
-    border-radius: 3px;  background: #f1f1f1;
-}
+      .category-list::-webkit-scrollbar-track,
+      .template-list::-webkit-scrollbar-track,
+      .form-content::-webkit-scrollbar-track {
+        border-radius: 3px;
+        background: #f1f1f1;
+      }
 
-.category-list::-webkit-scrollbar-thumb,
-.template-list::-webkit-scrollbar-thumb,
-.form-content::-webkit-scrollbar-thumb
-{
-    border-radius: 3px;  background: #c1c1c1;
-}
+      .category-list::-webkit-scrollbar-thumb,
+      .template-list::-webkit-scrollbar-thumb,
+      .form-content::-webkit-scrollbar-thumb {
+        border-radius: 3px;
+        background: #c1c1c1;
+      }
 
-.category-list::-webkit-scrollbar-thumb:hover,
-.template-list::-webkit-scrollbar-thumb:hover,
-.form-content::-webkit-scrollbar-thumb:hover
-{
-    background: #a8a8a8;
-}
+      .category-list::-webkit-scrollbar-thumb:hover,
+      .template-list::-webkit-scrollbar-thumb:hover,
+      .form-content::-webkit-scrollbar-thumb:hover {
+        background: #a8a8a8;
+      }
 
-/* 响应式优化：上下分布 */
-
-/* 小医嘱卡片样式 */
-.suborder-cards-container
-{
-    /* max-height: 420px; */
-    overflow-y: auto;  padding: 12px;
-}
-
-.suborder-card
-{
-    position: relative;  margin-bottom: 12px;  padding: 16px;  transition: all .2s ease;  border: 1px solid #e6e6e6;  border-radius: 8px;  background: #fff;  box-shadow: 0 2px 4px rgba(0, 0, 0, .05);
-}
-
-.suborder-card:hover
-{
-    transform: translateY(-1px);  border-color: #1e9fff;  box-shadow: 0 4px 12px rgba(30, 159, 255, .15);
-}
-
-.suborder-card.selected
-{
-    border-color: #1e9fff;  background: #f8fcff;  box-shadow: 0 4px 12px rgba(30, 159, 255, .2);
-}
-
-.suborder-card-header
-{
-    display: flex;  align-items: center;  justify-content: space-between;  margin-bottom: 12px;
-}
-
-.suborder-checkbox
-{
-    margin-right: 12px;
-}
-
-.suborder-name
-{
-    font-size: 14px;  font-weight: bold;  flex: 1;  cursor: pointer;  color: #333;
-}
-
-.suborder-type
-{
-    font-size: 12px;  margin-left: 8px;  padding: 2px 8px;  color: white;  border-radius: 12px;  background: #1e9fff;
-}
-
-.suborder-body
-{
-    display: grid;  margin-bottom: 12px;  grid-template-columns: 1fr 1fr;  gap: 8px 16px;
-}
-
-.suborder-field
-{
-    font-size: 13px;  display: flex;  align-items: center;
-}
-
-.suborder-field-label
-{
-    font-weight: 500;  min-width: 40px;  margin-right: 8px;  color: #666;
-}
-
-.suborder-field-value
-{
-    flex: 1;  word-break: break-all;  color: #333;
-}
-
-.suborder-field-value.editable
-{
-    padding: 2px 6px;  cursor: text;  transition: all .2s ease;  border: 1px solid transparent;  border-radius: 3px;  background: #f9f9f9;
-}
-
-.suborder-field-value.editable:hover
-{
-    border-color: #d9d9d9;  background: #fff;
-}
-
-.suborder-field-value.editable:focus
-{
-    border-color: #1e9fff;  outline: none;  box-shadow: 0 0 0 2px rgba(30, 159, 255, .1);
-}
-
-.suborder-instruction
-{
-    margin-top: 8px;  grid-column: 1 / -1;
-}
-
-.suborder-instruction .suborder-field-value
-{
-    min-height: 20px;  padding: 8px;  word-break: break-word;  border-radius: 4px;  background: #f5f5f5;
-}
-
-/* 草稿卡片不完整状态样式 */
-.draft-card.incomplete
-{
-    border-color: #ff5722 !important;  background: #fff3f0 !important;  box-shadow: 0 2px 8px rgba(255, 87, 34, .15) !important;
-}
-
-.draft-card.incomplete .title
-{
-    color: #ff5722;
-}
-
-.draft-card.incomplete .title::after
-{
-    font-weight: bold;  margin-left: 8px;  content: ' ⚠️';  color: #ff5722;
-}
-@media (max-width: 768px)
-{
-    .layui-table-page
-    {
-        visibility: hidden;
-    }
-    .order-selector
-    {
-        flex-direction: column;  height: 100%;
-    }
-    .order-left
-    {
-        height: 40%;
-    }
-    .order-right
-    {
-        width: 100%;  height: 60%;  margin-top: 8px;  border: none;
-    }
-    /* .layui-table-box {
+      /* 响应式优化：上下分布 */
+      @media (max-width: 768px) {
+        .layui-table-page {
+          visibility: hidden;
+        }
+        .order-selector {
+          flex-direction: column;
+          height: 100%;
+        }
+        .order-left {
+          height: 40%;
+        }
+        .order-right {
+          width: 100%;
+          height: 70%;
+          margin-top: 8px;
+          border: none;
+        }
+        /* .layui-table-box {
           transform: scale(0.5);
           transform-origin: top left;
           width: 200%;
         } */
-    .layui-container .layui-table-view
-    {
-        display: block;
-    }
-    /* 调整"类"列宽度为20px - 使用多种选择器确保生效 */
-    .layui-table-view th[data-field='long_once_flag'],
-    .layui-table-view td[data-field='long_once_flag']
-    {
-        width: 20px !important;  min-width: 20px !important;  max-width: 20px !important;
-    }
-    .layui-table-view th[data-field='start_time_mm_dd'],
-    .layui-table-view td[data-field='start_time_mm_dd'],
-    .layui-table-view th[data-field='enter_time_mm_dd'],
-    .layui-table-view td[data-field='enter_time_mm_dd'],
-    .layui-table-view th[data-field='end_time_mm_dd'],
-    .layui-table-view td[data-field='end_time_mm_dd']
-    {
-        width: 40px !important;  min-width: 40px !important;  max-width: 40px !important;
-    }
-    .layui-table-view th[data-field='order_doctor_name'],
-    .layui-table-view td[data-field='order_doctor_name']
-    {
-        width: 60px !important;  min-width: 60px !important;  max-width: 60px !important;
-    }
-}
+        .layui-container .layui-table-view {
+          display: block;
+        }
+        /* 调整"类"列宽度为20px - 使用多种选择器确保生效 */
+        .layui-table-view th[data-field="long_once_flag"],
+        .layui-table-view td[data-field="long_once_flag"] {
+          width: 20px !important;
+          min-width: 20px !important;
+          max-width: 20px !important;
+        }
+        .layui-table-view th[data-field="start_time_mm_dd"],
+        .layui-table-view td[data-field="start_time_mm_dd"],
+        .layui-table-view th[data-field="enter_time_mm_dd"],
+        .layui-table-view td[data-field="enter_time_mm_dd"],
+        .layui-table-view th[data-field="end_time_mm_dd"],
+        .layui-table-view td[data-field="end_time_mm_dd"] {
+          width: 40px !important;
+          min-width: 40px !important;
+          max-width: 40px !important;
+        }
+        .layui-table-view th[data-field="order_doctor_name"],
+        .layui-table-view td[data-field="order_doctor_name"] {
+          width: 60px !important;
+          min-width: 60px !important;
+          max-width: 60px !important;
+        }
+      }
 
-/* 医生单元格背景色样式 */
-.doctor-cell-primary
-{
-    /* background-color: LightGray !important; */
-    /* color: #1e9fff !important; */
-    font-weight: bold;
-}
-.doctor-cell-nurse
-{
-    background-color: #f6ffed !important;
-    /* color: #52c41a !important; */
-}
-.doctor-cell-special
-{
-    background-color: #fff1f0 !important;
-    /* color: #e74c3c !important; */
-}
+      /* 医生单元格背景色样式 */
+      .doctor-cell-primary {
+        /* background-color: LightGray !important; */
+        /* color: #1e9fff !important; */
+        font-weight: bold;
+      }
+      .doctor-cell-nurse {
+        background-color: #f6ffed !important;
+        /* color: #52c41a !important; */
+      }
+      .doctor-cell-special {
+        background-color: #fff1f0 !important;
+        /* color: #e74c3c !important; */
+      }
 
-#layui-layer2
-{
-    height: 100%;
-}
-.layui-row
-{
-    height: auto;  min-height: auto;
-}
-.layui-table td,
-.layui-table th
-{
-    padding: 5px 8px;      padding: 8px; /* 单元格内边距 */  border: 1px solid skyblue; /* 单元格边框 */
-}
-.layui-table th:nth-child(3)
-{
-    padding-left: 10px !important;
-}
-.layui-table thead tr
-{
-    height: 30px; /* 设置行高为30px */
-}
+      #layui-layer2 {
+        height: 100%;
+      }
+      .layui-row {
+        height: auto;
+        min-height: auto;
+      }
+      .layui-table td,
+      .layui-table th {
+        padding: 5px 8px;
+        padding: 8px; /* 单元格内边距 */
+        border: 1px solid skyblue; /* 单元格边框 */
+      }
+      .layui-table thead tr {
+        height: 30px; /* 设置行高为30px */
+      }
 
-/* 搜索框样式 */
-#yizhu-search-input
-{
-    padding-left: 0;  transition: all .3s ease;
-}
+      /* 搜索框样式 */
+      #yizhu-search-input {
+        transition: all 0.3s ease;
+      }
 
-#yizhu-search-input:focus
-{
-    border-color: #1e9fff;  box-shadow: 0 0 5px rgba(30, 159, 255, .3);
-}
+      #yizhu-search-input:focus {
+        border-color: #1e9fff;
+        box-shadow: 0 0 5px rgba(30, 159, 255, 0.3);
+      }
 
-#clear-search-btn
-{
-    cursor: pointer;  transition: all .3s ease;  color: #999;  border: none;  background-color: transparent;
-}
+      #clear-search-btn {
+        cursor: pointer;
+        transition: all 0.3s ease;
+        color: #999;
+        border: none;
+        background-color: transparent;
+      }
 
-#clear-search-btn:hover
-{
-    color: #1e9fff;  background-color: rgba(30, 159, 255, .1);
-}
-
-/* 表格缩放优化样式 */
-.layui-table-box
-{
-    transition: opacity .3s ease;  opacity: 0; /* 初始状态隐藏，避免加载时闪烁 */
-}
-
-.layui-table-box.table-ready
-{
-    opacity: 1; /* 准备完成后显示 */
-}
-
-.layui-icon-add-circle-fine
-{
-    font-size: 30px;
-}
-#search-icon
-{
-    line-height: 38px;  height: 38px;  padding: 0 5px;  cursor: pointer;  cursor: pointer;  text-align: center;  border-right: 0;  border-radius: 15px 0 0 15px;  background-color: #fff;
-}
-.role-label
-{
-    font-size: 14px;  font-weight: bold;  line-height: 36px;  height: 36px;  white-space: nowrap;  text-overflow: ellipsis;  color: #666;
-}
-.filter-condition
-{
-    font-size: 16px;  display: flex;  justify-content: center;  width: 100%;  height: 30px;
-}
-.filter-condition span
-{
-    line-height: 30px;  margin-right: 15px;
-}
-.filter-condition label
-{
-    line-height: 30px;  height: 30px;  padding: 0 5px;  color: #333;  border-radius: 5px;  background-color: #f0f0f0;
-}
-.filter-condition .layui-icon
-{
-    display: none;
-}
-.filter-condition .layui-form-radio *
-{
-    font-size: 14px;
-}
-.filter-condition .layui-form-radio:hover *
-{
-    color: rgb(36, 67, 119);
-}
-.filter-condition .layui-form-radio
-{
-    line-height: 30px;  height: 30px;  margin: 0 10px;  padding: 0 5px;  border: 1px solid gray;  border-radius: 10px;  background-color: #fff;
-}
-.filter-condition .layui-form-radioed,
-.layui-form-radioed > i
-{
-    color: rgb(36, 67, 119);  background-color: rgb(189, 203, 248);
-}
-.parent-first-cell-custom
-{
-    padding-left: 10px !important;  background-image: url(/images/connectup.png);  background-repeat: no-repeat;  background-position: bottom left;  background-size: 10px 50%;
-}
-.child-first-cell-custom
-{
-    padding-left: 10px !important;  background-image: url(/images/connectmiddle.png);  background-repeat: no-repeat;  background-position: left;  background-size: 10px 100%;
-}
-.last-child-first-cell-custom
-{
-    padding-left: 10px !important;  background-image: url(/images/connectdown.png);  background-repeat: no-repeat;  background-position: top left;  background-size: 10px 50%;
-}
-
-.layui-table-cell .layui-btn
-{
-    width: 40px;
-}
-
-/* 卡片视图简约现代覆盖样式（仅当前页生效） */
-:root
-{
-    --card-bg: #fff;  --card-border: #e5e7eb; /* Tailwind zinc-200 */  --card-shadow: 0 1px 2px rgba(0, 0, 0, .04),
-    0 1px 1px rgba(0, 0, 0, .02);  --card-shadow-hover: 0 4px 12px rgba(0, 0, 0, .08);  --text-main: #111827; /* gray-900 */  --text-muted: #6b7280; /* gray-500 */  --surface-muted: #f3f4f6; /* gray-100 */  --ok: #047857;  --ok-weak: #ecfdf5;  --ok-border: #a7f3d0;  --warn: #b45309;  --warn-weak: #fffbeb;  --warn-border: #fde68a;  --parent: #2563eb; /* blue-600 */  --child: #16a34a; /* green-600 */
-}
-.ordercardlists-container
-{
-    display: block;  padding: 8px 8px 12px 8px;  background: #fafafa;
-}
-.order-card
-{
-    box-sizing: border-box;  width: 100%;  margin: 0 0 10px 0;  padding: 0;  transition: box-shadow .2s ease, transform .2s ease,
-    border-color .2s ease;  border: 1px solid var(--card-border);  border-radius: 10px;  background: var(--card-bg);  box-shadow: var(--card-shadow);
-}
-.order-card:hover
-{
-    transform: translateY(-1px);  box-shadow: var(--card-shadow-hover);
-}
-
-/* 头部：去色背景，提升信息层级 */
-.order-card-header
-{
-    display: flex;  align-items: center;  justify-content: space-between;  height: auto !important;  padding: 10px 12px !important;  border-bottom: 1px solid var(--surface-muted);  border-radius: 10px 10px 0 0;  background: transparent !important;
-}
-.order-card-header .order-name
-{
-    font-size: 15px !important;  font-weight: 600;  color: var(--text-main) !important;
-}
-.order-card-header .order-name small
-{
-    font-size: 12px;  margin-left: 8px;  color: #9ca3af;
-}
-.order-card-header .order-name .enter-time
-{
-    font-size: 12px;  margin-left: 8px;  color: #9ca3af;
-}
-.order-card-header .order-type
-{
-    font-size: 12px;  line-height: 1;  padding: 6px 10px;  color: #374151;  border: 1px solid #e5e7eb;  border-radius: 9999px;  background: var(--surface-muted);
-}
-.order-card-header .order-type.badge-long
-{
-    color: var(--ok);  border-color: var(--ok-border);  background: var(--ok-weak);
-}
-.order-card-header .order-type.badge-once
-{
-    color: var(--warn);  border-color: var(--warn-border);  background: var(--warn-weak);
-}
-
-/* 主体：默认两列，中屏三列，宽屏四列 */
-.order-card-body
-{
-    display: grid;  padding: 10px 12px;  grid-template-columns: repeat(2, minmax(0, 1fr));  gap: 6px 12px;
-}
-.order-card .field
-{
-    display: flex;  align-items: center;  min-height: 18px;  gap: 6px;
-}
-.order-card .field label
-{
-    font-size: 11px;  white-space: nowrap;  color: var(--text-muted);
-}
-.order-card .field .value
-{
-    font-size: 13px;  color: var(--text-main);
-}
-/* 并列时间行 */
-.order-card .field-row.times-row
-{
-    display: grid;  grid-template-columns: repeat(2, minmax(0, 1fr));  gap: 6px 12px;
-}
-/* 嘱托弱化 */
-.order-card .field.instruction label
-{
-    color: #9ca3af;
-}
-.order-card .field.instruction .value
-{
-    font-size: 12px;  color: var(--text-muted);
-}
-/* 徽标组（合并多信息到一行） */
-.order-card .field-chips
-{
-    gap: 6px;
-}
-.order-card .field-chips .chip
-{
-    font-size: 11px;  line-height: 16px;  height: 18px;  padding: 0 6px;  border: 1px solid #e5e7eb;  border-radius: 9999px;  background: #f3f4f6;
-}
-
-/* 操作区：弱化按钮为“幽灵按钮”风格 */
-.order-card .order-card-actions
-{
-    display: flex;  align-items: center;  justify-content: flex-end;  padding: 8px 10px;  border-top: 1px solid var(--surface-muted);  gap: 8px;
-}
-.order-card .order-card-actions .layui-btn
-{
-    line-height: 28px;  height: 28px;  padding: 0 10px;  color: #374151;  border: 1px solid #e5e7eb;  border-radius: 8px;  background: transparent !important;
-}
-.order-card .order-card-actions .layui-btn:hover
-{
-    background: #f9fafb !important;
-}
-.order-card .order-card-actions .layui-btn-danger
-{
-    color: #b91c1c !important;  border-color: #fecaca;
-}
-.order-card .order-card-actions .layui-btn-warm
-{
-    color: #b45309 !important;  border-color: #fde68a;
-}
-
-/* 父子医嘱：仅用左侧细线提示，不再铺底 */
-.order-card.parent-order-card
-{
-    border-left: 4px solid var(--parent);
-}
-.order-card.child-order-card
-{
-    border-left: 4px solid var(--child);
-}
-
-/* 状态：以顶部细线提示，避免整卡变色 */
-.order-card.font-grey
-{
-    color: inherit;  border-top: 2px solid #e5e7eb;
-}
-.order-card.font-green
-{
-    color: inherit;  border-top: 2px solid #86efac;
-}
-.order-card.font-red
-{
-    color: inherit;  border-top: 2px solid #fca5a5;
-}
-.order-card.font-purple
-{
-    color: inherit;  border-top: 2px solid #e9d5ff;
-}
-
-/* 取消类型类对卡片底色的影响（继承自旧样式的覆盖） */
-.order-card.order-type-long,
-.order-card.order-type-once
-{
-    background: var(--card-bg) !important;
-}
-
-/* 中屏：主体三列信息 */
-@media (min-width: 992px)
-{
-    .order-card-body
-    {
-        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-    }
-}
-/* 宽屏：主体四列信息 */
-@media (min-width: 1440px)
-{
-    .order-card-body
-    {
-        grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-    }
-}
-/* 小屏：卡片独占一行，内容保持两列，并进一步收紧内边距字号 */
-@media (max-width: 768px)
-{
-    .ordercardlists-container
-    {
-        display: block;
-    }
-    .order-card-header
-    {
-        padding: 8px 10px !important;
-    }
-    .order-card-header .order-name
-    {
-        font-size: 14px !important;
-    }
-    .order-card-header .order-name small
-    {
-        font-size: 11px;
-    }
-    .order-card-header .order-type
-    {
-        font-size: 11px;  padding: 5px 8px;
-    }
-    .order-card-body
-    {
-        padding: 8px 10px;  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;  gap: 6px 10px;
-    }
-    .order-card .field label
-    {
-        font-size: 10.5px;
-    }
-    .order-card .field .value
-    {
-        font-size: 12.5px;
-    }
-    .order-card .field-chips .chip
-    {
-        font-size: 11px;  line-height: 16px;  height: 18px;  padding: 0 6px;
-    }
-    .order-card .order-card-actions
-    {
-        padding: 6px 8px;
-    }
-    .order-card .order-card-actions .layui-btn
-    {
-        line-height: 26px;  height: 26px;  padding: 0 8px;
-    }
-}
-#btn-add-order
-{
-    color: #435cab;  border-radius: 15px;  background-color: #d2d8e7;
-}
-
+      #clear-search-btn:hover {
+        color: #1e9fff;
+        background-color: rgba(30, 159, 255, 0.1);
+      }
     </style>
   </head>
   <body>
@@ -804,64 +415,96 @@
       <form class="layui-form">
         <div
           class="layui-btn-container filter-buttons"
-          id="order-btn-container"
           style="
             display: flex;
             gap: 10px;
             flex-wrap: wrap;
             justify-content: center;
             align-items: center;
-            height: 40px;
-            overflow: hidden;
-            transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
           "
         >
+          <!-- 新增医嘱按钮 -->
+          <button
+            type="button"
+            id="btn-add-order"
+            class="layui-btn layui-btn-sm layui-btn-primary"
+          >
+            <i class="layui-icon layui-icon-add-1"></i> 新增医嘱
+          </button>
+
+          <!-- 医嘱类型筛选 -->
           <div style="display: flex; gap: 8px; align-items: center">
-            <!-- 新增医嘱按钮 -->
-            <!-- <div>
-              <i
-                class="layui-icon layui-icon-add-circle-fine"
-                id="btn-add-order"
-                style="font-size: 30px; cursor: pointer"
-              ></i>
-            </div> -->
-            <button
-              class="layui-btn layui-btn-warm layui-btn-sm"
-              id="btn-add-order"
-              type="button"
+            <span
+              style="
+                font-size: 13px;
+                color: #666;
+                font-weight: bold;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+              "
+              >类型：</span
             >
-              <i class="layui-icon layui-icon-edit"></i> 新建申请
-            </button>
+            <select
+              id="order-type-select"
+              lay-filter="order-type-select"
+              class="layui-select"
+              style="font-size: 13px; width: 80px"
+            >
+              <option value="long">长期医嘱</option>
+              <option value="temp">临时医嘱</option>
+              <option value="all" selected>全部医嘱</option>
+            </select>
+            <span
+              style="
+                font-size: 13px;
+                color: #666;
+                font-weight: bold;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+              "
+              >开嘱人：</span
+            >
+            <select
+              id="role-type-select"
+              lay-filter="role-type-select"
+              class="layui-select"
+              style="font-size: 13px; width: 120px"
+            >
+              <option value="doctor" selected>医生</option>
+              <option value="nurse">护士</option>
+              <option value="mine">我的医嘱</option>
+              <option value="all-role">全部</option>
+            </select>
+          </div>
+
+          <!-- 搜索框 -->
+          <div style="display: flex; gap: 8px; align-items: center">
+            <span
+              style="
+                font-size: 13px;
+                color: #666;
+                font-weight: bold;
+                white-space: nowrap;
+              "
+            >
+              搜索：
+            </span>
             <div style="position: relative; display: flex; align-items: center">
-              <div
-                class="layui-input-split layui-input-suffix layui-input"
-                id="search-icon"
-              >
-                <i
-                  class="layui-icon layui-icon-search"
-                  style="font-size: 20px"
-                ></i>
-              </div>
               <input
                 id="yizhu-search-input"
                 type="text"
                 placeholder="医嘱名称/医生姓名/备注"
                 class="layui-input"
-                style="
-                  width: 160px;
-                  font-size: 13px;
-                  border-left: 0px;
-                  border-radius: 0 15px 15px 0;
-                "
+                style="width: 200px; font-size: 13px; padding-right: 30px"
               />
               <button
                 type="button"
                 id="clear-search-btn"
                 class="layui-btn layui-btn-xs"
                 style="
-                  width: 20px;
                   position: absolute;
-                  right: 10px;
+                  right: 5px;
+                  padding: 2px 6px;
                   display: none;
                 "
                 title="清空搜索"
@@ -870,123 +513,51 @@
               </button>
             </div>
           </div>
-
-          <div id="btn-filter-container" style="border-radius: 5px">
-            <i
-              class="layui-icon layui-icon-slider"
-              id="btn-filter-order"
-              style="font-size: 25px; cursor: pointer"
-            ></i>
-          </div>
-
-          <!-- 医嘱类型筛选 -->
-          <div
-            style="
-              display: flex;
-              gap: 8px;
-              align-items: center;
-              flex-wrap: wrap;
-            "
-          >
-            <div class="filter-condition">
-              <span>医嘱类型:</span>
-              <!-- <label for="order-type1">全部</label>
-              <label for="order-type2">临时</label>
-              <label for="order-type3">长期</label> -->
-              <div>
-                <input
-                  type="radio"
-                  id="order-type1"
-                  name="order-type"
-                  value="1"
-                  title="全部"
-                  lay-filter="order-type"
-                />
-                <input
-                  type="radio"
-                  id="order-type2"
-                  name="order-type"
-                  value="2"
-                  title="临时"
-                  checked
-                  lay-filter="order-type"
-                />
-                <input
-                  type="radio"
-                  id="order-type3"
-                  name="order-type"
-                  value="3"
-                  title="长期"
-                  lay-filter="order-type"
-                />
-              </div>
-            </div>
-            <div class="filter-condition">
-              <span>数据来源:</span>
-              <!-- <label for="data-source1">全部</label>
-              <label for="data-source2">医生</label>
-              <label for="data-source3">护士</label> -->
-              <div>
-                <input
-                  type="radio"
-                  id="data-source1"
-                  name="data-source"
-                  value="1"
-                  title="全部"
-                  lay-filter="data-source"
-                />
-                <input
-                  type="radio"
-                  id="data-source2"
-                  name="data-source"
-                  value="2"
-                  title="医生"
-                  checked
-                  lay-filter="data-source"
-                />
-                <input
-                  type="radio"
-                  id="data-source3"
-                  name="data-source"
-                  value="3"
-                  title="护士"
-                  lay-filter="data-source"
-                />
-              </div>
-            </div>
-            <!-- <span class="role-label">类型:</span>
-            <select
-            
-              id="order-type-select"
-              lay-filter="order-type-select"
-              class="layui-select"
-              style="font-size: 13px; width: 80px;"
-            >
-              <option value="long">长期医嘱</option>
-              <option value="temp" selected>临时医嘱</option>
-              <option value="all">全部医嘱</option>
-            </select>
-            <span class="role-label">开嘱人:</span>
-            <select
-              id="role-type-select"
-              lay-filter="role-type-select"
-              class="layui-select"
-              style="font-size: 13px; width: 120px;"
-            >
-              <option value="doctor" selected>医生</option>
-              <option value="nurse">护士</option>
-              <option value="mine">我的医嘱</option>
-              <option value="all-role">全部</option>
-            </select> -->
-          </div>
-
-          <!-- 搜索框 -->
         </div>
       </form>
-      <!-- 医嘱卡片容器 -->
-      <div class="ordercardlists-container" id="yizhu-cards"></div>
-
-      <!-- 医嘱表格容器（已切换到卡片视图，保留隐藏以兼容旧逻辑） -->
+      <!-- 医嘱信息卡片容器 -->
+      <div class="ordercardlists-container">
+        <div class="order-card">
+          <div class="order-card-header">
+            <span class="order-name">医嘱名</span>
+            <span class="order-type">类型</span>
+          </div>
+          <div class="order-card-body">
+            <div class="field"><label>开始日期</label></div>
+            <div class="field"><label>剂量</label><span>单位</span></div>
+            <div class="field"><label>数量</label></div>
+            <div class="field"><label>用法</label></div>
+            <div class="field"><label>频率</label></div>
+            <div class="field"><label>医生</label></div>
+            <div class="field"><label>录入日期</label></div>
+            <div class="field"><label>停止日期</label></div>
+            <div class="field"><label>嘱托</label></div>
+          </div>
+          <div class="order-card-actions">
+            <button class="layui-btn layui-btn-danger">删除</button>
+            <button class="layui-btn layui-btn-warn">撤销</button>
+          </div>
+        </div>
+        <div class="order-card">
+          <div class="order-card-header">
+            <span class="order-name">医嘱名</span>
+            <span class="order-type">类型</span>
+          </div>
+          <div class="order-card-body">
+            <div class="field"><label>开始日期</label></div>
+            <div class="field"><label>剂量</label><span>单位</span></div>
+            <div class="field"><label>数量</label></div>
+            <div class="field"><label>频率</label></div>
+            <div class="field"><label>医生</label></div>
+            <div class="field"><label>录入日期</label></div>
+            <div class="field"><label>停止日期</label></div>
+          </div>
+          <div class="order-card-actions">
+            <button class="layui-btn layui-btn-danger">删除</button>
+            <button class="layui-btn layui-btn-warn">撤销</button>
+          </div>
+        </div>
+      </div>
       <div class="table-container" style="display: none">
         <table
           class="layui-hide"
@@ -996,7 +567,7 @@
       </div>
     </div>
 
-    <!-- 新增医嘱弹窗（两部分：疗程分类 + 小医嘱卡片） -->
+    <!-- 新增医嘱弹窗（两部分：疗程分类 + 小医嘱表格） -->
     <div id="add-order-modal" style="display: none">
       <div class="order-form-container">
         <div class="order-selector">
@@ -1016,11 +587,11 @@
               <div class="no-data">正在加载分类...</div>
             </div>
           </div>
-          <!-- 右侧：小医嘱卡片 -->
+          <!-- 右侧：小医嘱表格 -->
           <div class="order-right">
             <div class="section-header">
-              <i class="layui-icon layui-icon-template-1"></i>
-              医嘱卡片
+              <i class="layui-icon layui-icon-list"></i>
+              医嘱列表
             </div>
             <div
               class="suborders-panel"
@@ -1057,68 +628,48 @@
     <script src="/js/lay-config.js?v=1.0.4" charset="utf-8"></script>
     <script>
       //js动态计算表格缩放比例
-      let scaleTimeout = null;
+      const tempAppconfig = "http://10.102.38.107:5251/";
       function scaleTableForMobile() {
         const layuiTableBox = document.querySelector(".layui-table-box");
         if (!layuiTableBox) {
+          console.log("未找到 .layui-table-box 元素");
           return;
         }
-
-        // 清除之前的延时器，防抖处理
-        if (scaleTimeout) {
-          clearTimeout(scaleTimeout);
+        const tableContainer = document.querySelector(".table-container");
+        // 获取表格内容的真实宽度（而不是容器宽度）
+        const layuiTable = layuiTableBox.querySelector(".layui-table");
+        const tableHeader = layuiTableBox.querySelector(
+          ".layui-table-header table"
+        );
+        const tableBody = layuiTableBox.querySelector(
+          ".layui-table-body table"
+        );
+        // 优先使用表头的宽度，如果没有则使用表体宽度
+        let tableRealWidth = 0;
+        if (tableHeader) {
+          tableRealWidth = tableHeader.offsetWidth;
+        } else if (tableBody) {
+          tableRealWidth = tableBody.offsetWidth;
+        } else if (layuiTable) {
+          tableRealWidth = layuiTable.scrollWidth; // 使用scrollWidth获取真实内容宽度
+        } else {
+          tableRealWidth = layuiTableBox.scrollWidth;
         }
 
-        const tableContainer = document.querySelector(".table-container");
+        const windowWidth = window.innerWidth; // 手机屏幕或浏览器窗口的宽度
+        const containerWidth = tableContainer.offsetWidth;
 
-        // 先移除ready类，隐藏表格
-        layuiTableBox.classList.remove("table-ready");
-
-        // 延时处理，避免频繁调用
-        scaleTimeout = setTimeout(() => {
-          // 使用 requestAnimationFrame 确保隐藏效果生效后再进行缩放计算
-          requestAnimationFrame(() => {
-            // 获取表格内容的真实宽度（而不是容器宽度）
-            const layuiTable = layuiTableBox.querySelector(".layui-table");
-            const tableHeader = layuiTableBox.querySelector(
-              ".layui-table-header table"
-            );
-            const tableBody = layuiTableBox.querySelector(
-              ".layui-table-body table"
-            );
-            // 优先使用表头的宽度，如果没有则使用表体宽度
-            let tableRealWidth = 0;
-            if (tableHeader) {
-              tableRealWidth = tableHeader.offsetWidth;
-            } else if (tableBody) {
-              tableRealWidth = tableBody.offsetWidth;
-            } else if (layuiTable) {
-              tableRealWidth = layuiTable.scrollWidth; // 使用scrollWidth获取真实内容宽度
-            } else {
-              tableRealWidth = layuiTableBox.scrollWidth;
-            }
-
-            const windowWidth = window.innerWidth; // 手机屏幕或浏览器窗口的宽度
-            const containerWidth = tableContainer.offsetWidth;
-
-            if (tableRealWidth != containerWidth) {
-              const scale = containerWidth / tableRealWidth;
-              layuiTableBox.style.transform = `scale(${scale})`;
-              layuiTableBox.style.transformOrigin = "top left";
-              layuiTableBox.style.width = `${100 / scale}%`;
-              layuiTableBox.style.height = `${100 / scale}%`;
-            } else {
-              layuiTableBox.style.transform = `scale(1)`;
-              layuiTableBox.style.transformOrigin = "top left";
-              layuiTableBox.style.width = `100%`;
-            }
-
-            // 缩放完成后，添加ready类显示表格
-            requestAnimationFrame(() => {
-              layuiTableBox.classList.add("table-ready");
-            });
-          });
-        }, 50); // 50ms防抖延时
+        if (tableRealWidth != containerWidth) {
+          const scale = containerWidth / tableRealWidth;
+          layuiTableBox.style.transform = `scale(${scale})`;
+          layuiTableBox.style.transformOrigin = "top left";
+          layuiTableBox.style.width = `${100 / scale}%`;
+          layuiTableBox.style.height = `${100 / scale}%`;
+        } else {
+          layuiTableBox.style.transform = `scale(1)`;
+          layuiTableBox.style.transformOrigin = "top left";
+          layuiTableBox.style.width = `100%`;
+        }
       }
       window.addEventListener("resize", scaleTableForMobile);
 
@@ -1127,7 +678,6 @@
         var $ = layui.jquery;
         var appconfig = layui.appconfig;
         var form = layui.form;
-        const tempAppconfig = appconfig.api;
 
         // 草稿区 - 暂存未正式提交的医嘱
         var draftOrders = [];
@@ -1138,21 +688,7 @@
 
         // 立即渲染表单元素，确保select框能正常工作
         form.render();
-        $(document).on("click", "#btn-filter-order", function () {
-          const $container = $("#order-btn-container");
-          const $btnFilterContainer = $("#btn-filter-container");
-          const color = $btnFilterContainer.css("background-color");
-          const currentHeight = $container.css("height");
-          if (color === "rgb(211, 211, 211)") {
-            $container.css("height", "40px");
-            $btnFilterContainer.css("background-color", "rgba(0, 0, 0,0)");
-            $container.css("overflow", "hidden");
-          } else {
-            $btnFilterContainer.css("background-color", "lightgrey");
-            $container.css("height", "120px");
-            $container.css("overflow", "visible");
-          }
-        });
+
         // 确保手动表单的 select 使用 Layui 的 select 事件（lay-filter），以便选择 option 后能可靠触发
         (function ensureLayuiSelectHandlers() {
           try {
@@ -1204,8 +740,6 @@
 
         // 缓存全部医嘱数据
         var allYizhuData = [];
-        // 最近一次渲染到卡片的数据（供按钮事件索引回取）
-        var lastRenderedYizhuData = [];
 
         // 医嘱模板数据 - 从API获取
         var orderTemplates = [];
@@ -1225,8 +759,8 @@
 
         // 当前筛选条件
         var currentFilters = {
-          orderType: "temp", // 'long', 'temp', 'all' - 默认临时医嘱（与单选框默认值一致）
-          roleType: "doctor", // 'doctor', 'nurse',"mine", 'all-role' - 默认医生（与单选框默认值一致）
+          orderType: "all", // 'long', 'temp', 'all'
+          roleType: "doctor", // 'doctor', 'nurse',"mine", 'all-role'
           searchQuery: "", // 搜索关键词
         };
         var tableCols = [
@@ -1306,136 +840,6 @@
           document.body.appendChild(tpl);
         }
 
-        // 父子医嘱排序函数
-        function sortYizhuDataWithParentChild(data) {
-          if (!data || data.length === 0) return data;
-
-          console.log("排序前医嘱数量:", data.length);
-
-          // 首先创建父子医嘱映射
-          const childrenMap = new Map();
-          const processedIds = new Set();
-
-          // 收集所有有parent_no的医嘱（子医嘱）
-          data.forEach((order) => {
-            if (order.parent_no && order.parent_no.trim()) {
-              const parentKey = order.parent_no.trim();
-              if (!childrenMap.has(parentKey)) {
-                childrenMap.set(parentKey, []);
-              }
-              childrenMap.get(parentKey).push(order);
-            }
-          });
-
-          // 创建医嘱组（每个组要么是单个普通医嘱，要么是父医嘱+子医嘱的组合）
-          const orderGroups = [];
-
-          data.forEach((order) => {
-            const orderId = order.act_order_no || order.order_no;
-
-            // 如果已经处理过这个医嘱，跳过
-            if (processedIds.has(orderId)) {
-              return;
-            }
-
-            // 如果这个医嘱是子医嘱，跳过（会在处理父医嘱时一起处理）
-            if (order.parent_no && order.parent_no.trim()) {
-              return;
-            }
-
-            // 检查这个医嘱是否是父医嘱
-            const children = childrenMap.get(orderId) || [];
-
-            if (children.length > 0) {
-              // 这是父医嘱，创建一个父子医嘱组
-              const group = {
-                sortTime: new Date(order.enter_time),
-                isParentGroup: true,
-                orders: [
-                  { ...order, _isParent: true },
-                  ...children.map((child, index) => ({
-                    ...child,
-                    _isChild: true,
-                    _isLastChild: index === children.length - 1,
-                  })),
-                ],
-              };
-
-              orderGroups.push(group);
-              processedIds.add(orderId);
-
-              // 标记所有子医嘱为已处理
-              children.forEach((child) => {
-                const childId = child.act_order_no || child.order_no;
-                processedIds.add(childId);
-              });
-            } else {
-              // 这是普通医嘱，创建单个医嘱组
-              const group = {
-                sortTime: new Date(order.enter_time),
-                isParentGroup: false,
-                orders: [{ ...order, _isNormal: true }],
-              };
-
-              orderGroups.push(group);
-              processedIds.add(orderId);
-            }
-          });
-
-          // 处理可能遗漏的孤儿子医嘱
-          data.forEach((order) => {
-            const orderId = order.act_order_no || order.order_no;
-
-            if (
-              !processedIds.has(orderId) &&
-              order.parent_no &&
-              order.parent_no.trim()
-            ) {
-              console.warn(
-                "发现孤儿子医嘱:",
-                order.order_name,
-                "parent_no:",
-                order.parent_no
-              );
-              const group = {
-                sortTime: new Date(order.enter_time),
-                isParentGroup: false,
-                orders: [{ ...order, _isOrphan: true }],
-              };
-              orderGroups.push(group);
-              processedIds.add(orderId);
-            }
-          });
-
-          // 按日期对所有医嘱组进行排序
-          orderGroups.sort((a, b) => a.sortTime - b.sortTime);
-
-          // 将所有组的医嘱合并成最终结果
-          const result = [];
-          orderGroups.forEach((group) => {
-            result.push(...group.orders);
-          });
-
-          console.log("排序后医嘱数量:", result.length);
-          console.log("医嘱组数量:", orderGroups.length);
-          console.log(
-            "父医嘱组数量:",
-            orderGroups.filter((g) => g.isParentGroup).length
-          );
-          console.log("父医嘱数量:", result.filter((r) => r._isParent).length);
-          console.log("子医嘱数量:", result.filter((r) => r._isChild).length);
-          console.log(
-            "普通医嘱数量:",
-            result.filter((r) => r._isNormal).length
-          );
-          console.log(
-            "孤儿医嘱数量:",
-            result.filter((r) => r._isOrphan).length
-          );
-
-          return result;
-        }
-
         // 首次加载数据
         function loadYizhuData(callback) {
           $.ajax({
@@ -1450,18 +854,20 @@
             success: function (res) {
               allYizhuData = res.Data || [];
 
-              // 对数据按父子关系排序
-              console.log(allYizhuData);
+              // 在渲染表格之前对数据按 enter_time 排序
+              function sortYizhuDataByEnterTime(data) {
+                return data.sort(
+                  (a, b) => new Date(a.enter_time) - new Date(b.enter_time)
+                );
+              }
+              allYizhuData = sortYizhuDataByEnterTime(allYizhuData);
 
-              allYizhuData = sortYizhuDataWithParentChild(allYizhuData);
-              console.log(allYizhuData);
-
-              renderYizhuCards(allYizhuData);
+              renderYizhuTable(allYizhuData);
               if (typeof callback === "function") callback();
             },
             error: function () {
               allYizhuData = [];
-              renderYizhuCards([]);
+              renderYizhuTable([]);
               if (typeof callback === "function") callback();
             },
           });
@@ -1666,7 +1072,7 @@
         function loadFrequencyData(callback) {
           $.ajax({
             url:
-              appconfig.api + "/api/MobileWard/GetYzFrequency?long_once_flag=1",
+              tempAppconfig + "api/MobileWard/GetYzFrequency?long_once_flag=1",
             method: "GET",
             dataType: "json",
             success: function (res) {
@@ -1715,7 +1121,7 @@
         // 加载用法数据
         function loadSupplyData(callback) {
           $.ajax({
-            url: appconfig.api + "/api/MobileWard/GetYzSupplyList",
+            url: tempAppconfig + "api/MobileWard/GetYzSupplyList",
             method: "GET",
             dataType: "json",
             success: function (res) {
@@ -1810,7 +1216,7 @@
           }
 
           $.ajax({
-            url: appconfig.api + "/api/MobileWard/GetYzDictList",
+            url: tempAppconfig + "api/MobileWard/GetYzDictList",
             method: "GET",
             dataType: "json",
             data: {
@@ -1831,7 +1237,6 @@
                   unitOptions.push({
                     unit_code: data.mini_unit,
                     unit_name: data.mini1_name,
-
                     unit_type: "mini",
                   });
                 }
@@ -1908,7 +1313,7 @@
             return;
           }
           $.ajax({
-            url: appconfig.api + "/api/MobileWard/GetYzDictList",
+            url: tempAppconfig + "api/MobileWard/GetYzDictList",
             method: "GET",
             dataType: "json",
             data: { serial: serial || "00", order_code: order_code },
@@ -2054,9 +1459,6 @@
             $("#add-order-form")[0].reset();
           }
 
-          // 清空模板搜索框
-          $("#template-search").val("");
-
           // 设置开始时间默认为当前时间
           var now = new Date();
           if ($("#start-time-input").length) {
@@ -2104,9 +1506,6 @@
                 .removeData("tableId")
                 .removeData("tableData")
                 .removeData("detailMap");
-
-              // 清空模板搜索框，避免下次打开时显示上次的搜索内容
-              $("#template-search").val("");
             },
           });
         }
@@ -2188,7 +1587,7 @@
               }
               $("#category-list").html(html);
             };
-            // 渲染右侧：小医嘱卡片（可勾选/编辑）
+            // 渲染右侧：小医嘱表格（可勾选/编辑）
             function renderSubordersTable(suborders) {
               if (!suborders || suborders.length === 0) {
                 $("#suborders-panel").html(
@@ -2197,18 +1596,29 @@
                 return;
               }
 
-              // 转换为卡片数据：每条子医嘱一个卡片，同时构建原始详情映射
+              // 构建表格
+              var tableId = "suborders-table-" + Date.now();
+              var html =
+                '<table class="layui-hide" id="' +
+                tableId +
+                '" lay-filter="' +
+                tableId +
+                '"></table>';
+              $("#suborders-panel").html(html);
+
+              // 转换为表格数据：每条子医嘱一行，同时构建原始详情映射，便于后续高效合并
               var detailMap = {};
-              var cardData = suborders.map(function (item, idx) {
+              var tableData = suborders.map(function (item, idx) {
                 var serial = item.serial || item.Serial;
                 var order_code = item.order_code;
                 var key = String(serial || "") + "|" + String(order_code || "");
-                // 缓存原始对象
+                // 缓存原始对象（不放到行对象里，避免占用多余内存）
                 if (key) detailMap[key] = item;
                 return {
                   _row_id: idx,
                   _key: key, // 用于回查原始明细
-                  selected: true, // 默认选中
+                  selected: true, // 自定义字段
+                  LAY_CHECKED: true, // Layui 默认勾选
                   order_name: item.order_name || "",
                   drug_specification: item.drug_specification || "",
                   doseage: item.doseage || "",
@@ -2226,213 +1636,113 @@
                 };
               });
 
-              // 异步补齐单位名称
+              // 异步补齐单位名称并在完成后刷新表格
+              var tableIdForReload = tableId; // 先声明供闭包使用
               (function populateDoseUnitNames() {
                 var keyToIndexes = {};
-                cardData.forEach(function (item, idx) {
-                  var key = (item.serial || "") + "|" + (item.order_code || "");
+                tableData.forEach(function (row, idx) {
+                  var key = (row.serial || "") + "|" + (row.order_code || "");
                   if (!keyToIndexes[key]) keyToIndexes[key] = [];
                   keyToIndexes[key].push(idx);
                 });
                 var keys = Object.keys(keyToIndexes);
                 var pending = keys.length;
-                if (pending === 0) {
-                  renderCards(); // 直接渲染
-                  return;
-                }
+                if (pending === 0) return; // 无需补齐
                 keys.forEach(function (key) {
                   var parts = key.split("|");
                   var serial = parts[0];
                   var order_code = parts[1];
                   getDoseUnitMapWithCache(serial, order_code, function (map) {
                     (keyToIndexes[key] || []).forEach(function (i) {
-                      var code = cardData[i].doseage_unit;
-                      cardData[i].doseage_unit_name = map[code] || code || "";
+                      var code = tableData[i].doseage_unit;
+                      tableData[i].doseage_unit_name = map[code] || code || "";
                     });
                     pending--;
                     if (pending === 0) {
-                      renderCards(); // 全部映射完成后渲染
+                      // 全部映射完成后刷新表
+                      var tid = $("#suborders-panel").data("tableId");
+                      if (tid) table.reload(tid, { data: tableData });
                     }
                   });
                 });
               })();
 
-              // 渲染卡片
-              function renderCards() {
-                var cardsHtml = '<div class="suborder-cards-container">';
+              // 渲染 Layui 表格
+              table.render({
+                elem: "#" + tableId,
+                id: tableId,
+                data: tableData,
+                height: 420,
+                cols: [
+                  [
+                    { type: "checkbox", field: "selected", width: 40 },
+                    {
+                      field: "order_name",
+                      title: "医嘱",
+                      minWidth: 160,
+                      edit: "text",
+                    },
+                    {
+                      field: "drug_specification",
+                      title: "规格",
+                      width: 140,
+                      templet: function (d) {
+                        return d.drug_specification || "";
+                      },
+                    },
+                    {
+                      field: "doseage",
+                      title: "剂量",
+                      width: 80,
+                      edit: "text",
+                    },
+                    {
+                      field: "doseage_unit_name",
+                      title: "单位",
+                      width: 110,
+                      templet: function (d) {
+                        return d.doseage_unit_name || d.doseage_unit || "";
+                      },
+                    },
+                    {
+                      field: "charge_amount",
+                      title: "数量",
+                      width: 80,
+                      edit: "text",
+                    },
+                    {
+                      field: "frequ_name",
+                      title: "频率",
+                      width: 120,
+                      templet: function (d) {
+                        return d.frequ_name || d.frequ_code || "";
+                      },
+                    },
+                    {
+                      field: "supply_name",
+                      title: "用法",
+                      width: 130,
+                      templet: function (d) {
+                        return d.supply_name || d.supply_code || "";
+                      },
+                    },
+                    {
+                      field: "instruction",
+                      title: "嘱托",
+                      minWidth: 180,
+                      edit: "text",
+                    },
+                  ],
+                ],
+                page: false,
+                limit: 1000,
+                done: function () {},
+              });
 
-                cardData.forEach(function (item, idx) {
-                  var isLongTerm = item.long_once_flag === "1";
-                  var typeText = isLongTerm ? "长期" : "临时";
-                  var doseageText =
-                    (item.doseage || "") +
-                    " " +
-                    (item.doseage_unit_name || item.doseage_unit || "");
-                  doseageText = doseageText.trim() || "未设置";
-
-                  cardsHtml +=
-                    '<div class="suborder-card ' +
-                    (item.selected ? "selected" : "") +
-                    '" data-index="' +
-                    idx +
-                    '">' +
-                    '<div class="suborder-card-header">' +
-                    '<label class="suborder-checkbox">' +
-                    '<input type="checkbox" ' +
-                    (item.selected ? "checked" : "") +
-                    ' data-index="' +
-                    idx +
-                    '">' +
-                    "</label>" +
-                    '<div class="suborder-name" contenteditable="true" data-field="order_name" data-index="' +
-                    idx +
-                    '">' +
-                    (item.order_name || "") +
-                    "</div>" +
-                    '<span class="suborder-type">' +
-                    typeText +
-                    "</span>" +
-                    "</div>" +
-                    '<div class="suborder-body">' +
-                    '<div class="suborder-field">' +
-                    '<span class="suborder-field-label">规格:</span>' +
-                    '<span class="suborder-field-value">' +
-                    (item.drug_specification || "无") +
-                    "</span>" +
-                    "</div>" +
-                    '<div class="suborder-field">' +
-                    '<span class="suborder-field-label">剂量:</span>' +
-                    '<span class="suborder-field-value " contenteditable="false" data-field="doseage" data-index="' +
-                    idx +
-                    '">' +
-                    doseageText +
-                    "</span>" +
-                    "</div>" +
-                    '<div class="suborder-field">' +
-                    '<span class="suborder-field-label">数量:</span>' +
-                    '<span class="suborder-field-value" contenteditable="false" data-field="charge_amount" data-index="' +
-                    idx +
-                    '">' +
-                    (item.charge_amount || "1") +
-                    "</span>" +
-                    "</div>" +
-                    '<div class="suborder-field">' +
-                    '<span class="suborder-field-label">频率:</span>' +
-                    '<span class="suborder-field-value">' +
-                    (item.frequ_name || item.frequ_code || "未设置") +
-                    "</span>" +
-                    "</div>" +
-                    '<div class="suborder-field">' +
-                    '<span class="suborder-field-label">用法:</span>' +
-                    '<span class="suborder-field-value">' +
-                    (item.supply_name || item.supply_code || "未设置") +
-                    "</span>" +
-                    "</div>" +
-                    '<div class="suborder-field suborder-instruction">' +
-                    '<span class="suborder-field-label">嘱托:</span>' +
-                    '<div class="suborder-field-value" contenteditable="false" data-field="instruction" data-index="' +
-                    idx +
-                    '">' +
-                    (item.instruction || "无特殊嘱托") +
-                    "</div>" +
-                    "</div>" +
-                    "</div>" +
-                    "</div>";
-                });
-
-                cardsHtml += "</div>";
-                $("#suborders-panel").html(cardsHtml);
-
-                // 绑定事件
-                bindCardEvents();
-              }
-
-              // 绑定卡片事件
-              function bindCardEvents() {
-                // 复选框改变事件
-                $(document)
-                  .off("change", ".suborder-checkbox input")
-                  .on("change", ".suborder-checkbox input", function () {
-                    var index = $(this).data("index");
-                    var checked = $(this).prop("checked");
-                    cardData[index].selected = checked;
-
-                    var $card = $(this).closest(".suborder-card");
-                    if (checked) {
-                      $card.addClass("selected");
-                    } else {
-                      $card.removeClass("selected");
-                    }
-                  });
-
-                // 卡片点击事件（切换选择状态）
-                $(document)
-                  .off("click", ".suborder-card")
-                  .on("click", ".suborder-card", function (e) {
-                    // 如果点击的是可编辑元素，不触发选择
-                    if (
-                      $(e.target).attr("contenteditable") === "true" ||
-                      $(e.target).is('input[type="checkbox"]')
-                    ) {
-                      return;
-                    }
-
-                    var $checkbox = $(this).find('input[type="checkbox"]');
-                    $checkbox
-                      .prop("checked", !$checkbox.prop("checked"))
-                      .trigger("change");
-                  });
-
-                // 可编辑字段失焦事件
-                $(document)
-                  .off("blur", ".suborder-field-value.editable")
-                  .on("blur", ".suborder-field-value.editable", function () {
-                    var index = $(this).data("index");
-                    var field = $(this).data("field");
-                    var value = $(this).text().trim();
-
-                    if (
-                      typeof index !== "undefined" &&
-                      field &&
-                      cardData[index]
-                    ) {
-                      // 特殊处理剂量字段，分离数值和单位
-                      if (field === "doseage") {
-                        var parts = value.split(/\s+/);
-                        if (parts.length >= 2) {
-                          cardData[index].doseage = parts[0];
-                          // 单位部分不更新，保持原有逻辑
-                        } else {
-                          cardData[index].doseage = value;
-                        }
-                      } else {
-                        cardData[index][field] = value;
-                      }
-                    }
-                  });
-
-                // 回车键完成编辑
-                $(document)
-                  .off("keypress", ".suborder-field-value.editable")
-                  .on(
-                    "keypress",
-                    ".suborder-field-value.editable",
-                    function (e) {
-                      if (e.which === 13) {
-                        // 回车键
-                        e.preventDefault();
-                        $(this).blur();
-                      }
-                    }
-                  );
-              }
-
-              // 保存当前数据，供提交使用
-              $("#suborders-panel").data("cardData", cardData);
+              // 保存当前数据与表格ID、原始详情映射，供提交使用
+              $("#suborders-panel").data("tableId", tableId);
+              $("#suborders-panel").data("tableData", tableData);
               $("#suborders-panel").data("detailMap", detailMap);
-
-              // 兼容原有的表格接口（供提交按钮使用）
-              $("#suborders-panel").data("tableData", cardData);
             }
 
             // 事件绑定：分类选择 -> 加载疗程小医嘱并渲染右侧表格
@@ -2467,25 +1777,17 @@
             $("#btn-submit-suborders")
               .off("click")
               .on("click", function () {
-                // 获取卡片数据（兼容原有的表格数据）
-                var cardData =
-                  $("#suborders-panel").data("cardData") ||
-                  $("#suborders-panel").data("tableData");
-                if (!cardData || cardData.length === 0) {
+                var tableId = $("#suborders-panel").data("tableId");
+                if (!tableId) {
                   layer.msg("请先选择左侧疗程", { icon: 5 });
                   return;
                 }
-
-                // 获取选中的卡片/行
-                var selectedRows = cardData.filter(function (item) {
-                  return item.selected === true || item.LAY_CHECKED === true;
-                });
-
+                var checkStatus = table.checkStatus(tableId);
+                var selectedRows = checkStatus.data || [];
                 if (selectedRows.length === 0) {
                   layer.msg("请至少选择一个小医嘱", { icon: 5 });
                   return;
                 }
-
                 // 获取原始详情映射，便于合并缺失字段
                 var detailMap = $("#suborders-panel").data("detailMap") || {};
 
@@ -2554,7 +1856,7 @@
                       (row.long_once_flag || raw.long_once_flag) === "1"
                         ? "3"
                         : "4",
-                    parent_no: "65965879",
+                    parent_no: "",
                     patient_id: patientData.patient_id || "00000",
                     prev_flag: "",
                     Serial: row.serial || raw.serial || "",
@@ -2598,12 +1900,10 @@
                 '<div class="no-data">正在加载分类...</div>'
               );
               loadOrderTemplates(function () {
-                // 重新渲染完整的分类列表，清除之前的搜索过滤
-                window.renderCategoryList(orderTemplates);
+                renderCategoryList();
               });
             } else {
-              // 重新渲染完整的分类列表，清除之前的搜索过滤
-              window.renderCategoryList(orderTemplates);
+              renderCategoryList();
             }
           } // 关闭 initializeModalContent 函数
         } // 关闭 initializeOrderModal 函数
@@ -2770,7 +2070,7 @@
 
           // 构建API参数
           var apiParams = {
-            act_order_no: "", // 后端生成
+            act_order_no: detailData.act_order_no || "", // 后端生成
             add_opera: doctorCode,
             // add_time: "",
             admiss_times: admiss_times,
@@ -2990,137 +2290,99 @@
 
         // 渲染表格
         function renderYizhuTable(data) {
-          // 兼容旧调用：直接转为卡片渲染
-          renderYizhuCards(data || []);
-        }
+          table.render({
+            elem: "#yizhu-table",
+            data: data,
+            defaultToolbar: [],
+            cols: tableCols,
+            // height: 900, // 减去过滤按钮区域的高度
+            page: true,
+            limit: 1000,
+            text: {
+              none: "暂无医嘱数据",
+            },
+            done: function (res, curr, count) {
+              // 表格渲染完成后调用缩放函数
+              setTimeout(function () {
+                scaleTableForMobile();
+                // 在小屏幕上强制调整"类"列宽度
+                // if (window.innerWidth <= 768) {
+                //   // 调整表头
+                //   $("#yizhu-table")
+                //     .next(".layui-table-view")
+                //     .find("th[data-field='long_once_flag']")
+                //     .css({
+                //       width: "20px",
+                //       "min-width": "20px",
+                //       "max-width": "20px",
+                //     });
+                //   // 调整表体
+                //   $("#yizhu-table")
+                //     .next(".layui-table-view")
+                //     .find("td[data-field='long_once_flag']")
+                //     .css({
+                //       width: "20px",
+                //       "min-width": "20px",
+                //       "max-width": "20px",
+                //     });
+                //   // 如果上面的选择器不生效，尝试使用第一列
+                //   $("#yizhu-table")
+                //     .next(".layui-table-view")
+                //     .find("th:first-child, td:first-child")
+                //     .css({
+                //       width: "20px",
+                //       "min-width": "20px",
+                //       "max-width": "20px",
+                //     });
+                // }
+              }, 100);
 
-        // 卡片渲染
-        function renderYizhuCards(data) {
-          var $cards = $("#yizhu-cards");
-          if (!$cards.length) return;
+              // 根据医嘱类型设置行背景色
+              $("#yizhu-table")
+                .next(".layui-table-view")
+                .find("tbody tr")
+                .each(function (i, tr) {
+                  var row = data[i];
+                  if (!row) return;
+                  var type = (row.long_once_flag || "").toLowerCase();
+                  // console.log("处理行数据:", row, "类型:", row.long_once_flag);
+                  if (row.long_once_flag == 1) {
+                    $(tr).addClass("order-type-long");
+                  } else if (row.long_once_flag == 0) {
+                    $(tr).addClass("order-type-once");
+                    $(tr).addClass("font-red");
+                  }
+                  if (row.status_flag == 0) {
+                    $(tr).addClass("font-grey");
+                  } else if (row.status_flag == 2) {
+                    $(tr).addClass("font-green");
+                  } else if (row.status_flag == 5 || row.long_once_flag == 0) {
+                    $(tr).addClass("font-red");
+                  } else if (row.status_flag == 7) {
+                    $(tr).addClass("font-purple");
+                  }
+                  if (row.order_doctor_name) {
+                    $(tr).addClass("myorder");
+                  }
 
-          lastRenderedYizhuData = Array.isArray(data) ? data.slice() : [];
-
-          // 显示卡片容器、隐藏表格容器
-          $cards.show();
-          $(".table-container").hide();
-
-          if (!lastRenderedYizhuData.length) {
-            $cards.html('<div class="no-data">暂无医嘱数据</div>');
-            return;
-          }
-
-          function text(v) {
-            return v == null ? "" : String(v);
-          }
-          function joinDose(dose, unit, unitName) {
-            var d = (dose || "").toString().trim();
-            var u = (unitName || unit || "").toString().trim();
-            if (!d && !u) return "";
-            if (!d) return u;
-            if (!u) return d;
-            return d + " " + u;
-          }
-
-          var html = "";
-          lastRenderedYizhuData.forEach(function (item, idx) {
-            var isLong = String(item.long_once_flag) === "1";
-            var typeText = isLong ? "长" : "临";
-            var typeCls = isLong ? "order-type-long" : "order-type-once";
-
-            var statusCls = "";
-            if (String(item.status_flag) === "0") statusCls = "font-grey";
-            else if (String(item.status_flag) === "2") statusCls = "font-green";
-            else if (String(item.status_flag) === "5" || !isLong)
-              statusCls = "font-red";
-            else if (String(item.status_flag) === "7")
-              statusCls = "font-purple";
-
-            var pcCls = item._isParent
-              ? "parent-order-card"
-              : item._isChild
-              ? "child-order-card"
-              : "";
-
-            var doseText = joinDose(
-              item.doseage,
-              item.doseage_unit,
-              item.doseage_unit_name
-            );
-            var instruction = text(item.instruction || item.discription);
-            var drugSpec = text(item.drug_specification);
-
-            html +=
-              '<div class="order-card ' +
-              typeCls +
-              " " +
-              statusCls +
-              " " +
-              pcCls +
-              '">' +
-              '<div class="order-card-header">' +
-              '<span class="order-name">' +
-              (text(item.order_name) || "未命名医嘱") +
-              (drugSpec ? "<small>" + drugSpec + "</small>" : "") +
-              (text(item.enter_time_mm_dd)
-                ? '<small class="enter-time">录入 ' +
-                  text(item.enter_time_mm_dd) +
-                  "</small>"
-                : "") +
-              "</span>" +
-              '<span class="order-type ' +
-              (isLong ? "badge-long" : "badge-once") +
-              '">' +
-              typeText +
-              "</span>" +
-              "</div>" +
-              '<div class="order-card-body">' +
-              '<div class="field-row times-row" style="grid-column:1/-1">' +
-              '<div class="field"><label>开始</label><span class="value">' +
-              text(item.start_time_mm_dd || item.order_date || "") +
-              "</span></div>" +
-              '<div class="field"><label>停止</label><span class="value">' +
-              text(item.end_time_mm_dd || "") +
-              "</span></div>" +
-              "</div>" +
-              '<div class="field"><label>剂量</label><span class="value">' +
-              (doseText || "-") +
-              "</span></div>" +
-              '<div class="field"><label>医生</label><span class="value">' +
-              text(item.order_doctor_name || "") +
-              "</span></div>" +
-              '<div class="field"><label>用法</label><span class="value">' +
-              text(item.supply_name || "") +
-              "</span></div>" +
-              '<div class="field"><label>频率</label><span class="value">' +
-              text(item.frequ_name || "") +
-              "</span></div>" +
-              '<div class="field"><label>数量</label><span class="value">' +
-              text(item.charge_amount || "") +
-              "</span></div>" +
-              (instruction
-                ? '<div class="field instruction" style="grid-column:1/-1"><label>嘱托</label><span class="value">' +
-                  instruction +
-                  "</span></div>"
-                : "") +
-              "</div>" +
-              '<div class="order-card-actions">' +
-              '<button type="button" class="layui-btn layui-btn-xs layui-btn-danger btn-card-revoke" data-idx="' +
-              idx +
-              '">撤销</button>' +
-              '<button type="button" class="layui-btn layui-btn-xs layui-btn-warm btn-card-stop" data-idx="' +
-              idx +
-              '">停止</button>' +
-              "</div>" +
-              "</div>";
+                  // 设置医生单元格背景色
+                  var doctorCell = $(tr).find(
+                    'td[data-field="order_doctor_name"]'
+                  );
+                  if (row.fit_flag == 1) {
+                    doctorCell.addClass("doctor-cell-primary");
+                  } else if (row.fit_flag == 0) {
+                    doctorCell.addClass("doctor-cell-nurse");
+                  } else if (row.fit_flag == 2) {
+                    doctorCell.addClass("doctor-cell-special");
+                  }
+                });
+            },
           });
-
-          $cards.html(html);
         }
 
         // 应用筛选条件
         function applyFilters() {
-          console.log("应用筛选前:", allYizhuData);
           var filtered = allYizhuData.filter(function (item) {
             var matchOrderType = true;
             var matchRoleType = true;
@@ -3167,10 +2429,7 @@
             return matchOrderType && matchRoleType && matchSearch;
           });
 
-          // 对筛选后的数据进行父子医嘱排序
-          console.log("筛选器", filtered);
-          var sortedData = sortYizhuDataWithParentChild(filtered);
-          renderYizhuCards(sortedData);
+          renderYizhuTable(filtered);
 
           // 显示筛选结果提示
           var orderTypeText =
@@ -3215,93 +2474,16 @@
         }
 
         // select框筛选事件 - 医嘱类型
-        // form.on("select(order-type-select)", function (data) {
-        //   console.log("医嘱类型select触发了:", data.value);
-        //   currentFilters.orderType = data.value;
-
-        //   // 同步更新单选框的值
-        //   var radioValue = "";
-        //   switch(data.value) {
-        //     case "all": radioValue = "1"; break;
-        //     case "temp": radioValue = "2"; break;
-        //     case "long": radioValue = "3"; break;
-        //     default: radioValue = "1";
-        //   }
-        //   $('input[name="order-type"][value="' + radioValue + '"]').prop('checked', true);
-        //   form.render('radio');
-
-        //   applyFilters();
-        // });
-
-        // // select框筛选事件 - 开嘱人类型
-        // form.on("select(role-type-select)", function (data) {
-        //   console.log("开嘱人类型select触发了:", data.value);
-        //   currentFilters.roleType = data.value;
-
-        //   // 同步更新单选框的值
-        //   var radioValue = "";
-        //   switch(data.value) {
-        //     case "all-role": radioValue = "1"; break;
-        //     case "doctor": radioValue = "2"; break;
-        //     case "nurse": radioValue = "3"; break;
-        //     case "mine": radioValue = "2"; break; // "我的医嘱" 归类到医生
-        //     default: radioValue = "2";
-        //   }
-        //   $('input[name="data-source"][value="' + radioValue + '"]').prop('checked', true);
-        //   form.render('radio');
-
-        //   applyFilters();
-        // });
-
-        // 单选框筛选事件 - 医嘱类型
-        form.on("radio(order-type)", function (data) {
-          console.log("医嘱类型radio触发了:", data.value);
-          var orderType = "";
-          switch (data.value) {
-            case "1":
-              orderType = "all";
-              break;
-            case "2":
-              orderType = "temp";
-              break;
-            case "3":
-              orderType = "long";
-              break;
-            default:
-              orderType = "all";
-          }
-          currentFilters.orderType = orderType;
-
-          // 同步更新下拉框的值
-          $("#order-type-select").val(orderType);
-          form.render("select");
-
+        form.on("select(order-type-select)", function (data) {
+          console.log("医嘱类型select触发了:", data.value);
+          currentFilters.orderType = data.value;
           applyFilters();
         });
 
-        // 单选框筛选事件 - 数据来源
-        form.on("radio(data-source)", function (data) {
-          console.log("数据来源radio触发了:", data.value);
-          var roleType = "";
-          switch (data.value) {
-            case "1":
-              roleType = "all-role";
-              break;
-            case "2":
-              roleType = "doctor";
-              break;
-            case "3":
-              roleType = "nurse";
-              break;
-            default:
-              roleType = "doctor";
-          }
-          currentFilters.roleType = roleType;
-
-          // 同步更新下拉框的值
-          $("#role-type-select").val(roleType);
-          form.render("select");
-
+        // select框筛选事件 - 开嘱人类型
+        form.on("select(role-type-select)", function (data) {
+          console.log("开嘱人类型select触发了:", data.value);
+          currentFilters.roleType = data.value;
           applyFilters();
         });
 
@@ -3715,89 +2897,6 @@
             );
         })();
 
-        // 通用的医嘱剂量和单位验证函数
-        function validateOrdersCompleteness(orders, orderType) {
-          var validationErrors = [];
-          var incompleteOrders = [];
-
-          orders.forEach(function (order, index) {
-            var orderName = order.order_name || "";
-            var doseage = (order.doseage || "").toString().trim();
-            var doseageUnit = (order.doseage_unit || "").toString().trim();
-            var doseageUnitName = (order.doseage_unit_name || "")
-              .toString()
-              .trim();
-
-            // 检查是否需要剂量（通常药品类医嘱需要剂量）
-            var needsDoseage = false; // 默认都需要剂量
-
-            // 某些特殊医嘱可能不需要剂量，比如检查类、手术类等
-            var nonDoseageKeywords = [
-              "检查",
-              "拍片",
-              "心电图",
-              "CT",
-              "MRI",
-              "B超",
-              "手术",
-              "换药",
-              "护理",
-              "观察",
-            ];
-            nonDoseageKeywords.forEach(function (keyword) {
-              if (orderName.indexOf(keyword) !== -1) {
-                needsDoseage = false;
-              }
-            });
-
-            if (needsDoseage) {
-              var hasValidDoseage =
-                doseage && doseage !== "" && doseage !== "0";
-              var hasValidUnit =
-                (doseageUnit && doseageUnit !== "") ||
-                (doseageUnitName && doseageUnitName !== "");
-
-              if (!hasValidDoseage || !hasValidUnit) {
-                incompleteOrders.push({
-                  index: index + 1,
-                  name: orderName || "未命名医嘱",
-                  missingDoseage: !hasValidDoseage,
-                  missingUnit: !hasValidUnit,
-                });
-              }
-            }
-          });
-
-          // 如果有不完整的医嘱，返回错误信息
-          if (incompleteOrders.length > 0) {
-            var errorMessages = [
-              "以下" + orderType + "缺少必要的剂量或单位信息：<br><br>",
-            ];
-            incompleteOrders.forEach(function (order) {
-              var missing = [];
-              if (order.missingDoseage) missing.push("剂量");
-              if (order.missingUnit) missing.push("单位");
-
-              errorMessages.push(
-                "• <strong>" +
-                  order.name +
-                  "</strong><br>" +
-                  "  缺少：<span style='color: #ff5722;'>" +
-                  missing.join("、") +
-                  "</span><br>"
-              );
-            });
-
-            return {
-              isValid: false,
-              errorMessage: errorMessages.join(""),
-              incompleteCount: incompleteOrders.length,
-            };
-          }
-
-          return { isValid: true };
-        }
-
         // 事件：提交全部草稿
         $(document)
           .off("click", "#btn-submit-all-drafts")
@@ -3806,27 +2905,6 @@
               layer.msg("暂无可提交的医嘱", { icon: 2 });
               return;
             }
-
-            // 验证剂量和单位完整性
-            var validation = validateOrdersCompleteness(
-              draftOrders,
-              "草稿医嘱"
-            );
-            if (!validation.isValid) {
-              layer.alert(
-                validation.errorMessage +
-                  "<br><span style='color: #666; font-size: 12px;'>请在草稿列表中补充完整信息后再提交</span>",
-                {
-                  icon: 2,
-                  title: "草稿医嘱信息不完整",
-                  area: ["450px", "auto"],
-                  btn: ["我知道了"],
-                  btnAlign: "c",
-                }
-              );
-              return;
-            }
-
             // 简单校验：提示缺少编码的条目数量
             var missing = draftOrders.filter(function (x) {
               return !x.order_code;
@@ -3835,11 +2913,7 @@
               ? "\n其中 " + missing + " 条缺少编码，可能提交失败"
               : "";
             layer.confirm(
-              "确定提交全部 " +
-                draftOrders.length +
-                " 条医嘱？" +
-                tip +
-                "\n\n✅ 保存区医嘱的剂量和单位信息均已完整",
+              "确定提交全部 " + draftOrders.length + " 条医嘱？" + tip,
               { icon: 3, title: "确认提交" },
               function (index) {
                 layer.close(index);
@@ -3875,9 +2949,7 @@
         loadOrderTemplates(function () {
           loadFrequencyData(function () {
             loadSupplyData(function () {
-              loadYizhuData(function () {
-                applyFilters();
-              });
+              loadYizhuData(applyFilters);
             });
           });
         });
@@ -3894,16 +2966,49 @@
           }
         });
 
-        // 卡片操作按钮事件
-        $(document).on("click", ".btn-card-revoke", function () {
-          var idx = $(this).data("idx");
-          var item = lastRenderedYizhuData[idx];
-          if (item) revokeMedicalOrder(item);
-        });
-        $(document).on("click", ".btn-card-stop", function () {
-          var idx = $(this).data("idx");
-          var item = lastRenderedYizhuData[idx];
-          if (item) stopMedicalOrder(item);
+        // 行工具栏事件
+        table.on("tool(yizhu-table)", function (obj) {
+          var data = obj.data;
+          if (obj.event === "detail") {
+            layer.open({
+              type: 1,
+              title: false,
+              area: ["600px", "400px"],
+              content:
+                '<div style="padding: 20px;">' +
+                "<p><strong>医嘱日期：</strong>" +
+                data.order_date +
+                " " +
+                data.order_time +
+                "</p>" +
+                "<p><strong>医嘱类型：</strong>" +
+                data.order_type_name +
+                "</p>" +
+                "<p><strong>医嘱内容：</strong>" +
+                data.order_text +
+                "</p>" +
+                "<p><strong>剂量：</strong>" +
+                (data.dosage || "") +
+                "</p>" +
+                "<p><strong>频次：</strong>" +
+                (data.frequency || "") +
+                "</p>" +
+                "<p><strong>用法：</strong>" +
+                (data.usage || "") +
+                "</p>" +
+                "<p><strong>开嘱医生：</strong>" +
+                data.doctor_name +
+                "</p>" +
+                "<p><strong>状态：</strong>" +
+                data.status_name +
+                "</p>" +
+                "</div>",
+            });
+          } else if (obj.event === "revoke") {
+            revokeMedicalOrder(data);
+          } else if (obj.event === "stop") {
+            stopMedicalOrder(data);
+          }
         });
         // 将 renderDraftTable 替换为卡片渲染，并替换相关事件
         // ...existing code...
@@ -3924,74 +3029,20 @@
             var supplyName =
               supplyCodeToName(it.supply_code) || it.supply_code || "";
             var selectedCls = idx === selectedDraftIndex ? " selected" : "";
-
-            // 检查剂量和单位是否完整
-            var orderName = it.order_name || "";
-            var doseage = (it.doseage || "").toString().trim();
-            var doseageUnit = (it.doseage_unit || "").toString().trim();
-            var doseageUnitName = (it.doseage_unit_name || "")
-              .toString()
-              .trim();
-
-            // 判断是否需要剂量
-            var needsDoseage = false;
-            var nonDoseageKeywords = [
-              "检查",
-              "拍片",
-              "心电图",
-              "CT",
-              "MRI",
-              "B超",
-              "手术",
-              "换药",
-              "护理",
-              "观察",
-            ];
-            nonDoseageKeywords.forEach(function (keyword) {
-              if (orderName.indexOf(keyword) !== -1) {
-                needsDoseage = false;
-              }
-            });
-
-            var hasValidDoseage =
-              !needsDoseage || (doseage && doseage !== "" && doseage !== "0");
-            var hasValidUnit =
-              !needsDoseage ||
-              (doseageUnit && doseageUnit !== "") ||
-              (doseageUnitName && doseageUnitName !== "");
-            var isIncomplete =
-              needsDoseage && (!hasValidDoseage || !hasValidUnit);
-            var incompleteCls = isIncomplete ? " incomplete" : "";
-
-            var dosePart = "";
-            if (needsDoseage) {
-              if (it.doseage || it.doseage_unit || it.doseage_unit_name) {
-                dosePart =
-                  "<span" +
-                  (!hasValidDoseage || !hasValidUnit
-                    ? ' style="color: #ff5722; font-weight: bold;"'
-                    : "") +
-                  ">剂量：" +
-                  (it.doseage ||
-                    "<span style='color: #ff5722;'>缺少剂量</span>") +
-                  (it.doseage_unit_name
-                    ? " " + it.doseage_unit_name
-                    : it.doseage_unit
-                    ? " " + it.doseage_unit
-                    : "<span style='color: #ff5722;'> 缺少单位</span>") +
-                  "</span>";
-              } else {
-                dosePart =
-                  "<span style='color: #ff5722; font-weight: bold;'>剂量：缺少剂量和单位</span>";
-              }
-            } else {
-              dosePart = "<span style='color: #999;'>剂量：不适用</span>";
-            }
+            var dosePart = it.doseage
+              ? "<span>剂量：" +
+                (it.doseage || "") +
+                (it.doseage_unit_name
+                  ? " " + it.doseage_unit_name
+                  : it.doseage_unit
+                  ? " " + it.doseage_unit
+                  : "") +
+                "</span>"
+              : "";
 
             html +=
               '<div class="draft-card' +
               selectedCls +
-              incompleteCls +
               '" data-index="' +
               idx +
               '">' +
@@ -4012,7 +3063,9 @@
               "<span>频率：" +
               freqName +
               "</span>" +
-              (supplyName ? "<span>用法：" + supplyName + "</span>" : "") +
+              "<span>用法：" +
+              supplyName +
+              "</span>" +
               (it.drug_specification
                 ? "<span>规格：" + it.drug_specification + "</span>"
                 : "") +
@@ -4061,167 +3114,217 @@
     </script>
     <!-- 静态：用于“新增医嘱（草稿）”的样式，已替代动态注入 ensureManualStyles -->
     <style id="manual-order-style">
-/* 宽度与居中 */
-#manual-order-modal .layui-row
-{
-    width: 100%;  max-width: 1200px;  margin: 0 auto;
-}
-/* 表单紧凑样式 */
-#manual-order-modal .layui-form .layui-form-item
-{
-    margin-bottom: 8px;
-}
-#manual-order-modal .layui-form-label
-{
-    width: 70px;  padding: 6px 8px;
-}
-#manual-order-modal .layui-input
-{
-    min-width: 100px;
-}
-/* 若需要可在此处调整 input-block 的 margin/padding */
-#manual-order-modal .layui-field-box
-{
-    padding: 10px;
-}
-#manual-order-modal .layui-col-sm5,
-#manual-order-modal .layui-col-sm7
-{
-    width: 100%;  max-height: 50%;  padding: 6px;
-}
-
-/* 保存区高亮 */
-
-#manual-order-form
-{
-    display: grid;  align-content: start;  width: 100%;  grid-template-columns: 1fr 1fr; /* 固定两列 */  gap: 15px;
-}
-
-/* 简化后的字段容器样式 */
-#manual-order-form .layui-inline
-{
-    display: flex !important;  align-items: center !important;  width: 100% !important; /* Grid子项占满网格单元 */  margin: 0 !important;  padding: 0 !important;  gap: 8px !important;
-}
-
-#manual-order-form .layui-form-label
-{
-    font-size: 14px !important;  line-height: 38px !important;  width: auto !important;  min-width: 60px !important;  margin: 0 !important;  padding: 0 !important;  white-space: nowrap !important;  color: #333 !important;
-}
-
-#manual-order-form .layui-input,
-#manual-order-form select
-{
-    font-size: 14px !important;  line-height: 38px !important;  flex: 1 !important;  width: 100%;  min-width: 0 !important;  height: 38px !important;  padding: 0 10px !important;  border: 1px solid #e6e6e6;  border-radius: 2px !important;
-}
-
-/* 按钮行样式 - 跨越两列 */
-#manual-order-form .form-buttons
-{
-    display: flex;  flex-wrap: wrap;  justify-content: space-around;  margin-top: 5px;  grid-column: 1 / -1; /* 跨越所有列 */  gap: 8px;
-}
-
-/* 基本信息表单中的select样式修复 */
-#manual-order-form .layui-form-select
-{
-    flex: 1 !important;  min-width: 0 !important;
-}
-
-#manual-order-form .layui-form-select .layui-select-title
-{
-    line-height: 38px !important;  width: 100% !important;  height: 38px !important;  border: 1px solid #e6e6e6 !important;  border-radius: 2px !important;
-}
-
-#manual-order-form .layui-form-select .layui-select-title input
-{
-    line-height: 36px !important;  height: 36px !important;  padding-right: 30px !important;
-}
-
-/* 确保select在flex容器中正常显示 */
-#manual-order-form .layui-inline .layui-form-select
-{
-    display: block !important;  flex: 1 !important;
-}
-/* 保存区：卡片列表 */
-#manual-order-modal #manual-draft-list
-{
-    display: grid;  grid-template-columns: 1fr;  gap: 8px;
-}
-@media (min-width: 992px)
-{
-    #manual-order-modal #manual-draft-list
-    {
-        grid-template-columns: 1fr 1fr;
-    }
-}
-#manual-order-modal .draft-card
-{
-    display: flex;  flex-direction: column;  padding: 10px 12px;  cursor: pointer;  border: 1px solid #e6e6e6;  border-radius: 6px;  background: #fff;  gap: 6px;
-}
-#manual-order-modal .draft-card .title
-{
-    font-size: 14px;  font-weight: 600;  line-height: 1.4;  display: flex;  align-items: center;  color: #333;  gap: 8px;
-}
-#manual-order-modal .draft-card .badge
-{
-    font-size: 12px;  line-height: 18px;  display: inline-block;  padding: 0 6px;  color: #1e9fff;  border: 1px solid #d6ecff;  border-radius: 3px;  background: #f0f7ff;
-}
-#manual-order-modal .draft-card .meta
-{
-    font-size: 12px;  display: flex;  flex-wrap: wrap;  color: #666;  gap: 10px 16px;
-}
-#manual-order-modal .draft-card .meta span
-{
-    white-space: nowrap;
-}
-#manual-order-modal .draft-card .desc
-{
-    font-size: 12px;  overflow: hidden;  white-space: nowrap;  text-overflow: ellipsis;  color: #666;
-}
-#manual-order-modal .draft-card .actions
-{
-    display: flex;  justify-content: flex-end;  margin-top: 4px;  gap: 8px;
-}
-#manual-order-modal .draft-card .layui-btn
-{
-    font-size: 12px;  line-height: 24px;  height: 24px;  padding: 0 10px;
-}
-#manual-order-modal .draft-card.selected
-{
-    outline: 2px solid #1e9fff;  background: #f0f7ff;
-}
-/* ...existing code... */
-/* 在小屏幕上调整布局，left/right 垂直堆叠 */
-@media (max-width: 640px)
-{
-    #manual-order-modal .layui-col-sm5,
-    #manual-order-modal .layui-col-sm7
-    {
+      /* 宽度与居中 */
+      #manual-order-modal .layui-row {
         width: 100%;
-    }
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+      /* 表单紧凑样式 */
+      #manual-order-modal .layui-form .layui-form-item {
+        margin-bottom: 8px;
+      }
+      #manual-order-modal .layui-form-label {
+        width: 70px;
+        padding: 6px 8px;
+      }
+      #manual-order-modal .layui-input {
+        min-width: 100px;
+      }
+      /* 若需要可在此处调整 input-block 的 margin/padding */
+      #manual-order-modal .layui-field-box {
+        padding: 10px;
+      }
+      #manual-order-modal .layui-col-sm5,
+      #manual-order-modal .layui-col-sm7 {
+        width: 100%;
+        max-height: 50%;
+        padding: 6px;
+      }
 
-    /* 小屏幕下保持双列，但调整间距和标签宽度 */
-    #manual-order-form
-    {
-        gap: 10px !important; /* 减小间距 */
-    }
+      /* 保存区高亮 */
 
-    #manual-order-form .layui-inline
-    {
-        gap: 4px !important; /* 减小内部间距 */
-    }
+      #manual-order-form {
+        display: grid;
+        align-content: start;
+        width: 100%;
+        grid-template-columns: 1fr 1fr; /* 固定两列 */
+        gap: 15px;
+      }
 
-    #manual-order-form .layui-form-label
-    {
-        font-size: 13px !important; /* 缩小字体 */  min-width: 40px !important; /* 缩小标签宽度 */
-    }
+      /* 简化后的字段容器样式 */
+      #manual-order-form .layui-inline {
+        display: flex !important;
+        align-items: center !important;
+        width: 100% !important; /* Grid子项占满网格单元 */
+        margin: 0 !important;
+        padding: 0 !important;
+        gap: 8px !important;
+      }
 
-    #manual-order-form .layui-input,
-    #manual-order-form select
-    {
-        font-size: 13px !important; /* 缩小输入框字体 */
-    }
-}
+      #manual-order-form .layui-form-label {
+        font-size: 14px !important;
+        line-height: 38px !important;
+        width: auto !important;
+        min-width: 60px !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        white-space: nowrap !important;
+        color: #333 !important;
+      }
 
+      #manual-order-form .layui-input,
+      #manual-order-form select {
+        font-size: 14px !important;
+        line-height: 38px !important;
+        flex: 1 !important;
+        min-width: 0 !important;
+        height: 38px !important;
+        padding: 0 10px !important;
+        border: 1px solid #e6e6e6 !important;
+        border-radius: 2px !important;
+      }
+
+      /* 按钮行样式 - 跨越两列 */
+      #manual-order-form .form-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+        margin-top: 5px;
+        grid-column: 1 / -1; /* 跨越所有列 */
+        gap: 8px;
+      }
+
+      /* 基本信息表单中的select样式修复 */
+      #manual-order-form .layui-form-select {
+        flex: 1 !important;
+        min-width: 0 !important;
+      }
+
+      #manual-order-form .layui-form-select .layui-select-title {
+        line-height: 38px !important;
+        width: 100% !important;
+        height: 38px !important;
+        border: 1px solid #e6e6e6 !important;
+        border-radius: 2px !important;
+      }
+
+      #manual-order-form .layui-form-select .layui-select-title input {
+        line-height: 36px !important;
+        height: 36px !important;
+        padding-right: 30px !important;
+      }
+
+      /* 确保select在flex容器中正常显示 */
+      #manual-order-form .layui-inline .layui-form-select {
+        display: block !important;
+        flex: 1 !important;
+      }
+      /* 在底部已有的 #manual-order-style 内追加以下样式 */
+      /* ...existing code... */
+      #manual-order-style {
+        /* 仅提示，此选择器为样式块id，不用粘贴此行 */
+      }
+      /* 保存区：卡片列表 */
+      #manual-order-modal #manual-draft-list {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+      @media (min-width: 992px) {
+        #manual-order-modal #manual-draft-list {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+      #manual-order-modal .draft-card {
+        display: flex;
+        flex-direction: column;
+        padding: 10px 12px;
+        cursor: pointer;
+        border: 1px solid #e6e6e6;
+        border-radius: 6px;
+        background: #fff;
+        gap: 6px;
+      }
+      #manual-order-modal .draft-card .title {
+        font-size: 14px;
+        font-weight: 600;
+        line-height: 1.4;
+        display: flex;
+        align-items: center;
+        color: #333;
+        gap: 8px;
+      }
+      #manual-order-modal .draft-card .badge {
+        font-size: 12px;
+        line-height: 18px;
+        display: inline-block;
+        padding: 0 6px;
+        color: #1e9fff;
+        border: 1px solid #d6ecff;
+        border-radius: 3px;
+        background: #f0f7ff;
+      }
+      #manual-order-modal .draft-card .meta {
+        font-size: 12px;
+        display: flex;
+        flex-wrap: wrap;
+        color: #666;
+        gap: 10px 16px;
+      }
+      #manual-order-modal .draft-card .meta span {
+        white-space: nowrap;
+      }
+      #manual-order-modal .draft-card .desc {
+        font-size: 12px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        color: #666;
+      }
+      #manual-order-modal .draft-card .actions {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 4px;
+        gap: 8px;
+      }
+      #manual-order-modal .draft-card .layui-btn {
+        font-size: 12px;
+        line-height: 24px;
+        height: 24px;
+        padding: 0 10px;
+      }
+      #manual-order-modal .draft-card.selected {
+        outline: 2px solid #1e9fff;
+        background: #f0f7ff;
+      }
+      /* ...existing code... */
+      /* 在小屏幕上调整布局，left/right 垂直堆叠 */
+      @media (max-width: 640px) {
+        #manual-order-modal .layui-col-sm5,
+        #manual-order-modal .layui-col-sm7 {
+          width: 100%;
+        }
+
+        /* 小屏幕下保持双列，但调整间距和标签宽度 */
+        #manual-order-form {
+          gap: 10px !important; /* 减小间距 */
+        }
+
+        #manual-order-form .layui-inline {
+          gap: 4px !important; /* 减小内部间距 */
+        }
+
+        #manual-order-form .layui-form-label {
+          font-size: 13px !important; /* 缩小字体 */
+          min-width: 40px !important; /* 缩小标签宽度 */
+        }
+
+        #manual-order-form .layui-input,
+        #manual-order-form select {
+          font-size: 13px !important; /* 缩小输入框字体 */
+        }
+      }
     </style>
 
     <!-- 静态：新增医嘱（草稿）弹窗 DOM，已替代动态注入 ensureManualModalDom -->

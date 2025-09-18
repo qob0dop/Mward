@@ -1,7 +1,7 @@
 import { defineConfig } from "vite";
 import { resolve } from "path";
 // copy static folders into `dist` during build
-import { viteStaticCopy } from 'vite-plugin-static-copy'
+import { viteStaticCopy } from "vite-plugin-static-copy";
 
 export default defineConfig({
   root: ".",
@@ -10,14 +10,15 @@ export default defineConfig({
   plugins: [
     viteStaticCopy({
       targets: [
-        { src: 'api/**', dest: 'api' },
-        { src: 'images/**', dest: 'images' },
-        { src: 'css/**', dest: 'css' },
-        { src: 'js/**', dest: 'js' },
-        { src: 'lib/**', dest: 'lib' },
+        { src: "api/**", dest: "api" },
+        { src: "images/**", dest: "images" },
+        { src: "css/**", dest: "css" },
+        { src: "js/**", dest: "js" },
+        { src: "lib/**", dest: "lib" },
+
         // 如果你有其他自定义静态文件夹，按 { src: 'myfolder/**', dest: 'myfolder' } 增加即可
-      ]
-    })
+      ],
+    }),
   ],
   build: {
     outDir: "dist",
@@ -26,6 +27,7 @@ export default defineConfig({
       input: {
         main: resolve(__dirname, "main.html"),
         login: resolve(__dirname, "index.html"),
+        home: resolve(__dirname, "home.html"),
         patient: resolve(__dirname, "view/patient.html"),
         wardlist: resolve(__dirname, "view/wardlist.html"),
         edoclist: resolve(__dirname, "view/edoclist.html"),
@@ -34,8 +36,13 @@ export default defineConfig({
         oplist: resolve(__dirname, "view/oplist.html"),
         yizhu: resolve(__dirname, "view/yizhu.html"),
         ward_records: resolve(__dirname, "view/ward_records.html"),
-      }
-    }
+        patients: resolve(__dirname, "navpage/patients.html"),
+        contacts: resolve(__dirname, "navpage/contacts.html"),
+        message: resolve(__dirname, "navpage/message.html"),
+        workbench: resolve(__dirname, "navpage/workbench.html"),
+        my: resolve(__dirname, "navpage/my.html"),
+      },
+    },
   },
   server: {
     open: "/index.html",
