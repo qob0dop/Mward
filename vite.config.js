@@ -35,6 +35,7 @@ export default defineConfig({
         jy_apply: resolve(__dirname, "view/jy_apply.html"),
         oplist: resolve(__dirname, "view/oplist.html"),
         yizhu: resolve(__dirname, "view/yizhu.html"),
+        add_order: resolve(__dirname, "view/add_order.html"),
         ward_records: resolve(__dirname, "view/ward_records.html"),
         patients: resolve(__dirname, "navpage/patients.html"),
         contacts: resolve(__dirname, "navpage/contacts.html"),

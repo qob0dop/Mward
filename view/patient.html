@@ -977,6 +977,13 @@
           transform: none !important;
         }
       } */
+
+
+
+
+
+
+
     </style>
   </head>
   <body>
@@ -1429,7 +1436,7 @@
                   "/";
                 var now = new Date();
                 var ticks = now.getTime();
-                window.parent.layui.layer.open({
+                layui.layer.open({
                   type: 2,
                   area: ["100%", "100%"],
                   title:
@@ -1784,7 +1791,7 @@
               case "btn-electronic-medical":
                 // 电子病历 - 使用iframe在新页面打开
                 var config = functionConfigs.electronic;
-                window.parent.layui.layer.open({
+                layui.layer.open({
                   type: 2,
                   area: ["100%", "100%"],
                   title: config.title + " - " + jsonData.name,
@@ -1795,10 +1802,11 @@
               case "btn-ward-records":
                 // 查房记录 - 使用iframe在新页面打开
                 var config = functionConfigs.wardRecords;
-                window.parent.layui.layer.open({
+                layui.layer.open({
                   type: 2,
                   area: ["100%", "100%"],
-                  title: config.title + " - " + jsonData.name,
+                  title: false,
+                  closeBtn:0,
                   content: config.src + patientParams,
                 });
                 break;

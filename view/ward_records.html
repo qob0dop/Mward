@@ -23,12 +23,14 @@ body
 /* 头部操作区域样式 */
 .header-controls
 {
-    display: flex;  align-items: center;  flex-wrap: wrap;  justify-content: space-between;  box-sizing: border-box;height: 10%; padding: 8px;  border: 1px solid #e9ecef;  border-radius: 6px;  background: #f8f9fa;  gap: 10px;
+    display: flex;  align-items: center;  flex-wrap: wrap;  justify-content: space-between;  box-sizing: border-box;height: 10%; padding: 8px;  border: 1px solid #e9ecef;  border-radius: 6px;          background-color: rgb(4, 46, 167);
+
+gap: 10px;
 }
 
 .page-title
 {
-    font-size: 18px;  font-weight: bold;  margin: 0;  color: #333;
+    font-size: 18px;  font-weight: bold;  margin: 0;  color: #fff;
 }
 
 /* 查房记录列表样式 */
@@ -110,15 +112,13 @@ audio
 
 /* 转文字按钮样式 */
 .convert-text-btn
-{font-weight: bold;  
-
-    flex-shrink: 0;  transition: all .3s ease; color: white;  border: none;  background: linear-gradient(45deg, #1e9fff, #26c6da);  
+{
+    font-weight: bold;  flex-shrink: 0;  transition: all .3s ease; color: white;  border: none;  background: linear-gradient(45deg, #1e9fff, #26c6da);
 }
 
 .convert-text-btn:hover
-{transform: translateY(-1px);  
-
-    background: linear-gradient(45deg, #0d8bf0, #1eb8cc);  box-shadow: 0 4px 8px rgba(30, 159, 255, .3);
+{
+    transform: translateY(-1px);  background: linear-gradient(45deg, #0d8bf0, #1eb8cc);  box-shadow: 0 4px 8px rgba(30, 159, 255, .3);
 }
 
 /* 表单样式优化 */
@@ -214,12 +214,21 @@ audio
 
 
 
+
+
+
+
+
+
+
     </style>
   </head>
   <body>
     <div class="layui-container">
       <!-- 头部操作区域 -->
       <div class="header-controls">
+        <!-- 关闭弹窗 -->
+         <i class="layui-icon layui-icon-return" id="backBtn" title="返回" style="cursor: pointer; font-size: 20px; color: #fff;"></i>
         <h2 class="page-title">
           <i class="layui-icon layui-icon-record"></i> 查房记录管理
         </h2>
@@ -312,7 +321,11 @@ audio
             showAddRecordDialog();
           });
         }
-
+        $("#backBtn").on("click", function () {
+            console.log("关闭查房记录弹窗");
+            
+            parent.layer.closeAll();
+          });
         // 显示新增查房记录对话框
         function showAddRecordDialog() {
           var now = new Date();
@@ -727,7 +740,7 @@ audio
           view.setUint16(34, 16, true);
           writeString(36, "data");
           view.setUint32(40, length * numberOfChannels * 2, true);
-
+          
           // 写入音频数据
           let offset = 44;
           for (let i = 0; i < length; i++) {

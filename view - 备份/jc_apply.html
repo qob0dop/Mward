@@ -11,312 +11,272 @@
     <link rel="stylesheet" href="/css/public.css" media="all" />
     <link rel="stylesheet" href="/css/table/iframe.css" media="all" />
     <style>
-      /* 确保固定列与其他列高度一致 */
-      .layui-table-fixed-r .layui-table-body tr {
-        height: auto !important;
-      }
+/* 确保固定列与其他列高度一致 */
+.layui-table-fixed-r .layui-table-body tr
+{
+    height: auto !important;
+}
 
-      .layui-table-fixed-r .layui-table-cell {
-        font-size: 14px !important;
-        line-height: 1.4 !important;
-        height: auto !important;
-        padding: 12px 8px !important;
-        white-space: normal !important;
-      }
+.layui-table-fixed-r .layui-table-cell
+{
+    font-size: 14px !important;  line-height: 1.4 !important;  height: auto !important;  padding: 12px 8px !important;  white-space: normal !important;
+}
 
-      /* 确保固定列头部单元格与普通列保持一致 */
-      .layui-table-fixed-r .layui-table-header .layui-table-cell {
-        font-size: 14px !important;
-        font-weight: bold !important;
-        background-color: #f8f9fa !important;
-        /* padding: 12px 8px !important; */
-      }
+/* 确保固定列头部单元格与普通列保持一致 */
+.layui-table-fixed-r .layui-table-header .layui-table-cell
+{
+    font-size: 14px !important;  font-weight: bold !important;  background-color: #f8f9fa !important;
+    /* padding: 12px 8px !important; */
+}
 
-      /* 操作按钮样式优化 */
-      .layui-table .layui-btn-xs {
-        font-size: 12px !important;
-        line-height: 24px !important;
-        height: 24px !important;
-        margin: 2px !important;
-        padding: 0 8px !important;
-      }
+/* 操作按钮样式优化 */
+.layui-table .layui-btn-xs
+{
+    font-size: 12px !important;  line-height: 24px !important;  height: 24px !important;  margin: 2px !important;  padding: 0 8px !important;
+}
 
-      /* 确保固定列不会产生滚动条 */
-      .layui-table-fixed-r {
-        box-shadow: -1px 0 8px rgba(0, 0, 0, 0.08);
-      }
+/* 确保固定列不会产生滚动条 */
+.layui-table-fixed-r
+{
+    box-shadow: -1px 0 8px rgba(0, 0, 0, .08);
+}
 
-      /* 修正固定列的行高与主表格保持一致 */
-      .layui-table-fixed-r tbody tr {
-        height: auto !important;
-      }
+/* 修正固定列的行高与主表格保持一致 */
+.layui-table-fixed-r tbody tr
+{
+    height: auto !important;
+}
 
-      /* 确保固定列的内容垂直居中 */
-      .layui-table-fixed-r .layui-table-cell {
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-      }
+/* 确保固定列的内容垂直居中 */
+.layui-table-fixed-r .layui-table-cell
+{
+    display: flex !important;  align-items: center !important;  justify-content: center !important;
+}
 
-      /* 添加表格缩放的平滑过渡效果 */
-      .layui-table-box {
-        transition: transform 0.2s ease, width 0.2s ease;
-      }
+/* 添加表格缩放的平滑过渡效果 */
+.layui-table-box
+{
+    transition: transform .2s ease, width .2s ease;
+}
 
-      /* 确保表格内部元素在缩放时能够正常调整 */
-      .layui-table-header table,
-      .layui-table-body table {
-        transition: width 0.2s ease;
-      }
+/* 确保表格内部元素在缩放时能够正常调整 */
+.layui-table-header table,
+.layui-table-body table
+{
+    transition: width .2s ease;
+}
 
-      /* 套餐选择样式 */
-      .package-form {
-        display: flex;
-        flex-direction: column;
-        height: 100%;
-      }
+/* 套餐选择样式 */
+.package-form
+{
+    display: flex;  flex-direction: column;  height: 100%;
+}
 
-      .package-content {
-        overflow: hidden;
-        flex: 1;
-      }
+.package-content
+{
+    overflow: hidden;  flex: 1;
+}
 
-      .package-selector {
-        display: flex;
-        flex-direction: column;
-        height: 100%;
-        gap: 15px;
-      }
+.package-selector
+{
+    display: flex;  flex-direction: column;  height: 100%;  gap: 15px;
+}
 
-      .package-select-area {
-        flex: 0 0 auto;
-        padding: 15px;
-        border-bottom: 1px solid #e6e6e6;
-        background: #f8f9fa;
-      }
+.package-select-area
+{
+    flex: 0 0 auto;  padding: 15px;  border-bottom: 1px solid #e6e6e6;  background: #f8f9fa;
+}
 
-      .package-select-label {
-        font-size: 14px;
-        font-weight: bold;
-        display: block;
-        margin-bottom: 8px;
-        color: #333;
-      }
+.package-select-label
+{
+    font-size: 14px;  font-weight: bold;  display: block;  margin-bottom: 8px;  color: #333;
+}
 
-      .package-select {
-        position: relative;
-        width: 100%;
-        height: 36px;
-        cursor: pointer;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        background: white;
-      }
+.package-select
+{
+    position: relative;  width: 100%;  height: 36px;  cursor: pointer;  border: 1px solid #ddd;  border-radius: 4px;  background: white;
+}
 
-      .package-select-display {
-        font-size: 13px;
-        line-height: 36px;
-        width: 100%;
-        height: 100%;
-        padding: 0 30px 0 10px;
-        cursor: pointer;
-        user-select: none;
-        color: #333;
-        border: none;
-        outline: none;
-        background: transparent;
-      }
+.package-select-display
+{
+    font-size: 13px;  line-height: 36px;  width: 100%;  height: 100%;  padding: 0 30px 0 10px;  cursor: pointer;  user-select: none;  color: #333;  border: none;  outline: none;  background: transparent;
+}
 
-      .package-select-display.placeholder {
-        color: #999;
-      }
+.package-select-display.placeholder
+{
+    color: #999;
+}
 
-      .package-select-arrow {
-        font-size: 12px;
-        position: absolute;
-        top: 50%;
-        right: 10px;
-        transition: transform 0.2s ease;
-        transform: translateY(-50%);
-        pointer-events: none;
-        color: #666;
-      }
+.package-select-arrow
+{
+    font-size: 12px;  position: absolute;  top: 50%;  right: 10px;  transition: transform .2s ease;  transform: translateY(-50%);  pointer-events: none;  color: #666;
+}
 
-      .package-select.open .package-select-arrow {
-        transform: translateY(-50%) rotate(180deg);
-      }
+.package-select.open .package-select-arrow
+{
+    transform: translateY(-50%) rotate(180deg);
+}
 
-      .package-select:focus {
-        border-color: #1e9fff;
-        box-shadow: 0 0 3px rgba(30, 159, 255, 0.3);
-      }
+.package-select:focus
+{
+    border-color: #1e9fff;  box-shadow: 0 0 3px rgba(30, 159, 255, .3);
+}
 
-      .package-dropdown {
-        position: absolute;
-        z-index: 1000;
-        top: 100%;
-        right: 0;
-        left: 0;
-        display: none;
-        overflow-y: auto;
-        max-height: 200px;
-        border: 1px solid #ddd;
-        border-top: none;
-        border-radius: 0 0 4px 4px;
-        background: white;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-      }
+.package-dropdown
+{
+    position: absolute;  z-index: 1000;  top: 100%;  right: 0;  left: 0;  display: none;  overflow-y: auto;  max-height: 200px;  border: 1px solid #ddd;  border-top: none;  border-radius: 0 0 4px 4px;  background: white;  box-shadow: 0 2px 8px rgba(0, 0, 0, .1);
+}
 
-      .package-dropdown.show {
-        display: block;
-      }
+.package-dropdown.show
+{
+    display: block;
+}
 
-      .package-option {
-        font-size: 13px;
-        padding: 8px 10px;
-        cursor: pointer;
-        transition: background-color 0.2s ease;
-        color: #333;
-        border-bottom: 1px solid #f5f5f5;
-      }
+.package-option
+{
+    font-size: 13px;  padding: 8px 10px;  cursor: pointer;  transition: background-color .2s ease;  color: #333;  border-bottom: 1px solid #f5f5f5;
+}
 
-      .package-option:hover {
-        background: #f5f5f5;
-      }
+.package-option:hover
+{
+    background: #f5f5f5;
+}
 
-      .package-option:last-child {
-        border-bottom: none;
-      }
+.package-option:last-child
+{
+    border-bottom: none;
+}
 
-      .package-option.selected {
-        color: white;
-        background: #1e9fff;
-      }
+.package-option.selected
+{
+    color: white;  background: #1e9fff;
+}
 
-      .package-items-area {
-        display: flex;
-        flex: 1;
-        flex-direction: column;
-        min-height: 0;
-      }
+.package-items-area
+{
+    display: flex;  flex: 1;  flex-direction: column;  min-height: 0;
+}
 
-      .items-container {
-        overflow-y: auto;
-        flex: 1;
-        max-height: 280px;
-      }
+.items-container
+{
+    overflow-y: auto;  flex: 1;  max-height: 280px;
+}
 
-      .items-header {
-        font-size: 13px;
-        font-weight: bold;
-        padding: 8px;
-        text-align: center;
-        color: #fff;
-        background: #1e9fff;
-      }
+.items-header
+{
+    font-size: 13px;  font-weight: bold;  padding: 8px;  text-align: center;  color: #fff;  background: #1e9fff;
+}
 
-      .items-list {
+.items-list
+{
+    padding: 10px;
+}
+
+.item-checkbox
+{
+    display: block;  padding: 8px 0;  cursor: pointer;  border-bottom: 1px solid #f0f0f0;
+}
+
+.item-checkbox:hover
+{
+    background: #f5f5f5;
+}
+
+.item-name
+{
+    font-size: 13px;  margin-left: 8px;
+}
+
+.no-package-selected
+{
+    font-size: 13px;  padding: 50px 20px;  text-align: center;  color: #999;
+}
+
+.dialog-buttons
+{
+    flex-shrink: 0;  padding: 15px;  text-align: right;  border-top: 1px solid #e6e6e6;
+}
+
+.dialog-buttons .layui-btn
+{
+    margin-left: 10px;
+}
+
+/* 窄屏响应式布局 */
+@media (max-width: 768px)
+{
+    .package-content
+    {
+        padding: 0;
+    }
+
+    .package-select-area
+    {
         padding: 10px;
-      }
+    }
 
-      .item-checkbox {
-        display: block;
-        padding: 8px 0;
-        cursor: pointer;
-        border-bottom: 1px solid #f0f0f0;
-      }
-
-      .item-checkbox:hover {
-        background: #f5f5f5;
-      }
-
-      .item-name {
+    .package-select-label
+    {
         font-size: 13px;
-        margin-left: 8px;
-      }
+    }
 
-      .no-package-selected {
-        font-size: 13px;
-        padding: 50px 20px;
-        text-align: center;
-        color: #999;
-      }
+    .package-select
+    {
+        height: 32px;
+    }
 
-      .dialog-buttons {
-        flex-shrink: 0;
-        padding: 15px;
-        text-align: right;
-        border-top: 1px solid #e6e6e6;
-      }
+    .package-select-display
+    {
+        font-size: 12px;  line-height: 32px;
+    }
 
-      .dialog-buttons .layui-btn {
-        margin-left: 10px;
-      }
+    .package-dropdown
+    {
+        max-height: 150px;
+    }
 
-      /* 窄屏响应式布局 */
-      @media (max-width: 768px) {
-        .package-content {
-          padding: 0;
-        }
+    .package-option
+    {
+        font-size: 12px;  padding: 6px 8px;
+    }
 
-        .package-select-area {
-          padding: 10px;
-        }
+    .items-container
+    {
+        max-height: 200px;
+    }
 
-        .package-select-label {
-          font-size: 13px;
-        }
+    .items-header
+    {
+        font-size: 12px;
+    }
 
-        .package-select {
-          height: 32px;
-        }
-
-        .package-select-display {
-          font-size: 12px;
-          line-height: 32px;
-        }
-
-        .package-dropdown {
-          max-height: 150px;
-        }
-
-        .package-option {
-          font-size: 12px;
-          padding: 6px 8px;
-        }
-
-        .items-container {
-          max-height: 200px;
-        }
-
-        .items-header {
-          font-size: 12px;
-        }
-
-        .item-name {
-          font-size: 12px;
-        }
-      }
-      /* .layui-table-box {
+    .item-name
+    {
+        font-size: 12px;
+    }
+}
+/* .layui-table-box {
         height: 100%;
       } */
-      /* 更窄屏幕优化 */
-      @media (max-width: 480px) {
-        .items-container {
-          max-height: 150px;
-        }
+/* 更窄屏幕优化 */
+@media (max-width: 480px)
+{
+    .items-container
+    {
+        max-height: 150px;
+    }
 
-        .dialog-buttons {
-          padding: 10px;
-        }
+    .dialog-buttons
+    {
+        padding: 10px;
+    }
 
-        .dialog-buttons .layui-btn {
-          font-size: 12px;
-          line-height: 32px;
-          height: 32px;
-          padding: 0 12px;
-        }
-      }
+    .dialog-buttons .layui-btn
+    {
+        font-size: 12px;  line-height: 32px;  height: 32px;  padding: 0 12px;
+    }
+}
+
     </style>
   </head>
   <body>

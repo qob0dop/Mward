@@ -248,581 +248,479 @@ body
 
 
 
+
     </style> -->
 
     <style>
-      /* 套餐选择弹窗样式（检验页面） */
-      .package-form {
-        display: flex;
-        flex-direction: column;
-        height: 100%;
-      }
+/* 套餐选择弹窗样式（检验页面） */
+.package-form
+{
+    display: flex;  flex-direction: column;  height: 100%;
+}
 
-      .package-content {
-        overflow: hidden;
-        flex: 1;
-      }
+.package-content
+{
+    overflow: hidden;  flex: 1;
+}
 
-      .package-selector {
-        display: flex;
-        flex-direction: column;
-        height: 100%;
-        gap: 15px;
-      }
+.package-selector
+{
+    display: flex;  flex-direction: column;  height: 100%;  gap: 15px;
+}
 
-      .package-select-area {
-        flex: 0 0 auto;
-        padding: 15px;
-        border-bottom: 1px solid #e6e6e6;
-        background: #f8f9fa;
-      }
+.package-select-area
+{
+    flex: 0 0 auto;  padding: 15px;  border-bottom: 1px solid #e6e6e6;  background: #f8f9fa;
+}
 
-      .package-select-label {
-        font-size: 14px;
-        font-weight: bold;
-        display: block;
-        margin-bottom: 8px;
-        color: #333;
-      }
+.package-select-label
+{
+    font-size: 14px;  font-weight: bold;  display: block;  margin-bottom: 8px;  color: #333;
+}
 
-      .package-select {
-        position: relative;
-        width: 100%;
-        height: 36px;
-        cursor: pointer;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        background: white;
-      }
+.package-select
+{
+    position: relative;  width: 100%;  height: 36px;  cursor: pointer;  border: 1px solid #ddd;  border-radius: 4px;  background: white;
+}
 
-      .package-select-display {
+.package-select-display
+{
+    font-size: 13px;  line-height: 36px;  width: 100%;  height: 100%;  padding: 0 30px 0 10px;  cursor: pointer;  user-select: none;  color: #333;  border: none;  outline: none;  background: transparent;
+}
+
+.package-select-display.placeholder
+{
+    color: #999;
+}
+
+.package-select-arrow
+{
+    font-size: 12px;  position: absolute;  top: 50%;  right: 10px;  transition: transform .2s ease;  transform: translateY(-50%);  pointer-events: none;  color: #666;
+}
+
+.package-select.open .package-select-arrow
+{
+    transform: translateY(-50%) rotate(180deg);
+}
+
+.package-select:focus
+{
+    border-color: #1e9fff;  box-shadow: 0 0 3px rgba(30, 159, 255, .3);
+}
+
+.package-dropdown
+{
+    position: absolute;  z-index: 1000;  top: 100%;  right: 0;  left: 0;  display: none;  overflow-y: auto;  max-height: 200px;  border: 1px solid #ddd;  border-top: none;  border-radius: 0 0 4px 4px;  background: white;  box-shadow: 0 2px 8px rgba(0, 0, 0, .1);
+}
+
+.package-dropdown.show
+{
+    display: block;
+}
+
+.package-option
+{
+    font-size: 13px;  padding: 8px 10px;  cursor: pointer;  transition: background-color .2s ease;  color: #333;  border-bottom: 1px solid #f5f5f5;
+}
+
+.package-option:hover
+{
+    background: #f5f5f5;
+}
+
+.package-option:last-child
+{
+    border-bottom: none;
+}
+
+.package-option.selected
+{
+    color: white;  background: #1e9fff;
+}
+
+.package-items-area
+{
+    display: flex;  flex: 1;  flex-direction: column;  min-height: 0;
+}
+
+.items-container
+{
+    overflow-y: auto;  flex: 1;  max-height: 280px;
+}
+
+.items-header
+{
+    font-size: 13px;  font-weight: bold;  padding: 8px;  text-align: center;  color: #fff;  background: #1e9fff;
+}
+
+.items-list
+{
+    padding: 10px;
+}
+
+.item-checkbox
+{
+    display: block;  padding: 8px 0;  cursor: pointer;  border-bottom: 1px solid #f0f0f0;
+}
+
+.item-checkbox:hover
+{
+    background: #f5f5f5;
+}
+
+.item-name
+{
+    font-size: 13px;  margin-left: 8px;
+}
+
+.no-package-selected
+{
+    font-size: 13px;  padding: 50px 20px;  text-align: center;  color: #999;
+}
+
+.dialog-buttons
+{
+    flex-shrink: 0;  padding: 15px;  text-align: right;  border-top: 1px solid #e6e6e6;
+}
+
+.dialog-buttons .layui-btn
+{
+    margin-left: 10px;
+}
+
+/* 窄屏响应式布局 */
+@media (max-width: 768px)
+{
+    .package-content
+    {
+        padding: 0;
+    }
+
+    .package-select-area
+    {
+        padding: 10px;
+    }
+
+    .package-select-label
+    {
         font-size: 13px;
-        line-height: 36px;
-        width: 100%;
-        height: 100%;
-        padding: 0 30px 0 10px;
-        cursor: pointer;
-        user-select: none;
-        color: #333;
-        border: none;
-        outline: none;
-        background: transparent;
-      }
+    }
 
-      .package-select-display.placeholder {
-        color: #999;
-      }
+    .package-select
+    {
+        height: 32px;
+    }
 
-      .package-select-arrow {
-        font-size: 12px;
-        position: absolute;
-        top: 50%;
-        right: 10px;
-        transition: transform 0.2s ease;
-        transform: translateY(-50%);
-        pointer-events: none;
-        color: #666;
-      }
+    .package-select-display
+    {
+        font-size: 12px;  line-height: 32px;
+    }
 
-      .package-select.open .package-select-arrow {
-        transform: translateY(-50%) rotate(180deg);
-      }
+    .package-dropdown
+    {
+        max-height: 150px;
+    }
 
-      .package-select:focus {
-        border-color: #1e9fff;
-        box-shadow: 0 0 3px rgba(30, 159, 255, 0.3);
-      }
+    .package-option
+    {
+        font-size: 12px;  padding: 6px 8px;
+    }
 
-      .package-dropdown {
-        position: absolute;
-        z-index: 1000;
-        top: 100%;
-        right: 0;
-        left: 0;
-        display: none;
-        overflow-y: auto;
+    .items-container
+    {
         max-height: 200px;
-        border: 1px solid #ddd;
-        border-top: none;
-        border-radius: 0 0 4px 4px;
-        background: white;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-      }
+    }
 
-      .package-dropdown.show {
-        display: block;
-      }
+    .items-header
+    {
+        font-size: 12px;
+    }
 
-      .package-option {
-        font-size: 13px;
-        padding: 8px 10px;
-        cursor: pointer;
-        transition: background-color 0.2s ease;
-        color: #333;
-        border-bottom: 1px solid #f5f5f5;
-      }
+    .item-name
+    {
+        font-size: 12px;
+    }
+}
 
-      .package-option:hover {
-        background: #f5f5f5;
-      }
-
-      .package-option:last-child {
-        border-bottom: none;
-      }
-
-      .package-option.selected {
-        color: white;
-        background: #1e9fff;
-      }
-
-      .package-items-area {
-        display: flex;
-        flex: 1;
-        flex-direction: column;
-        min-height: 0;
-      }
-
-      .items-container {
-        overflow-y: auto;
-        flex: 1;
-        max-height: 280px;
-      }
-
-      .items-header {
-        font-size: 13px;
-        font-weight: bold;
-        padding: 8px;
-        text-align: center;
-        color: #fff;
-        background: #1e9fff;
-      }
-
-      .items-list {
+/* 更窄屏优化 */
+@media (max-width: 480px)
+{
+    .items-container
+    {
+        max-height: 150px;
+    }
+    .dialog-buttons
+    {
         padding: 10px;
-      }
+    }
+    .dialog-buttons .layui-btn
+    {
+        font-size: 12px;  line-height: 32px;  height: 32px;  padding: 0 12px;
+    }
+}
 
-      .item-checkbox {
-        display: block;
-        padding: 8px 0;
-        cursor: pointer;
-        border-bottom: 1px solid #f0f0f0;
-      }
+/* 卡片视图样式 */
+.cards-view
+{
+    display: flex;  flex-direction: column;  height: 100%;  background: #f5f5f5;
+}
 
-      .item-checkbox:hover {
-        background: #f5f5f5;
-      }
+.toolbar-container
+{
+    display: flex;  align-items: center;  flex-shrink: 0;  justify-content: space-between;  padding: 10px 15px;  border-bottom: 1px solid #e6e6e6;  background: #fff;
+}
 
-      .item-name {
+.toolbar-title
+{
+    font-size: 16px;  font-weight: bold;  display: flex;  align-items: center;  color: #333;
+}
+
+.toolbar-title i
+{
+    font-size: 16px;  margin-right: 6px;  color: #1e9fff;
+}
+
+.toolbar-actions
+{
+    display: flex;  gap: 8px;
+}
+
+.cards-container
+{
+    /* 改为网格布局，尽可能展示更多卡片 */
+    display: grid;  overflow-y: auto;  flex: 1;  padding: 10px;  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));  gap: 10px;
+}
+
+.card-item
+{
+    /* 网格布局下取消外边距，使用 gap 控制间距 */
+    margin: 0;  transition: all .3s ease;  border: 1px solid #e6e6e6;  border-radius: 6px;  background: #fff;  box-shadow: 0 1px 3px rgba(0, 0, 0, .08);
+}
+
+.card-item:hover
+{
+    transform: translateY(-1px);  box-shadow: 0 2px 8px rgba(0, 0, 0, .15);
+}
+
+.card-header
+{
+    font-size: 14px;  font-weight: 600;  line-height: 1.2;  display: flex;  align-items: center;  justify-content: space-between;  min-height: 32px; /* 确保最小高度 */  padding: 6px 10px; /* 减少padding使卡片更紧凑 */  color: #2c5282; /* 深蓝色文字配合淡蓝背景 */  border-bottom: 1px solid #dbeafe;  border-radius: 6px 6px 0 0;  background: linear-gradient(
+    135deg,
+    #eff6ff 0%,
+    #dbeafe 100%
+    ); /* 使用淡蓝色背景 */
+}
+
+.card-title
+{
+    font-size: 14px;  font-weight: 600;  display: flex;  align-items: center;  color: #2c5282; /* 深蓝色与淡蓝背景搭配 */
+}
+
+.card-title i
+{
+    font-size: 14px;  margin-right: 5px;
+}
+
+/* 项目类型标签样式 */
+.project-type
+{
+    font-size: 11px;  font-weight: 400;  margin-left: 8px;  padding: 2px 6px;  color: #666;  border-radius: 10px;  background: #f0f0f0;
+}
+
+.card-status
+{
+    font-size: 11px;  font-weight: 500;  line-height: 1;  display: inline-block;  padding: 3px 8px;  border: none; /* 移除边框 */  border-radius: 12px; /* 药丸形状 */
+}
+
+.status-pending
+{
+    color: #1976d2;  background: #e3f2fd;
+}
+
+.status-completed
+{
+    color: #2e7d32;  background: #e8f5e8;
+}
+
+.status-cancelled
+{
+    color: #616161;  background: #f5f5f5;
+}
+
+.card-body
+{
+    font-size: 12px;  line-height: 1.4;  padding: 8px 10px; /* 减少padding使内容更紧凑 */
+}
+
+/* 紧凑的日期信息布局 */
+.date-info
+{
+    font-size: 11px;  display: flex;  justify-content: space-between;  margin-bottom: 8px;
+}
+
+.date-item
+{
+    display: flex;  align-items: center;  flex: 1;  flex-direction: column;
+}
+
+.date-label
+{
+    font-size: 10px;  margin-bottom: 2px;  color: #666;
+}
+
+.date-value
+{
+    font-weight: 500;  color: #333;
+}
+
+.card-project
+{
+    margin-bottom: 10px;  padding: 8px 10px;  border-left: 3px solid #1e9fff;  border-radius: 4px;  background: #f8f9fa;
+}
+
+.project-label
+{
+    font-size: 10px;  margin-bottom: 2px;  color: #666;
+}
+
+.project-name
+{
+    font-size: 12px;  font-weight: 600;  line-height: 1.3;  color: #333;
+}
+
+.card-info-grid
+{
+    display: grid;  margin-bottom: 10px;  grid-template-columns: 1fr 1fr;  gap: 10px;
+}
+
+.info-item
+{
+    display: flex;  flex-direction: column;
+}
+
+.info-label
+{
+    font-size: 10px;  font-weight: 500;  margin-bottom: 2px;  color: #666;
+}
+
+.info-value
+{
+    font-size: 11px;  font-weight: 600;  color: #333;
+}
+
+.card-actions
+{
+    display: flex;  justify-content: flex-end;  margin-top: 6px;  padding-top: 6px; /* 减少padding */  border-top: 1px solid #f0f0f0;
+}
+
+.card-btn
+{
+    font-size: 11px;  display: flex;  align-items: center;  height: 24px; /* 固定按钮高度 */  padding: 4px 8px; /* 减少按钮内边距 */  cursor: pointer;  transition: all .3s ease;  border: none;  border-radius: 4px;  gap: 3px;
+}
+
+.card-btn-delete
+{
+    color: #c62828;  border: 1px solid #ffcdd2;  background: #ffebee;
+}
+
+.card-btn-delete:hover
+{
+    transform: scale(1.05);  color: #fff;  background: #e57373;
+}
+
+.empty-state
+{
+    padding: 40px 20px;  text-align: center;  color: #999;
+}
+
+.empty-state i
+{
+    font-size: 48px;  display: block;  margin-bottom: 12px;  opacity: .5;
+}
+
+.empty-state-text
+{
+    font-size: 14px;  margin-bottom: 6px;
+}
+
+.empty-state-desc
+{
+    font-size: 12px;  opacity: .7;
+}
+
+/* 移动端适配 */
+@media (max-width: 768px)
+{
+    .toolbar-container
+    {
+        padding: 8px 12px;  gap: 8px;
+    }
+
+    .toolbar-actions
+    {
+        justify-content: center;
+    }
+
+    .cards-container
+    {
+        padding: 8px;  grid-template-columns: 1fr; /* 移动端单列布局 */
+    }
+
+    .card-item
+    {
+        margin: 0; /* 网格布局下移除margin */
+    }
+
+    .card-header
+    {
+        padding: 6px 8px; /* 移动端进一步压缩 */
+    }
+
+    .card-title
+    {
         font-size: 13px;
-        margin-left: 8px;
-      }
+    }
 
-      .no-package-selected {
-        font-size: 13px;
-        padding: 50px 20px;
-        text-align: center;
-        color: #999;
-      }
+    .card-status
+    {
+        font-size: 10px;  padding: 2px 6px;
+    }
 
-      .dialog-buttons {
-        flex-shrink: 0;
-        padding: 15px;
-        text-align: right;
-        border-top: 1px solid #e6e6e6;
-      }
+    .card-body
+    {
+        padding: 6px 8px; /* 移动端进一步压缩 */
+    }
 
-      .dialog-buttons .layui-btn {
-        margin-left: 10px;
-      }
+    .project-type
+    {
+        font-size: 10px;  padding: 1px 4px;
+    }
 
-      /* 窄屏响应式布局 */
-      @media (max-width: 768px) {
-        .package-content {
-          padding: 0;
-        }
-
-        .package-select-area {
-          padding: 10px;
-        }
-
-        .package-select-label {
-          font-size: 13px;
-        }
-
-        .package-select {
-          height: 32px;
-        }
-
-        .package-select-display {
-          font-size: 12px;
-          line-height: 32px;
-        }
-
-        .package-dropdown {
-          max-height: 150px;
-        }
-
-        .package-option {
-          font-size: 12px;
-          padding: 6px 8px;
-        }
-
-        .items-container {
-          max-height: 200px;
-        }
-
-        .items-header {
-          font-size: 12px;
-        }
-
-        .item-name {
-          font-size: 12px;
-        }
-      }
-
-      /* 更窄屏优化 */
-      @media (max-width: 480px) {
-        .items-container {
-          max-height: 150px;
-        }
-        .dialog-buttons {
-          padding: 10px;
-        }
-        .dialog-buttons .layui-btn {
-          font-size: 12px;
-          line-height: 32px;
-          height: 32px;
-          padding: 0 12px;
-        }
-      }
-
-      /* 卡片视图样式 */
-      .cards-view {
-        display: flex;
-        flex-direction: column;
-        height: 100%;
-        background: #f5f5f5;
-      }
-
-      .toolbar-container {
-        display: flex;
-        align-items: center;
-        flex-shrink: 0;
-        justify-content: space-between;
-        padding: 10px 15px;
-        border-bottom: 1px solid #e6e6e6;
-        background: #fff;
-      }
-
-      .toolbar-title {
-        font-size: 16px;
-        font-weight: bold;
-        display: flex;
-        align-items: center;
-        color: #333;
-      }
-
-      .toolbar-title i {
-        font-size: 16px;
-        margin-right: 6px;
-        color: #1e9fff;
-      }
-
-      .toolbar-actions {
-        display: flex;
-        gap: 8px;
-      }
-
-      .cards-container {
-        /* 改为网格布局，尽可能展示更多卡片 */
-        display: grid;
-        overflow-y: auto;
-        flex: 1;
-        padding: 10px;
-        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-        gap: 10px;
-      }
-
-      .card-item {
-        /* 网格布局下取消外边距，使用 gap 控制间距 */
-        margin: 0;
-        transition: all 0.3s ease;
-        border: 1px solid #e6e6e6;
-        border-radius: 6px;
-        background: #fff;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-      }
-
-      .card-item:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-      }
-
-      .card-header {
-        font-size: 14px;
-        font-weight: 600;
-        line-height: 1.2;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        min-height: 32px; /* 确保最小高度 */
-        padding: 6px 10px; /* 减少padding使卡片更紧凑 */
-        color: #2c5282; /* 深蓝色文字配合淡蓝背景 */
-        border-bottom: 1px solid #dbeafe;
-        border-radius: 6px 6px 0 0;
-        background: linear-gradient(
-          135deg,
-          #eff6ff 0%,
-          #dbeafe 100%
-        ); /* 使用淡蓝色背景 */
-      }
-
-      .card-title {
-        font-size: 14px;
-        font-weight: 600;
-        display: flex;
-        align-items: center;
-        color: #2c5282; /* 深蓝色与淡蓝背景搭配 */
-      }
-
-      .card-title i {
-        font-size: 14px;
-        margin-right: 5px;
-      }
-
-      /* 项目类型标签样式 */
-      .project-type {
-        font-size: 11px;
-        font-weight: 400;
-        margin-left: 8px;
-        padding: 2px 6px;
-        color: #666;
-        border-radius: 10px;
-        background: #f0f0f0;
-      }
-
-      .card-status {
-        font-size: 11px;
-        font-weight: 500;
-        line-height: 1;
-        display: inline-block;
-        padding: 3px 8px;
-        border: none; /* 移除边框 */
-        border-radius: 12px; /* 药丸形状 */
-      }
-
-      .status-pending {
-        color: #1976d2;
-        background: #e3f2fd;
-      }
-
-      .status-completed {
-        color: #2e7d32;
-        background: #e8f5e8;
-      }
-
-      .status-cancelled {
-        color: #616161;
-        background: #f5f5f5;
-      }
-
-      .card-body {
-        font-size: 12px;
-        line-height: 1.4;
-        padding: 8px 10px; /* 减少padding使内容更紧凑 */
-      }
-
-      /* 紧凑的日期信息布局 */
-      .date-info {
-        font-size: 11px;
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 8px;
-      }
-
-      .date-item {
-        display: flex;
-        align-items: center;
-        flex: 1;
-        flex-direction: column;
-      }
-
-      .date-label {
+    .date-info
+    {
         font-size: 10px;
-        margin-bottom: 2px;
-        color: #666;
-      }
+    }
 
-      .date-value {
-        font-weight: 500;
-        color: #333;
-      }
+    .date-label
+    {
+        font-size: 9px;
+    }
 
-      .card-project {
-        margin-bottom: 10px;
-        padding: 8px 10px;
-        border-left: 3px solid #1e9fff;
-        border-radius: 4px;
-        background: #f8f9fa;
-      }
-
-      .project-label {
+    .info-value
+    {
         font-size: 10px;
-        margin-bottom: 2px;
-        color: #666;
-      }
+    }
 
-      .project-name {
-        font-size: 12px;
-        font-weight: 600;
-        line-height: 1.3;
-        color: #333;
-      }
-
-      .card-info-grid {
-        display: grid;
-        margin-bottom: 10px;
-        grid-template-columns: 1fr 1fr;
-        gap: 10px;
-      }
-
-      .info-item {
-        display: flex;
-        flex-direction: column;
-      }
-
-      .info-label {
-        font-size: 10px;
-        font-weight: 500;
-        margin-bottom: 2px;
-        color: #666;
-      }
-
-      .info-value {
+    .project-name
+    {
         font-size: 11px;
-        font-weight: 600;
-        color: #333;
-      }
+    }
+}
+#btn-new-apply-card
+{
+    color: #435cab;  border-radius: 15px;  background-color: #d2d8e7;
+}
 
-      .card-actions {
-        display: flex;
-        justify-content: flex-end;
-        margin-top: 6px;
-        padding-top: 6px; /* 减少padding */
-        border-top: 1px solid #f0f0f0;
-      }
-
-      .card-btn {
-        font-size: 11px;
-        display: flex;
-        align-items: center;
-        height: 24px; /* 固定按钮高度 */
-        padding: 4px 8px; /* 减少按钮内边距 */
-        cursor: pointer;
-        transition: all 0.3s ease;
-        border: none;
-        border-radius: 4px;
-        gap: 3px;
-      }
-
-      .card-btn-delete {
-        color: #c62828;
-        border: 1px solid #ffcdd2;
-        background: #ffebee;
-      }
-
-      .card-btn-delete:hover {
-        transform: scale(1.05);
-        color: #fff;
-        background: #e57373;
-      }
-
-      .empty-state {
-        padding: 40px 20px;
-        text-align: center;
-        color: #999;
-      }
-
-      .empty-state i {
-        font-size: 48px;
-        display: block;
-        margin-bottom: 12px;
-        opacity: 0.5;
-      }
-
-      .empty-state-text {
-        font-size: 14px;
-        margin-bottom: 6px;
-      }
-
-      .empty-state-desc {
-        font-size: 12px;
-        opacity: 0.7;
-      }
-
-      /* 移动端适配 */
-      @media (max-width: 768px) {
-        .toolbar-container {
-          padding: 8px 12px;
-          gap: 8px;
-        }
-
-        .toolbar-actions {
-          justify-content: center;
-        }
-
-        .cards-container {
-          padding: 8px;
-          grid-template-columns: 1fr; /* 移动端单列布局 */
-        }
-
-        .card-item {
-          margin: 0; /* 网格布局下移除margin */
-        }
-
-        .card-header {
-          padding: 6px 8px; /* 移动端进一步压缩 */
-        }
-
-        .card-title {
-          font-size: 13px;
-        }
-
-        .card-status {
-          font-size: 10px;
-          padding: 2px 6px;
-        }
-
-        .card-body {
-          padding: 6px 8px; /* 移动端进一步压缩 */
-        }
-
-        .project-type {
-          font-size: 10px;
-          padding: 1px 4px;
-        }
-
-        .date-info {
-          font-size: 10px;
-        }
-
-        .date-label {
-          font-size: 9px;
-        }
-
-        .info-value {
-          font-size: 10px;
-        }
-
-        .project-name {
-          font-size: 11px;
-        }
-      }
-      #btn-new-apply-card {
-        color: #435cab;
-        border-radius: 15px;
-        background-color: #d2d8e7;
-      }
     </style>
   </head>
   <body>
@@ -891,7 +789,7 @@ body
         var appconfig = layui.appconfig;
         var layer = layui.layer;
         var form = layui.form;
-
+        const userData=localStorage.getItem("userData")?JSON.parse(localStorage.getItem("userData")):{};
         // 获取URL参数
         function getUrlParam(name) {
           var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
@@ -1115,21 +1013,12 @@ body
 
         // 获取检验项目数据
         function loadTestItems(callback) {
-          var wardData = localStorage.getItem("wardData");
-
-          if (wardData === null) {
-            layer.msg("请先选择病区！");
-            location.href = "view/wardlist.html";
-            return;
-          }
-          var jsonData = JSON.parse(wardData);
-          localStorage.ward_sn = jsonData.ward_sn;
 
           $.ajax({
             url:
               appconfig.api +
               "/api/JcJy/GetJianYanList?ward_sn=" +
-              (localStorage.ward_sn || ""),
+              (userData.admiss_dept || ""),
             type: "GET",
             dataType: "json",
             success: function (res) {
@@ -1161,15 +1050,15 @@ body
           var loginUserData = JSON.parse(loginUser);
           $.ajax({
             url:
-              "http://10.102.41.142:5105" +
-              "/api/jcjy/GetCustomerTemplates?type=jianyan&opera=" +
+              appconfig.api +
+              "/api/MobileWard/GetCustomerTemplates?type=jianyan&opera=" +
               loginUserData.user_mi,
             type: "GET",
             dataType: "json",
             success: function (res) {
               console.log("获取套餐数据 - 响应:", res);
-              if (res.status === 1 && res.data) {
-                testPackages = res.data;
+              if (res.Status === 1 && res.Data) {
+                testPackages = res.Data;
                 callback(true);
               } else {
                 layer.msg("获取套餐数据失败: " + (res.Msg || "未知错误"), {
@@ -1322,7 +1211,7 @@ body
                   sex: patientData.sex || "",
                   status: "0",
                   add_new: true,
-                  ward: patientData.ward || "",
+                  ward: userData.admiss_ward || "",
                   status_name: "未保存",
                 };
 
