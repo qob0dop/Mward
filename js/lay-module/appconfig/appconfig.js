@@ -7,7 +7,7 @@ layui.define(function (exports) {
 
   // 检查localStorage中是否有保存的API地址
   var savedApiUrl = localStorage.getItem("api_url");
-  var defaultApi = "http://mwardtest.top:8123"; // 默认API地址
+  var defaultApi = "https://www.annotokyo.fun:8123"; // 默认API地址
 
   var obj = {
     // api: "http://10.102.41.142:5105", //根据自己项目的端口而定

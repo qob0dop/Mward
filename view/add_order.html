@@ -235,7 +235,7 @@ header
 
 .order-name
 {
-    font-weight: 500;  margin-bottom: 4px;  color: #333;
+    font-size: 16px;  font-weight: 500;  margin-bottom: 4px;  color: #333;
 }
 
 .order-details
@@ -349,10 +349,93 @@ header
     overflow-y: auto;  flex: 1;  padding: 20px;  background-color: #f8f9fa;
 }
 
+/* 全屏已选医嘱：将编辑/删除按钮固定在卡片右下角 */
+.selected-orders-fullpage .order-item
+{
+    display: flex;  flex-direction: column; /* 上下两层 */  padding: 10px;  border: 1px solid #f0f0f0;  border-radius: 8px;  background: #fff;  gap: 8px;
+}
+.selected-orders-fullpage .order-main
+{
+    display: flex;  align-items: flex-start;  width: 100%; gap: 10px;
+}
+.selected-orders-fullpage .order-main .order-content
+{
+    overflow: hidden;  flex: 1;
+}
+.selected-orders-fullpage .order-footer
+{
+    display: flex;  align-items: center;  justify-content: flex-end;  width: 100%; padding-top: 6px;  border-top: 1px solid #f0f0f0; gap: 8px;
+}
+.selected-orders-fullpage .order-footer .action-buttons
+{
+    display: flex;  gap: 6px;
+}
+.selected-orders-fullpage .order-footer .btn
+{
+    font-size: 13px;  padding: 6px 10px;
+}
+
 .fullpage-actions
 {
     display: flex;  align-items: center;  flex-shrink: 0;  justify-content: space-between;  padding: 15px 20px;  border-top: 1px solid #e8e8e8;  background: #f8f9fa;
 }
+
+/* 编辑弹窗现代化样式 */
+.edit-order-form .layui-form-label
+{
+    font-weight: 600;  padding: 9px 12px;  color: #333;
+}
+.edit-order-form .layui-input-wrapper
+{
+    width: 100%;
+}
+.edit-order-form .layui-input,
+.edit-order-form .layui-select
+{
+    border-radius: 4px;
+}
+.edit-order-form .layui-badge
+{
+    font-size: 14px;  padding: 4px 8px;  color: #1890ff;  border: 1px solid #d4edda;  border-radius: 4px;  background-color: #e8f4fd;
+}
+.edit-order-form .form-tip
+{
+    font-size: 12px;  margin-top: 4px;   color: #999;
+}
+.edit-order-form .readonly-value
+{
+    line-height: 22px;  min-height: 38px;  padding: 8px 12px;  word-wrap: break-word;  border-radius: 4px;  background: #f5f5f5;
+}
+.custom-edit-layer
+{
+    border-radius: 20px !important;
+}
+
+/* 优化编辑弹窗中 Layui 下拉选项清晰度（Windows/非 Retina 常见发虚） */
+.layui-layer .layui-form-select dl,
+.layui-layer .layui-form-select dl dd
+{
+    -webkit-font-smoothing: antialiased;  -moz-osx-font-smoothing: grayscale;  text-rendering: optimizeLegibility;
+}
+.layui-layer .layui-form-select dl
+{
+    font-size: 14px; /* 提升清晰度的常用字号 */  line-height: 22px;  color: #333;  background-color: #fff;
+}
+.layui-layer .layui-form-select dl dd.layui-this
+{
+    color: #1890ff; /* 选中项高对比度 */
+}
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -361,18 +444,13 @@ header
   </head>
   <body>
     <header>
-      <i
-        class="layui-icon layui-icon-return"
-        id="backBtn"
-        title="返回医嘱列表"
-        style="
-          font-size: 18px;
-          cursor: pointer;
-          margin-right: 15px;
-          position: absolute;
-          left: 10px;
-        "
-      ></i>
+      <!-- 返回按钮：使用 inline SVG 作为字体图标的回退，确保打包后依然可见 -->
+      <button id="backBtn" title="返回医嘱列表" aria-label="返回" style="
+          background: transparent; border: none; padding: 0; margin: 0; cursor: pointer; position: absolute; left: 10px; display: inline-flex; align-items: center; justify-content: center;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" focusable="false" aria-hidden="true">
+          <path d="M19 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H19v-2z" fill="#ffffff" />
+        </svg>
+      </button>
       开立医嘱
     </header>
     <div class="search-wrapper">
@@ -475,10 +553,12 @@ header
     <script src="../js/lay-config.js?v=1.0.4" charset="utf-8"></script>
 
     <script>
-      layui.use(["appconfig"], function () {
+      layui.use(["appconfig", "form"], function () {
         const appconfig = layui.appconfig;
+        const form = layui.form;
         const $ = layui.$;
         const orderTemplates = [];
+        const userData = JSON.parse(localStorage.getItem("userData") || "{}");
         let currentType = "dept"; // 当前选择的模板类型
         let filteredTemplates = []; // 搜索过滤后的模板
         let searchKeyword = ""; // 当前搜索关键词
@@ -487,6 +567,98 @@ header
         let globalSelectedOrders = []; // 全局已选医嘱列表，存储完整医嘱对象及来源信息
         let lastPatternName = ""; // 最近一次打开的模板名称
         let panelMode = "all"; // 面板模式: all | selected
+
+        // 选项缓存与辅助方法（参考 yizhu.html 逻辑，做轻量实现）
+        const frequencyCache = { '1': { loaded: false, list: [] }, '0': { loaded: false, list: [] } }; // 长期/临时分开缓存
+        const supplyCache = { loaded: false, list: [] };
+        const doseUnitCacheMap = {}; // key: serial|order_code -> [{unit_code, unit_name, unit_type}]
+
+        function fetchFrequencyList(longOnceFlag = '1') {
+          const flag = String(longOnceFlag);
+          if (frequencyCache[flag] && frequencyCache[flag].loaded) {
+            return Promise.resolve(frequencyCache[flag].list);
+          }
+          return new Promise((resolve) => {
+            $.ajax({
+              url: appconfig.api + "/api/MobileWard/GetYzFrequency",
+              type: "GET",
+              dataType: "json",
+              data: { long_once_flag: flag },
+              success: function (res) {
+                const list = (res && res.Status && Array.isArray(res.Data)) ? res.Data : [];
+                if (!frequencyCache[flag]) frequencyCache[flag] = { loaded: false, list: [] };
+                frequencyCache[flag].loaded = true;
+                frequencyCache[flag].list = list;
+                resolve(list);
+              },
+              error: function () { resolve([]); }
+            });
+          });
+        }
+
+        function fetchSupplyList() {
+          if (supplyCache.loaded) return Promise.resolve(supplyCache.list);
+          return new Promise((resolve) => {
+            $.ajax({
+              url: appconfig.api + "/api/MobileWard/GetYzSupplyList",
+              type: "GET",
+              dataType: "json",
+              success: function (res) {
+                const list = (res && res.Status && Array.isArray(res.Data)) ? res.Data : [];
+                supplyCache.loaded = true;
+                supplyCache.list = list;
+                resolve(list);
+              },
+              error: function () { resolve([]); }
+            });
+          });
+        }
+
+        function fetchDoseUnitList(serial, order_code) {
+          const key = (serial || "00") + "|" + (order_code || "");
+          if (doseUnitCacheMap[key]) return Promise.resolve(doseUnitCacheMap[key]);
+          if (!order_code) return Promise.resolve([]);
+          return new Promise((resolve) => {
+            $.ajax({
+              url: appconfig.api + "/api/MobileWard/GetYzDictList",
+              type: "GET",
+              dataType: "json",
+              data: { serial: serial || "00", order_code: order_code },
+              success: function (res) {
+                const arr = [];
+                const d = res && res.Status && res.Data && res.Data[0] ? res.Data[0] : null;
+                if (d) {
+                  if (d.mini_unit && d.mini1_name) arr.push({ unit_code: d.mini_unit, unit_name: d.mini1_name, unit_type: "mini" });
+                  if (d.pack_unit && d.pack_name) arr.push({ unit_code: d.pack_unit, unit_name: d.pack_name, unit_type: "pack" });
+                  if (d.vol_unit && d.vol_name) arr.push({ unit_code: d.vol_unit, unit_name: d.vol_name, unit_type: "vol" });
+                  if (d.weight_unit && d.weight_name) arr.push({ unit_code: d.weight_unit, unit_name: d.weight_name, unit_type: "weight" });
+                }
+                doseUnitCacheMap[key] = arr;
+                resolve(arr);
+              },
+              error: function () { resolve([]); }
+            });
+          });
+        }
+
+        function buildOptions(list, codeKey, nameKey, selectedCode) {
+          let html = '<option value="">请选择</option>';
+          (list || []).forEach(function (it) {
+            const code = (it && it[codeKey]) || "";
+            const name = (it && it[nameKey]) || code;
+            const sel = String(code).trim().toUpperCase() === String(selectedCode || "").trim().toUpperCase() ? " selected" : "";
+            html += '<option value="' + (String(code).replace(/"/g, '&quot;')) + '"' + sel + '>' + (String(name).replace(/</g, '&lt;')) + '</option>';
+          });
+          return html;
+        }
+
+        function findCodeByName(list, name, codeKey, nameKey) {
+          if (!name) return "";
+          const it = (list || []).find(function (x) {
+            return String(x[nameKey] || "").trim() === String(name).trim();
+          });
+          return it ? (it[codeKey] || "") : "";
+        }
 
         // 加载模板列表
         function loadYzPatternList() {
@@ -505,11 +677,11 @@ header
                 console.log(orderTemplates);
                 renderTemplateList();
               } else {
-                alert("获取医嘱模板失败");
+                layui.layer.msg("获取医嘱模板失败", { icon: 2, time: 3000 });
               }
             },
             error: function () {
-              alert("网络错误，获取医嘱模板失败");
+              layui.layer.msg("网络错误，获取医嘱模板失败", { icon: 2, time: 3000 });
             },
           });
         }
@@ -598,7 +770,7 @@ header
                 selectedTemplate.pattern_name
               );
             } else {
-              alert("模板信息不完整，无法获取详情");
+              layui.layer.msg("模板信息不完整，无法获取详情", { icon: 2, time: 3000 });
             }
           });
         }
@@ -677,11 +849,11 @@ header
                 currentOrderDetails = res.Data || [];
                 showOrderPanel(patternName, currentOrderDetails);
               } else {
-                alert("获取医嘱模板明细失败: " + (res.Message || "未知错误"));
+                layui.layer.msg("获取医嘱模板明细失败: " + (res.Message || "未知错误"), { icon: 2, time: 3000 });
               }
             },
             error: function (xhr, status, error) {
-              alert("网络错误，获取医嘱模板明细失败");
+              layui.layer.msg("网络错误，获取医嘱模板明细失败", { icon: 2, time: 3000 });
               console.error("获取模板详情失败:", error);
             },
           });
@@ -737,13 +909,14 @@ header
                           ? "规格: " + order.drug_specification + " | "
                           : ""
                       }
-                      ${order.doseage ? "剂量: " + order.doseage_unit_name + " | " : ""}
+                      ${order.doseage ? "剂量: " + order.doseage+order.doseage_unit_name + " | " : ""}
                       ${
                         order.frequ_name
                           ? "频次: " + order.frequ_name + " | "
                           : ""
                       }
-                      ${order.supply_name ? "用法: " + order.supply_name : ""}
+                      ${order.supply_name ? "用法: " + order.supply_name + " | ": ""}
+                      ${order.charge_amount ? "数量: " + order.charge_amount  : ""}
                       ${order.order_code ? "<br>编码: " + order.order_code : ""}
                     </div>
                   </div>
@@ -759,6 +932,7 @@ header
 
           // 更新选择计数
           updateSelectedCount();
+
         }
 
         // 显示全屏已选医嘱页面
@@ -776,36 +950,48 @@ header
             );
           } else {
             globalSelectedOrders.forEach((globalOrder, globalIndex) => {
+              const isLongTerm = globalOrder.long_once_flag === '1';
+              const typeBadge = `<span class="layui-badge ${isLongTerm ? 'layui-bg-blue' : 'layui-bg-orange'}" style="margin-right: 8px;">${isLongTerm ? '长期' : '临时'}</span>`;
+
               const orderItem = `
-                <div class="order-item">
-                  <input type="checkbox" class="global-order-checkbox" data-global-index="${globalIndex}" checked>
-                  <div class="order-content">
-                    <div class="order-name">${
-                      globalOrder.order_name || globalOrder.drug_name || "医嘱"
-                    }</div>
-                    <div class="order-details">
-                      <strong>来源模板:</strong> ${globalOrder.pattern_name}<br>
-                      ${
-                        globalOrder.drug_description
-                          ? "规格: " + globalOrder.drug_description + " | "
-                          : ""
-                      }
-                      ${
-                        globalOrder.doseage
-                          ? "剂量: " + globalOrder.doseage + globalOrder.doseage_unit_name + " | "
-                          : ""
-                      }
-                      ${
-                        globalOrder.frequ_name
-                          ? "频次: " + globalOrder.frequ_name + " | "
-                          : ""
-                      }
-                      ${globalOrder.supply_name ? "用法: " + globalOrder.supply_name : ""}
-                      ${
-                        globalOrder.order_code
-                          ? "<br>编码: " + globalOrder.order_code
-                          : ""
-                      }
+                <div class="order-item" data-global-index="${globalIndex}">
+                  <div class="order-main">
+                    <div class="order-content">
+                      <div class="order-name">
+                        ${typeBadge}
+                        ${
+                        globalOrder.order_name || globalOrder.drug_name || "医嘱"
+                      }</div>
+                      <div class="order-details">
+                        <strong>来源模板:</strong> ${globalOrder.pattern_name}<br>
+                        ${
+                          globalOrder.drug_description
+                            ? "规格: " + globalOrder.drug_description + " | "
+                            : ""
+                        }
+                        ${
+                          globalOrder.doseage
+                            ? "剂量: " + globalOrder.doseage + globalOrder.doseage_unit_name + " | "
+                            : ""
+                        }
+                        ${
+                          globalOrder.frequ_name
+                            ? "频次: " + globalOrder.frequ_name + " | "
+                            : ""
+                        }
+                        ${globalOrder.supply_name ? "用法: " + globalOrder.supply_name : ""}
+                        ${
+                          globalOrder.order_code
+                            ? "<br>编码: " + globalOrder.order_code
+                            : ""
+                        }
+                      </div>
+                    </div>
+                  </div>
+                  <div class="order-footer">
+                    <div class="action-buttons">
+                      <button class="btn btn-secondary global-edit-btn" data-global-index="${globalIndex}" type="button">编辑</button>
+                      <button class="btn btn-secondary global-delete-btn" data-global-index="${globalIndex}" type="button">删除</button>
                     </div>
                   </div>
                 </div>`;
@@ -943,6 +1129,7 @@ header
               if (existsInGlobal === -1) {
                 globalSelectedOrders.push({
                   ...currentOrder,
+                  long_once_flag: "0", // 默认设置为临时医嘱
                   pattern_name: lastPatternName,
                   original_index: index,
                 });
@@ -970,17 +1157,171 @@ header
             }
           });
 
-          // 全局已选医嘱复选框变化
-          $(document).on("change", ".global-order-checkbox", function () {
-            const globalIndex = parseInt($(this).data("global-index"));
-            const isChecked = $(this).is(":checked");
 
-            if (!isChecked) {
-              // 从全局选择中移除
+
+          // 全局已选医嘱 - 删除按钮
+          $(document).on("click", ".global-delete-btn", function () {
+            const globalIndex = parseInt($(this).data("global-index"));
+            const orderName = globalSelectedOrders[globalIndex]
+              ? globalSelectedOrders[globalIndex].order_name || globalSelectedOrders[globalIndex].drug_name || "医嘱"
+              : "此医嘱";
+
+            layui.layer.confirm(`确定删除 ${orderName} 吗？`, { icon: 3, title: '删除确认' }, function (idx) {
+              // 确认删除
               globalSelectedOrders.splice(globalIndex, 1);
               updateSelectedCount();
-              showSelectedOrdersFullpage(); // 重新渲染
-            }
+              showSelectedOrdersFullpage();
+              layui.layer.close(idx);
+            });
+          });
+
+          // 全局已选医嘱 - 编辑按钮（带下拉选择：剂量单位/用法/频率）
+          $(document).on("click", ".global-edit-btn", function () {
+            const globalIndex = parseInt($(this).data("global-index"));
+            const order = globalSelectedOrders[globalIndex];
+            if (!order) return;
+
+            // 确保 long_once_flag 存在，默认为长期医嘱 '1'
+
+            order.long_once_flag = order.long_once_flag === '0' ? '0' : '1';
+
+            const serial = order.Serial || order.serial || "00";
+            const orderCode = order.order_code || "";
+
+            // 根据当前医嘱类型加载初始频次列表
+            Promise.all([
+              fetchFrequencyList(order.long_once_flag),
+              fetchDoseUnitList(serial, orderCode),
+              fetchSupplyList()
+            ]).then(function ([freqList, unitList, supplyList]) {
+              const frequ_code = order.frequ_code || findCodeByName(freqList, order.frequ_name, 'code', 'name');
+              const dose_unit_code = order.doseage_unit || findCodeByName(unitList, order.doseage_unit_name, 'unit_code', 'unit_name');
+              const supply_code = order.supply_code || findCodeByName(supplyList, order.supply_name, 'supply_code', 'supply_name');
+
+              const freqOptions = buildOptions(freqList, 'code', 'name', frequ_code);
+              const unitOptions = buildOptions(unitList, 'unit_code', 'unit_name', dose_unit_code);
+              const supplyOptions = buildOptions(supplyList, 'supply_code', 'supply_name', supply_code);
+
+              const content = `
+                <form class="layui-form edit-order-form" lay-filter="editOrderForm" style="padding: 20px 25px 10px 0px;">
+                  <div class="layui-form-item">
+                    <label class="layui-form-label">医嘱名称</label>
+                    <div class="layui-input-block">
+                      <div class="readonly-value">${(order.order_name||order.drug_name||'').replace(/"/g,'&quot;')}</div>
+                    </div>
+                  </div>
+                  <div class="layui-form-item">
+                    <label class="layui-form-label">医嘱类型</label>
+                    <div class="layui-input-block">
+                      <input type="checkbox" name="long_once_flag" lay-skin="switch" lay-text="长期|临时" lay-filter="longOnceSwitch" ${order.long_once_flag === '0' ? '' : 'checked'} value="1">
+                    </div>
+                  </div>
+                  <div class="layui-row layui-col-space10">
+                    <div class="layui-col-md6">
+                      <div class="layui-form-item">
+                        <label class="layui-form-label">剂量</label>
+                        <div class="layui-input-block">
+                          <input type="text" id="edit_order_doseage" name="doseage" class="layui-input" value="${order.doseage || ''}" placeholder="请输入剂量">
+                        </div>
+                      </div>
+                    </div>
+                    <div class="layui-col-md6">
+                      <div class="layui-form-item">
+                        <label class="layui-form-label">剂量单位</label>
+                        <div class="layui-input-block">
+                          <select id="edit_order_doseage_unit" name="doseage_unit" lay-search>${unitOptions}</select>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="layui-row layui-col-space10">
+                    <div class="layui-col-md6">
+                      <div class="layui-form-item">
+                        <label class="layui-form-label">数量</label>
+                        <div class="layui-input-block">
+                          <input type="number" id="edit_order_charge_amount" name="charge_amount" class="layui-input" value="${order.charge_amount || '1'}" placeholder="请输入数量">
+                        </div>
+                      </div>
+                    </div>
+                    <div class="layui-col-md6">
+                      <div class="layui-form-item">
+                        <label class="layui-form-label">频次</label>
+                        <div class="layui-input-block">
+                          <select id="edit_order_frequ" name="frequ_code" lay-search>${freqOptions}</select>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="layui-row layui-col-space10">
+                    <div class="layui-col-md6">
+                      <div class="layui-form-item">
+                        <label class="layui-form-label">用法</label>
+                        <div class="layui-input-block">
+                          <select id="edit_order_supply" name="supply_code" lay-search>${supplyOptions}</select>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="layui-form-item" style="margin-top: 5px;">
+                     <div class="layui-input-block form-tip">
+                       <i class="layui-icon layui-icon-tips" style="font-size:14px;"></i> 提示：修改将仅应用于本次提交，不会影响模板。
+                     </div>
+                  </div>
+                </form>
+              `;
+
+              layui.layer.open({
+                type: 1,
+                title: '编辑医嘱',
+                area: ['90%', 'auto'],
+                maxWidth: '600px',
+                skin: 'custom-edit-layer',
+                content: content,
+                btn: ['保存', '取消'],
+                success: function(layero){
+                  form.render(null, 'editOrderForm'); // 渲染整个表单
+
+                  // 监听医嘱类型切换
+                  form.on('switch(longOnceSwitch)', function(data){
+                    const newFlag = data.elem.checked ? '1' : '0';
+                    fetchFrequencyList(newFlag).then(function(newList){
+                      const newFreqOptions = buildOptions(newList, 'code', 'name', ''); // 不保留旧选择
+                      layero.find('#edit_order_frequ').html(newFreqOptions);
+                      form.render('select', 'editOrderForm'); // 重新渲染下拉框
+                    });
+                  });
+                },
+                yes: function (index, layero) {
+                  const newDose = layero.find('#edit_order_doseage').val();
+                  const newCharge = layero.find('#edit_order_charge_amount').val();
+                  const newFrequCode = layero.find('#edit_order_frequ').val();
+                  const newDoseUnitCode = layero.find('#edit_order_doseage_unit').val();
+                  const newSupplyCode = layero.find('#edit_order_supply').val();
+                  const newLongOnceFlag = layero.find('input[name="long_once_flag"]').is(':checked') ? '1' : '0';
+
+                  // 重新获取当前类型的频次列表以找到名称
+                  const currentFreqList = frequencyCache[newLongOnceFlag].list || [];
+                  const frequItem = currentFreqList.find(x => String(x.code||'').toUpperCase() === String(newFrequCode||'').toUpperCase());
+                  const unitItem = (unitList || []).find(x => String(x.unit_code||'').toUpperCase() === String(newDoseUnitCode||'').toUpperCase());
+                  const supplyItem = (supplyList || []).find(x => String(x.supply_code||'').toUpperCase() === String(newSupplyCode||'').toUpperCase());
+
+                  order.doseage = newDose;
+                  order.charge_amount = newCharge;
+                  order.long_once_flag = newLongOnceFlag;
+                  order.frequ_code = newFrequCode || '';
+                  order.frequ_name = (frequItem && (frequItem.name || frequItem.code)) || '';
+                  order.supply_code = newSupplyCode || '';
+                  order.supply_name = (supplyItem && (supplyItem.supply_name || supplyItem.supply_code)) || '';
+                  order.doseage_unit = newDoseUnitCode || '';
+                  order.doseage_unit_name = (unitItem && (unitItem.unit_name || unitItem.unit_code)) || '';
+
+                  globalSelectedOrders[globalIndex] = order;
+                  updateSelectedCount();
+                  showSelectedOrdersFullpage();
+                  layui.layer.close(index);
+                }
+              });
+            });
           });
 
           // 全选/取消全选
@@ -1002,6 +1343,7 @@ header
                 if (existsInGlobal === -1) {
                   globalSelectedOrders.push({
                     ...order,
+                    long_once_flag: "0", // 默认设置为临时医嘱
                     pattern_name: lastPatternName,
                     original_index: index,
                   });
@@ -1021,16 +1363,14 @@ header
           // 确认添加医嘱
           $("#confirmOrderBtn").on("click", function () {
             if (globalSelectedOrders.length === 0) {
-              alert("请至少选择一个医嘱");
+              layui.layer.msg("请至少选择一个医嘱", { icon: 2, time: 2000 });
               return;
             }
 
             console.log("确认添加的全局医嘱:", globalSelectedOrders);
 
             // 这里可以添加提交医嘱的逻辑
-            alert(
-              `已选择 ${globalSelectedOrders.length} 个医嘱，准备添加到患者医嘱中`
-            );
+            layui.layer.msg(`已选择 ${globalSelectedOrders.length} 个医嘱，准备添加到患者医嘱中`, { icon: 1, time: 2000 });
 
             // 隐藏面板
             hideOrderPanel();
@@ -1039,7 +1379,7 @@ header
           // 查看已选：进入全屏模式
           $("#viewSelectedBtn").on("click", function () {
             if (globalSelectedOrders.length === 0) {
-              alert("还没有勾选任何医嘱");
+              layui.layer.msg("还没有勾选任何医嘱", { icon: 2, time: 2000 });
               return;
             }
             showSelectedOrdersFullpage();
@@ -1053,7 +1393,7 @@ header
           // 全屏页面确认添加
           $("#fullpageConfirmBtn").on("click", function () {
             if (globalSelectedOrders.length === 0) {
-              alert("请至少选择一个医嘱");
+              layui.layer.msg("请至少选择一个医嘱", { icon: 2, time: 2000 });
               return;
             }
 
@@ -1067,7 +1407,7 @@ header
         // 批量提交已选医嘱
         function submitSelectedOrders() {
           if (!globalSelectedOrders || globalSelectedOrders.length === 0) {
-            alert("没有可提交的医嘱");
+            layui.layer.msg("没有可提交的医嘱", { icon: 2, time: 2000 });
             return;
           }
 
@@ -1114,7 +1454,7 @@ header
               end_time_2: "",
               enter_oper: doctorCode,
               enter_time: currentTime,
-              exec_unit: wardData.ward_sn || "",
+              exec_unit: userData.admiss_ward || "",
               exclusive_type: "1",
               fit_flag: "1",
               frequ_code: (
@@ -1147,7 +1487,7 @@ header
               doseage_unit_name:
                 order.doseage_unit_name || order.doseage_unit || null,
               frequ_code: order.frequency || order.frequ_code || "ONCE",
-              ward_sn: wardData.ward_sn || "",
+              ward_sn: userData.admiss_ward || "",
             };
           });
 
@@ -1167,7 +1507,7 @@ header
             success: function (response) {
               console.log("提交响应:", response);
               if (response && response.Status) {
-                alert("提交成功！");
+                layui.layer.msg("提交成功！", { icon: 1, time: 2000 });
                 // 清空已选医嘱
                 globalSelectedOrders = [];
                 selectedOrders = [];
@@ -1177,7 +1517,7 @@ header
               } else {
                 const errorMsg =
                   response && response.Message ? response.Message : "提交失败";
-                alert(errorMsg);
+                layui.layer.msg(errorMsg, { icon: 2, time: 3000 });
               }
             },
             error: function (xhr) {
@@ -1186,7 +1526,7 @@ header
               if (xhr.responseJSON && xhr.responseJSON.Message) {
                 errorMsg = xhr.responseJSON.Message;
               }
-              alert(errorMsg);
+              layui.layer.msg(errorMsg, { icon: 2, time: 3000 });
             },
           });
         }

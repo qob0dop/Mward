@@ -462,10 +462,10 @@
     /* color: #e74c3c !important; */
 }
 
-#layui-layer2
+/* #layui-layer2
 {
     height: 100%;
-}
+} */
 .layui-row
 {
     height: auto;  min-height: auto;
@@ -795,6 +795,8 @@
 {
     color: #435cab;  border-radius: 15px;  background-color: #d2d8e7;
 }
+
+
 
 
 
@@ -1503,57 +1505,8 @@
 
           // 确认对话框
           layer.confirm(
-            '<div style="padding: 20px 0; text-align: center;">' +
-              '<div style="margin-bottom: 20px;">' +
-                '<i class="layui-icon" style="font-size: 48px; color: #ff9800; margin-bottom: 15px;">&#xe783;</i>' +
-              '</div>' +
-              '<div style="font-size: 16px; color: #333; margin-bottom: 15px; font-weight: 500;">确定要停止此医嘱吗？</div>' +
-              '<div style="background: #f8f9fa; padding: 12px; border-radius: 6px; border-left: 4px solid #007bff;">' +
-                '<div style="font-size: 12px; color: #666; margin-bottom: 5px;">医嘱详情</div>' +
-                '<div style="font-size: 14px; color: #333; font-weight: 500;">' + (orderData.order_name || "未知") + '</div>' +
-              '</div>' +
-            '</div>',
-            {
-              icon: 0, // 不显示默认图标，使用自定义图标
-              title: '<div style="padding: 5px 0; font-size: 16px; font-weight: 600; color: #333;"><i class="layui-icon" style="margin-right: 8px; color: #ff9800;">&#xe783;</i>停止医嘱确认</div>',
-              btn: ["确定停止", "取消"],
-              btnAlign: 'c', // 按钮居中
-              area: ["460px", "320px"],
-              skin: 'layui-layer-molv', // 使用更现代的皮肤
-              shade: [0.4, '#000'], // 增强遮罩效果
-              shadeClose: false, // 防止误操作
-              resize: false, // 禁止调整大小
-              success: function(layero, index) {
-                // 自定义按钮样式
-                $(layero).find('.layui-layer-btn0').css({
-                  'background': '#ff9800',
-                  'border-color': '#ff9800',
-                  'color': '#fff',
-                  'border-radius': '6px',
-                  'padding': '8px 24px',
-                  'font-weight': '500',
-                  'transition': 'all 0.3s ease'
-                });
-                $(layero).find('.layui-layer-btn1').css({
-                  'background': '#f5f5f5',
-                  'border-color': '#ddd',
-                  'color': '#666',
-                  'border-radius': '6px',
-                  'padding': '8px 24px',
-                  'font-weight': '500',
-                  'transition': 'all 0.3s ease'
-                });
-                // 添加悬停效果
-                $(layero).find('.layui-layer-btn0').hover(
-                  function() { $(this).css('background', '#e65100'); },
-                  function() { $(this).css('background', '#ff9800'); }
-                );
-                $(layero).find('.layui-layer-btn1').hover(
-                  function() { $(this).css({'background': '#e9ecef', 'color': '#333'}); },
-                  function() { $(this).css({'background': '#f5f5f5', 'color': '#666'}); }
-                );
-              }
-            },
+            `确定要停止医嘱【${orderData.order_name || "未知"}】吗？`,
+            { icon: 3, title: "停止医嘱确认" },
             function (index) {
               // 构建API参数
               var apiParams = {
@@ -2936,61 +2889,8 @@
 
           // 确认对话框
           layer.confirm(
-            '<div style="padding: 20px 0; text-align: center;">' +
-              '<div style="margin-bottom: 20px;">' +
-                '<i class="layui-icon" style="font-size: 48px; color: #f44336; margin-bottom: 15px;">&#xe730;</i>' +
-              '</div>' +
-              '<div style="font-size: 16px; color: #333; margin-bottom: 10px; font-weight: 500;">确定要撤销此医嘱吗？</div>' +
-              '<div style="background: #fff3f3; padding: 10px; border-radius: 6px; border: 1px solid #ffcdd2; margin-bottom: 15px;">' +
-                '<div style="font-size: 12px; color: #d32f2f; font-weight: 500; margin-bottom: 5px;">⚠️ 重要提醒</div>' +
-                '<div style="font-size: 12px; color: #d32f2f;">撤销后医嘱将被永久删除，无法恢复</div>' +
-              '</div>' +
-              '<div style="background: #f8f9fa; padding: 12px; border-radius: 6px; border-left: 4px solid #007bff;">' +
-                '<div style="font-size: 12px; color: #666; margin-bottom: 5px;">医嘱详情</div>' +
-                '<div style="font-size: 14px; color: #333; font-weight: 500;">' + (orderData.order_name || "未知") + '</div>' +
-              '</div>' +
-            '</div>',
-            {
-              icon: 0, // 不显示默认图标，使用自定义图标
-              title: '<div style="padding: 5px 0; font-size: 16px; font-weight: 600; color: #333;"><i class="layui-icon" style="margin-right: 8px; color: #f44336;">&#xe730;</i>撤销医嘱确认</div>',
-              btn: ["确定撤销", "取消"],
-              btnAlign: 'c', // 按钮居中
-              area: ["480px", "380px"],
-              skin: 'layui-layer-molv', // 使用更现代的皮肤
-              shade: [0.5, '#000'], // 增强遮罩效果
-              shadeClose: false, // 防止误操作
-              resize: false, // 禁止调整大小
-              success: function(layero, index) {
-                // 自定义按钮样式
-                $(layero).find('.layui-layer-btn0').css({
-                  'background': '#f44336',
-                  'border-color': '#f44336',
-                  'color': '#fff',
-                  'border-radius': '6px',
-                  'padding': '8px 24px',
-                  'font-weight': '500',
-                  'transition': 'all 0.3s ease'
-                });
-                $(layero).find('.layui-layer-btn1').css({
-                  'background': '#f5f5f5',
-                  'border-color': '#ddd',
-                  'color': '#666',
-                  'border-radius': '6px',
-                  'padding': '8px 24px',
-                  'font-weight': '500',
-                  'transition': 'all 0.3s ease'
-                });
-                // 添加悬停效果
-                $(layero).find('.layui-layer-btn0').hover(
-                  function() { $(this).css('background', '#c62828'); },
-                  function() { $(this).css('background', '#f44336'); }
-                );
-                $(layero).find('.layui-layer-btn1').hover(
-                  function() { $(this).css({'background': '#e9ecef', 'color': '#333'}); },
-                  function() { $(this).css({'background': '#f5f5f5', 'color': '#666'}); }
-                );
-              }
-            },
+            "确定要撤销医嘱【" + (orderData.order_name || "未知") + "】吗？",
+            { icon: 3, title: "撤销医嘱确认" },
             function (index) {
               // 构建API参数
               var apiParams = {
@@ -4326,6 +4226,8 @@
         font-size: 13px !important; /* 缩小输入框字体 */
     }
 }
+
+
 
 
 

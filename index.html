@@ -19,293 +19,207 @@
       <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
     <style>
-      .main-body {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        overflow: hidden;
-        -webkit-transform: translate(-50%, -50%);
-        -moz-transform: translate(-50%, -50%);
-        -ms-transform: translate(-50%, -50%);
-        -o-transform: translate(-50%, -50%);
-        transform: translate(-50%, -50%);
-      }
+.main-body
+{
+    position: absolute;  top: 50%;  left: 50%;  overflow: hidden;          -webkit-transform: translate(-50%, -50%);             -moz-transform: translate(-50%, -50%);              -ms-transform: translate(-50%, -50%);               -o-transform: translate(-50%, -50%);                  transform: translate(-50%, -50%);
+}
 
-      .login-main .login-bottom .center .item input {
-        font-size: 14px;
-        position: absolute;
-        display: inline-block;
-        width: 227px;
-        height: 22px;
-        padding: 0;
-        letter-spacing: 0;
-        border: 0;
-        outline: 0;
-      }
+.login-main .login-bottom .center .item input
+{
+    font-size: 14px;  position: absolute;  display: inline-block;  width: 227px;  height: 22px;  padding: 0;  letter-spacing: 0;  border: 0;  outline: 0;
+}
 
-      .login-main .login-bottom .center .item .icon-1 {
-        background: url(/images/icon-login.png) no-repeat 1px 0;
-      }
+.login-main .login-bottom .center .item .icon-1
+{
+    background: url(/images/icon-login.png) no-repeat 1px 0;
+}
 
-      .login-main .login-bottom .center .item .icon-2 {
-        background: url(/images/icon-login.png) no-repeat -54px 0;
-      }
+.login-main .login-bottom .center .item .icon-2
+{
+    background: url(/images/icon-login.png) no-repeat -54px 0;
+}
 
-      .login-main .login-bottom .center .item .icon-3 {
-        background: url(/images/icon-login.png) no-repeat -106px 0;
-      }
+.login-main .login-bottom .center .item .icon-3
+{
+    background: url(/images/icon-login.png) no-repeat -106px 0;
+}
 
-      .login-main .login-bottom .center .item .icon-4 {
-        position: absolute;
-        right: -10px;
-        cursor: pointer;
-        background: url(/images/icon-login.png) no-repeat 0 -43px;
-      }
+.login-main .login-bottom .center .item .icon-4
+{
+    position: absolute;  right: -10px;  cursor: pointer;  background: url(/images/icon-login.png) no-repeat 0 -43px;
+}
 
-      .login-main .login-bottom .center .item .icon-5 {
-        background: url(/images/icon-login.png) no-repeat -55px -43px;
-      }
+.login-main .login-bottom .center .item .icon-5
+{
+    background: url(/images/icon-login.png) no-repeat -55px -43px;
+}
 
-      .login-main .login-bottom .center .item .icon-6 {
-        position: absolute;
-        right: -10px;
-        margin-top: 8px;
-        cursor: pointer;
-        background: url(/images/icon-login.png) no-repeat 0 -93px;
-      }
+.login-main .login-bottom .center .item .icon-6
+{
+    position: absolute;  right: -10px;  margin-top: 8px;  cursor: pointer;  background: url(/images/icon-login.png) no-repeat 0 -93px;
+}
 
-      .login-main .login-bottom .tip .icon-nocheck {
-        position: relative;
-        top: 2px;
-        display: inline-block;
-        width: 10px;
-        height: 10px;
-        margin: 1px 8px 1px 1px;
-        cursor: pointer;
-        border: solid 1px #9abcda;
-        border-radius: 2px;
-      }
+.login-main .login-bottom .tip .icon-nocheck
+{
+    position: relative;  top: 2px;  display: inline-block;  width: 10px;  height: 10px;  margin: 1px 8px 1px 1px;  cursor: pointer;  border: solid 1px #9abcda;  border-radius: 2px;
+}
 
-      .login-main .login-bottom .tip .icon-check {
-        width: 14px;
-        height: 14px;
-        margin: 0 7px 0 0;
-        border: none;
-        background: url(/images/icon-login.png) no-repeat -111px -48px;
-      }
+.login-main .login-bottom .tip .icon-check
+{
+    width: 14px;  height: 14px;  margin: 0 7px 0 0;  border: none;  background: url(/images/icon-login.png) no-repeat -111px -48px;
+}
 
-      .login-main .login-bottom .center .item .icon {
-        display: inline-block;
-        width: 33px;
-        height: 22px;
-      }
+.login-main .login-bottom .center .item .icon
+{
+    display: inline-block;  width: 33px;  height: 22px;
+}
 
-      .login-main .login-bottom .center .item {
-        width: 288px;
-        height: 35px;
-        margin-bottom: 35px;
-        border-bottom: 1px solid #dae1e6;
-      }
+.login-main .login-bottom .center .item
+{
+    width: 288px;  height: 35px;  margin-bottom: 35px;  border-bottom: 1px solid #dae1e6;
+}
 
-      .login-main {
-        position: relative;
-        float: left;
-        width: 428px;
-      }
+.login-main
+{
+    position: relative;  float: left;  width: 428px;
+}
 
-      .login-main .login-top {
-        font-family: SourceHanSansCN-Regular;
-        font-size: 30px;
-        font-weight: 400;
-        font-stretch: normal;
-        line-height: 117px;
-        overflow: hidden;
-        height: 117px;
-        -webkit-transform: rotate(0);
-        -moz-transform: rotate(0);
-        -ms-transform: rotate(0);
-        -o-transform: rotate(0);
-        transform: rotate(0);
-        text-align: center;
-        letter-spacing: 0;
-        color: #fff;
-        border-radius: 12px 12px 0 0;
-        background-color: #148be4;
-      }
+.login-main .login-top
+{
+    font-family: SourceHanSansCN-Regular;  font-size: 30px;  font-weight: 400;  font-stretch: normal;  line-height: 117px;  overflow: hidden;  height: 117px;          -webkit-transform: rotate(0);             -moz-transform: rotate(0);              -ms-transform: rotate(0);               -o-transform: rotate(0);                  transform: rotate(0);  text-align: center;  letter-spacing: 0;  color: #fff;  border-radius: 12px 12px 0 0;  background-color: #148be4;
+}
 
-      .login-main .login-top .bg1 {
-        position: absolute;
-        top: 43px;
-        left: 0;
-        display: inline-block;
-        width: 74px;
-        height: 74px;
-        opacity: 0.1;
-        border-radius: 0 74px 0 0;
-        background: #fff;
-      }
+.login-main .login-top .bg1
+{
+    position: absolute;  top: 43px;  left: 0;  display: inline-block;  width: 74px;  height: 74px;  opacity: .1;  border-radius: 0 74px 0 0;  background: #fff;
+}
 
-      .login-main .login-top .bg2 {
-        position: absolute;
-        top: -16px;
-        right: -16px;
-        display: inline-block;
-        width: 94px;
-        height: 94px;
-        opacity: 0.1;
-        border-radius: 50%;
-        background: #fff;
-      }
+.login-main .login-top .bg2
+{
+    position: absolute;  top: -16px;  right: -16px;  display: inline-block;  width: 94px;  height: 94px;  opacity: .1;  border-radius: 50%;  background: #fff;
+}
 
-      .login-main .login-bottom {
-        width: 428px;
-        padding-bottom: 53px;
-        border-radius: 0 0 12px 12px;
-        background: #fff;
-      }
+.login-main .login-bottom
+{
+    width: 428px;  padding-bottom: 53px;  border-radius: 0 0 12px 12px;  background: #fff;
+}
 
-      .login-main .login-bottom .center {
-        position: relative;
-        width: 288px;
-        margin: 0 auto;
-        padding-top: 40px;
-        padding-bottom: 15px;
-      }
+.login-main .login-bottom .center
+{
+    position: relative;  width: 288px;  margin: 0 auto;  padding-top: 40px;  padding-bottom: 15px;
+}
 
-      .login-main .login-bottom .tip {
-        line-height: 16px;
-        clear: both;
-        width: 288px;
-        height: 16px;
-        margin: 0 auto;
-      }
+.login-main .login-bottom .tip
+{
+    line-height: 16px;  clear: both;  width: 288px;  height: 16px;  margin: 0 auto;
+}
 
-      body {
-        font-size: 12px;
-        position: static;
-        background: url(/images/loginbg.png) 0 0 / cover no-repeat;
-      }
+body
+{
+    font-size: 12px;  position: static;  background: url(/images/loginbg.png) 0 0 / cover no-repeat;
+}
 
-      input::-webkit-input-placeholder {
-        color: #a6aebf;
-      }
+input::-webkit-input-placeholder
+{
+    color: #a6aebf;
+}
 
-      input::-moz-placeholder {
-        /* Mozilla Firefox 19+ */
-        color: #a6aebf;
-      }
+input::-moz-placeholder
+{
+    /* Mozilla Firefox 19+ */
+    color: #a6aebf;
+}
 
-      input:-moz-placeholder {
-        /* Mozilla Firefox 4 to 18 */
-        color: #a6aebf;
-      }
+input:-moz-placeholder
+{
+    /* Mozilla Firefox 4 to 18 */
+    color: #a6aebf;
+}
 
-      input:-ms-input-placeholder {
-        /* Internet Explorer 10-11 */
-        color: #a6aebf;
-      }
+input:-ms-input-placeholder
+{
+    /* Internet Explorer 10-11 */
+    color: #a6aebf;
+}
 
-      input:-webkit-autofill {
-        /* 取消Chrome记住密码的背景颜色 */
-        -webkit-box-shadow: 0 0 0 1000px white inset !important;
-      }
+input:-webkit-autofill
+{
+    /* 取消Chrome记住密码的背景颜色 */
+    -webkit-box-shadow: 0 0 0 1000px white inset !important;
+}
 
-      html {
-        height: 100%;
-      }
+html
+{
+    height: 100%;
+}
 
-      .login-main .login-bottom .tip .login-tip {
-        font-family: MicrosoftYaHei;
-        font-size: 12px;
-        font-weight: 400;
-        font-stretch: normal;
-        cursor: pointer;
-        letter-spacing: 0;
-        color: #9abcda;
-      }
+.login-main .login-bottom .tip .login-tip
+{
+    font-family: MicrosoftYaHei;  font-size: 12px;  font-weight: 400;  font-stretch: normal;  cursor: pointer;  letter-spacing: 0;  color: #9abcda;
+}
 
-      .login-main .login-bottom .tip .forget-password {
-        font-stretch: normal;
-        position: absolute;
-        right: 62px;
-        text-decoration: none;
-        letter-spacing: 0;
-        color: #1391ff;
-      }
+.login-main .login-bottom .tip .forget-password
+{
+    font-stretch: normal;  position: absolute;  right: 62px;  text-decoration: none;  letter-spacing: 0;  color: #1391ff;
+}
 
-      .login-main .login-bottom .login-btn {
-        font-size: 14px;
-        line-height: 40px;
-        width: 288px;
-        height: 40px;
-        margin: 24px auto 0;
-        cursor: pointer;
-        text-align: center;
-        letter-spacing: 0;
-        color: #fff;
-        border: none;
-        border-radius: 16px;
-        background-color: #1e9fff;
-      }
+.login-main .login-bottom .login-btn
+{
+    font-size: 14px;  line-height: 40px;  width: 288px;  height: 40px;  margin: 24px auto 0;  cursor: pointer;  text-align: center;  letter-spacing: 0;  color: #fff;  border: none;  border-radius: 16px;  background-color: #1e9fff;
+}
 
-      .login-main .login-bottom .center .item .validateImg {
-        position: absolute;
-        right: 1px;
-        height: 36px;
-        cursor: pointer;
-        border: 1px solid #e6e6e6;
-      }
+.login-main .login-bottom .center .item .validateImg
+{
+    position: absolute;  right: 1px;  height: 36px;  cursor: pointer;  border: 1px solid #e6e6e6;
+}
 
-      .footer {
-        font-size: 14px;
-        line-height: 30px;
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        padding-bottom: 10px;
-        text-align: center;
-        color: #fff;
-        text-shadow: #000 0.1em 0.1em 0.1em;
-      }
+.footer
+{
+    font-size: 14px;  line-height: 30px;  position: absolute;  bottom: 0;  left: 0;  width: 100%;  padding-bottom: 10px;  text-align: center;  color: #fff;  text-shadow: #000 .1em .1em .1em;
+}
 
-      .padding-5 {
-        padding: 5px !important;
-      }
+.padding-5
+{
+    padding: 5px !important;
+}
 
-      .footer a,
-      .footer span {
-        color: #fff;
-      }
+.footer a,
+.footer span
+{
+    color: #fff;
+}
 
-      /* 设置图标样式 */
-      .setting-icon {
-        font-size: 20px;
-        position: absolute;
-        top: 15px;
-        right: 15px;
-        cursor: pointer;
-        transition: color 0.3s;
-        color: rgba(255, 255, 255, 0.8);
-      }
+/* 设置图标样式 */
+.setting-icon
+{
+    font-size: 20px;  position: absolute;  top: 15px;  right: 15px;  cursor: pointer;  transition: color .3s;  color: rgba(255, 255, 255, .8);
+}
 
-      .setting-icon:hover {
-        color: #fff;
-      }
+.setting-icon:hover
+{
+    color: #fff;
+}
 
-      @media screen and (max-width: 428px) {
-        .login-main {
-          width: 360px !important;
-        }
+@media screen and (max-width: 428px)
+{
+    .login-main
+    {
+        width: 360px !important;
+    }
 
-        .login-main .login-top {
-          width: 360px !important;
-        }
+    .login-main .login-top
+    {
+        width: 360px !important;
+    }
 
-        .login-main .login-bottom {
-          width: 360px !important;
-        }
-      }
+    .login-main .login-bottom
+    {
+        width: 360px !important;
+    }
+}
+
+
+
     </style>
   </head>
   <body>
@@ -395,7 +309,7 @@
         // 设置图标点击事件
         $("#setting-btn").on("click", function () {
           var currentApiUrl =
-            localStorage.getItem("api_url") || "http://10.102.41.142:5251";
+            localStorage.getItem("api_url") || "https://www.annotokyo.fun:8123";
           layer.open({
             type: 1,
             title: "API设置",
@@ -424,7 +338,7 @@
               }
             },
             btn2: function () {
-              $("#modal-api-url").val("http://10.102.41.142:5251");
+              $("#modal-api-url").val("https://www.annotokyo.fun:8123");
               return false; // 不关闭弹窗
             },
             btn3: function (index) {
