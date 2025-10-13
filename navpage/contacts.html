@@ -1,11 +1,688 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-  </head>
-  <body>
-    <h1>通讯录页面</h1>
-  </body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>通讯录</title>
+    <link rel="stylesheet" href="/lib/layui-v2.6.3/css/layui.css" media="all" />
+    <style>
+body,
+html
+{
+    height: 100%;  margin: 0;  background-color: rgb(242, 243, 245);
+}
+
+header
+{
+    font-size: 18px;  font-weight: bold;  display: flex;  align-items: center;  justify-content: space-between;  box-sizing: border-box;  height: 10%;  padding: 0 10px;  text-align: center;  color: #fff;  background-color: rgb(4, 46, 167);
+}
+
+#search-container
+{
+    position: relative;  display: flex;  align-items: center;  justify-content: center;  min-width: 0;
+}
+
+.layui-icon-search
+{
+    font-size: 20px;  flex-shrink: 0;  margin-right: 5px;  cursor: pointer;
+ color: white; 
+}
+
+#contact-search
+{
+    font-size: 14px;  width: 120px;  height: 30px;  padding: 4px 12px;  transition: all .3s ease;  color: white;
+ border: 1px solid rgba(255,255,255,.3);  border-radius: 15px;  outline: none;  background: rgba(255,255,255,.1); 
+}
+
+#contact-search::placeholder
+{
+    color: rgba(255,255,255,.7);
+}
+
+#contact-search:focus
+{ width: 140px;
+ border-color: rgba(255,255,255,.6); 
+    background: rgba(255,255,255,.2); 
+}
+
+.tool
+{
+    display: flex;  align-items: center;
+ height: 5%;  padding: 0 10px;  background-color: rgb(242, 243, 245); 
+}
+
+.tool label
+{
+    font-size: 12px;  line-height: 12px;  margin: 5px;  padding: 5px 10px;  cursor: pointer;  transition: all .3s ease;  color: gray;  border-radius: 15px;  background-color: #fff;
+}
+
+.tool label.active
+{
+    color: rgb(67, 92, 171);  background-color: rgb(210, 216, 231);
+}
+
+main
+{ overflow: hidden;
+
+    height: 85%; 
+}
+
+.contacts-container
+{
+    overflow: auto;  box-sizing: border-box;  height: 100%;  padding: 10px;  padding-top: 0;  background-color: rgb(242, 243, 245);
+}
+
+.contact-card
+{
+    position: relative;  margin-bottom: 10px;  padding: 15px;  transition: all .3s ease;
+ border-radius: 10px;  background-color: #fff;  box-shadow: 0 2px 4px rgba(0,0,0,.1); 
+}
+
+.contact-card:hover
+{ transform: translateY(-1px);
+
+    box-shadow: 0 4px 8px rgba(0,0,0,.15); 
+}
+
+.contact-header
+{
+    display: flex;  align-items: center;  margin-bottom: 12px;
+}
+
+.contact-avatar
+{ font-size: 18px;  font-weight: bold;  display: flex;  align-items: center;  flex-shrink: 0;
+ justify-content: center; 
+
+    width: 50px;  height: 50px;  margin-right: 12px;  color: white;  border-radius: 50%;  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+}
+
+.contact-avatar.doctor
+{
+    background: linear-gradient(135deg, #1e9fff 0%, #1890ff 100%);
+}
+
+.contact-avatar.nurse
+{
+    background: linear-gradient(135deg, #52c41a 0%, #389e0d 100%);
+}
+
+.contact-avatar.admin
+{
+    background: linear-gradient(135deg, #722ed1 0%, #531dab 100%);
+}
+
+.contact-info
+{
+    flex: 1;  min-width: 0;
+}
+
+.contact-name
+{
+    font-size: 16px;  font-weight: bold;  margin-bottom: 4px;
+ color: #333; 
+}
+
+.contact-position
+{
+    font-size: 12px;  display: inline-block;  margin-bottom: 6px;
+ padding: 2px 6px;  color: #fff;  border-radius: 8px; 
+}
+
+.contact-position.doctor
+{
+    background-color: #1e9fff;
+}
+
+.contact-position.nurse
+{
+    background-color: #52c41a;
+}
+
+.contact-position.admin
+{
+    background-color: #722ed1;
+}
+
+.contact-department
+{
+    font-size: 12px;  color: #666;
+}
+
+.contact-status
+{
+    position: absolute;  top: 12px;  right: 12px;  display: flex;  align-items: center;
+}
+
+.status-dot
+{
+    width: 8px;  height: 8px;  margin-right: 4px;
+ border-radius: 50%; 
+}
+
+.status-dot.online
+{
+    background-color: #52c41a;
+}
+
+.status-dot.busy
+{
+    background-color: #faad14;
+}
+
+.status-dot.offline
+{
+    background-color: #d9d9d9;
+}
+
+.status-text
+{
+    font-size: 11px;  color: #999;
+}
+
+.contact-details
+{
+    display: grid;  margin-top: 10px;  padding-top: 10px;  border-top: 1px solid #f0f0f0;
+ grid-template-columns: repeat(2, 1fr);  gap: 8px; 
+}
+
+.contact-item
+{ font-size: 13px; 
+
+    display: flex;  align-items: center;  color: #666;
+}
+
+.contact-item .layui-icon
+{ font-size: 14px;
+
+    margin-right: 6px;  color: #999; 
+}
+
+.contact-actions
+{
+    display: flex;  justify-content: flex-end;  margin-top: 12px;
+ gap: 8px; 
+}
+
+.action-btn
+{ font-size: 12px; 
+
+    padding: 6px 12px;  cursor: pointer;  transition: all .3s ease;
+ color: #666;  border: 1px solid #d9d9d9;  border-radius: 15px;  background: white; 
+}
+
+.action-btn:hover
+{ color: #1e9fff;
+    border-color: #1e9fff; 
+}
+
+.action-btn.primary
+{ color: white;
+ border-color: #1e9fff; 
+    background-color: #1e9fff; 
+}
+
+.action-btn.primary:hover
+{ border-color: #40a9ff;
+    background-color: #40a9ff; 
+}
+
+.no-contacts
+{ padding: 50px 20px; 
+
+    text-align: center;  color: #999;
+}
+
+.no-contacts .layui-icon
+{
+    font-size: 64px;  margin-bottom: 20px;  color: #ddd;
+}
+
+/* 快速拨号悬浮按钮 */
+.quick-dial
+{
+    position: fixed;  z-index: 1000;
+ right: 20px;  bottom: 20px; 
+}
+
+.dial-btn
+{ font-size: 20px;  display: block;
+
+    width: 50px;  height: 50px;  margin-bottom: 10px;  cursor: pointer;  transition: all .3s ease;  color: white;  border: none;  border-radius: 50%;  background-color: rgb(4, 46, 167);  box-shadow: 0 4px 8px rgba(0,0,0,.2); 
+}
+
+.dial-btn:hover
+{ transform: scale(1.1);
+
+    background-color: rgb(67, 92, 171); 
+}
+
+/* 科室标题分组 */
+.department-header
+{
+    font-size: 14px;  font-weight: bold;  margin: 10px 0 5px;
+ padding: 10px 15px 5px;  color: #666;  border-radius: 8px;  background-color: rgb(242, 243, 245); 
+}
+
+.department-header:first-child
+{
+    margin-top: 0;
+}
+
+    </style>
+</head>
+<body>
+    <header>
+        <div style="font-size: 18px;">通讯录</div>
+        <div id="search-container">
+            <i class="layui-icon layui-icon-search"></i>
+            <input
+                type="text"
+                id="contact-search"
+                placeholder="搜索联系人"
+            />
+        </div>
+    </header>
+
+    <div class="tool">
+        <label class="contact-filter active" data-filter="all">全部</label>
+        <label class="contact-filter" data-filter="doctor">医生</label>
+        <label class="contact-filter" data-filter="nurse">护士</label>
+        <label class="contact-filter" data-filter="admin">管理</label>
+    </div>
+
+    <main>
+        <div class="contacts-container" id="contactsContainer">
+            <!-- 联系人列表将通过 JavaScript 动态生成 -->
+        </div>
+    </main>
+
+    <!-- 快速拨号 -->
+    <div class="quick-dial">
+        <button class="dial-btn" onclick="showEmergencyContacts()" title="紧急联系人">
+            <i class="layui-icon layui-icon-cellphone"></i>
+        </button>
+    </div>
+
+    <script src="/lib/layui-v2.6.3/layui.js" charset="utf-8"></script>
+    <script>
+        // 模拟联系人数据
+        const contactsData = [
+            // 医生
+            {
+                id: 1,
+                name: '张主任',
+                position: 'doctor',
+                positionName: '科室主任',
+                department: '内科',
+                phone: '138****1001',
+                extension: '8001',
+                office: '内科办公室',
+                email: 'zhang.director@hospital.com',
+                status: 'online',
+                avatar: '张'
+            },
+            {
+                id: 2,
+                name: '李医生',
+                position: 'doctor',
+                positionName: '主治医师',
+                department: '内科',
+                phone: '138****1002',
+                extension: '8002',
+                office: '内科诊室1',
+                email: 'li.doctor@hospital.com',
+                status: 'busy',
+                avatar: '李'
+            },
+            {
+                id: 3,
+                name: '王医生',
+                position: 'doctor',
+                positionName: '住院医师',
+                department: '内科',
+                phone: '138****1003',
+                extension: '8003',
+                office: '内科诊室2',
+                email: 'wang.doctor@hospital.com',
+                status: 'online',
+                avatar: '王'
+            },
+            {
+                id: 4,
+                name: '刘医生',
+                position: 'doctor',
+                positionName: '副主任医师',
+                department: '内科',
+                phone: '138****1004',
+                extension: '8004',
+                office: '内科诊室3',
+                email: 'liu.doctor@hospital.com',
+                status: 'offline',
+                avatar: '刘'
+            },
+            
+            // 护士
+            {
+                id: 5,
+                name: '陈护士长',
+                position: 'nurse',
+                positionName: '护士长',
+                department: '内科',
+                phone: '138****2001',
+                extension: '8101',
+                office: '护士站',
+                email: 'chen.head@hospital.com',
+                status: 'online',
+                avatar: '陈'
+            },
+            {
+                id: 6,
+                name: '吴护士',
+                position: 'nurse',
+                positionName: '主管护师',
+                department: '内科',
+                phone: '138****2002',
+                extension: '8102',
+                office: '护士站',
+                email: 'wu.nurse@hospital.com',
+                status: 'online',
+                avatar: '吴'
+            },
+            {
+                id: 7,
+                name: '赵护士',
+                position: 'nurse',
+                positionName: '护师',
+                department: '内科',
+                phone: '138****2003',
+                extension: '8103',
+                office: '护士站',
+                email: 'zhao.nurse@hospital.com',
+                status: 'busy',
+                avatar: '赵'
+            },
+            {
+                id: 8,
+                name: '孙护士',
+                position: 'nurse',
+                positionName: '护士',
+                department: '内科',
+                phone: '138****2004',
+                extension: '8104',
+                office: '护士站',
+                email: 'sun.nurse@hospital.com',
+                status: 'online',
+                avatar: '孙'
+            },
+            {
+                id: 9,
+                name: '周护士',
+                position: 'nurse',
+                positionName: '护士',
+                department: '内科',
+                phone: '138****2005',
+                extension: '8105',
+                office: '护士站',
+                email: 'zhou.nurse@hospital.com',
+                status: 'offline',
+                avatar: '周'
+            },
+            
+            // 管理人员
+            {
+                id: 10,
+                name: '钱主管',
+                position: 'admin',
+                positionName: '病房主管',
+                department: '内科',
+                phone: '138****3001',
+                extension: '8201',
+                office: '行政办公室',
+                email: 'qian.admin@hospital.com',
+                status: 'online',
+                avatar: '钱'
+            },
+            {
+                id: 11,
+                name: '郑秘书',
+                position: 'admin',
+                positionName: '科室秘书',
+                department: '内科',
+                phone: '138****3002',
+                extension: '8202',
+                office: '行政办公室',
+                email: 'zheng.secretary@hospital.com',
+                status: 'busy',
+                avatar: '郑'
+            }
+        ];
+
+        let currentFilter = 'all';
+        let searchKeyword = '';
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            renderContacts();
+            bindEvents();
+        });
+
+        // 渲染联系人列表
+        function renderContacts() {
+            const container = document.getElementById('contactsContainer');
+            let filteredContacts = contactsData;
+
+            // 根据筛选条件过滤
+            if (currentFilter !== 'all') {
+                filteredContacts = filteredContacts.filter(contact => contact.position === currentFilter);
+            }
+
+            // 根据搜索关键词过滤
+            if (searchKeyword) {
+                filteredContacts = filteredContacts.filter(contact => 
+                    contact.name.toLowerCase().includes(searchKeyword.toLowerCase()) ||
+                    contact.positionName.toLowerCase().includes(searchKeyword.toLowerCase()) ||
+                    contact.phone.includes(searchKeyword)
+                );
+            }
+
+            if (filteredContacts.length === 0) {
+                container.innerHTML = `
+                    <div class="no-contacts">
+                        <div class="layui-icon layui-icon-username"></div>
+                        <p>暂无联系人</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // 按职位分组
+            const grouped = groupByPosition(filteredContacts);
+            let html = '';
+
+            Object.keys(grouped).forEach(position => {
+                const positionName = getPositionName(position);
+                html += `<div class="department-header">${positionName}</div>`;
+                
+                grouped[position].forEach(contact => {
+                    html += renderContactCard(contact);
+                });
+            });
+
+            container.innerHTML = html;
+        }
+
+        // 按职位分组
+        function groupByPosition(contacts) {
+            const grouped = {};
+            contacts.forEach(contact => {
+                if (!grouped[contact.position]) {
+                    grouped[contact.position] = [];
+                }
+                grouped[contact.position].push(contact);
+            });
+            return grouped;
+        }
+
+        // 获取职位名称
+        function getPositionName(position) {
+            const names = {
+                'doctor': '👨‍⚕️ 医生',
+                'nurse': '👩‍⚕️ 护士',
+                'admin': '👨‍💼 管理人员'
+            };
+            return names[position] || '其他';
+        }
+
+        // 获取状态文本
+        function getStatusText(status) {
+            const statusTexts = {
+                'online': '在线',
+                'busy': '忙碌',
+                'offline': '离线'
+            };
+            return statusTexts[status] || '未知';
+        }
+
+        // 渲染联系人卡片
+        function renderContactCard(contact) {
+            return `
+                <div class="contact-card">
+                    <div class="contact-header">
+                        <div class="contact-avatar ${contact.position}">
+                            ${contact.avatar}
+                        </div>
+                        <div class="contact-info">
+                            <div class="contact-name">${contact.name}</div>
+                            <span class="contact-position ${contact.position}">${contact.positionName}</span>
+                            <div class="contact-department">${contact.department}</div>
+                        </div>
+                        <div class="contact-status">
+                            <span class="status-dot ${contact.status}"></span>
+                            <span class="status-text">${getStatusText(contact.status)}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-details">
+                        <div class="contact-item">
+                            <i class="layui-icon layui-icon-cellphone"></i>
+                            ${contact.phone}
+                        </div>
+                        <div class="contact-item">
+                            <i class="layui-icon layui-icon-service"></i>
+                            ${contact.extension}
+                        </div>
+                        <div class="contact-item">
+                            <i class="layui-icon layui-icon-location"></i>
+                            ${contact.office}
+                        </div>
+                        <div class="contact-item">
+                            <i class="layui-icon layui-icon-email"></i>
+                            ${contact.email}
+                        </div>
+                    </div>
+                    
+                    <div class="contact-actions">
+                        <button class="action-btn" onclick="sendMessage(${contact.id})">
+                            <i class="layui-icon layui-icon-dialogue"></i> 消息
+                        </button>
+                        <button class="action-btn primary" onclick="makeCall('${contact.phone}')">
+                            <i class="layui-icon layui-icon-cellphone"></i> 拨号
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // 绑定事件
+        function bindEvents() {
+            // 筛选按钮事件
+            document.querySelectorAll('.contact-filter').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.contact-filter').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    currentFilter = this.dataset.filter;
+                    renderContacts();
+                });
+            });
+
+            // 搜索框事件
+            const searchInput = document.getElementById('contact-search');
+            searchInput.addEventListener('input', function() {
+                searchKeyword = this.value.trim();
+                renderContacts();
+            });
+        }
+
+        // 拨打电话
+        function makeCall(phone) {
+            layui.use('layer', function(){
+                const layer = layui.layer;
+                layer.confirm(`确定要拨打 ${phone} 吗？`, {
+                    btn: ['拨号','取消'],
+                    icon: 3,
+                    title: '拨号确认'
+                }, function(index){
+                    // 这里可以集成真实的拨号功能
+                    layer.msg(`正在拨打 ${phone}...`, {icon: 1});
+                    layer.close(index);
+                });
+            });
+        }
+
+        // 发送消息
+        function sendMessage(contactId) {
+            const contact = contactsData.find(c => c.id === contactId);
+            if (contact) {
+                layui.use('layer', function(){
+                    const layer = layui.layer;
+                    layer.prompt({
+                        formType: 2,
+                        value: '',
+                        title: `发送消息给 ${contact.name}`,
+                        area: ['300px', '150px']
+                    }, function(value, index){
+                        layer.msg(`消息已发送给 ${contact.name}`, {icon: 1});
+                        layer.close(index);
+                    });
+                });
+            }
+        }
+
+        // 显示紧急联系人
+        function showEmergencyContacts() {
+            layui.use('layer', function(){
+                const layer = layui.layer;
+                const emergencyHtml = `
+                    <div style="padding: 20px;">
+                        <h4 style="margin-bottom: 15px; color: #333;">紧急联系人</h4>
+                        <div style="margin-bottom: 10px;">
+                            <strong>值班医生：</strong> 
+                            <a href="tel:138****1001" style="color: #1e9fff;">138****1001</a>
+                        </div>
+                        <div style="margin-bottom: 10px;">
+                            <strong>值班护士：</strong> 
+                            <a href="tel:138****2001" style="color: #1e9fff;">138****2001</a>
+                        </div>
+                        <div style="margin-bottom: 10px;">
+                            <strong>保安值班：</strong> 
+                            <a href="tel:138****9999" style="color: #1e9fff;">138****9999</a>
+                        </div>
+                        <div style="margin-bottom: 10px;">
+                            <strong>医务科：</strong> 
+                            <a href="tel:138****8888" style="color: #1e9fff;">138****8888</a>
+                        </div>
+                    </div>
+                `;
+                layer.open({
+                    type: 1,
+                    title: false,
+                    closeBtn: 1,
+                    area: ['300px', 'auto'],
+                    skin: 'layui-layer-rim',
+                    content: emergencyHtml
+                });
+            });
+        }
+    </script>
+</body>
 </html>

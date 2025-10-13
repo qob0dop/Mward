@@ -1,11 +1,463 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-  </head>
-  <body>
-    <h1>消息页面</h1>
-  </body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>消息中心</title>
+    <link rel="stylesheet" href="/lib/layui-v2.6.3/css/layui.css" media="all" />
+    <style>
+body,
+html
+{
+    height: 100%;  margin: 0;  background-color: rgb(242, 243, 245);
+}
+
+header
+{
+    font-size: 18px;  font-weight: bold;  display: flex;  align-items: center;  justify-content: space-between;  box-sizing: border-box;  height: 10%;  padding: 0 10px;  text-align: center;  color: #fff;  background-color: rgb(4, 46, 167);
+}
+
+.message-title
+{
+    flex: 1;  text-align: center;
+}
+
+.message-count
+{ font-size: 12px;  margin-left: 5px;
+ padding: 2px 8px;  border-radius: 12px; 
+    background-color: #ff5722; 
+}
+
+.tool
+{
+    display: flex;  align-items: center;
+ height: 5%;  padding: 0 10px;  background-color: rgb(242, 243, 245); 
+}
+
+.tool label
+{
+    font-size: 12px;  line-height: 12px;  margin: 5px;  padding: 5px 10px;  cursor: pointer;  transition: all .3s ease;  color: gray;  border-radius: 15px;  background-color: #fff;
+}
+
+.tool label.active
+{
+    color: rgb(67, 92, 171);  background-color: rgb(210, 216, 231);
+}
+
+main
+{ overflow: hidden;
+
+    height: 85%; 
+}
+
+.message-container
+{
+    overflow: auto;  box-sizing: border-box;  height: 100%;  padding: 10px;  background-color: rgb(242, 243, 245);
+}
+
+.message-card
+{
+    position: relative;  margin-bottom: 10px;  padding: 15px;  cursor: pointer;  transition: all .3s ease;
+ border-radius: 10px;  background-color: #fff;  box-shadow: 0 2px 4px rgba(0,0,0,.1); 
+}
+
+.message-card:hover
+{ transform: translateY(-2px);
+
+    box-shadow: 0 4px 8px rgba(0,0,0,.15); 
+}
+
+.message-card.unread
+{
+    border-left: 4px solid #1e9fff;
+}
+
+.message-card.unread::after
+{ position: absolute;  top: 8px;  right: 15px;  width: 8px;  height: 8px; 
+
+    content: '';  border-radius: 50%;
+ background-color: #ff5722; 
+}
+
+.message-header
+{
+    display: flex;  align-items: center;  justify-content: space-between;  margin-bottom: 10px;
+}
+
+.message-type
+{
+    font-size: 12px;  padding: 3px 8px;  color: #fff;
+ border-radius: 12px; 
+}
+
+.message-type.system
+{
+    background-color: #1e9fff;
+}
+
+.message-type.notice
+{
+    background-color: #ff5722;
+}
+
+.message-type.work
+{
+    background-color: #28a745;
+}
+
+.message-type.urgent
+{ animation: blink 1s infinite;
+
+    background-color: #dc3545; 
+}
+
+@keyframes blink
+{
+    0%,
+    50%
+    {
+        opacity: 1;
+    }
+    51%,
+    100%
+    {
+        opacity: .5;
+    }
+}
+
+.message-time
+{
+    font-size: 12px;  color: #999;
+}
+
+.message-title-text
+{
+    font-size: 16px;  font-weight: bold;  margin-bottom: 8px;  color: #333;
+}
+
+.message-content
+{
+    font-size: 14px;  line-height: 1.4;  margin-bottom: 8px;
+ color: #666; 
+}
+
+.message-sender
+{
+    font-size: 12px;  display: flex;  align-items: center;
+ color: #999; 
+}
+
+.message-sender .layui-icon
+{
+    margin-right: 4px;
+}
+
+.no-messages
+{ padding: 50px 20px; 
+
+    text-align: center;  color: #999;
+}
+
+.no-messages .layui-icon
+{
+    font-size: 64px;  margin-bottom: 20px;  color: #ddd;
+}
+
+.message-actions
+{
+    position: fixed;  z-index: 1000;
+ right: 20px;  bottom: 20px; 
+}
+
+.action-btn
+{ font-size: 24px;  display: block;
+
+    width: 50px;  height: 50px;  margin-bottom: 10px;  cursor: pointer;  transition: all .3s ease;  color: white;  border: none;  border-radius: 50%;  background-color: rgb(4, 46, 167);  box-shadow: 0 4px 8px rgba(0,0,0,.2); 
+}
+
+.action-btn:hover
+{ transform: scale(1.1);
+
+    background-color: rgb(67, 92, 171); 
+}
+
+/* 消息详情弹窗样式 */
+.message-detail-overlay
+{
+    position: fixed;  z-index: 1001;  top: 0;  left: 0;  display: none;
+ width: 100%;  height: 100%;  background: rgba(0, 0, 0, .5); 
+}
+
+.message-detail-modal
+{
+    position: fixed;  z-index: 1002;
+ top: 50%;  left: 50%;  overflow: hidden;  width: 90%;  max-width: 500px;  max-height: 80%;  transform: translate(-50%, -50%);  border-radius: 10px;  background: white; 
+}
+
+.message-detail-header
+{ display: flex;  align-items: center;
+ justify-content: space-between; 
+
+    padding: 20px;  color: white;  background-color: rgb(4, 46, 167); 
+}
+
+.message-detail-body
+{ overflow-y: auto;
+ max-height: 400px; 
+    padding: 20px; 
+}
+
+.close-btn
+{ font-size: 24px;  cursor: pointer;
+ color: white;  border: none; 
+    background: none; 
+}
+
+    </style>
+</head>
+<body>
+    <header>
+        <div class="message-title">
+            消息中心
+            <span class="message-count" id="unreadCount">3</span>
+        </div>
+        <i class="layui-icon layui-icon-more-vertical" style="cursor: pointer;"></i>
+    </header>
+
+    <div class="tool">
+        <label class="message-filter active" data-filter="all">全部</label>
+        <label class="message-filter" data-filter="unread">未读</label>
+        <label class="message-filter" data-filter="system">系统消息</label>
+        <label class="message-filter" data-filter="work">工作通知</label>
+    </div>
+
+    <main>
+        <div class="message-container" id="messageContainer">
+            <!-- 消息列表将通过 JavaScript 动态生成 -->
+        </div>
+    </main>
+
+    <!-- 操作按钮 -->
+    <div class="message-actions">
+        <button class="action-btn" onclick="markAllAsRead()" title="全部标记为已读">
+            <i class="layui-icon layui-icon-ok"></i>
+        </button>
+    </div>
+
+    <!-- 消息详情弹窗 -->
+    <div class="message-detail-overlay" id="messageDetailOverlay" onclick="closeMessageDetail()">
+        <div class="message-detail-modal" onclick="event.stopPropagation()">
+            <div class="message-detail-header">
+                <h3 id="detailTitle">消息详情</h3>
+                <button class="close-btn" onclick="closeMessageDetail()">×</button>
+            </div>
+            <div class="message-detail-body" id="detailContent">
+                <!-- 详情内容 -->
+            </div>
+        </div>
+    </div>
+
+    <script src="/lib/layui-v2.6.3/layui.js" charset="utf-8"></script>
+    <script>
+        // 模拟消息数据
+        const messageData = [
+            {
+                id: 1,
+                type: 'urgent',
+                title: '紧急通知：患者张三病情变化',
+                content: '患者张三(床号：12)体温突然升高至39.2°C，请主治医生立即查看。',
+                sender: '护士长 李护士',
+                time: '2025-09-28 14:30',
+                isRead: false,
+                fullContent: '患者张三(床号：12)体温突然升高至39.2°C，血压160/100mmHg，心率120次/分钟。患者主诉头痛、恶心。请主治医生立即查看，必要时调整治疗方案。\n\n报告护士：李护士\n报告时间：2025-09-28 14:30\n患者位置：内科病房12床'
+            },
+            {
+                id: 2,
+                type: 'system',
+                title: '系统维护通知',
+                content: '系统将于今晚22:00-24:00进行维护升级，期间可能无法正常访问。',
+                sender: '系统管理员',
+                time: '2025-09-28 09:15',
+                isRead: false,
+                fullContent: '尊敬的用户：\n\n为了提升系统性能和用户体验，我们将于2025年9月28日22:00-24:00对系统进行维护升级。\n\n维护期间，您可能无法正常访问以下功能：\n- 患者信息查询\n- 医嘱录入\n- 护理记录\n- 检验报告查看\n\n请您提前安排好工作，避免在维护期间进行重要操作。如有紧急情况，请联系值班人员。\n\n给您带来不便，敬请谅解！\n\n系统管理员\n2025-09-28'
+            },
+            {
+                id: 3,
+                type: 'work',
+                title: '排班调整通知',
+                content: '10月1日-3日的排班已更新，请查看新的排班表。',
+                sender: '护士长',
+                time: '2025-09-27 16:45',
+                isRead: false,
+                fullContent: '各位同事：\n\n由于国庆节假期安排，10月1日-3日的排班进行了调整：\n\n10月1日：\n白班：张护士、李护士\n夜班：王护士、赵护士\n\n10月2日：\n白班：刘护士、陈护士\n夜班：孙护士、周护士\n\n10月3日：\n白班：吴护士、郑护士\n夜班：冯护士、蒋护士\n\n请各位同事提前做好准备，如有特殊情况请及时联系护士长。\n\n护士长\n2025-09-27'
+            },
+            {
+                id: 4,
+                type: 'notice',
+                title: '新药品入库提醒',
+                content: '新批次的阿莫西林已入库，请注意检查效期。',
+                sender: '药房',
+                time: '2025-09-27 11:20',
+                isRead: true,
+                fullContent: '药品入库通知：\n\n以下药品已入库，请各科室注意：\n\n1. 阿莫西林胶囊 0.5g×12粒/盒\n   批号：20250915\n   效期：2027-09-14\n   数量：200盒\n\n2. 头孢克洛颗粒 0.125g×12袋/盒\n   批号：20250918\n   效期：2027-09-17\n   数量：150盒\n\n请各科室在使用时注意检查效期，遵循先进先出原则。\n\n药房\n2025-09-27'
+            },
+            {
+                id: 5,
+                type: 'system',
+                title: '密码安全提醒',
+                content: '您的密码已超过90天未更换，建议及时更新密码。',
+                sender: '系统管理员',
+                time: '2025-09-26 08:00',
+                isRead: true,
+                fullContent: '安全提醒：\n\n您的账户密码已超过90天未更换，为了保障账户安全，建议您及时更新密码。\n\n密码设置建议：\n- 长度不少于8位\n- 包含大小写字母、数字和特殊字符\n- 避免使用生日、姓名等个人信息\n- 定期更换密码\n\n您可以在"个人设置"-"密码管理"中更新密码。\n\n系统管理员\n2025-09-26'
+            }
+        ];
+
+        let currentFilter = 'all';
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            renderMessages();
+            bindEvents();
+            updateUnreadCount();
+        });
+
+        // 渲染消息列表
+        function renderMessages() {
+            const container = document.getElementById('messageContainer');
+            let filteredMessages = messageData;
+
+            // 根据筛选条件过滤消息
+            switch(currentFilter) {
+                case 'unread':
+                    filteredMessages = messageData.filter(msg => !msg.isRead);
+                    break;
+                case 'system':
+                    filteredMessages = messageData.filter(msg => msg.type === 'system');
+                    break;
+                case 'work':
+                    filteredMessages = messageData.filter(msg => msg.type === 'work');
+                    break;
+                default:
+                    filteredMessages = messageData;
+            }
+
+            if (filteredMessages.length === 0) {
+                container.innerHTML = `
+                    <div class="no-messages">
+                        <div class="layui-icon layui-icon-email"></div>
+                        <p>暂无消息</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            filteredMessages.forEach(message => {
+                const typeClass = message.type;
+                const typeName = getTypeName(message.type);
+                const unreadClass = message.isRead ? '' : 'unread';
+
+                html += `
+                    <div class="message-card ${unreadClass}" onclick="showMessageDetail(${message.id})">
+                        <div class="message-header">
+                            <span class="message-type ${typeClass}">${typeName}</span>
+                            <span class="message-time">${message.time}</span>
+                        </div>
+                        <div class="message-title-text">${message.title}</div>
+                        <div class="message-content">${message.content}</div>
+                        <div class="message-sender">
+                            <i class="layui-icon layui-icon-username"></i>
+                            ${message.sender}
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        // 获取消息类型名称
+        function getTypeName(type) {
+            const typeNames = {
+                'system': '系统',
+                'notice': '公告',
+                'work': '工作',
+                'urgent': '紧急'
+            };
+            return typeNames[type] || '消息';
+        }
+
+        // 绑定事件
+        function bindEvents() {
+            // 筛选按钮事件
+            document.querySelectorAll('.message-filter').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.message-filter').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    currentFilter = this.dataset.filter;
+                    renderMessages();
+                });
+            });
+        }
+
+        // 显示消息详情
+        function showMessageDetail(messageId) {
+            const message = messageData.find(msg => msg.id === messageId);
+            if (!message) return;
+
+            // 标记为已读
+            if (!message.isRead) {
+                message.isRead = true;
+                updateUnreadCount();
+                renderMessages();
+            }
+
+            // 显示详情弹窗
+            document.getElementById('detailTitle').textContent = message.title;
+            document.getElementById('detailContent').innerHTML = `
+                <div class="message-header" style="margin-bottom: 15px;">
+                    <span class="message-type ${message.type}">${getTypeName(message.type)}</span>
+                    <span class="message-time">${message.time}</span>
+                </div>
+                <div style="white-space: pre-line; line-height: 1.6; margin-bottom: 15px;">
+                    ${message.fullContent}
+                </div>
+                <div class="message-sender">
+                    <i class="layui-icon layui-icon-username"></i>
+                    发送人：${message.sender}
+                </div>
+            `;
+            document.getElementById('messageDetailOverlay').style.display = 'block';
+        }
+
+        // 关闭消息详情
+        function closeMessageDetail() {
+            document.getElementById('messageDetailOverlay').style.display = 'none';
+        }
+
+        // 全部标记为已读
+        function markAllAsRead() {
+            messageData.forEach(msg => msg.isRead = true);
+            updateUnreadCount();
+            renderMessages();
+            layui.use('layer', function(){
+                const layer = layui.layer;
+                layer.msg('所有消息已标记为已读', {icon: 1});
+            });
+        }
+
+        // 更新未读数量
+        function updateUnreadCount() {
+            const unreadCount = messageData.filter(msg => !msg.isRead).length;
+            const countElement = document.getElementById('unreadCount');
+            if (unreadCount > 0) {
+                countElement.textContent = unreadCount;
+                countElement.style.display = 'inline-block';
+            } else {
+                countElement.style.display = 'none';
+            }
+        }
+    </script>
+</body>
 </html>

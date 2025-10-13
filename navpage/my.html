@@ -1,11 +1,749 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-  </head>
-  <body>
-    <h1>我的页面</h1>
-  </body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的</title>
+    <link rel="stylesheet" href="/lib/layui-v2.6.3/css/layui.css" media="all" />
+    <style>
+body,
+html
+{
+    height: 100%;  margin: 0;  background-color: rgb(242, 243, 245);
+}
+
+header
+{
+    font-size: 18px;  font-weight: bold;  display: flex;  align-items: center;  justify-content: space-between;  box-sizing: border-box;  height: 10%;  padding: 0 15px;  text-align: center;  color: #fff;  background: linear-gradient(135deg, rgb(4, 46, 167) 0%, rgb(67, 92, 171) 100%);
+}
+
+.header-actions
+{
+    display: flex;  gap: 15px;
+}
+
+.header-icon
+{
+    font-size: 20px;  padding: 5px;  cursor: pointer;  transition: all .3s ease;  border-radius: 50%;
+}
+
+.header-icon:hover
+{
+    background: rgba(255,255,255,.2);
+}
+
+main
+{
+    overflow-y: auto;  height: 90%;   padding-top: 20px; padding-bottom: 20px;box-sizing: border-box;
+}
+
+.profile-section
+{
+    margin-bottom: 10px;  padding: 0 15px 30px;  background: linear-gradient(135deg, rgb(4, 46, 167) 0%, rgb(67, 92, 171) 100%);
+}
+
+.profile-card
+{
+    position: relative;  margin-top: -20px;  padding: 20px;  border-radius: 15px;  background: white;  box-shadow: 0 8px 20px rgba(0,0,0,.1);
+}
+
+.profile-header
+{
+    display: flex;  align-items: center;  margin-bottom: 20px;
+}
+
+.profile-avatar
+{
+    font-size: 28px;  font-weight: bold;  position: relative;  display: flex;  align-items: center;  justify-content: center;  width: 70px;  height: 70px;  margin-right: 15px;  color: white;  border-radius: 50%;  background: linear-gradient(135deg, #1e9fff 0%, #1890ff 100%);  box-shadow: 0 4px 12px rgba(30, 159, 255, .3);
+}
+
+.avatar-badge
+{
+    position: absolute;  right: 0;  bottom: 0;  display: flex;  align-items: center;  justify-content: center;  width: 20px;  height: 20px;  border: 2px solid white;  border-radius: 50%;  background: #52c41a;
+}
+
+.profile-info h2
+{
+    font-size: 22px;  font-weight: bold;  margin: 0;  color: #333;
+}
+
+.profile-info p
+{
+    font-size: 14px;  margin: 5px 0 0;  color: #666;
+}
+
+.profile-stats
+{
+    display: grid;  margin-top: 20px;  padding-top: 20px;  border-top: 1px solid #f0f0f0;  grid-template-columns: repeat(3, 1fr);  gap: 15px;
+}
+
+.stat-item
+{
+    text-align: center;
+}
+
+.stat-number
+{
+    font-size: 24px;  font-weight: bold;  display: block;  color: #1e9fff;
+}
+
+.stat-label
+{
+    font-size: 12px;  margin-top: 5px;  color: #999;
+}
+
+.section
+{
+    overflow: hidden;  margin: 10px 15px;  border-radius: 15px;  background: white;  box-shadow: 0 2px 8px rgba(0,0,0,.06);
+}
+
+.section-title
+{
+    font-size: 16px;  font-weight: bold;  padding: 20px 20px 10px;  color: #333;  border-bottom: 1px solid #f8f9fa;
+}
+
+.menu-list
+{
+    padding: 0;
+}
+
+.menu-item
+{
+    position: relative;  display: flex;  align-items: center;  padding: 15px 20px;  cursor: pointer;  transition: all .3s ease;  border-bottom: 1px solid #f8f9fa;
+}
+
+.menu-item:last-child
+{
+    border-bottom: none;
+}
+
+.menu-item:hover
+{
+    background-color: #f8f9fa;
+}
+
+.menu-item:active
+{
+    background-color: #f0f0f0;
+}
+
+.menu-icon
+{
+    font-size: 18px;  display: flex;  align-items: center;  justify-content: center;  width: 40px;  height: 40px;  margin-right: 15px;  color: white;  border-radius: 10px;
+}
+
+.menu-icon.blue
+{
+    background: linear-gradient(135deg, #1e9fff 0%, #40a9ff 100%);
+}
+
+.menu-icon.green
+{
+    background: linear-gradient(135deg, #52c41a 0%, #73d13d 100%);
+}
+
+.menu-icon.orange
+{
+    background: linear-gradient(135deg, #fa8c16 0%, #ffa940 100%);
+}
+
+.menu-icon.purple
+{
+    background: linear-gradient(135deg, #722ed1 0%, #9254de 100%);
+}
+
+.menu-icon.red
+{
+    background: linear-gradient(135deg, #f5222d 0%, #ff4d4f 100%);
+}
+
+.menu-content
+{
+    flex: 1;
+}
+
+.menu-title
+{
+    font-size: 16px;  margin-bottom: 2px;  color: #333;
+}
+
+.menu-subtitle
+{
+    font-size: 12px;  color: #999;
+}
+
+.menu-arrow
+{
+    font-size: 14px;  color: #d9d9d9;
+}
+
+.menu-badge
+{
+    font-size: 10px;  margin-left: 10px;  padding: 2px 6px;  color: white;  border-radius: 8px;  background: #ff4d4f;
+}
+
+.toggle-switch
+{
+    position: relative;  width: 44px;  height: 24px;  cursor: pointer;  transition: all .3s ease;  border-radius: 12px;  background: #d9d9d9;
+}
+
+.toggle-switch.active
+{
+    background: #1e9fff;
+}
+
+.toggle-switch::after
+{
+    position: absolute;  top: 2px;  left: 2px;  width: 20px;  height: 20px;  content: '';  transition: all .3s ease;  border-radius: 50%;  background: white;  box-shadow: 0 2px 4px rgba(0,0,0,.2);
+}
+
+.toggle-switch.active::after
+{
+    left: 22px;
+}
+
+.version-info
+{
+    font-size: 12px;  padding: 20px;  text-align: center;  color: #999;
+}
+
+/* 弹窗样式 */
+.modal-overlay
+{
+    position: fixed;  z-index: 1001;  top: 0;  left: 0;  display: none;  align-items: center;  justify-content: center;  width: 100%;  height: 100%;  background: rgba(0, 0, 0, .5);
+}
+
+.modal-content
+{
+    overflow-y: auto;  width: 90%;  max-width: 400px;  max-height: 80%;  border-radius: 15px;  background: white;
+}
+
+.modal-header
+{
+    margin-bottom: 20px;  padding: 20px 20px 0;  border-bottom: 1px solid #f0f0f0;
+}
+
+.modal-title
+{
+    font-size: 18px;  font-weight: bold;  text-align: center;  color: #333;
+}
+
+.modal-body
+{
+    padding: 0 20px 20px;
+}
+
+.form-item
+{
+    margin-bottom: 20px;
+}
+
+.form-label
+{
+    font-size: 14px;  display: block;  margin-bottom: 8px;  color: #666;
+}
+
+.form-input
+{
+    font-size: 14px;  box-sizing: border-box;  width: 100%;  padding: 12px 15px;  transition: all .3s ease;  border: 1px solid #d9d9d9;  border-radius: 8px;
+}
+
+.form-input:focus
+{
+    border-color: #1e9fff;  outline: none;  box-shadow: 0 0 0 2px rgba(30, 159, 255, .1);
+}
+
+.btn-group
+{
+    display: flex;  margin-top: 30px;  gap: 10px;
+}
+
+.btn
+{
+    font-size: 16px;  flex: 1;  padding: 12px;  cursor: pointer;  transition: all .3s ease;  border: none;  border-radius: 8px;
+}
+
+.btn-primary
+{
+    color: white;  background: #1e9fff;
+}
+
+.btn-primary:hover
+{
+    background: #40a9ff;
+}
+
+.btn-secondary
+{
+    color: #666;  background: #f5f5f5;
+}
+
+.btn-secondary:hover
+{
+    background: #e6e6e6;
+}
+
+
+
+    </style>
+</head>
+<body>
+    <header>
+        <div>我的</div>
+        <div class="header-actions">
+            <i class="layui-icon layui-icon-set header-icon" onclick="showSettings()" title="设置"></i>
+            <i class="layui-icon layui-icon-notice header-icon" onclick="showNotifications()" title="通知"></i>
+        </div>
+    </header>
+
+    <main>
+        <!-- 个人资料区域 -->
+        <div class="profile-section">
+            <div class="profile-card">
+                <div class="profile-header">
+                    <div class="profile-avatar" onclick="changeAvatar()">
+                        李
+                        <div class="avatar-badge">
+                            <i class="layui-icon layui-icon-ok" style="font-size: 12px;"></i>
+                        </div>
+                    </div>
+                    <div class="profile-info">
+                        <h2>李医生</h2>
+                        <p>主治医师 · 内科</p>
+                        <p>工号：202401001</p>
+                    </div>
+                </div>
+                
+                <div class="profile-stats">
+                    <div class="stat-item">
+                        <span class="stat-number">156</span>
+                        <div class="stat-label">本月患者</div>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">28</span>
+                        <div class="stat-label">待处理</div>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">98%</span>
+                        <div class="stat-label">好评率</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 快捷功能 -->
+        <div class="section">
+            <div class="section-title">快捷功能</div>
+            <div class="menu-list">
+                <div class="menu-item" onclick="showMySchedule()">
+                    <div class="menu-icon blue">
+                        <i class="layui-icon layui-icon-date"></i>
+                    </div>
+                    <div class="menu-content">
+                        <div class="menu-title">我的排班</div>
+                        <div class="menu-subtitle">查看本周排班安排</div>
+                    </div>
+                    <i class="layui-icon layui-icon-right menu-arrow"></i>
+                </div>
+                
+                <div class="menu-item" onclick="showWorkStats()">
+                    <div class="menu-icon green">
+                        <i class="layui-icon layui-icon-chart"></i>
+                    </div>
+                    <div class="menu-content">
+                        <div class="menu-title">工作统计</div>
+                        <div class="menu-subtitle">本月工作数据统计</div>
+                    </div>
+                    <i class="layui-icon layui-icon-right menu-arrow"></i>
+                </div>
+                
+                <div class="menu-item" onclick="showMyPatients()">
+                    <div class="menu-icon orange">
+                        <i class="layui-icon layui-icon-username"></i>
+                    </div>
+                    <div class="menu-content">
+                        <div class="menu-title">我的患者</div>
+                        <div class="menu-subtitle">管理我负责的患者</div>
+                    </div>
+                    <span class="menu-badge">12</span>
+                    <i class="layui-icon layui-icon-right menu-arrow"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- 个人设置 -->
+        <div class="section">
+            <div class="section-title">个人设置</div>
+            <div class="menu-list">
+                <div class="menu-item" onclick="editProfile()">
+                    <div class="menu-icon blue">
+                        <i class="layui-icon layui-icon-edit"></i>
+                    </div>
+                    <div class="menu-content">
+                        <div class="menu-title">编辑资料</div>
+                        <div class="menu-subtitle">修改个人信息</div>
+                    </div>
+                    <i class="layui-icon layui-icon-right menu-arrow"></i>
+                </div>
+                
+                <div class="menu-item" onclick="changePassword()">
+                    <div class="menu-icon purple">
+                        <i class="layui-icon layui-icon-password"></i>
+                    </div>
+                    <div class="menu-content">
+                        <div class="menu-title">修改密码</div>
+                        <div class="menu-subtitle">更新登录密码</div>
+                    </div>
+                    <i class="layui-icon layui-icon-right menu-arrow"></i>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="menu-icon green">
+                        <i class="layui-icon layui-icon-notice"></i>
+                    </div>
+                    <div class="menu-content">
+                        <div class="menu-title">消息推送</div>
+                        <div class="menu-subtitle">接收系统通知</div>
+                    </div>
+                    <div class="toggle-switch active" onclick="toggleNotification(this)"></div>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="menu-icon orange">
+                        <i class="layui-icon layui-icon-voice"></i>
+                    </div>
+                    <div class="menu-content">
+                        <div class="menu-title">声音提醒</div>
+                        <div class="menu-subtitle">开启声音通知</div>
+                    </div>
+                    <div class="toggle-switch" onclick="toggleSound(this)"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 系统功能 -->
+        <div class="section">
+            <div class="section-title">系统功能</div>
+            <div class="menu-list">
+                <div class="menu-item" onclick="showHelp()">
+                    <div class="menu-icon blue">
+                        <i class="layui-icon layui-icon-help"></i>
+                    </div>
+                    <div class="menu-content">
+                        <div class="menu-title">帮助中心</div>
+                        <div class="menu-subtitle">使用指南和常见问题</div>
+                    </div>
+                    <i class="layui-icon layui-icon-right menu-arrow"></i>
+                </div>
+                
+                <div class="menu-item" onclick="showAbout()">
+                    <div class="menu-icon purple">
+                        <i class="layui-icon layui-icon-app"></i>
+                    </div>
+                    <div class="menu-content">
+                        <div class="menu-title">关于系统</div>
+                        <div class="menu-subtitle">版本信息和更新日志</div>
+                    </div>
+                    <i class="layui-icon layui-icon-right menu-arrow"></i>
+                </div>
+                
+                <div class="menu-item" onclick="logout()">
+                    <div class="menu-icon red">
+                        <i class="layui-icon layui-icon-logout"></i>
+                    </div>
+                    <div class="menu-content">
+                        <div class="menu-title">退出登录</div>
+                        <div class="menu-subtitle">安全退出系统</div>
+                    </div>
+                    <i class="layui-icon layui-icon-right menu-arrow"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="version-info">
+            移动查房系统 v2.1.0<br>
+            © 2025 Hospital Management System
+        </div>
+    </main>
+
+    <!-- 模态框 -->
+    <div class="modal-overlay" id="modalOverlay" onclick="closeModal()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <div class="modal-title" id="modalTitle">标题</div>
+            </div>
+            <div class="modal-body" id="modalBody">
+                内容
+            </div>
+        </div>
+    </div>
+
+    <script src="/lib/layui-v2.6.3/layui.js" charset="utf-8"></script>
+    <script>
+        // 显示模态框
+        function showModal(title, content) {
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalBody').innerHTML = content;
+            document.getElementById('modalOverlay').style.display = 'flex';
+        }
+
+        // 关闭模态框
+        function closeModal() {
+            document.getElementById('modalOverlay').style.display = 'none';
+        }
+
+        // 切换开关
+        function toggleNotification(element) {
+            element.classList.toggle('active');
+            const isActive = element.classList.contains('active');
+            layui.use('layer', function(){
+                const layer = layui.layer;
+                layer.msg(isActive ? '已开启消息推送' : '已关闭消息推送', {icon: 1});
+            });
+        }
+
+        function toggleSound(element) {
+            element.classList.toggle('active');
+            const isActive = element.classList.contains('active');
+            layui.use('layer', function(){
+                const layer = layui.layer;
+                layer.msg(isActive ? '已开启声音提醒' : '已关闭声音提醒', {icon: 1});
+            });
+        }
+
+        // 我的排班
+        function showMySchedule() {
+            const scheduleContent = `
+                <div style="text-align: center;">
+                    <h4 style="margin-bottom: 20px; color: #333;">本周排班</h4>
+                    <div style="text-align: left; font-size: 14px; line-height: 1.8;">
+                        <div style="margin-bottom: 10px;">
+                            <strong>周一：</strong> 上午班 08:00-12:00
+                        </div>
+                        <div style="margin-bottom: 10px;">
+                            <strong>周二：</strong> 夜班 20:00-08:00
+                        </div>
+                        <div style="margin-bottom: 10px;">
+                            <strong>周三：</strong> 休息
+                        </div>
+                        <div style="margin-bottom: 10px;">
+                            <strong>周四：</strong> 下午班 14:00-20:00
+                        </div>
+                        <div style="margin-bottom: 10px;">
+                            <strong>周五：</strong> 上午班 08:00-12:00
+                        </div>
+                        <div style="margin-bottom: 10px;">
+                            <strong>周六：</strong> 休息
+                        </div>
+                        <div style="margin-bottom: 10px;">
+                            <strong>周日：</strong> 值班 08:00-17:00
+                        </div>
+                    </div>
+                </div>
+            `;
+            showModal('我的排班', scheduleContent);
+        }
+
+        // 工作统计
+        function showWorkStats() {
+            const statsContent = `
+                <div style="text-align: center;">
+                    <h4 style="margin-bottom: 20px; color: #333;">本月工作统计</h4>
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; text-align: center;">
+                        <div style="padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                            <div style="font-size: 24px; font-weight: bold; color: #1e9fff;">156</div>
+                            <div style="font-size: 12px; color: #666; margin-top: 5px;">接诊患者</div>
+                        </div>
+                        <div style="padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                            <div style="font-size: 24px; font-weight: bold; color: #52c41a;">89</div>
+                            <div style="font-size: 12px; color: #666; margin-top: 5px;">开立医嘱</div>
+                        </div>
+                        <div style="padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                            <div style="font-size: 24px; font-weight: bold; color: #fa8c16;">45</div>
+                            <div style="font-size: 12px; color: #666; margin-top: 5px;">查房次数</div>
+                        </div>
+                        <div style="padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                            <div style="font-size: 24px; font-weight: bold; color: #722ed1;">98%</div>
+                            <div style="font-size: 12px; color: #666; margin-top: 5px;">满意度</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            showModal('工作统计', statsContent);
+        }
+
+        // 我的患者
+        function showMyPatients() {
+            layui.use('layer', function(){
+                const layer = layui.layer;
+                layer.msg('跳转到患者列表页面', {icon: 1});
+            });
+        }
+
+        // 编辑资料
+        function editProfile() {
+            const profileContent = `
+                <div class="form-item">
+                    <label class="form-label">姓名</label>
+                    <input type="text" class="form-input" value="李医生" placeholder="请输入姓名">
+                </div>
+                <div class="form-item">
+                    <label class="form-label">职位</label>
+                    <input type="text" class="form-input" value="主治医师" placeholder="请输入职位">
+                </div>
+                <div class="form-item">
+                    <label class="form-label">科室</label>
+                    <input type="text" class="form-input" value="内科" placeholder="请输入科室">
+                </div>
+                <div class="form-item">
+                    <label class="form-label">联系电话</label>
+                    <input type="tel" class="form-input" value="138****1002" placeholder="请输入联系电话">
+                </div>
+                <div class="form-item">
+                    <label class="form-label">邮箱</label>
+                    <input type="email" class="form-input" value="li.doctor@hospital.com" placeholder="请输入邮箱">
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-secondary" onclick="closeModal()">取消</button>
+                    <button class="btn btn-primary" onclick="saveProfile()">保存</button>
+                </div>
+            `;
+            showModal('编辑资料', profileContent);
+        }
+
+        // 修改密码
+        function changePassword() {
+            const passwordContent = `
+                <div class="form-item">
+                    <label class="form-label">当前密码</label>
+                    <input type="password" class="form-input" placeholder="请输入当前密码">
+                </div>
+                <div class="form-item">
+                    <label class="form-label">新密码</label>
+                    <input type="password" class="form-input" placeholder="请输入新密码">
+                </div>
+                <div class="form-item">
+                    <label class="form-label">确认新密码</label>
+                    <input type="password" class="form-input" placeholder="请再次输入新密码">
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-secondary" onclick="closeModal()">取消</button>
+                    <button class="btn btn-primary" onclick="savePassword()">修改</button>
+                </div>
+            `;
+            showModal('修改密码', passwordContent);
+        }
+
+        // 帮助中心
+        function showHelp() {
+            const helpContent = `
+                <div style="text-align: left; font-size: 14px; line-height: 1.6;">
+                    <h4 style="color: #333; margin-bottom: 15px;">常见问题</h4>
+                    <div style="margin-bottom: 15px;">
+                        <strong>Q: 如何查看患者信息？</strong><br>
+                        A: 在患者页面可以查看所有患者信息，支持搜索和筛选功能。
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <strong>Q: 如何开立医嘱？</strong><br>
+                        A: 进入患者详情页面，点击"开立医嘱"按钮即可。
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <strong>Q: 如何查看排班？</strong><br>
+                        A: 在工作台或个人中心可以查看排班信息。
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <strong>Q: 忘记密码怎么办？</strong><br>
+                        A: 请联系系统管理员重置密码。
+                    </div>
+                </div>
+            `;
+            showModal('帮助中心', helpContent);
+        }
+
+        // 关于系统
+        function showAbout() {
+            const aboutContent = `
+                <div style="text-align: center;">
+                    <div style="font-size: 48px; color: #1e9fff; margin-bottom: 20px;">
+                        <i class="layui-icon layui-icon-app"></i>
+                    </div>
+                    <h4 style="color: #333; margin-bottom: 10px;">移动查房系统</h4>
+                    <p style="color: #666; margin-bottom: 20px;">版本 v2.1.0</p>
+                    <div style="text-align: left; font-size: 14px; line-height: 1.6;">
+                        <div style="margin-bottom: 10px;"><strong>更新日期：</strong>2025-09-28</div>
+                        <div style="margin-bottom: 10px;"><strong>开发商：</strong>医院信息科</div>
+                        <div style="margin-bottom: 10px;"><strong>技术支持：</strong>400-1234-5678</div>
+                        <hr style="margin: 15px 0; border: none; border-top: 1px solid #f0f0f0;">
+                        <div style="margin-bottom: 10px;"><strong>更新内容：</strong></div>
+                        <div style="color: #666;">
+                            • 新增消息推送功能<br>
+                            • 优化患者查询性能<br>
+                            • 修复已知问题<br>
+                            • 提升用户体验
+                        </div>
+                    </div>
+                </div>
+            `;
+            showModal('关于系统', aboutContent);
+        }
+
+        // 设置
+        function showSettings() {
+            layui.use('layer', function(){
+                const layer = layui.layer;
+                layer.msg('系统设置功能', {icon: 1});
+            });
+        }
+
+        // 通知
+        function showNotifications() {
+            layui.use('layer', function(){
+                const layer = layui.layer;
+                layer.msg('跳转到消息页面', {icon: 1});
+            });
+        }
+
+        // 更换头像
+        function changeAvatar() {
+            layui.use('layer', function(){
+                const layer = layui.layer;
+                layer.msg('头像更换功能', {icon: 1});
+            });
+        }
+
+        // 保存资料
+        function saveProfile() {
+            layui.use('layer', function(){
+                const layer = layui.layer;
+                layer.msg('资料保存成功', {icon: 1});
+                closeModal();
+            });
+        }
+
+        // 保存密码
+        function savePassword() {
+            layui.use('layer', function(){
+                const layer = layui.layer;
+                layer.msg('密码修改成功', {icon: 1});
+                closeModal();
+            });
+        }
+
+        // 退出登录
+        function logout() {
+            layui.use('layer', function(){
+                const layer = layui.layer;
+                layer.confirm('确定要退出登录吗？', {
+                    btn: ['确定','取消'],
+                    icon: 3,
+                    title: '退出确认'
+                }, function(index){
+                    layer.msg('正在退出...', {icon: 1});
+                    layer.close(index);
+                    // 这里可以添加实际的退出逻辑
+                });
+            });
+        }
+    </script>
+</body>
 </html>

@@ -69,6 +69,7 @@ main {
   outline: none;
 }
 .patients-cardlist {
+  position: relative;
   overflow: auto;
   box-sizing: border-box;
   height: 100%;
@@ -77,13 +78,14 @@ main {
   background-color: rgb(242, 243, 245);
 }
 .patient-card {
+  position: relative;
   margin-bottom: 10px;
   padding: 10px;
   border-radius: 10px;
   background-color: #fff;
 }
 .patient-card-header {
-  margin-bottom: 5px;
+  margin-bottom: 10px;
 }
 .patient-card-header label:first-child {
   font-size: 16px;
@@ -101,6 +103,7 @@ main {
 }
 .patient-card-body {
   display: grid;
+  margin-top: 5px;
   color: gray;
   gap: 8px;
   grid-template-columns: repeat(2, 1fr);
@@ -147,4 +150,71 @@ main {
   float: right;
   padding: 0 20px;
   cursor: pointer;
+}
+/* 筛选模块样式 */
+#filter-label {
+  position: absolute;
+  right: 0;
+}
+.filter-panel {
+  position: fixed;
+  z-index: 100;
+  right: 0;
+  display: flex;
+  width: 0;
+  height: 85%;
+  transition: all 0.3s ease;
+  border-top: 1px solid #e6e6e6;
+  background: transparent;
+}
+.filter-overlay {
+  width: 20%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+}
+.filter-body {
+  position: relative;
+  background-color: rgb(242, 243, 245);
+}
+.filter-body label {
+  font-size: 12px;
+  line-height: 12px;
+  margin: 5px;
+  padding: 5px 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  color: gray;
+  border-radius: 15px;
+  background-color: #fff;
+}
+.filter-body label.active {
+  color: rgb(67, 92, 171);
+  background-color: rgb(210, 216, 231);
+}
+.filter-body h5 {
+  font-weight: bold;
+  margin: 10px;
+}
+.order-filter {
+  display: flex;
+  flex-wrap: wrap;
+}
+.filter-body .act-area {
+  position: absolute;
+  bottom: 10px;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+#filter-label {
+  color: gray;
+}
+.act-area .layui-btn {
+  width: 100px;
+  border-radius: 20px;
+}
+.act-area #filter-confirm-btn {
+  margin-right: 20px;
+  background-color: rgb(4, 46, 167);
 }

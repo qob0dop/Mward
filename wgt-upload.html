@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+
+<head>
+    <meta charset="UTF-8">
+    <title>WGT 包上传</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./lib/layui-v2.6.3/css/layui.css" />
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: #f5f6fa;
+        }
+
+        .upload-container {
+            max-width: 400px;
+            margin: 60px auto;
+            padding: 32px 24px 24px 24px;
+            border-radius: 8px;
+            background: #fff;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, .08);
+        }
+
+        .upload-title {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        .layui-form-label {
+            width: 90px;
+        }
+
+        .layui-input-block {
+            margin-left: 120px;
+        }
+
+        .progress-bar {
+            display: none;
+            margin: 16px 0;
+        }
+
+        .result-msg {
+            font-size: 15px;
+            margin-top: 18px;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="upload-container">
+        <div class="upload-title">WGT 包上传</div>
+        <form class="layui-form" id="wgtForm">
+            <div class="layui-form-item">
+                <label class="layui-form-label">WGT 文件</label>
+                <div class="layui-input-block">
+                    <input type="file" name="file" id="file" accept=".wgt" required class="layui-input"
+                        style="padding:4px;" />
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">版本号</label>
+                <div class="layui-input-block">
+                    <input type="text" name="version" id="version" required placeholder="如 1.0.5" class="layui-input" />
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">发布时间</label>
+                <div class="layui-input-block">
+                    <input type="text" name="publishedAt" id="publishedAt" placeholder="如 2025-10-13，可选"
+                        class="layui-input" />
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">更新说明</label>
+                    <div class="layui-input-block">
+                        <textarea name="description" id="description" placeholder="本次更新内容说明（可选）" class="layui-textarea"
+                            rows="3"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block" style="margin-left:0;text-align:center;">
+                    <button type="submit" class="layui-btn layui-btn-normal">上传</button>
+                </div>
+            </div>
+            <div class="progress-bar layui-progress layui-progress-big" lay-showPercent="true"
+                lay-filter="uploadProgress">
+                <div class="layui-progress-bar layui-bg-blue" lay-percent="0%"></div>
+            </div>
+            <div class="result-msg" id="resultMsg"></div>
+        </form>
+    </div>
+    <script src="./lib/layui-v2.6.3/layui.js"></script>
+    <script>
+        layui.use(['form', 'layer', 'element'], function () {
+            var form = layui.form, layer = layui.layer, element = layui.element;
+            var formElem = document.getElementById('wgtForm');
+            var progressBar = document.querySelector('.progress-bar');
+            var resultMsg = document.getElementById('resultMsg');
+            formElem.onsubmit = function (e) {
+                e.preventDefault();
+                resultMsg.textContent = '';
+                var fileInput = document.getElementById('file');
+                var versionInput = document.getElementById('version');
+                if (!fileInput.files.length) {
+                    layer.msg('请选择 WGT 文件');
+                    return false;
+                }
+                if (!versionInput.value.trim()) {
+                    layer.msg('请输入版本号');
+                    return false;
+                }
+                var formData = new FormData(formElem);
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', 'http://localhost:5251/api/wgt/upload', true);
+                xhr.upload.onprogress = function (e) {
+                    if (e.lengthComputable) {
+                        var percent = Math.round(e.loaded / e.total * 100);
+                        progressBar.style.display = '';
+                        element.progress('uploadProgress', percent + '%');
+                    }
+                };
+                xhr.onload = function () {
+                    progressBar.style.display = 'none';
+                    if (xhr.status === 200) {
+                        resultMsg.style.color = '#16b777';
+                        resultMsg.textContent = '上传成功！';
+                    } else {
+                        resultMsg.style.color = '#ff5722';
+                        resultMsg.textContent = '上传失败：' + (xhr.responseText || xhr.statusText);
+                    }
+                };
+                xhr.onerror = function () {
+                    progressBar.style.display = 'none';
+                    resultMsg.style.color = '#ff5722';
+                    resultMsg.textContent = '上传出错，请检查网络或服务器。';
+                };
+                progressBar.style.display = '';
+                element.progress('uploadProgress', '0%');
+                xhr.send(formData);
+            };
+        });
+    </script>
+</body>
+
+</html>

@@ -473,7 +473,7 @@
 .layui-table td,
 .layui-table th
 {
-      padding: 5px 8px;      padding: 8px; /* 单元格内边距 */  border: 1px solid skyblue; /* 单元格边框 */
+    padding: 5px 8px;      padding: 8px; /* 单元格内边距 */  border: 1px solid skyblue; /* 单元格边框 */
 }
 .layui-table th:nth-child(3)
 {
@@ -592,7 +592,7 @@
 .order-card
 {
     box-sizing: border-box;  width: 100%;  margin: 0 0 10px 0;  padding: 0;  transition: box-shadow .2s ease, transform .2s ease,
-    border-color .2s ease;  border: 1px solid var(--card-border);  border-radius: 10px;  background: var(--card-bg);  box-shadow: var(--card-shadow);
+    border-color .2s ease;  border-radius: 10px;  background: var(--card-bg);
 }
 .order-card:hover
 {
@@ -602,11 +602,11 @@
 /* 头部：去色背景，提升信息层级 */
 .order-card-header
 {
-    display: flex;  align-items: center;  justify-content: space-between;  height: auto !important;  padding: 10px 12px !important;  border-bottom: 1px solid var(--surface-muted);  border-radius: 10px 10px 0 0;  background: transparent !important;
+    display: flex;  align-items: center;  justify-content: space-between;  height: auto !important;  padding: 10px 12px !important;  border-bottom: 1px solid var(--surface-muted);  border-radius: 10px 10px 0 0;  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
 }
 .order-card-header .order-name
 {
-    font-size: 15px !important;  font-weight: 600;  color: var(--text-main) !important;
+    font-size: 15px !important;  font-weight: 600;  color: #2c5282;
 }
 .order-card-header .order-name small
 {
@@ -618,7 +618,7 @@
 }
 .order-card-header .order-type
 {
-    font-size: 12px;  line-height: 1;  padding: 6px 10px;  color: #374151;  border: 1px solid #e5e7eb;  border-radius: 9999px;  background: var(--surface-muted);
+    font-size: 12px;  line-height: 15px;  padding: 6px 10px;  color: #374151;  border: 1px solid #e5e7eb;  border-radius: 9999px;  background: var(--surface-muted);
 }
 .order-card-header .order-type.badge-long
 {
@@ -795,18 +795,6 @@
 {
     color: #435cab;  border-radius: 15px;  background-color: #d2d8e7;
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
     </style>
   </head>
@@ -2523,7 +2511,7 @@
                 var todoList = selectedRows.map(function (row) {
                   var raw = (row && row._key && detailMap[row._key]) || {};
                   return {
-                    act_order_no: row.act_order_no || raw.act_order_no, // 后端生成
+                    act_order_no: "", // 后端生成
                     add_opera: doctorCode,
                     admiss_times: patientData.admiss_times || "1",
                     ca_id_doctor: doctorCode,
@@ -2896,7 +2884,7 @@
               var apiParams = {
                 patient_id: patient_id || orderData.patient_id,
                 admiss_times: admiss_times || orderData.admiss_times,
-                act_order_no: orderData.act_order_no || orderData.order_no,
+                act_order_no: "",
                 opera: loginUser.user_mi,
                 cancel_mode: "1", // 撤销模式，1表示撤销
                 pre_cancel_step: "2", // 预撤销步骤，1表示直接撤销
@@ -3887,6 +3875,43 @@
           });
         });
 
+        // 对外暴露一个刷新函数，供其它页面（如 add_order.html）在提交后调用
+        // 使用时只需在父窗口或顶层窗口调用 window.refreshYizhu()
+        window.refreshYizhu = function () {
+          console.log("外部触发刷新医嘱列表");
+          loadOrderTemplates(function () {
+            loadFrequencyData(function () {
+              loadSupplyData(function () {
+                loadYizhuData(function () {
+                  applyFilters();
+                });
+              });
+            });
+          });
+        };
+
+        // 支持通过 postMessage 请求刷新（兼容无法直接访问父窗口函数的场景）
+        window.addEventListener(
+          "message",
+          function (event) {
+            try {
+              var data = event && event.data;
+              if (!data) return;
+              if (data.type === "refreshYizhuRequest") {
+                console.log("收到外部 postMessage 刷新请求，开始刷新 yizhu");
+                try {
+                  window.refreshYizhu();
+                } catch (e) {
+                  console.warn("调用 window.refreshYizhu 失败：", e);
+                }
+              }
+            } catch (e) {
+              console.warn("message 事件处理异常：", e);
+            }
+          },
+          false
+        );
+
         // 头工具栏事件
         table.on("toolbar(yizhu-table)", function (obj) {
           switch (obj.event) {
@@ -4226,18 +4251,6 @@
         font-size: 13px !important; /* 缩小输入框字体 */
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
     </style>
 

@@ -265,7 +265,7 @@
 
     .dialog-buttons
     {
-        padding: 10px;
+        padding: 15px;
     }
 
     .dialog-buttons .layui-btn
@@ -517,6 +517,15 @@
 {
     color: #435cab;  border-radius: 15px;  background-color: #d2d8e7;
 }
+.custom-edit-layer
+{
+    padding: 10px!important;  border-radius: 10px !important;
+}
+
+
+
+
+
 
 
 
@@ -1186,11 +1195,12 @@
 
               layer.open({
                 type: 1,
-                title:
-                  '<i class="layui-icon layui-icon-add-1"></i> 选择检查项目',
+                title:0,
+                closeBtn: 0,
+                skin: 'custom-edit-layer',
                 area: ["90%", "90%"],
                 offset: window.innerWidth < 768 ? "10px" : "auto", // 移动端靠近顶部，桌面端居中
-                maxmin: true,
+                maxmin: false,
                 resize: false,
                 content:
                   '<div class="package-form">' +

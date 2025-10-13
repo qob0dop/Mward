@@ -3,7 +3,12 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="../lib/layui-v2.6.3/css/layui.css" media="all" />
+    <link
+      rel="stylesheet"
+      href="../lib/layui-v2.6.3/css/layui.css"
+      media="all"
+    />
+        <link rel="stylesheet" href="../lib/mobile-select/mobile-select.css">
 
     <title>Document</title>
     <style>
@@ -356,7 +361,7 @@ header
 }
 .selected-orders-fullpage .order-main
 {
-    display: flex;  align-items: flex-start;  width: 100%; gap: 10px;
+    display: flex;  align-items: flex-start;  width: 100%;  gap: 10px;
 }
 .selected-orders-fullpage .order-main .order-content
 {
@@ -364,7 +369,7 @@ header
 }
 .selected-orders-fullpage .order-footer
 {
-    display: flex;  align-items: center;  justify-content: flex-end;  width: 100%; padding-top: 6px;  border-top: 1px solid #f0f0f0; gap: 8px;
+    display: flex;  align-items: center;  justify-content: flex-end;  width: 100%;  padding-top: 6px;  border-top: 1px solid #f0f0f0;  gap: 8px;
 }
 .selected-orders-fullpage .order-footer .action-buttons
 {
@@ -383,7 +388,7 @@ header
 /* 编辑弹窗现代化样式 */
 .edit-order-form .layui-form-label
 {
-    font-weight: 600;  padding: 9px 12px;  color: #333;
+    font-weight: 600;   padding: 9px 15px;   text-align: right; /* 文本右对齐 */ color: #333;
 }
 .edit-order-form .layui-input-wrapper
 {
@@ -400,7 +405,7 @@ header
 }
 .edit-order-form .form-tip
 {
-    font-size: 12px;  margin-top: 4px;   color: #999;
+    font-size: 12px;  margin-top: 4px;  color: #999;
 }
 .edit-order-form .readonly-value
 {
@@ -425,6 +430,44 @@ header
 {
     color: #1890ff; /* 选中项高对比度 */
 }
+.layui-form-item
+{
+    display: flex;  align-items: center;
+}
+.layui-form-item .layui-input-block
+{
+    flex: 1;  margin-left: 0;
+}
+.layui-form-item h3
+{
+    font-weight: bolder;  margin-left: 20px;
+}
+.layui-form.edit-order-form
+{
+    display: grid;  grid-template-columns: 1fr 1fr;  grid-column-gap: 20px;
+}
+
+.layui-form-label
+{
+    width: auto;  padding: 0;
+}
+
+/* 允许弹窗内容区的下拉框溢出，防止被裁剪 */
+.layui-layer-content
+{
+    overflow: visible !important;
+}
+
+.layui-form-onswitch em{
+  margin-left: 3px;
+}
+
+
+
+
+
+
+
 
 
 
@@ -445,10 +488,36 @@ header
   <body>
     <header>
       <!-- 返回按钮：使用 inline SVG 作为字体图标的回退，确保打包后依然可见 -->
-      <button id="backBtn" title="返回医嘱列表" aria-label="返回" style="
-          background: transparent; border: none; padding: 0; margin: 0; cursor: pointer; position: absolute; left: 10px; display: inline-flex; align-items: center; justify-content: center;">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" focusable="false" aria-hidden="true">
-          <path d="M19 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H19v-2z" fill="#ffffff" />
+      <button
+        id="backBtn"
+        title="返回医嘱列表"
+        aria-label="返回"
+        style="
+          background: transparent;
+          border: none;
+          padding: 0;
+          margin: 0;
+          cursor: pointer;
+          position: absolute;
+          left: 10px;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+        "
+      >
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          focusable="false"
+          aria-hidden="true"
+        >
+          <path
+            d="M19 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H19v-2z"
+            fill="#ffffff"
+          />
         </svg>
       </button>
       开立医嘱
@@ -551,6 +620,7 @@ header
 
     <script src="../lib/layui-v2.6.3/layui.js" charset="utf-8"></script>
     <script src="../js/lay-config.js?v=1.0.4" charset="utf-8"></script>
+    <script src="../lib/mobile-select/mobile-select.iife.js"></script>
 
     <script>
       layui.use(["appconfig", "form"], function () {
@@ -569,11 +639,14 @@ header
         let panelMode = "all"; // 面板模式: all | selected
 
         // 选项缓存与辅助方法（参考 yizhu.html 逻辑，做轻量实现）
-        const frequencyCache = { '1': { loaded: false, list: [] }, '0': { loaded: false, list: [] } }; // 长期/临时分开缓存
+        const frequencyCache = {
+          1: { loaded: false, list: [] },
+          0: { loaded: false, list: [] },
+        }; // 长期/临时分开缓存
         const supplyCache = { loaded: false, list: [] };
         const doseUnitCacheMap = {}; // key: serial|order_code -> [{unit_code, unit_name, unit_type}]
 
-        function fetchFrequencyList(longOnceFlag = '1') {
+        function fetchFrequencyList(longOnceFlag = "1") {
           const flag = String(longOnceFlag);
           if (frequencyCache[flag] && frequencyCache[flag].loaded) {
             return Promise.resolve(frequencyCache[flag].list);
@@ -585,13 +658,17 @@ header
               dataType: "json",
               data: { long_once_flag: flag },
               success: function (res) {
-                const list = (res && res.Status && Array.isArray(res.Data)) ? res.Data : [];
-                if (!frequencyCache[flag]) frequencyCache[flag] = { loaded: false, list: [] };
+                const list =
+                  res && res.Status && Array.isArray(res.Data) ? res.Data : [];
+                if (!frequencyCache[flag])
+                  frequencyCache[flag] = { loaded: false, list: [] };
                 frequencyCache[flag].loaded = true;
                 frequencyCache[flag].list = list;
                 resolve(list);
               },
-              error: function () { resolve([]); }
+              error: function () {
+                resolve([]);
+              },
             });
           });
         }
@@ -604,19 +681,23 @@ header
               type: "GET",
               dataType: "json",
               success: function (res) {
-                const list = (res && res.Status && Array.isArray(res.Data)) ? res.Data : [];
+                const list =
+                  res && res.Status && Array.isArray(res.Data) ? res.Data : [];
                 supplyCache.loaded = true;
                 supplyCache.list = list;
                 resolve(list);
               },
-              error: function () { resolve([]); }
+              error: function () {
+                resolve([]);
+              },
             });
           });
         }
 
         function fetchDoseUnitList(serial, order_code) {
           const key = (serial || "00") + "|" + (order_code || "");
-          if (doseUnitCacheMap[key]) return Promise.resolve(doseUnitCacheMap[key]);
+          if (doseUnitCacheMap[key])
+            return Promise.resolve(doseUnitCacheMap[key]);
           if (!order_code) return Promise.resolve([]);
           return new Promise((resolve) => {
             $.ajax({
@@ -626,17 +707,42 @@ header
               data: { serial: serial || "00", order_code: order_code },
               success: function (res) {
                 const arr = [];
-                const d = res && res.Status && res.Data && res.Data[0] ? res.Data[0] : null;
+                const d =
+                  res && res.Status && res.Data && res.Data[0]
+                    ? res.Data[0]
+                    : null;
                 if (d) {
-                  if (d.mini_unit && d.mini1_name) arr.push({ unit_code: d.mini_unit, unit_name: d.mini1_name, unit_type: "mini" });
-                  if (d.pack_unit && d.pack_name) arr.push({ unit_code: d.pack_unit, unit_name: d.pack_name, unit_type: "pack" });
-                  if (d.vol_unit && d.vol_name) arr.push({ unit_code: d.vol_unit, unit_name: d.vol_name, unit_type: "vol" });
-                  if (d.weight_unit && d.weight_name) arr.push({ unit_code: d.weight_unit, unit_name: d.weight_name, unit_type: "weight" });
+                  if (d.mini_unit && d.mini1_name)
+                    arr.push({
+                      unit_code: d.mini_unit,
+                      unit_name: d.mini1_name,
+                      unit_type: "mini",
+                    });
+                  if (d.pack_unit && d.pack_name)
+                    arr.push({
+                      unit_code: d.pack_unit,
+                      unit_name: d.pack_name,
+                      unit_type: "pack",
+                    });
+                  if (d.vol_unit && d.vol_name)
+                    arr.push({
+                      unit_code: d.vol_unit,
+                      unit_name: d.vol_name,
+                      unit_type: "vol",
+                    });
+                  if (d.weight_unit && d.weight_name)
+                    arr.push({
+                      unit_code: d.weight_unit,
+                      unit_name: d.weight_name,
+                      unit_type: "weight",
+                    });
                 }
                 doseUnitCacheMap[key] = arr;
                 resolve(arr);
               },
-              error: function () { resolve([]); }
+              error: function () {
+                resolve([]);
+              },
             });
           });
         }
@@ -646,8 +752,21 @@ header
           (list || []).forEach(function (it) {
             const code = (it && it[codeKey]) || "";
             const name = (it && it[nameKey]) || code;
-            const sel = String(code).trim().toUpperCase() === String(selectedCode || "").trim().toUpperCase() ? " selected" : "";
-            html += '<option value="' + (String(code).replace(/"/g, '&quot;')) + '"' + sel + '>' + (String(name).replace(/</g, '&lt;')) + '</option>';
+            const sel =
+              String(code).trim().toUpperCase() ===
+              String(selectedCode || "")
+                .trim()
+                .toUpperCase()
+                ? " selected"
+                : "";
+            html +=
+              '<option value="' +
+              String(code).replace(/"/g, "&quot;") +
+              '"' +
+              sel +
+              ">" +
+              String(name).replace(/</g, "&lt;") +
+              "</option>";
           });
           return html;
         }
@@ -657,7 +776,7 @@ header
           const it = (list || []).find(function (x) {
             return String(x[nameKey] || "").trim() === String(name).trim();
           });
-          return it ? (it[codeKey] || "") : "";
+          return it ? it[codeKey] || "" : "";
         }
 
         // 加载模板列表
@@ -681,7 +800,10 @@ header
               }
             },
             error: function () {
-              layui.layer.msg("网络错误，获取医嘱模板失败", { icon: 2, time: 3000 });
+              layui.layer.msg("网络错误，获取医嘱模板失败", {
+                icon: 2,
+                time: 3000,
+              });
             },
           });
         }
@@ -770,7 +892,10 @@ header
                 selectedTemplate.pattern_name
               );
             } else {
-              layui.layer.msg("模板信息不完整，无法获取详情", { icon: 2, time: 3000 });
+              layui.layer.msg("模板信息不完整，无法获取详情", {
+                icon: 2,
+                time: 3000,
+              });
             }
           });
         }
@@ -849,11 +974,17 @@ header
                 currentOrderDetails = res.Data || [];
                 showOrderPanel(patternName, currentOrderDetails);
               } else {
-                layui.layer.msg("获取医嘱模板明细失败: " + (res.Message || "未知错误"), { icon: 2, time: 3000 });
+                layui.layer.msg(
+                  "获取医嘱模板明细失败: " + (res.Message || "未知错误"),
+                  { icon: 2, time: 3000 }
+                );
               }
             },
             error: function (xhr, status, error) {
-              layui.layer.msg("网络错误，获取医嘱模板明细失败", { icon: 2, time: 3000 });
+              layui.layer.msg("网络错误，获取医嘱模板明细失败", {
+                icon: 2,
+                time: 3000,
+              });
               console.error("获取模板详情失败:", error);
             },
           });
@@ -909,14 +1040,29 @@ header
                           ? "规格: " + order.drug_specification + " | "
                           : ""
                       }
-                      ${order.doseage ? "剂量: " + order.doseage+order.doseage_unit_name + " | " : ""}
+                      ${
+                        order.doseage
+                          ? "剂量: " +
+                            order.doseage +
+                            order.doseage_unit_name +
+                            " | "
+                          : ""
+                      }
                       ${
                         order.frequ_name
                           ? "频次: " + order.frequ_name + " | "
                           : ""
                       }
-                      ${order.supply_name ? "用法: " + order.supply_name + " | ": ""}
-                      ${order.charge_amount ? "数量: " + order.charge_amount  : ""}
+                      ${
+                        order.supply_name
+                          ? "用法: " + order.supply_name + " | "
+                          : ""
+                      }
+                      ${
+                        order.charge_amount
+                          ? "数量: " + order.charge_amount
+                          : ""
+                      }
                       ${order.order_code ? "<br>编码: " + order.order_code : ""}
                     </div>
                   </div>
@@ -932,7 +1078,6 @@ header
 
           // 更新选择计数
           updateSelectedCount();
-
         }
 
         // 显示全屏已选医嘱页面
@@ -950,8 +1095,12 @@ header
             );
           } else {
             globalSelectedOrders.forEach((globalOrder, globalIndex) => {
-              const isLongTerm = globalOrder.long_once_flag === '1';
-              const typeBadge = `<span class="layui-badge ${isLongTerm ? 'layui-bg-blue' : 'layui-bg-orange'}" style="margin-right: 8px;">${isLongTerm ? '长期' : '临时'}</span>`;
+              const isLongTerm = globalOrder.long_once_flag === "1";
+              const typeBadge = `<span class="layui-badge ${
+                isLongTerm ? "layui-bg-blue" : "layui-bg-orange"
+              }" style="margin-right: 8px;">${
+                isLongTerm ? "长期" : "临时"
+              }</span>`;
 
               const orderItem = `
                 <div class="order-item" data-global-index="${globalIndex}">
@@ -960,10 +1109,14 @@ header
                       <div class="order-name">
                         ${typeBadge}
                         ${
-                        globalOrder.order_name || globalOrder.drug_name || "医嘱"
-                      }</div>
+                          globalOrder.order_name ||
+                          globalOrder.drug_name ||
+                          "医嘱"
+                        }</div>
                       <div class="order-details">
-                        <strong>来源模板:</strong> ${globalOrder.pattern_name}<br>
+                        <strong>来源模板:</strong> ${
+                          globalOrder.pattern_name
+                        }<br>
                         ${
                           globalOrder.drug_description
                             ? "规格: " + globalOrder.drug_description + " | "
@@ -971,7 +1124,10 @@ header
                         }
                         ${
                           globalOrder.doseage
-                            ? "剂量: " + globalOrder.doseage + globalOrder.doseage_unit_name + " | "
+                            ? "剂量: " +
+                              globalOrder.doseage +
+                              globalOrder.doseage_unit_name +
+                              " | "
                             : ""
                         }
                         ${
@@ -979,7 +1135,11 @@ header
                             ? "频次: " + globalOrder.frequ_name + " | "
                             : ""
                         }
-                        ${globalOrder.supply_name ? "用法: " + globalOrder.supply_name : ""}
+                        ${
+                          globalOrder.supply_name
+                            ? "用法: " + globalOrder.supply_name
+                            : ""
+                        }
                         ${
                           globalOrder.order_code
                             ? "<br>编码: " + globalOrder.order_code
@@ -1157,22 +1317,26 @@ header
             }
           });
 
-
-
           // 全局已选医嘱 - 删除按钮
           $(document).on("click", ".global-delete-btn", function () {
             const globalIndex = parseInt($(this).data("global-index"));
             const orderName = globalSelectedOrders[globalIndex]
-              ? globalSelectedOrders[globalIndex].order_name || globalSelectedOrders[globalIndex].drug_name || "医嘱"
+              ? globalSelectedOrders[globalIndex].order_name ||
+                globalSelectedOrders[globalIndex].drug_name ||
+                "医嘱"
               : "此医嘱";
 
-            layui.layer.confirm(`确定删除 ${orderName} 吗？`, { icon: 3, title: '删除确认' }, function (idx) {
-              // 确认删除
-              globalSelectedOrders.splice(globalIndex, 1);
-              updateSelectedCount();
-              showSelectedOrdersFullpage();
-              layui.layer.close(idx);
-            });
+            layui.layer.confirm(
+              `确定删除 ${orderName} 吗？`,
+              { icon: 3, title: "删除确认" },
+              function (idx) {
+                // 确认删除
+                globalSelectedOrders.splice(globalIndex, 1);
+                updateSelectedCount();
+                showSelectedOrdersFullpage();
+                layui.layer.close(idx);
+              }
+            );
           });
 
           // 全局已选医嘱 - 编辑按钮（带下拉选择：剂量单位/用法/频率）
@@ -1183,7 +1347,7 @@ header
 
             // 确保 long_once_flag 存在，默认为长期医嘱 '1'
 
-            order.long_once_flag = order.long_once_flag === '0' ? '0' : '1';
+            order.long_once_flag = order.long_once_flag === "0" ? "0" : "1";
 
             const serial = order.Serial || order.serial || "00";
             const orderCode = order.order_code || "";
@@ -1192,134 +1356,185 @@ header
             Promise.all([
               fetchFrequencyList(order.long_once_flag),
               fetchDoseUnitList(serial, orderCode),
-              fetchSupplyList()
+              fetchSupplyList(),
             ]).then(function ([freqList, unitList, supplyList]) {
-              const frequ_code = order.frequ_code || findCodeByName(freqList, order.frequ_name, 'code', 'name');
-              const dose_unit_code = order.doseage_unit || findCodeByName(unitList, order.doseage_unit_name, 'unit_code', 'unit_name');
-              const supply_code = order.supply_code || findCodeByName(supplyList, order.supply_name, 'supply_code', 'supply_name');
+              const frequ_code =
+                order.frequ_code ||
+                findCodeByName(freqList, order.frequ_name, "code", "name");
+              const dose_unit_code =
+                order.doseage_unit ||
+                findCodeByName(
+                  unitList,
+                  order.doseage_unit_name,
+                  "unit_code",
+                  "unit_name"
+                );
+              const supply_code =
+                order.supply_code ||
+                findCodeByName(
+                  supplyList,
+                  order.supply_name,
+                  "supply_code",
+                  "supply_name"
+                );
 
-              const freqOptions = buildOptions(freqList, 'code', 'name', frequ_code);
-              const unitOptions = buildOptions(unitList, 'unit_code', 'unit_name', dose_unit_code);
-              const supplyOptions = buildOptions(supplyList, 'supply_code', 'supply_name', supply_code);
+              const freqOptions = buildOptions(
+                freqList,
+                "code",
+                "name",
+                frequ_code
+              );
+              const unitOptions = buildOptions(
+                unitList,
+                "unit_code",
+                "unit_name",
+                dose_unit_code
+              );
+              const supplyOptions = buildOptions(
+                supplyList,
+                "supply_code",
+                "supply_name",
+                supply_code
+              );
 
               const content = `
                 <form class="layui-form edit-order-form" lay-filter="editOrderForm" style="padding: 20px 25px 10px 0px;">
                   <div class="layui-form-item">
-                    <label class="layui-form-label">医嘱名称</label>
-                    <div class="layui-input-block">
-                      <div class="readonly-value">${(order.order_name||order.drug_name||'').replace(/"/g,'&quot;')}</div>
-                    </div>
+                    <h3>${(
+                        order.order_name || ""
+                      ).replace(/"/g, "&quot;")}</h3>
+                    
                   </div>
                   <div class="layui-form-item">
                     <label class="layui-form-label">医嘱类型</label>
                     <div class="layui-input-block">
-                      <input type="checkbox" name="long_once_flag" lay-skin="switch" lay-text="长期|临时" lay-filter="longOnceSwitch" ${order.long_once_flag === '0' ? '' : 'checked'} value="1">
+                      <input type="checkbox" name="long_once_flag" lay-skin="switch" lay-text="长期|临时" lay-filter="longOnceSwitch" ${
+                        order.long_once_flag === "0" ? "" : "checked"
+                      } value="1">
                     </div>
                   </div>
-                  <div class="layui-row layui-col-space10">
-                    <div class="layui-col-md6">
-                      <div class="layui-form-item">
-                        <label class="layui-form-label">剂量</label>
-                        <div class="layui-input-block">
-                          <input type="text" id="edit_order_doseage" name="doseage" class="layui-input" value="${order.doseage || ''}" placeholder="请输入剂量">
-                        </div>
-                      </div>
-                    </div>
-                    <div class="layui-col-md6">
-                      <div class="layui-form-item">
-                        <label class="layui-form-label">剂量单位</label>
-                        <div class="layui-input-block">
-                          <select id="edit_order_doseage_unit" name="doseage_unit" lay-search>${unitOptions}</select>
-                        </div>
-                      </div>
+                  <div class="layui-form-item">
+                    <label class="layui-form-label">剂量</label>
+                    <div class="layui-input-block">
+                      <input type="text" id="edit_order_doseage" name="doseage" class="layui-input" value="${
+                        order.doseage || ""
+                      }" placeholder="请输入剂量">
                     </div>
                   </div>
-                  <div class="layui-row layui-col-space10">
-                    <div class="layui-col-md6">
-                      <div class="layui-form-item">
-                        <label class="layui-form-label">数量</label>
-                        <div class="layui-input-block">
-                          <input type="number" id="edit_order_charge_amount" name="charge_amount" class="layui-input" value="${order.charge_amount || '1'}" placeholder="请输入数量">
-                        </div>
-                      </div>
-                    </div>
-                    <div class="layui-col-md6">
-                      <div class="layui-form-item">
-                        <label class="layui-form-label">频次</label>
-                        <div class="layui-input-block">
-                          <select id="edit_order_frequ" name="frequ_code" lay-search>${freqOptions}</select>
-                        </div>
-                      </div>
+                  <div class="layui-form-item">
+                    <label class="layui-form-label">单位</label>
+                    <div class="layui-input-block">
+                      <select id="edit_order_doseage_unit" name="doseage_unit" lay-search>${unitOptions}</select>
                     </div>
                   </div>
-                  <div class="layui-row layui-col-space10">
-                    <div class="layui-col-md6">
-                      <div class="layui-form-item">
-                        <label class="layui-form-label">用法</label>
-                        <div class="layui-input-block">
-                          <select id="edit_order_supply" name="supply_code" lay-search>${supplyOptions}</select>
-                        </div>
-                      </div>
+                 
+                  <div class="layui-form-item">
+                    <label class="layui-form-label">频次</label>
+                    <div class="layui-input-block">
+                      <select id="edit_order_frequ" name="frequ_code" lay-search>${freqOptions}</select>
                     </div>
                   </div>
-                  <div class="layui-form-item" style="margin-top: 5px;">
-                     <div class="layui-input-block form-tip">
-                       <i class="layui-icon layui-icon-tips" style="font-size:14px;"></i> 提示：修改将仅应用于本次提交，不会影响模板。
-                     </div>
+                   <div class="layui-form-item">
+                    <label class="layui-form-label">数量</label>
+                    <div class="layui-input-block">
+                      <input type="number" id="edit_order_charge_amount" name="charge_amount" class="layui-input" value="${
+                        order.charge_amount || "1"
+                      }" placeholder="请输入数量">
+                    </div>
                   </div>
+                  <div class="layui-form-item" style="grid-column: 1 / -1;">
+                    <label class="layui-form-label">用法</label>
+                    <div class="layui-input-block">
+                      <select id="edit_order_supply" name="supply_code" lay-search>${supplyOptions}</select>
+                    </div>
+                  </div>
+                 
                 </form>
               `;
 
               layui.layer.open({
                 type: 1,
-                title: '编辑医嘱',
-                area: ['90%', 'auto'],
-                maxWidth: '600px',
-                skin: 'custom-edit-layer',
+                title: false,
+                closeBtn: 0,
+                area: ["90%", "auto"],
+                maxWidth: "600px",
+                skin: "custom-edit-layer",
                 content: content,
-                btn: ['保存', '取消'],
-                success: function(layero){
-                  form.render(null, 'editOrderForm'); // 渲染整个表单
+                btn: ["保存", "取消"],
+                success: function (layero) {
+                  form.render(null, "editOrderForm"); // 渲染整个表单
 
                   // 监听医嘱类型切换
-                  form.on('switch(longOnceSwitch)', function(data){
-                    const newFlag = data.elem.checked ? '1' : '0';
-                    fetchFrequencyList(newFlag).then(function(newList){
-                      const newFreqOptions = buildOptions(newList, 'code', 'name', ''); // 不保留旧选择
-                      layero.find('#edit_order_frequ').html(newFreqOptions);
-                      form.render('select', 'editOrderForm'); // 重新渲染下拉框
+                  form.on("switch(longOnceSwitch)", function (data) {
+                    const newFlag = data.elem.checked ? "1" : "0";
+                    fetchFrequencyList(newFlag).then(function (newList) {
+                      const newFreqOptions = buildOptions(
+                        newList,
+                        "code",
+                        "name",
+                        ""
+                      ); // 不保留旧选择
+                      layero.find("#edit_order_frequ").html(newFreqOptions);
+                      form.render("select", "editOrderForm"); // 重新渲染下拉框
                     });
                   });
                 },
                 yes: function (index, layero) {
-                  const newDose = layero.find('#edit_order_doseage').val();
-                  const newCharge = layero.find('#edit_order_charge_amount').val();
-                  const newFrequCode = layero.find('#edit_order_frequ').val();
-                  const newDoseUnitCode = layero.find('#edit_order_doseage_unit').val();
-                  const newSupplyCode = layero.find('#edit_order_supply').val();
-                  const newLongOnceFlag = layero.find('input[name="long_once_flag"]').is(':checked') ? '1' : '0';
+                  const newDose = layero.find("#edit_order_doseage").val();
+                  const newCharge = layero
+                    .find("#edit_order_charge_amount")
+                    .val();
+                  const newFrequCode = layero.find("#edit_order_frequ").val();
+                  const newDoseUnitCode = layero
+                    .find("#edit_order_doseage_unit")
+                    .val();
+                  const newSupplyCode = layero.find("#edit_order_supply").val();
+                  const newLongOnceFlag = layero
+                    .find('input[name="long_once_flag"]')
+                    .is(":checked")
+                    ? "1"
+                    : "0";
 
                   // 重新获取当前类型的频次列表以找到名称
-                  const currentFreqList = frequencyCache[newLongOnceFlag].list || [];
-                  const frequItem = currentFreqList.find(x => String(x.code||'').toUpperCase() === String(newFrequCode||'').toUpperCase());
-                  const unitItem = (unitList || []).find(x => String(x.unit_code||'').toUpperCase() === String(newDoseUnitCode||'').toUpperCase());
-                  const supplyItem = (supplyList || []).find(x => String(x.supply_code||'').toUpperCase() === String(newSupplyCode||'').toUpperCase());
+                  const currentFreqList =
+                    frequencyCache[newLongOnceFlag].list || [];
+                  const frequItem = currentFreqList.find(
+                    (x) =>
+                      String(x.code || "").toUpperCase() ===
+                      String(newFrequCode || "").toUpperCase()
+                  );
+                  const unitItem = (unitList || []).find(
+                    (x) =>
+                      String(x.unit_code || "").toUpperCase() ===
+                      String(newDoseUnitCode || "").toUpperCase()
+                  );
+                  const supplyItem = (supplyList || []).find(
+                    (x) =>
+                      String(x.supply_code || "").toUpperCase() ===
+                      String(newSupplyCode || "").toUpperCase()
+                  );
 
                   order.doseage = newDose;
                   order.charge_amount = newCharge;
                   order.long_once_flag = newLongOnceFlag;
-                  order.frequ_code = newFrequCode || '';
-                  order.frequ_name = (frequItem && (frequItem.name || frequItem.code)) || '';
-                  order.supply_code = newSupplyCode || '';
-                  order.supply_name = (supplyItem && (supplyItem.supply_name || supplyItem.supply_code)) || '';
-                  order.doseage_unit = newDoseUnitCode || '';
-                  order.doseage_unit_name = (unitItem && (unitItem.unit_name || unitItem.unit_code)) || '';
+                  order.frequ_code = newFrequCode || "";
+                  order.frequ_name =
+                    (frequItem && (frequItem.name || frequItem.code)) || "";
+                  order.supply_code = newSupplyCode || "";
+                  order.supply_name =
+                    (supplyItem &&
+                      (supplyItem.supply_name || supplyItem.supply_code)) ||
+                    "";
+                  order.doseage_unit = newDoseUnitCode || "";
+                  order.doseage_unit_name =
+                    (unitItem && (unitItem.unit_name || unitItem.unit_code)) ||
+                    "";
 
                   globalSelectedOrders[globalIndex] = order;
                   updateSelectedCount();
                   showSelectedOrdersFullpage();
                   layui.layer.close(index);
-                }
+                },
               });
             });
           });
@@ -1370,7 +1585,10 @@ header
             console.log("确认添加的全局医嘱:", globalSelectedOrders);
 
             // 这里可以添加提交医嘱的逻辑
-            layui.layer.msg(`已选择 ${globalSelectedOrders.length} 个医嘱，准备添加到患者医嘱中`, { icon: 1, time: 2000 });
+            layui.layer.msg(
+              `已选择 ${globalSelectedOrders.length} 个医嘱，准备添加到患者医嘱中`,
+              { icon: 1, time: 2000 }
+            );
 
             // 隐藏面板
             hideOrderPanel();
@@ -1405,6 +1623,40 @@ header
         }
 
         // 批量提交已选医嘱
+        // 尝试刷新 yizhu 的简洁封装：会先尝试直接调用父/顶层/opener 函数，失败时使用 postMessage 回退
+        function tryRefreshYizhu() {
+          try {
+            // 直接调用 parent.frames[0].refreshYizhu（你已确认该方法有效）
+            if (
+              parent &&
+              parent.frames &&
+              parent.frames[0] &&
+              typeof parent.frames[0].refreshYizhu === "function"
+            ) {
+              parent.frames[0].refreshYizhu();
+              console.log("调用 parent.frames[0].refreshYizhu 成功");
+              return true;
+            }
+            // 回退：使用 postMessage 告知可接收方刷新
+            var msg = { type: "refreshYizhuRequest" };
+            try {
+              if (parent && parent !== window && parent.postMessage)
+                parent.postMessage(msg, "*");
+            } catch (e) {}
+            try {
+              if (window.top && window.top !== window && window.top.postMessage)
+                window.top.postMessage(msg, "*");
+            } catch (e) {}
+            try {
+              if (window.opener && window.opener.postMessage)
+                window.opener.postMessage(msg, "*");
+            } catch (e) {}
+            return false;
+          } catch (e) {
+            console.warn("tryRefreshYizhu 异常：", e);
+            return false;
+          }
+        }
         function submitSelectedOrders() {
           if (!globalSelectedOrders || globalSelectedOrders.length === 0) {
             layui.layer.msg("没有可提交的医嘱", { icon: 2, time: 2000 });
@@ -1441,7 +1693,7 @@ header
           // 将globalSelectedOrders转换为API所需的格式
           const todoList = globalSelectedOrders.map(function (order) {
             return {
-              act_order_no: order.act_order_no || "", // 后端生成
+              act_order_no: "", // 后端生成
               add_opera: doctorCode,
               admiss_times: patientData.admiss_times || "1",
               ca_id_doctor: doctorCode,
@@ -1513,6 +1765,8 @@ header
                 selectedOrders = [];
                 updateSelectedCount();
                 hideSelectedOrdersFullpage();
+                // 简洁调用：尝试刷新 yizhu（内部实现包含直接调用与 postMessage 回退）
+                tryRefreshYizhu();
                 // 可以在这里添加刷新页面或跳转的逻辑
               } else {
                 const errorMsg =

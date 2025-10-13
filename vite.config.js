@@ -10,13 +10,11 @@ export default defineConfig({
   plugins: [
     viteStaticCopy({
       targets: [
-        { src: "api/**", dest: "api" },
-        { src: "images/**", dest: "images" },
-        { src: "css/**", dest: "css" },
-        { src: "js/**", dest: "js" },
-        { src: "lib/**", dest: "lib" },
-
-        // 如果你有其他自定义静态文件夹，按 { src: 'myfolder/**', dest: 'myfolder' } 增加即可
+        { src: "api/*", dest: "api" },
+        { src: "images/*", dest: "images" },
+        { src: "css/*", dest: "css" },
+        { src: "js/*", dest: "js" },
+        { src: "lib/*", dest: "lib" },
       ],
     }),
   ],
@@ -28,6 +26,7 @@ export default defineConfig({
         main: resolve(__dirname, "main.html"),
         login: resolve(__dirname, "index.html"),
         home: resolve(__dirname, "home.html"),
+        wgt_upload: resolve(__dirname, "wgt-upload.html"),
         patient: resolve(__dirname, "view/patient.html"),
         wardlist: resolve(__dirname, "view/wardlist.html"),
         edoclist: resolve(__dirname, "view/edoclist.html"),
