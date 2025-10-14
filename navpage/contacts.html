@@ -1,285 +1,357 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>通讯录</title>
     <link rel="stylesheet" href="/lib/layui-v2.6.3/css/layui.css" media="all" />
     <style>
-body,
-html
-{
-    height: 100%;  margin: 0;  background-color: rgb(242, 243, 245);
-}
+        body,
+        html {
+            height: 100%;
+            margin: 0;
+            background-color: rgb(242, 243, 245);
+        }
 
-header
-{
-    font-size: 18px;  font-weight: bold;  display: flex;  align-items: center;  justify-content: space-between;  box-sizing: border-box;  height: 10%;  padding: 0 10px;  text-align: center;  color: #fff;  background-color: rgb(4, 46, 167);
-}
+        header {
+            font-size: 18px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-sizing: border-box;
+            height: 10%;
+            padding: 0 10px;
+            text-align: center;
+            color: #fff;
+            background-color: rgb(4, 46, 167);
+        }
 
-#search-container
-{
-    position: relative;  display: flex;  align-items: center;  justify-content: center;  min-width: 0;
-}
+        #search-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 0;
+        }
 
-.layui-icon-search
-{
-    font-size: 20px;  flex-shrink: 0;  margin-right: 5px;  cursor: pointer;
- color: white; 
-}
+        .layui-icon-search {
+            font-size: 20px;
+            flex-shrink: 0;
+            margin-right: 5px;
+            cursor: pointer;
+            color: white;
+        }
 
-#contact-search
-{
-    font-size: 14px;  width: 120px;  height: 30px;  padding: 4px 12px;  transition: all .3s ease;  color: white;
- border: 1px solid rgba(255,255,255,.3);  border-radius: 15px;  outline: none;  background: rgba(255,255,255,.1); 
-}
+        #contact-search {
+            font-size: 14px;
+            width: 120px;
+            height: 30px;
+            padding: 4px 12px;
+            transition: all .3s ease;
+            color: white;
+            border: 1px solid rgba(255, 255, 255, .3);
+            border-radius: 15px;
+            outline: none;
+            background: rgba(255, 255, 255, .1);
+        }
 
-#contact-search::placeholder
-{
-    color: rgba(255,255,255,.7);
-}
+        #contact-search::placeholder {
+            color: rgba(255, 255, 255, .7);
+        }
 
-#contact-search:focus
-{ width: 140px;
- border-color: rgba(255,255,255,.6); 
-    background: rgba(255,255,255,.2); 
-}
+        #contact-search:focus {
+            width: 140px;
+            border-color: rgba(255, 255, 255, .6);
+            background: rgba(255, 255, 255, .2);
+        }
 
-.tool
-{
-    display: flex;  align-items: center;
- height: 5%;  padding: 0 10px;  background-color: rgb(242, 243, 245); 
-}
+        .tool {
+            display: flex;
+            align-items: center;
+            height: 5%;
+            padding: 0 10px;
+            background-color: rgb(242, 243, 245);
+        }
 
-.tool label
-{
-    font-size: 12px;  line-height: 12px;  margin: 5px;  padding: 5px 10px;  cursor: pointer;  transition: all .3s ease;  color: gray;  border-radius: 15px;  background-color: #fff;
-}
+        .tool label {
+            font-size: 12px;
+            line-height: 12px;
+            margin: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+            transition: all .3s ease;
+            color: gray;
+            border-radius: 15px;
+            background-color: #fff;
+        }
 
-.tool label.active
-{
-    color: rgb(67, 92, 171);  background-color: rgb(210, 216, 231);
-}
+        .tool label.active {
+            color: rgb(67, 92, 171);
+            background-color: rgb(210, 216, 231);
+        }
 
-main
-{ overflow: hidden;
+        main {
+            overflow: hidden;
 
-    height: 85%; 
-}
+            height: 85%;
+        }
 
-.contacts-container
-{
-    overflow: auto;  box-sizing: border-box;  height: 100%;  padding: 10px;  padding-top: 0;  background-color: rgb(242, 243, 245);
-}
+        .contacts-container {
+            overflow: auto;
+            box-sizing: border-box;
+            height: 100%;
+            padding: 10px;
+            padding-top: 0;
+            background-color: rgb(242, 243, 245);
+        }
 
-.contact-card
-{
-    position: relative;  margin-bottom: 10px;  padding: 15px;  transition: all .3s ease;
- border-radius: 10px;  background-color: #fff;  box-shadow: 0 2px 4px rgba(0,0,0,.1); 
-}
+        .contact-card {
+            position: relative;
+            margin-bottom: 10px;
+            padding: 15px;
+            transition: all .3s ease;
+            border-radius: 10px;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, .1);
+        }
 
-.contact-card:hover
-{ transform: translateY(-1px);
+        .contact-card:hover {
+            transform: translateY(-1px);
 
-    box-shadow: 0 4px 8px rgba(0,0,0,.15); 
-}
+            box-shadow: 0 4px 8px rgba(0, 0, 0, .15);
+        }
 
-.contact-header
-{
-    display: flex;  align-items: center;  margin-bottom: 12px;
-}
+        .contact-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+        }
 
-.contact-avatar
-{ font-size: 18px;  font-weight: bold;  display: flex;  align-items: center;  flex-shrink: 0;
- justify-content: center; 
+        .contact-avatar {
+            font-size: 18px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+            justify-content: center;
 
-    width: 50px;  height: 50px;  margin-right: 12px;  color: white;  border-radius: 50%;  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
-}
+            width: 50px;
+            height: 50px;
+            margin-right: 12px;
+            color: white;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
 
-.contact-avatar.doctor
-{
-    background: linear-gradient(135deg, #1e9fff 0%, #1890ff 100%);
-}
+        .contact-avatar.doctor {
+            background: linear-gradient(135deg, #1e9fff 0%, #1890ff 100%);
+        }
 
-.contact-avatar.nurse
-{
-    background: linear-gradient(135deg, #52c41a 0%, #389e0d 100%);
-}
+        .contact-avatar.nurse {
+            background: linear-gradient(135deg, #52c41a 0%, #389e0d 100%);
+        }
 
-.contact-avatar.admin
-{
-    background: linear-gradient(135deg, #722ed1 0%, #531dab 100%);
-}
+        .contact-avatar.admin {
+            background: linear-gradient(135deg, #722ed1 0%, #531dab 100%);
+        }
 
-.contact-info
-{
-    flex: 1;  min-width: 0;
-}
+        .contact-info {
+            flex: 1;
+            min-width: 0;
+        }
 
-.contact-name
-{
-    font-size: 16px;  font-weight: bold;  margin-bottom: 4px;
- color: #333; 
-}
+        .contact-name {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 4px;
+            color: #333;
+        }
 
-.contact-position
-{
-    font-size: 12px;  display: inline-block;  margin-bottom: 6px;
- padding: 2px 6px;  color: #fff;  border-radius: 8px; 
-}
+        .contact-position {
+            font-size: 12px;
+            display: inline-block;
+            margin-bottom: 6px;
+            padding: 2px 6px;
+            color: #fff;
+            border-radius: 8px;
+        }
 
-.contact-position.doctor
-{
-    background-color: #1e9fff;
-}
+        .contact-position.doctor {
+            background-color: #1e9fff;
+        }
 
-.contact-position.nurse
-{
-    background-color: #52c41a;
-}
+        .contact-position.nurse {
+            background-color: #52c41a;
+        }
 
-.contact-position.admin
-{
-    background-color: #722ed1;
-}
+        .contact-position.admin {
+            background-color: #722ed1;
+        }
 
-.contact-department
-{
-    font-size: 12px;  color: #666;
-}
+        .contact-department {
+            font-size: 12px;
+            color: #666;
+        }
 
-.contact-status
-{
-    position: absolute;  top: 12px;  right: 12px;  display: flex;  align-items: center;
-}
+        .contact-status {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            display: flex;
+            align-items: center;
+        }
 
-.status-dot
-{
-    width: 8px;  height: 8px;  margin-right: 4px;
- border-radius: 50%; 
-}
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            margin-right: 4px;
+            border-radius: 50%;
+        }
 
-.status-dot.online
-{
-    background-color: #52c41a;
-}
+        .status-dot.online {
+            background-color: #52c41a;
+        }
 
-.status-dot.busy
-{
-    background-color: #faad14;
-}
+        .status-dot.busy {
+            background-color: #faad14;
+        }
 
-.status-dot.offline
-{
-    background-color: #d9d9d9;
-}
+        .status-dot.offline {
+            background-color: #d9d9d9;
+        }
 
-.status-text
-{
-    font-size: 11px;  color: #999;
-}
+        .status-text {
+            font-size: 11px;
+            color: #999;
+        }
 
-.contact-details
-{
-    display: grid;  margin-top: 10px;  padding-top: 10px;  border-top: 1px solid #f0f0f0;
- grid-template-columns: repeat(2, 1fr);  gap: 8px; 
-}
+        .contact-details {
+            display: grid;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #f0f0f0;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
 
-.contact-item
-{ font-size: 13px; 
+        .contact-item {
+            font-size: 13px;
 
-    display: flex;  align-items: center;  color: #666;
-}
+            display: flex;
+            align-items: center;
+            color: #666;
+        }
 
-.contact-item .layui-icon
-{ font-size: 14px;
+        .contact-item .layui-icon {
+            font-size: 14px;
 
-    margin-right: 6px;  color: #999; 
-}
+            margin-right: 6px;
+            color: #999;
+        }
 
-.contact-actions
-{
-    display: flex;  justify-content: flex-end;  margin-top: 12px;
- gap: 8px; 
-}
+        .contact-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 12px;
+            gap: 8px;
+        }
 
-.action-btn
-{ font-size: 12px; 
+        .action-btn {
+            font-size: 12px;
 
-    padding: 6px 12px;  cursor: pointer;  transition: all .3s ease;
- color: #666;  border: 1px solid #d9d9d9;  border-radius: 15px;  background: white; 
-}
+            padding: 6px 12px;
+            cursor: pointer;
+            transition: all .3s ease;
+            color: #666;
+            border: 1px solid #d9d9d9;
+            border-radius: 15px;
+            background: white;
+        }
 
-.action-btn:hover
-{ color: #1e9fff;
-    border-color: #1e9fff; 
-}
+        .action-btn:hover {
+            color: #1e9fff;
+            border-color: #1e9fff;
+        }
 
-.action-btn.primary
-{ color: white;
- border-color: #1e9fff; 
-    background-color: #1e9fff; 
-}
+        .action-btn.primary {
+            color: white;
+            border-color: #1e9fff;
+            background-color: #1e9fff;
+        }
 
-.action-btn.primary:hover
-{ border-color: #40a9ff;
-    background-color: #40a9ff; 
-}
+        .action-btn.primary:hover {
+            border-color: #40a9ff;
+            background-color: #40a9ff;
+        }
 
-.no-contacts
-{ padding: 50px 20px; 
+        .no-contacts {
+            padding: 50px 20px;
 
-    text-align: center;  color: #999;
-}
+            text-align: center;
+            color: #999;
+        }
 
-.no-contacts .layui-icon
-{
-    font-size: 64px;  margin-bottom: 20px;  color: #ddd;
-}
+        .no-contacts .layui-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            color: #ddd;
+        }
 
-/* 快速拨号悬浮按钮 */
-.quick-dial
-{
-    position: fixed;  z-index: 1000;
- right: 20px;  bottom: 20px; 
-}
+        /* 快速拨号悬浮按钮 */
+        .quick-dial {
+            position: fixed;
+            z-index: 1000;
+            right: 20px;
+            bottom: 20px;
+        }
 
-.dial-btn
-{ font-size: 20px;  display: block;
+        .dial-btn {
+            font-size: 20px;
+            display: block;
 
-    width: 50px;  height: 50px;  margin-bottom: 10px;  cursor: pointer;  transition: all .3s ease;  color: white;  border: none;  border-radius: 50%;  background-color: rgb(4, 46, 167);  box-shadow: 0 4px 8px rgba(0,0,0,.2); 
-}
+            width: 50px;
+            height: 50px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all .3s ease;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            background-color: rgb(4, 46, 167);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, .2);
+        }
 
-.dial-btn:hover
-{ transform: scale(1.1);
+        .dial-btn:hover {
+            transform: scale(1.1);
 
-    background-color: rgb(67, 92, 171); 
-}
+            background-color: rgb(67, 92, 171);
+        }
 
-/* 科室标题分组 */
-.department-header
-{
-    font-size: 14px;  font-weight: bold;  margin: 10px 0 5px;
- padding: 10px 15px 5px;  color: #666;  border-radius: 8px;  background-color: rgb(242, 243, 245); 
-}
+        /* 科室标题分组 */
+        .department-header {
+            font-size: 14px;
+            font-weight: bold;
+            margin: 10px 0 5px;
+            padding: 10px 15px 5px;
+            color: #666;
+            border-radius: 8px;
+            background-color: rgb(242, 243, 245);
+        }
 
-.department-header:first-child
-{
-    margin-top: 0;
-}
-
+        .department-header:first-child {
+            margin-top: 0;
+        }
     </style>
 </head>
+
 <body>
     <header>
         <div style="font-size: 18px;">通讯录</div>
         <div id="search-container">
             <i class="layui-icon layui-icon-search"></i>
-            <input
-                type="text"
-                id="contact-search"
-                placeholder="搜索联系人"
-            />
+            <input type="text" id="contact-search" placeholder="搜索联系人" />
         </div>
     </header>
 
@@ -360,7 +432,7 @@ main
                 status: 'offline',
                 avatar: '刘'
             },
-            
+
             // 护士
             {
                 id: 5,
@@ -427,7 +499,7 @@ main
                 status: 'offline',
                 avatar: '周'
             },
-            
+
             // 管理人员
             {
                 id: 10,
@@ -461,7 +533,7 @@ main
         let searchKeyword = '';
 
         // 页面加载完成后初始化
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             renderContacts();
             bindEvents();
         });
@@ -478,7 +550,7 @@ main
 
             // 根据搜索关键词过滤
             if (searchKeyword) {
-                filteredContacts = filteredContacts.filter(contact => 
+                filteredContacts = filteredContacts.filter(contact =>
                     contact.name.toLowerCase().includes(searchKeyword.toLowerCase()) ||
                     contact.positionName.toLowerCase().includes(searchKeyword.toLowerCase()) ||
                     contact.phone.includes(searchKeyword)
@@ -502,7 +574,7 @@ main
             Object.keys(grouped).forEach(position => {
                 const positionName = getPositionName(position);
                 html += `<div class="department-header">${positionName}</div>`;
-                
+
                 grouped[position].forEach(contact => {
                     html += renderContactCard(contact);
                 });
@@ -597,7 +669,7 @@ main
         function bindEvents() {
             // 筛选按钮事件
             document.querySelectorAll('.contact-filter').forEach(btn => {
-                btn.addEventListener('click', function() {
+                btn.addEventListener('click', function () {
                     document.querySelectorAll('.contact-filter').forEach(b => b.classList.remove('active'));
                     this.classList.add('active');
                     currentFilter = this.dataset.filter;
@@ -607,7 +679,7 @@ main
 
             // 搜索框事件
             const searchInput = document.getElementById('contact-search');
-            searchInput.addEventListener('input', function() {
+            searchInput.addEventListener('input', function () {
                 searchKeyword = this.value.trim();
                 renderContacts();
             });
@@ -615,15 +687,15 @@ main
 
         // 拨打电话
         function makeCall(phone) {
-            layui.use('layer', function(){
+            layui.use('layer', function () {
                 const layer = layui.layer;
                 layer.confirm(`确定要拨打 ${phone} 吗？`, {
-                    btn: ['拨号','取消'],
+                    btn: ['拨号', '取消'],
                     icon: 3,
                     title: '拨号确认'
-                }, function(index){
+                }, function (index) {
                     // 这里可以集成真实的拨号功能
-                    layer.msg(`正在拨打 ${phone}...`, {icon: 1});
+                    layer.msg(`正在拨打 ${phone}...`, { icon: 1 });
                     layer.close(index);
                 });
             });
@@ -633,15 +705,15 @@ main
         function sendMessage(contactId) {
             const contact = contactsData.find(c => c.id === contactId);
             if (contact) {
-                layui.use('layer', function(){
+                layui.use('layer', function () {
                     const layer = layui.layer;
                     layer.prompt({
                         formType: 2,
                         value: '',
                         title: `发送消息给 ${contact.name}`,
                         area: ['300px', '150px']
-                    }, function(value, index){
-                        layer.msg(`消息已发送给 ${contact.name}`, {icon: 1});
+                    }, function (value, index) {
+                        layer.msg(`消息已发送给 ${contact.name}`, { icon: 1 });
                         layer.close(index);
                     });
                 });
@@ -650,7 +722,7 @@ main
 
         // 显示紧急联系人
         function showEmergencyContacts() {
-            layui.use('layer', function(){
+            layui.use('layer', function () {
                 const layer = layui.layer;
                 const emergencyHtml = `
                     <div style="padding: 20px;">
@@ -683,6 +755,24 @@ main
                 });
             });
         }
+
+        // 处理移动端返回键（在 iframe 子页面中）
+        window.addEventListener('message', function (event) {
+            // 检查是否有打开的 layer 弹层
+            if (event.data && event.data.type === 'back') {
+                if (window.layui && layui.layer) {
+                    var openLayers = document.querySelectorAll('.layui-layer');
+                    if (openLayers && openLayers.length > 0) {
+                        // 如果有弹层，关闭最上层的弹层
+                        layui.layer.closeAll();
+                        return;
+                    }
+                }
+            }
+
+            // 如果没有弹层，不处理（让父页面处理返回逻辑）
+        }, false);
     </script>
 </body>
+
 </html>

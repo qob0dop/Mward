@@ -1,220 +1,287 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>消息中心</title>
     <link rel="stylesheet" href="/lib/layui-v2.6.3/css/layui.css" media="all" />
     <style>
-body,
-html
-{
-    height: 100%;  margin: 0;  background-color: rgb(242, 243, 245);
-}
+        body,
+        html {
+            height: 100%;
+            margin: 0;
+            background-color: rgb(242, 243, 245);
+        }
 
-header
-{
-    font-size: 18px;  font-weight: bold;  display: flex;  align-items: center;  justify-content: space-between;  box-sizing: border-box;  height: 10%;  padding: 0 10px;  text-align: center;  color: #fff;  background-color: rgb(4, 46, 167);
-}
+        header {
+            font-size: 18px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-sizing: border-box;
+            height: 10%;
+            padding: 0 10px;
+            text-align: center;
+            color: #fff;
+            background-color: rgb(4, 46, 167);
+        }
 
-.message-title
-{
-    flex: 1;  text-align: center;
-}
+        .message-title {
+            flex: 1;
+            text-align: center;
+        }
 
-.message-count
-{ font-size: 12px;  margin-left: 5px;
- padding: 2px 8px;  border-radius: 12px; 
-    background-color: #ff5722; 
-}
+        .message-count {
+            font-size: 12px;
+            margin-left: 5px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            background-color: #ff5722;
+        }
 
-.tool
-{
-    display: flex;  align-items: center;
- height: 5%;  padding: 0 10px;  background-color: rgb(242, 243, 245); 
-}
+        .tool {
+            display: flex;
+            align-items: center;
+            height: 5%;
+            padding: 0 10px;
+            background-color: rgb(242, 243, 245);
+        }
 
-.tool label
-{
-    font-size: 12px;  line-height: 12px;  margin: 5px;  padding: 5px 10px;  cursor: pointer;  transition: all .3s ease;  color: gray;  border-radius: 15px;  background-color: #fff;
-}
+        .tool label {
+            font-size: 12px;
+            line-height: 12px;
+            margin: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+            transition: all .3s ease;
+            color: gray;
+            border-radius: 15px;
+            background-color: #fff;
+        }
 
-.tool label.active
-{
-    color: rgb(67, 92, 171);  background-color: rgb(210, 216, 231);
-}
+        .tool label.active {
+            color: rgb(67, 92, 171);
+            background-color: rgb(210, 216, 231);
+        }
 
-main
-{ overflow: hidden;
+        main {
+            overflow: hidden;
 
-    height: 85%; 
-}
+            height: 85%;
+        }
 
-.message-container
-{
-    overflow: auto;  box-sizing: border-box;  height: 100%;  padding: 10px;  background-color: rgb(242, 243, 245);
-}
+        .message-container {
+            overflow: auto;
+            box-sizing: border-box;
+            height: 100%;
+            padding: 10px;
+            background-color: rgb(242, 243, 245);
+        }
 
-.message-card
-{
-    position: relative;  margin-bottom: 10px;  padding: 15px;  cursor: pointer;  transition: all .3s ease;
- border-radius: 10px;  background-color: #fff;  box-shadow: 0 2px 4px rgba(0,0,0,.1); 
-}
+        .message-card {
+            position: relative;
+            margin-bottom: 10px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all .3s ease;
+            border-radius: 10px;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, .1);
+        }
 
-.message-card:hover
-{ transform: translateY(-2px);
+        .message-card:hover {
+            transform: translateY(-2px);
 
-    box-shadow: 0 4px 8px rgba(0,0,0,.15); 
-}
+            box-shadow: 0 4px 8px rgba(0, 0, 0, .15);
+        }
 
-.message-card.unread
-{
-    border-left: 4px solid #1e9fff;
-}
+        .message-card.unread {
+            border-left: 4px solid #1e9fff;
+        }
 
-.message-card.unread::after
-{ position: absolute;  top: 8px;  right: 15px;  width: 8px;  height: 8px; 
+        .message-card.unread::after {
+            position: absolute;
+            top: 8px;
+            right: 15px;
+            width: 8px;
+            height: 8px;
 
-    content: '';  border-radius: 50%;
- background-color: #ff5722; 
-}
+            content: '';
+            border-radius: 50%;
+            background-color: #ff5722;
+        }
 
-.message-header
-{
-    display: flex;  align-items: center;  justify-content: space-between;  margin-bottom: 10px;
-}
+        .message-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
 
-.message-type
-{
-    font-size: 12px;  padding: 3px 8px;  color: #fff;
- border-radius: 12px; 
-}
+        .message-type {
+            font-size: 12px;
+            padding: 3px 8px;
+            color: #fff;
+            border-radius: 12px;
+        }
 
-.message-type.system
-{
-    background-color: #1e9fff;
-}
+        .message-type.system {
+            background-color: #1e9fff;
+        }
 
-.message-type.notice
-{
-    background-color: #ff5722;
-}
+        .message-type.notice {
+            background-color: #ff5722;
+        }
 
-.message-type.work
-{
-    background-color: #28a745;
-}
+        .message-type.work {
+            background-color: #28a745;
+        }
 
-.message-type.urgent
-{ animation: blink 1s infinite;
+        .message-type.urgent {
+            animation: blink 1s infinite;
 
-    background-color: #dc3545; 
-}
+            background-color: #dc3545;
+        }
 
-@keyframes blink
-{
-    0%,
-    50%
-    {
-        opacity: 1;
-    }
-    51%,
-    100%
-    {
-        opacity: .5;
-    }
-}
+        @keyframes blink {
 
-.message-time
-{
-    font-size: 12px;  color: #999;
-}
+            0%,
+            50% {
+                opacity: 1;
+            }
 
-.message-title-text
-{
-    font-size: 16px;  font-weight: bold;  margin-bottom: 8px;  color: #333;
-}
+            51%,
+            100% {
+                opacity: .5;
+            }
+        }
 
-.message-content
-{
-    font-size: 14px;  line-height: 1.4;  margin-bottom: 8px;
- color: #666; 
-}
+        .message-time {
+            font-size: 12px;
+            color: #999;
+        }
 
-.message-sender
-{
-    font-size: 12px;  display: flex;  align-items: center;
- color: #999; 
-}
+        .message-title-text {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #333;
+        }
 
-.message-sender .layui-icon
-{
-    margin-right: 4px;
-}
+        .message-content {
+            font-size: 14px;
+            line-height: 1.4;
+            margin-bottom: 8px;
+            color: #666;
+        }
 
-.no-messages
-{ padding: 50px 20px; 
+        .message-sender {
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            color: #999;
+        }
 
-    text-align: center;  color: #999;
-}
+        .message-sender .layui-icon {
+            margin-right: 4px;
+        }
 
-.no-messages .layui-icon
-{
-    font-size: 64px;  margin-bottom: 20px;  color: #ddd;
-}
+        .no-messages {
+            padding: 50px 20px;
 
-.message-actions
-{
-    position: fixed;  z-index: 1000;
- right: 20px;  bottom: 20px; 
-}
+            text-align: center;
+            color: #999;
+        }
 
-.action-btn
-{ font-size: 24px;  display: block;
+        .no-messages .layui-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            color: #ddd;
+        }
 
-    width: 50px;  height: 50px;  margin-bottom: 10px;  cursor: pointer;  transition: all .3s ease;  color: white;  border: none;  border-radius: 50%;  background-color: rgb(4, 46, 167);  box-shadow: 0 4px 8px rgba(0,0,0,.2); 
-}
+        .message-actions {
+            position: fixed;
+            z-index: 1000;
+            right: 20px;
+            bottom: 20px;
+        }
 
-.action-btn:hover
-{ transform: scale(1.1);
+        .action-btn {
+            font-size: 24px;
+            display: block;
 
-    background-color: rgb(67, 92, 171); 
-}
+            width: 50px;
+            height: 50px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all .3s ease;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            background-color: rgb(4, 46, 167);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, .2);
+        }
 
-/* 消息详情弹窗样式 */
-.message-detail-overlay
-{
-    position: fixed;  z-index: 1001;  top: 0;  left: 0;  display: none;
- width: 100%;  height: 100%;  background: rgba(0, 0, 0, .5); 
-}
+        .action-btn:hover {
+            transform: scale(1.1);
 
-.message-detail-modal
-{
-    position: fixed;  z-index: 1002;
- top: 50%;  left: 50%;  overflow: hidden;  width: 90%;  max-width: 500px;  max-height: 80%;  transform: translate(-50%, -50%);  border-radius: 10px;  background: white; 
-}
+            background-color: rgb(67, 92, 171);
+        }
 
-.message-detail-header
-{ display: flex;  align-items: center;
- justify-content: space-between; 
+        /* 消息详情弹窗样式 */
+        .message-detail-overlay {
+            position: fixed;
+            z-index: 1001;
+            top: 0;
+            left: 0;
+            display: none;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, .5);
+        }
 
-    padding: 20px;  color: white;  background-color: rgb(4, 46, 167); 
-}
+        .message-detail-modal {
+            position: fixed;
+            z-index: 1002;
+            top: 50%;
+            left: 50%;
+            overflow: hidden;
+            width: 90%;
+            max-width: 500px;
+            max-height: 80%;
+            transform: translate(-50%, -50%);
+            border-radius: 10px;
+            background: white;
+        }
 
-.message-detail-body
-{ overflow-y: auto;
- max-height: 400px; 
-    padding: 20px; 
-}
+        .message-detail-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
 
-.close-btn
-{ font-size: 24px;  cursor: pointer;
- color: white;  border: none; 
-    background: none; 
-}
+            padding: 20px;
+            color: white;
+            background-color: rgb(4, 46, 167);
+        }
 
+        .message-detail-body {
+            overflow-y: auto;
+            max-height: 400px;
+            padding: 20px;
+        }
+
+        .close-btn {
+            font-size: 24px;
+            cursor: pointer;
+            color: white;
+            border: none;
+            background: none;
+        }
     </style>
 </head>
+
 <body>
     <header>
         <div class="message-title">
@@ -316,7 +383,7 @@ main
         let currentFilter = 'all';
 
         // 页面加载完成后初始化
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             renderMessages();
             bindEvents();
             updateUnreadCount();
@@ -328,7 +395,7 @@ main
             let filteredMessages = messageData;
 
             // 根据筛选条件过滤消息
-            switch(currentFilter) {
+            switch (currentFilter) {
                 case 'unread':
                     filteredMessages = messageData.filter(msg => !msg.isRead);
                     break;
@@ -392,7 +459,7 @@ main
         function bindEvents() {
             // 筛选按钮事件
             document.querySelectorAll('.message-filter').forEach(btn => {
-                btn.addEventListener('click', function() {
+                btn.addEventListener('click', function () {
                     document.querySelectorAll('.message-filter').forEach(b => b.classList.remove('active'));
                     this.classList.add('active');
                     currentFilter = this.dataset.filter;
@@ -441,9 +508,9 @@ main
             messageData.forEach(msg => msg.isRead = true);
             updateUnreadCount();
             renderMessages();
-            layui.use('layer', function(){
+            layui.use('layer', function () {
                 const layer = layui.layer;
-                layer.msg('所有消息已标记为已读', {icon: 1});
+                layer.msg('所有消息已标记为已读', { icon: 1 });
             });
         }
 
@@ -458,6 +525,25 @@ main
                 countElement.style.display = 'none';
             }
         }
+
+        // 处理移动端返回键（在 iframe 子页面中）
+        window.addEventListener('message', function (event) {
+            // 检查是否有打开的 layer 弹层
+            if (event.data && event.data.type === 'back') {
+                closeMessageDetail();
+                if (window.layui && layui.layer) {
+                    var openLayers = document.querySelectorAll('.layui-layer');
+                    if (openLayers && openLayers.length > 0) {
+                        // 如果有弹层，关闭最上层的弹层
+                        layui.layer.closeAll();
+                        return;
+                    }
+                }
+            }
+
+            // 如果没有弹层，不处理（让父页面处理返回逻辑）
+        }, false);
     </script>
 </body>
+
 </html>

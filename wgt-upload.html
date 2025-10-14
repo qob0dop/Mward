@@ -114,7 +114,7 @@
                 }
                 var formData = new FormData(formElem);
                 var xhr = new XMLHttpRequest();
-                xhr.open('POST', 'http://localhost:5251/api/wgt/upload', true);
+                xhr.open('POST', 'https://www.annotokyo.fun:8123/api/wgt/upload', true);
                 xhr.upload.onprogress = function (e) {
                     if (e.lengthComputable) {
                         var percent = Math.round(e.loaded / e.total * 100);

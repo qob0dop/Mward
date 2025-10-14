@@ -1,103 +1,124 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-    <link rel="stylesheet" href="/lib/layui-v2.6.3/css/layui.css" media="all" />
-    <link rel="stylesheet" href="css/home.css" />
 
-    <style></style>
-  </head>
-  <body>
-    <div id="main-content">
-      <!-- Center content will be loaded here -->
-    </div>
-    <nav id="bottom-nav">
-      <button class="nav-item layui-btn" data-target="message">
-        <i class="layui-icon layui-icon-dialogue"></i>
-        <p>消息</p>
-      </button>
-      <button class="nav-item layui-btn" data-target="patients">
-        <i class="layui-icon layui-icon-user"></i>
-        <p>患者</p>
-      </button>
-      <button class="nav-item layui-btn" data-target="workbench">
-        <i class="layui-icon layui-icon-app"></i>
-        <p>工作台</p>
-      </button>
-      <button class="nav-item layui-btn" data-target="contacts">
-        <i class="layui-icon layui-icon-group"></i>
-        <p>通讯录</p>
-      </button>
-      <button class="nav-item layui-btn" data-target="my">
-        <i class="layui-icon layui-icon-username"></i>
-        <p>我的</p>
-      </button>
-    </nav>
-    <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        const buttons = document.querySelectorAll(".nav-item");
-        const mainContent = document.getElementById("main-content");
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document</title>
+  <link rel="stylesheet" href="/lib/layui-v2.6.3/css/layui.css" media="all" />
+  <link rel="stylesheet" href="css/home.css" />
 
-        // 映射 target -> url
-        const urlMap = {
-          message: "navpage/message.html",
-          patients: "navpage/patients.html",
-          workbench: "navpage/workbench.html",
-          contacts: "navpage/contacts.html",
-          my: "navpage/my.html",
-        };
+  <style></style>
+</head>
 
-        // 缓存已经创建的 iframe
-        const frames = {};
+<body>
+  <div id="main-content">
+    <!-- Center content will be loaded here -->
+  </div>
+  <nav id="bottom-nav">
+    <button class="nav-item layui-btn" data-target="message">
+      <i class="layui-icon layui-icon-dialogue"></i>
+      <p>消息</p>
+    </button>
+    <button class="nav-item layui-btn" data-target="patients">
+      <i class="layui-icon layui-icon-user"></i>
+      <p>患者</p>
+    </button>
+    <button class="nav-item layui-btn" data-target="workbench">
+      <i class="layui-icon layui-icon-app"></i>
+      <p>工作台</p>
+    </button>
+    <button class="nav-item layui-btn" data-target="contacts">
+      <i class="layui-icon layui-icon-group"></i>
+      <p>通讯录</p>
+    </button>
+    <button class="nav-item layui-btn" data-target="my">
+      <i class="layui-icon layui-icon-username"></i>
+      <p>我的</p>
+    </button>
+  </nav>
+  <script src="/lib/layui-v2.6.3/layui.js"></script>
+  <script>
+    // 全局变量，缓存已创建的 iframe
+    const iframeCache = {};
+    let currentIframe = "workbench"; // 当前显示的 iframe
 
-        function showFrame(target) {
-          const targetBtn = document.querySelector(
-            `.nav-item[data-target="${target}"]`
-          );
-          // 先移除所有按钮的主题色
-          buttons.forEach((btn) => btn.classList.remove("theme-color"));
-          // 再给当前按钮添加主题色
-          targetBtn.classList.add("theme-color");
-          // 如果没有对应 url，回退到 message
-          const url = urlMap[target] || urlMap["message"];
+    document.addEventListener("plusready", function () {
+      plus.key.addEventListener('backbutton', function () {
+        // 方法1: 通过 currentIframe 变量查找
+        const iframe = iframeCache[currentIframe];
 
-          // 隐藏所有已存在的 iframe
-          Object.keys(frames).forEach((key) => {
-            frames[key].style.display = "none";
-          });
+        // 方法2: 或者直接查找当前显示的 iframe（display: block）
+        // const iframe = document.querySelector('#main-content iframe[style*="display: block"]');
 
-          // 如果已经创建，直接显示（保持页面状态）
-          if (frames[target]) {
-            frames[target].style.display = "block";
-            return;
-          }
-
-          // 否则懒加载创建 iframe 并缓存
-          const iframe = document.createElement("iframe");
-          iframe.src = url;
-          iframe.setAttribute("loading", "lazy");
-          iframe.dataset.target = target;
-          // 可根据需要添加 sandbox 属性，例如: sandbox="allow-scripts allow-same-origin"
-          iframe.style.display = "block";
-
-          mainContent.appendChild(iframe);
-          frames[target] = iframe;
+        if (iframe) {
+          iframe.contentWindow.postMessage({ type: "back" }, "*");
+        } else {
+          console.log("未找到当前 iframe:", currentIframe);
         }
+      }, false);
+    });
 
-        // 绑定按钮
-        buttons.forEach((button) => {
-          button.addEventListener("click", function () {
-            const target = this.getAttribute("data-target");
+    document.addEventListener("DOMContentLoaded", function () {
+      const buttons = document.querySelectorAll(".nav-item");
+      const mainContent = document.getElementById("main-content");
 
-            showFrame(target);
-          });
+      // 映射 target -> url
+      const urlMap = {
+        message: "navpage/message.html",
+        patients: "navpage/patients.html",
+        workbench: "navpage/workbench.html",
+        contacts: "navpage/contacts.html",
+        my: "navpage/my.html",
+      };
+
+      function showFrame(target) {
+        currentIframe = target; // 每次切换都同步当前 iframe
+        const targetBtn = document.querySelector(
+          `.nav-item[data-target="${target}"]`
+        );
+        // 先移除所有按钮的主题色
+        buttons.forEach((btn) => btn.classList.remove("theme-color"));
+        // 再给当前按钮添加主题色
+        targetBtn.classList.add("theme-color");
+        // 如果没有对应 url，回退到 message
+        const url = urlMap[target] || urlMap["message"];
+
+        // 隐藏所有已存在的 iframe
+        Object.keys(iframeCache).forEach((key) => {
+          iframeCache[key].style.display = "none";
         });
 
-        // 默认显示
-        showFrame("workbench");
+        // 如果已经创建，直接显示（保持页面状态）
+        if (iframeCache[target]) {
+          iframeCache[target].style.display = "block";
+          return;
+        }
+
+        // 否则懒加载创建 iframe 并缓存
+        const iframe = document.createElement("iframe");
+        iframe.src = url;
+        iframe.setAttribute("loading", "lazy");
+        iframe.dataset.target = target;
+        // 可根据需要添加 sandbox 属性，例如: sandbox="allow-scripts allow-same-origin"
+        iframe.style.display = "block";
+
+        mainContent.appendChild(iframe);
+        iframeCache[target] = iframe;
+      }
+
+      // 绑定按钮
+      buttons.forEach((button) => {
+        button.addEventListener("click", function () {
+          const target = this.getAttribute("data-target");
+          showFrame(target);
+        });
       });
-    </script>
-  </body>
+
+      // 默认显示
+      showFrame("workbench");
+    });
+  </script>
+</body>
+
 </html>

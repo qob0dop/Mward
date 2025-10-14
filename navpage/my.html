@@ -1,292 +1,392 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>我的</title>
     <link rel="stylesheet" href="/lib/layui-v2.6.3/css/layui.css" media="all" />
     <style>
-body,
-html
-{
-    height: 100%;  margin: 0;  background-color: rgb(242, 243, 245);
-}
+        body,
+        html {
+            height: 100%;
+            margin: 0;
+            background-color: rgb(242, 243, 245);
+        }
 
-header
-{
-    font-size: 18px;  font-weight: bold;  display: flex;  align-items: center;  justify-content: space-between;  box-sizing: border-box;  height: 10%;  padding: 0 15px;  text-align: center;  color: #fff;  background: linear-gradient(135deg, rgb(4, 46, 167) 0%, rgb(67, 92, 171) 100%);
-}
+        header {
+            font-size: 18px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-sizing: border-box;
+            height: 10%;
+            padding: 0 15px;
+            text-align: center;
+            color: #fff;
+            background: linear-gradient(135deg, rgb(4, 46, 167) 0%, rgb(67, 92, 171) 100%);
+        }
 
-.header-actions
-{
-    display: flex;  gap: 15px;
-}
+        .header-actions {
+            display: flex;
+            gap: 15px;
+        }
 
-.header-icon
-{
-    font-size: 20px;  padding: 5px;  cursor: pointer;  transition: all .3s ease;  border-radius: 50%;
-}
+        .header-icon {
+            font-size: 20px;
+            padding: 5px;
+            cursor: pointer;
+            transition: all .3s ease;
+            border-radius: 50%;
+        }
 
-.header-icon:hover
-{
-    background: rgba(255,255,255,.2);
-}
+        .header-icon:hover {
+            background: rgba(255, 255, 255, .2);
+        }
 
-main
-{
-    overflow-y: auto;  height: 90%;   padding-top: 20px; padding-bottom: 20px;box-sizing: border-box;
-}
+        main {
+            overflow-y: auto;
+            height: 90%;
+            padding-top: 20px;
+            padding-bottom: 20px;
+            box-sizing: border-box;
+        }
 
-.profile-section
-{
-    margin-bottom: 10px;  padding: 0 15px 30px;  background: linear-gradient(135deg, rgb(4, 46, 167) 0%, rgb(67, 92, 171) 100%);
-}
+        .profile-section {
+            margin-bottom: 10px;
+            padding: 0 15px 30px;
+            background: linear-gradient(135deg, rgb(4, 46, 167) 0%, rgb(67, 92, 171) 100%);
+        }
 
-.profile-card
-{
-    position: relative;  margin-top: -20px;  padding: 20px;  border-radius: 15px;  background: white;  box-shadow: 0 8px 20px rgba(0,0,0,.1);
-}
+        .profile-card {
+            position: relative;
+            margin-top: -20px;
+            padding: 20px;
+            border-radius: 15px;
+            background: white;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, .1);
+        }
 
-.profile-header
-{
-    display: flex;  align-items: center;  margin-bottom: 20px;
-}
+        .profile-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
 
-.profile-avatar
-{
-    font-size: 28px;  font-weight: bold;  position: relative;  display: flex;  align-items: center;  justify-content: center;  width: 70px;  height: 70px;  margin-right: 15px;  color: white;  border-radius: 50%;  background: linear-gradient(135deg, #1e9fff 0%, #1890ff 100%);  box-shadow: 0 4px 12px rgba(30, 159, 255, .3);
-}
+        .profile-avatar {
+            font-size: 28px;
+            font-weight: bold;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 70px;
+            height: 70px;
+            margin-right: 15px;
+            color: white;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #1e9fff 0%, #1890ff 100%);
+            box-shadow: 0 4px 12px rgba(30, 159, 255, .3);
+        }
 
-.avatar-badge
-{
-    position: absolute;  right: 0;  bottom: 0;  display: flex;  align-items: center;  justify-content: center;  width: 20px;  height: 20px;  border: 2px solid white;  border-radius: 50%;  background: #52c41a;
-}
+        .avatar-badge {
+            position: absolute;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            border: 2px solid white;
+            border-radius: 50%;
+            background: #52c41a;
+        }
 
-.profile-info h2
-{
-    font-size: 22px;  font-weight: bold;  margin: 0;  color: #333;
-}
+        .profile-info h2 {
+            font-size: 22px;
+            font-weight: bold;
+            margin: 0;
+            color: #333;
+        }
 
-.profile-info p
-{
-    font-size: 14px;  margin: 5px 0 0;  color: #666;
-}
+        .profile-info p {
+            font-size: 14px;
+            margin: 5px 0 0;
+            color: #666;
+        }
 
-.profile-stats
-{
-    display: grid;  margin-top: 20px;  padding-top: 20px;  border-top: 1px solid #f0f0f0;  grid-template-columns: repeat(3, 1fr);  gap: 15px;
-}
+        .profile-stats {
+            display: grid;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #f0f0f0;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
 
-.stat-item
-{
-    text-align: center;
-}
+        .stat-item {
+            text-align: center;
+        }
 
-.stat-number
-{
-    font-size: 24px;  font-weight: bold;  display: block;  color: #1e9fff;
-}
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            display: block;
+            color: #1e9fff;
+        }
 
-.stat-label
-{
-    font-size: 12px;  margin-top: 5px;  color: #999;
-}
+        .stat-label {
+            font-size: 12px;
+            margin-top: 5px;
+            color: #999;
+        }
 
-.section
-{
-    overflow: hidden;  margin: 10px 15px;  border-radius: 15px;  background: white;  box-shadow: 0 2px 8px rgba(0,0,0,.06);
-}
+        .section {
+            overflow: hidden;
+            margin: 10px 15px;
+            border-radius: 15px;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, .06);
+        }
 
-.section-title
-{
-    font-size: 16px;  font-weight: bold;  padding: 20px 20px 10px;  color: #333;  border-bottom: 1px solid #f8f9fa;
-}
+        .section-title {
+            font-size: 16px;
+            font-weight: bold;
+            padding: 20px 20px 10px;
+            color: #333;
+            border-bottom: 1px solid #f8f9fa;
+        }
 
-.menu-list
-{
-    padding: 0;
-}
+        .menu-list {
+            padding: 0;
+        }
 
-.menu-item
-{
-    position: relative;  display: flex;  align-items: center;  padding: 15px 20px;  cursor: pointer;  transition: all .3s ease;  border-bottom: 1px solid #f8f9fa;
-}
+        .menu-item {
+            position: relative;
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            cursor: pointer;
+            transition: all .3s ease;
+            border-bottom: 1px solid #f8f9fa;
+        }
 
-.menu-item:last-child
-{
-    border-bottom: none;
-}
+        .menu-item:last-child {
+            border-bottom: none;
+        }
 
-.menu-item:hover
-{
-    background-color: #f8f9fa;
-}
+        .menu-item:hover {
+            background-color: #f8f9fa;
+        }
 
-.menu-item:active
-{
-    background-color: #f0f0f0;
-}
+        .menu-item:active {
+            background-color: #f0f0f0;
+        }
 
-.menu-icon
-{
-    font-size: 18px;  display: flex;  align-items: center;  justify-content: center;  width: 40px;  height: 40px;  margin-right: 15px;  color: white;  border-radius: 10px;
-}
+        .menu-icon {
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            margin-right: 15px;
+            color: white;
+            border-radius: 10px;
+        }
 
-.menu-icon.blue
-{
-    background: linear-gradient(135deg, #1e9fff 0%, #40a9ff 100%);
-}
+        .menu-icon.blue {
+            background: linear-gradient(135deg, #1e9fff 0%, #40a9ff 100%);
+        }
 
-.menu-icon.green
-{
-    background: linear-gradient(135deg, #52c41a 0%, #73d13d 100%);
-}
+        .menu-icon.green {
+            background: linear-gradient(135deg, #52c41a 0%, #73d13d 100%);
+        }
 
-.menu-icon.orange
-{
-    background: linear-gradient(135deg, #fa8c16 0%, #ffa940 100%);
-}
+        .menu-icon.orange {
+            background: linear-gradient(135deg, #fa8c16 0%, #ffa940 100%);
+        }
 
-.menu-icon.purple
-{
-    background: linear-gradient(135deg, #722ed1 0%, #9254de 100%);
-}
+        .menu-icon.purple {
+            background: linear-gradient(135deg, #722ed1 0%, #9254de 100%);
+        }
 
-.menu-icon.red
-{
-    background: linear-gradient(135deg, #f5222d 0%, #ff4d4f 100%);
-}
+        .menu-icon.red {
+            background: linear-gradient(135deg, #f5222d 0%, #ff4d4f 100%);
+        }
 
-.menu-content
-{
-    flex: 1;
-}
+        .menu-content {
+            flex: 1;
+        }
 
-.menu-title
-{
-    font-size: 16px;  margin-bottom: 2px;  color: #333;
-}
+        .menu-title {
+            font-size: 16px;
+            margin-bottom: 2px;
+            color: #333;
+        }
 
-.menu-subtitle
-{
-    font-size: 12px;  color: #999;
-}
+        .menu-subtitle {
+            font-size: 12px;
+            color: #999;
+        }
 
-.menu-arrow
-{
-    font-size: 14px;  color: #d9d9d9;
-}
+        .menu-arrow {
+            font-size: 14px;
+            color: #d9d9d9;
+        }
 
-.menu-badge
-{
-    font-size: 10px;  margin-left: 10px;  padding: 2px 6px;  color: white;  border-radius: 8px;  background: #ff4d4f;
-}
+        .menu-badge {
+            font-size: 10px;
+            margin-left: 10px;
+            padding: 2px 6px;
+            color: white;
+            border-radius: 8px;
+            background: #ff4d4f;
+        }
 
-.toggle-switch
-{
-    position: relative;  width: 44px;  height: 24px;  cursor: pointer;  transition: all .3s ease;  border-radius: 12px;  background: #d9d9d9;
-}
+        .toggle-switch {
+            position: relative;
+            width: 44px;
+            height: 24px;
+            cursor: pointer;
+            transition: all .3s ease;
+            border-radius: 12px;
+            background: #d9d9d9;
+        }
 
-.toggle-switch.active
-{
-    background: #1e9fff;
-}
+        .toggle-switch.active {
+            background: #1e9fff;
+        }
 
-.toggle-switch::after
-{
-    position: absolute;  top: 2px;  left: 2px;  width: 20px;  height: 20px;  content: '';  transition: all .3s ease;  border-radius: 50%;  background: white;  box-shadow: 0 2px 4px rgba(0,0,0,.2);
-}
+        .toggle-switch::after {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            content: '';
+            transition: all .3s ease;
+            border-radius: 50%;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, .2);
+        }
 
-.toggle-switch.active::after
-{
-    left: 22px;
-}
+        .toggle-switch.active::after {
+            left: 22px;
+        }
 
-.version-info
-{
-    font-size: 12px;  padding: 20px;  text-align: center;  color: #999;
-}
+        .version-info {
+            font-size: 12px;
+            padding: 20px;
+            text-align: center;
+            color: #999;
+        }
 
-/* 弹窗样式 */
-.modal-overlay
-{
-    position: fixed;  z-index: 1001;  top: 0;  left: 0;  display: none;  align-items: center;  justify-content: center;  width: 100%;  height: 100%;  background: rgba(0, 0, 0, .5);
-}
+        /* 弹窗样式 */
+        .modal-overlay {
+            position: fixed;
+            z-index: 1001;
+            top: 0;
+            left: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, .5);
+        }
 
-.modal-content
-{
-    overflow-y: auto;  width: 90%;  max-width: 400px;  max-height: 80%;  border-radius: 15px;  background: white;
-}
+        .modal-content {
+            overflow-y: auto;
+            width: 90%;
+            max-width: 400px;
+            max-height: 80%;
+            border-radius: 15px;
+            background: white;
+        }
 
-.modal-header
-{
-    margin-bottom: 20px;  padding: 20px 20px 0;  border-bottom: 1px solid #f0f0f0;
-}
+        .modal-header {
+            margin-bottom: 20px;
+            padding: 20px 20px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
 
-.modal-title
-{
-    font-size: 18px;  font-weight: bold;  text-align: center;  color: #333;
-}
+        .modal-title {
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+            color: #333;
+        }
 
-.modal-body
-{
-    padding: 0 20px 20px;
-}
+        .modal-body {
+            padding: 0 20px 20px;
+        }
 
-.form-item
-{
-    margin-bottom: 20px;
-}
+        .form-item {
+            margin-bottom: 20px;
+        }
 
-.form-label
-{
-    font-size: 14px;  display: block;  margin-bottom: 8px;  color: #666;
-}
+        .form-label {
+            font-size: 14px;
+            display: block;
+            margin-bottom: 8px;
+            color: #666;
+        }
 
-.form-input
-{
-    font-size: 14px;  box-sizing: border-box;  width: 100%;  padding: 12px 15px;  transition: all .3s ease;  border: 1px solid #d9d9d9;  border-radius: 8px;
-}
+        .form-input {
+            font-size: 14px;
+            box-sizing: border-box;
+            width: 100%;
+            padding: 12px 15px;
+            transition: all .3s ease;
+            border: 1px solid #d9d9d9;
+            border-radius: 8px;
+        }
 
-.form-input:focus
-{
-    border-color: #1e9fff;  outline: none;  box-shadow: 0 0 0 2px rgba(30, 159, 255, .1);
-}
+        .form-input:focus {
+            border-color: #1e9fff;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(30, 159, 255, .1);
+        }
 
-.btn-group
-{
-    display: flex;  margin-top: 30px;  gap: 10px;
-}
+        .btn-group {
+            display: flex;
+            margin-top: 30px;
+            gap: 10px;
+        }
 
-.btn
-{
-    font-size: 16px;  flex: 1;  padding: 12px;  cursor: pointer;  transition: all .3s ease;  border: none;  border-radius: 8px;
-}
+        .btn {
+            font-size: 16px;
+            flex: 1;
+            padding: 12px;
+            cursor: pointer;
+            transition: all .3s ease;
+            border: none;
+            border-radius: 8px;
+        }
 
-.btn-primary
-{
-    color: white;  background: #1e9fff;
-}
+        .btn-primary {
+            color: white;
+            background: #1e9fff;
+        }
 
-.btn-primary:hover
-{
-    background: #40a9ff;
-}
+        .btn-primary:hover {
+            background: #40a9ff;
+        }
 
-.btn-secondary
-{
-    color: #666;  background: #f5f5f5;
-}
+        .btn-secondary {
+            color: #666;
+            background: #f5f5f5;
+        }
 
-.btn-secondary:hover
-{
-    background: #e6e6e6;
-}
-
-
-
+        .btn-secondary:hover {
+            background: #e6e6e6;
+        }
     </style>
 </head>
+
 <body>
     <header>
         <div>我的</div>
@@ -313,7 +413,7 @@ main
                         <p>工号：202401001</p>
                     </div>
                 </div>
-                
+
                 <div class="profile-stats">
                     <div class="stat-item">
                         <span class="stat-number">156</span>
@@ -345,7 +445,7 @@ main
                     </div>
                     <i class="layui-icon layui-icon-right menu-arrow"></i>
                 </div>
-                
+
                 <div class="menu-item" onclick="showWorkStats()">
                     <div class="menu-icon green">
                         <i class="layui-icon layui-icon-chart"></i>
@@ -356,7 +456,7 @@ main
                     </div>
                     <i class="layui-icon layui-icon-right menu-arrow"></i>
                 </div>
-                
+
                 <div class="menu-item" onclick="showMyPatients()">
                     <div class="menu-icon orange">
                         <i class="layui-icon layui-icon-username"></i>
@@ -385,7 +485,7 @@ main
                     </div>
                     <i class="layui-icon layui-icon-right menu-arrow"></i>
                 </div>
-                
+
                 <div class="menu-item" onclick="changePassword()">
                     <div class="menu-icon purple">
                         <i class="layui-icon layui-icon-password"></i>
@@ -396,7 +496,7 @@ main
                     </div>
                     <i class="layui-icon layui-icon-right menu-arrow"></i>
                 </div>
-                
+
                 <div class="menu-item">
                     <div class="menu-icon green">
                         <i class="layui-icon layui-icon-notice"></i>
@@ -407,7 +507,7 @@ main
                     </div>
                     <div class="toggle-switch active" onclick="toggleNotification(this)"></div>
                 </div>
-                
+
                 <div class="menu-item">
                     <div class="menu-icon orange">
                         <i class="layui-icon layui-icon-voice"></i>
@@ -435,7 +535,7 @@ main
                     </div>
                     <i class="layui-icon layui-icon-right menu-arrow"></i>
                 </div>
-                
+
                 <div class="menu-item" onclick="showAbout()">
                     <div class="menu-icon purple">
                         <i class="layui-icon layui-icon-app"></i>
@@ -446,7 +546,7 @@ main
                     </div>
                     <i class="layui-icon layui-icon-right menu-arrow"></i>
                 </div>
-                
+
                 <div class="menu-item" onclick="logout()">
                     <div class="menu-icon red">
                         <i class="layui-icon layui-icon-logout"></i>
@@ -496,18 +596,18 @@ main
         function toggleNotification(element) {
             element.classList.toggle('active');
             const isActive = element.classList.contains('active');
-            layui.use('layer', function(){
+            layui.use('layer', function () {
                 const layer = layui.layer;
-                layer.msg(isActive ? '已开启消息推送' : '已关闭消息推送', {icon: 1});
+                layer.msg(isActive ? '已开启消息推送' : '已关闭消息推送', { icon: 1 });
             });
         }
 
         function toggleSound(element) {
             element.classList.toggle('active');
             const isActive = element.classList.contains('active');
-            layui.use('layer', function(){
+            layui.use('layer', function () {
                 const layer = layui.layer;
-                layer.msg(isActive ? '已开启声音提醒' : '已关闭声音提醒', {icon: 1});
+                layer.msg(isActive ? '已开启声音提醒' : '已关闭声音提醒', { icon: 1 });
             });
         }
 
@@ -574,9 +674,9 @@ main
 
         // 我的患者
         function showMyPatients() {
-            layui.use('layer', function(){
+            layui.use('layer', function () {
                 const layer = layui.layer;
-                layer.msg('跳转到患者列表页面', {icon: 1});
+                layer.msg('跳转到患者列表页面', { icon: 1 });
             });
         }
 
@@ -689,61 +789,80 @@ main
 
         // 设置
         function showSettings() {
-            layui.use('layer', function(){
+            layui.use('layer', function () {
                 const layer = layui.layer;
-                layer.msg('系统设置功能', {icon: 1});
+                layer.msg('系统设置功能', { icon: 1 });
             });
         }
 
         // 通知
         function showNotifications() {
-            layui.use('layer', function(){
+            layui.use('layer', function () {
                 const layer = layui.layer;
-                layer.msg('跳转到消息页面', {icon: 1});
+                layer.msg('跳转到消息页面', { icon: 1 });
             });
         }
 
         // 更换头像
         function changeAvatar() {
-            layui.use('layer', function(){
+            layui.use('layer', function () {
                 const layer = layui.layer;
-                layer.msg('头像更换功能', {icon: 1});
+                layer.msg('头像更换功能', { icon: 1 });
             });
         }
 
         // 保存资料
         function saveProfile() {
-            layui.use('layer', function(){
+            layui.use('layer', function () {
                 const layer = layui.layer;
-                layer.msg('资料保存成功', {icon: 1});
+                layer.msg('资料保存成功', { icon: 1 });
                 closeModal();
             });
         }
 
         // 保存密码
         function savePassword() {
-            layui.use('layer', function(){
+            layui.use('layer', function () {
                 const layer = layui.layer;
-                layer.msg('密码修改成功', {icon: 1});
+                layer.msg('密码修改成功', { icon: 1 });
                 closeModal();
             });
         }
 
         // 退出登录
         function logout() {
-            layui.use('layer', function(){
+            layui.use('layer', function () {
                 const layer = layui.layer;
                 layer.confirm('确定要退出登录吗？', {
-                    btn: ['确定','取消'],
+                    btn: ['确定', '取消'],
                     icon: 3,
                     title: '退出确认'
-                }, function(index){
-                    layer.msg('正在退出...', {icon: 1});
+                }, function (index) {
+                    layer.msg('正在退出...', { icon: 1 });
                     layer.close(index);
                     // 这里可以添加实际的退出逻辑
                 });
             });
         }
+
+        // 处理移动端返回键（在 iframe 子页面中）
+        window.addEventListener('message', function (event) {
+            // 检查是否有打开的 layer 弹层
+            if (event.data && event.data.type === 'back') {
+                closeModal();
+                if (window.layui && layui.layer) {
+                    var openLayers = document.querySelectorAll('.layui-layer');
+                    if (openLayers && openLayers.length > 0) {
+                        // 如果有弹层，关闭最上层的弹层
+                        layui.layer.closeAll();
+                        return;
+                    }
+                }
+            }
+
+            // 如果没有弹层，不处理（让父页面处理返回逻辑）
+        }, false);
     </script>
 </body>
+
 </html>

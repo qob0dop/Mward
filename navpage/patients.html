@@ -160,6 +160,9 @@
   <script src="/js/lay-config.js?v=1.0.4" charset="utf-8"></script>
 
   <script>
+    // 处理移动端返回键（在 iframe 子页面中）
+
+
     layui.use(["jquery", "appconfig"], function () {
       const $ = layui.$;
       const appconfig = layui.appconfig;
@@ -173,6 +176,33 @@
       let filteredStatus = "全部"; // 当前状态筛选
       let filteredGender = "全部"; // 当前性别筛选
       //加载患者信息
+      window.addEventListener('message', function (event) {
+        if (event.data && event.data.type === 'back') {
+          // 1. 优先检查是否有 layer 弹层
+          if (window.layui && layui.layer) {
+            var openLayers = document.querySelectorAll('.layui-layer');
+            if (openLayers && openLayers.length > 0) {
+              layui.layer.closeAll();
+              return;
+            }
+          }
+
+          // 2. 检查筛选面板是否打开
+          if ($(".filter-panel").width() > 0) {
+            $(".filter-panel").css("width", "0");
+            return;
+          }
+
+          // 3. 检查病区列表是否打开
+          if ($(".ward-list").is(":visible")) {
+            $(".ward-list").fadeOut(300);
+            $(".overlay").fadeOut(300);
+            return;
+          }
+
+          // 如果以上都没有打开，不处理（让父页面处理返回逻辑）
+        }
+      }, false);
       function loadPatients(dept_sn) {
         // 显示加载图标和遮罩层
         $("main > .layui-icon-loading").addClass("show");

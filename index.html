@@ -367,6 +367,7 @@
   <div class="footer">
     谷翔科技 ©2024<!--<span class="padding-5">|</span><a target="_blank" href="http://www.miitbeian.gov.cn"></a>-->
   </div>
+
   <script src="./lib/layui-v2.6.3/layui.js" charset="utf-8"></script>
   <script src="./js/lay-config.js" charset="utf-8"></script>
   <script>
@@ -421,13 +422,21 @@
 
       // 下载 WGT 文件
       function downloadWgt(wgtUrl) {
-        console.log("进入下载", wgtUrl)
-        const downloadTask = plus.downloader.createDownload(wgtUrl, {}, (download, status) => {
+        console.log("进入下载", wgtUrl);
+        if (!window.plus || !plus.downloader) {
+          layer.msg('当前环境不支持下载');
+          return;
+        }
+        var tipIndex = layer.msg('下载中...', { icon: 16, shade: 0.3, time: 0 });
+        var downloadTask = plus.downloader.createDownload(wgtUrl, {}, function (download, status) {
           if (status === 200) {
-            console.log("下载成功：" + download.filename);
-            installWgt(download.filename); // 安装更新文件
+            layer.close(tipIndex);
+            layer.msg('安装中...', { icon: 16, shade: 0.3, time: 0 });
+            installWgt(download.filename);
           } else {
-            console.error("下载失败");
+            layer.close(tipIndex);
+            console.error("下载失败，状态：" + status);
+            layer.msg('下载失败（状态 ' + status + '）', { icon: 2 });
           }
         });
         downloadTask.start();
@@ -435,16 +444,40 @@
 
       // 安装 WGT 文件
       function installWgt(path) {
+        layer.msg('安装中...', { icon: 16, shade: 0.3, time: 0 });
         plus.runtime.install(path, {}, () => {
-          console.log("安装成功，准备重启");
-          plus.runtime.restart(); // 重启应用
+          layer.closeAll('msg');
+          layer.msg('安装完成，即将重启', { icon: 1, time: 1200 }, function () {
+            plus.runtime.restart();
+          });
         }, err => {
-          console.error("安装失败：", errToString(err)); // 打印详细错误信息
+          layer.closeAll('msg');
+          console.error("安装失败：", errToString(err));
+          layer.alert('安装失败：' + errToString(err), { icon: 2 });
         });
       }
 
       // 页面加载完成后检查更新
-      document.addEventListener("plusready", checkUpdate);
+      document.addEventListener("plusready", function () {
+        checkUpdate();
+
+        // 监听移动端返回键，弹窗确认是否退出
+        plus.key.addEventListener('backbutton', function () {
+          layer.confirm('确认退出应用？', {
+            icon: 3,
+            title: '提示',
+            btn: ['确定', '取消']
+          }, function (index) {
+            // 确定退出
+            layer.close(index);
+            plus.runtime.quit();
+          }, function (index) {
+            // 取消
+            layer.close(index);
+          });
+        }, false);
+      });
+
       // 检查localStorage中是否有保存的API地址
       var savedApiUrl = localStorage.getItem("api_url");
       if (savedApiUrl) {
