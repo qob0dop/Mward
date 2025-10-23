@@ -392,7 +392,7 @@
         <div>我的</div>
         <div class="header-actions">
             <i class="layui-icon layui-icon-set header-icon" onclick="showSettings()" title="设置"></i>
-            <i class="layui-icon layui-icon-notice header-icon" onclick="showNotifications()" title="通知"></i>
+            <i class="layui-icon layui-icon-notice header-icon" onclick="goToMessage()" title="通知"></i>
         </div>
     </header>
 
@@ -402,15 +402,15 @@
             <div class="profile-card">
                 <div class="profile-header">
                     <div class="profile-avatar" onclick="changeAvatar()">
-                        李
+                        <span id="userAvatar">李</span>
                         <div class="avatar-badge">
                             <i class="layui-icon layui-icon-ok" style="font-size: 12px;"></i>
                         </div>
                     </div>
                     <div class="profile-info">
-                        <h2>李医生</h2>
+                        <h2 id="loginUserName">李医生</h2>
                         <p>主治医师 · 内科</p>
-                        <p>工号：202401001</p>
+                        <p>工号：<span id="userMi">202401001</span></p>
                     </div>
                 </div>
 
@@ -579,7 +579,31 @@
     </div>
 
     <script src="/lib/layui-v2.6.3/layui.js" charset="utf-8"></script>
+    <script src="/js/lay-config.js?v=1.0.4" charset="utf-8"></script>
+
     <script>
+        const loginUser = JSON.parse(localStorage.getItem('loginUser'));
+        layui.use(['layer', 'appconfig'], function () {
+            const $ = layui.jquery;
+            const layer = layui.layer;
+            const appconfig = layui.appconfig;
+            initData();
+            function initData() {
+                if (loginUser) {
+                    // 设置用户名
+                    if (loginUser.name) {
+                        $('#loginUserName').text(loginUser.name);
+                        // 设置头像首字
+                        $('#userAvatar').text(loginUser.name.charAt(0));
+                    }
+                    // 设置工号
+                    if (loginUser.user_mi) {
+                        $('#userMi').text(loginUser.user_mi);
+                    }
+                }
+            }
+        });
+
         // 显示模态框
         function showModal(title, content) {
             document.getElementById('modalTitle').textContent = title;
@@ -674,10 +698,12 @@
 
         // 我的患者
         function showMyPatients() {
-            layui.use('layer', function () {
-                const layer = layui.layer;
-                layer.msg('跳转到患者列表页面', { icon: 1 });
-            });
+            // 向父窗口发送消息，请求切换到 patients 页面并筛选我的患者
+            window.parent.postMessage({
+                type: 'switchTab',
+                target: 'patients',
+                action: 'showMyPatients'
+            }, '*');
         }
 
         // 编辑资料
@@ -795,12 +821,13 @@
             });
         }
 
-        // 通知
-        function showNotifications() {
-            layui.use('layer', function () {
-                const layer = layui.layer;
-                layer.msg('跳转到消息页面', { icon: 1 });
-            });
+        // 通知 - 跳转到消息页面
+        function goToMessage() {
+            // 向父窗口发送消息，请求切换到 message 页面
+            window.parent.postMessage({
+                type: 'switchTab',
+                target: 'message'
+            }, '*');
         }
 
         // 更换头像
@@ -840,6 +867,7 @@
                 }, function (index) {
                     layer.msg('正在退出...', { icon: 1 });
                     layer.close(index);
+                    window.location.href = '../index.html'; // 跳转到index.html
                     // 这里可以添加实际的退出逻辑
                 });
             });

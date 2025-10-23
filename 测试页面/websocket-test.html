@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket 消息推送测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        .status {
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .status.connected {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .status.disconnected {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .messages {
+            max-height: 500px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 4px;
+            background-color: #fafafa;
+        }
+
+        .message {
+            background: white;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-left: 4px solid #007bff;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .message.system {
+            border-left-color: #28a745;
+        }
+
+        .message.ward {
+            border-left-color: #ffc107;
+        }
+
+        .message.patient {
+            border-left-color: #17a2b8;
+        }
+
+        .message-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-size: 16px;
+        }
+
+        .message-content {
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .message-time {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .message-type {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 11px;
+            margin-left: 10px;
+            background-color: #007bff;
+            color: white;
+        }
+
+        .send-form {
+            display: grid;
+            gap: 10px;
+        }
+
+        .send-form input,
+        .send-form textarea,
+        .send-form select {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>WebSocket 消息推送测试</h1>
+
+    <div class="container">
+        <div id="status" class="status disconnected">状态：未连接</div>
+
+        <div class="controls">
+            <input type="text" id="userId" placeholder="请输入用户ID（如：user001）" value="user001">
+            <button id="connectBtn" onclick="connect()">连接</button>
+            <button id="disconnectBtn" onclick="disconnect()" disabled>断开</button>
+            <button onclick="clearMessages()">清空消息</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>发送测试消息（通过API）</h2>
+        <div class="send-form">
+            <input type="text" id="targetUserId" placeholder="目标用户ID" value="user001">
+            <input type="text" id="messageTitle" placeholder="消息标题" value="测试消息">
+            <textarea id="messageContent" rows="3" placeholder="消息内容">这是一条测试消息</textarea>
+            <select id="messageType">
+                <option value="system">系统通知</option>
+                <option value="ward">病区通知</option>
+                <option value="patient">患者通知</option>
+                <option value="report">报告通知</option>
+            </select>
+            <button onclick="sendMessageViaApi()">通过 API 发送消息</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>接收到的消息</h2>
+        <div id="messages" class="messages">
+            <p style="color: #999; text-align: center;">暂无消息</p>
+        </div>
+    </div>
+
+    <script>
+        let ws = null;
+        let currentUserId = '';
+        const apiBaseUrl = 'http://localhost:5000/api'; // 根据实际端口修改
+
+        function connect() {
+            const userId = document.getElementById('userId').value.trim();
+            if (!userId) {
+                alert('请输入用户ID');
+                return;
+            }
+
+            currentUserId = userId;
+            const wsUrl = `ws://localhost:5251/ws?userId=${userId}`; // 根据实际端口修改
+
+            ws = new WebSocket(wsUrl);
+
+            ws.onopen = function () {
+                updateStatus(true);
+                console.log('WebSocket 连接成功');
+
+                // 启动心跳检测
+                setInterval(() => {
+                    if (ws && ws.readyState === WebSocket.OPEN) {
+                        ws.send(JSON.stringify({ Type: 'ping' }));
+                        console.log('发送心跳');
+                    }
+                }, 30000);
+            };
+
+            ws.onmessage = function (event) {
+                console.log('收到消息:', event.data);
+                try {
+                    const message = JSON.parse(event.data);
+                    displayMessage(message);
+
+                    // 如果是推送的消息通知，发送已读确认
+                    if (message.Id) {
+                        ws.send(JSON.stringify({ Type: 'read', MessageId: message.Id }));
+                    }
+                } catch (e) {
+                    console.error('解析消息失败:', e);
+                }
+            };
+
+            ws.onerror = function (error) {
+                console.error('WebSocket 错误:', error);
+                alert('WebSocket 连接错误');
+            };
+
+            ws.onclose = function () {
+                updateStatus(false);
+                console.log('WebSocket 连接关闭');
+            };
+        }
+
+        function disconnect() {
+            if (ws) {
+                ws.close();
+                ws = null;
+            }
+        }
+
+        function updateStatus(connected) {
+            const statusDiv = document.getElementById('status');
+            const connectBtn = document.getElementById('connectBtn');
+            const disconnectBtn = document.getElementById('disconnectBtn');
+
+            if (connected) {
+                statusDiv.className = 'status connected';
+                statusDiv.textContent = `状态：已连接（用户：${currentUserId}）`;
+                connectBtn.disabled = true;
+                disconnectBtn.disabled = false;
+            } else {
+                statusDiv.className = 'status disconnected';
+                statusDiv.textContent = '状态：未连接';
+                connectBtn.disabled = false;
+                disconnectBtn.disabled = true;
+            }
+        }
+
+        function displayMessage(message) {
+            const messagesDiv = document.getElementById('messages');
+
+            // 清除"暂无消息"提示
+            if (messagesDiv.querySelector('p')) {
+                messagesDiv.innerHTML = '';
+            }
+
+            const messageDiv = document.createElement('div');
+            const messageType = message.MessageType || message.Type || 'system';
+            messageDiv.className = `message ${messageType}`;
+
+            const title = message.Title || message.Message || '通知';
+            const content = message.Content || '';
+            const time = new Date(message.CreateTime || message.Time || Date.now()).toLocaleString('zh-CN');
+
+            messageDiv.innerHTML = `
+                <div class="message-title">
+                    ${title}
+                    <span class="message-type">${messageType}</span>
+                </div>
+                ${content ? `<div class="message-content">${content}</div>` : ''}
+                <div class="message-time">${time}</div>
+            `;
+
+            messagesDiv.insertBefore(messageDiv, messagesDiv.firstChild);
+        }
+
+        function clearMessages() {
+            const messagesDiv = document.getElementById('messages');
+            messagesDiv.innerHTML = '<p style="color: #999; text-align: center;">暂无消息</p>';
+        }
+
+        async function sendMessageViaApi() {
+            const targetUserId = document.getElementById('targetUserId').value.trim();
+            const title = document.getElementById('messageTitle').value.trim();
+            const content = document.getElementById('messageContent').value.trim();
+            const messageType = document.getElementById('messageType').value;
+
+            if (!targetUserId || !title || !content) {
+                alert('请填写完整信息');
+                return;
+            }
+
+            const messageData = {
+                UserId: targetUserId,
+                Title: title,
+                Content: content,
+                MessageType: messageType,
+                RelatedData: JSON.stringify({ sendTime: new Date().toISOString() })
+            };
+
+            try {
+                const response = await fetch(`${apiBaseUrl}/message/send`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(messageData)
+                });
+
+                const result = await response.json();
+                if (result.Success) {
+                    alert(`消息发送成功！状态：${result.Status}`);
+                } else {
+                    alert(`消息发送失败：${result.Message}`);
+                }
+            } catch (error) {
+                console.error('发送消息失败:', error);
+                alert('发送消息失败：' + error.message);
+            }
+        }
+
+        // 页面加载完成后自动连接（可选）
+        // window.onload = function() {
+        //     connect();
+        // };
+
+        // 页面关闭时断开连接
+        window.onbeforeunload = function () {
+            if (ws) {
+                ws.close();
+            }
+        };
+    </script>
+</body>
+
+</html>

@@ -18,42 +18,42 @@
       }
     }
 
-    /* 加载图标样式 */
-    main>.layui-icon-loading {
-      font-size: 40px !important;
-      position: fixed;
-      z-index: 9999;
-      top: 50%;
-      left: 50%;
-      display: none !important;
-      padding: 20px;
-      transform: translate(-50%, -50%);
-      animation: spin 1s linear infinite !important;
-      color: #1e9fff;
-      border-radius: 50%;
-      background-color: rgba(255, 255, 255, .9);
-      box-shadow: 0 2px 10px rgba(0, 0, 0, .1);
-    }
-
-    /* 显示加载图标时的样式 */
-    main>.layui-icon-loading.show {
-      display: block !important;
-    }
-
-    /* 加载时的遮罩层 */
+    /* 加载遮罩层（overlay）和居中 spinner */
     .loading-overlay {
       position: fixed;
       z-index: 9998;
       top: 0;
       left: 0;
       display: none;
+
+      /* hidden by default */
+      /* flex 居中内部内容 */
+      display: flex;
+      align-items: center;
+      justify-content: center;
       width: 100%;
       height: 100%;
       background-color: rgba(0, 0, 0, .3);
     }
 
     .loading-overlay.show {
-      display: block;
+      display: flex;
+    }
+
+    .loading-overlay .layui-icon-loading {
+      font-size: 40px !important;
+      z-index: 9999;
+      display: none;
+      padding: 20px;
+      animation: spin 1s linear infinite !important;
+      color: #1e9fff;
+      border-radius: 50%;
+      background-color: rgba(255, 255, 255, .95);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, .1);
+    }
+
+    .loading-overlay .layui-icon-loading.show {
+      display: block !important;
     }
 
 
@@ -92,7 +92,7 @@
     </p>
   </div>
   <main>
-    <i class="layui-icon layui-icon-loading layui-icon-spin"></i>
+
     <div class="filter-panel">
       <div class="filter-overlay"></div>
       <div class="filter-body">
@@ -175,8 +175,48 @@
       let currentSort = "default"; // 当前排序方式
       let filteredStatus = "全部"; // 当前状态筛选
       let filteredGender = "全部"; // 当前性别筛选
+      // 显示/隐藏加载遮罩的助手函数
+      function showLoading() {
+        try {
+          $(".loading-overlay .layui-icon-loading").addClass("show");
+          $(".loading-overlay").addClass("show");
+        } catch (e) {
+          console.error('showLoading error', e);
+          var ov = document.querySelector('.loading-overlay');
+          if (ov) ov.style.display = 'flex';
+        }
+      }
+
+      function hideLoading() {
+        try {
+          $(".loading-overlay .layui-icon-loading").removeClass("show");
+          $(".loading-overlay").removeClass("show");
+          // fallback: ensure style is none
+          var ov = document.querySelector('.loading-overlay');
+          var sp = document.querySelector('.loading-overlay .layui-icon-loading');
+          if (ov) ov.style.display = ov.classList.contains('show') ? 'flex' : 'none';
+          if (sp) sp.style.display = sp.classList.contains('show') ? 'block' : 'none';
+        } catch (e) {
+          console.error('hideLoading error', e);
+          var ov = document.querySelector('.loading-overlay');
+          if (ov) ov.style.display = 'none';
+        }
+      }
       //加载患者信息
       window.addEventListener('message', function (event) {
+        // 处理来自父窗口的动作指令
+        if (event.data && event.data.type === 'action') {
+          if (event.data.action === 'showMyPatients') {
+            // 触发"我的患者"按钮点击
+            showMyPatientsOnly = true;
+            $("#my-patients-label").addClass("active");
+            $("#all-patients-label").removeClass("active");
+            renderPatients(); // 重新渲染
+          }
+          return;
+        }
+
+        // 处理返回键
         if (event.data && event.data.type === 'back') {
           // 1. 优先检查是否有 layer 弹层
           if (window.layui && layui.layer) {
@@ -200,13 +240,12 @@
             return;
           }
 
-          // 如果以上都没有打开，不处理（让父页面处理返回逻辑）
+          // 如果以上都没有打开,不处理（让父页面处理返回逻辑）
         }
       }, false);
       function loadPatients(dept_sn) {
         // 显示加载图标和遮罩层
-        $("main > .layui-icon-loading").addClass("show");
-        $(".loading-overlay").addClass("show");
+        showLoading();
 
         $.ajax({
           url:
@@ -215,8 +254,7 @@
           method: "GET",
           success: function (res) {
             // 隐藏加载图标和遮罩层
-            $("main > .layui-icon-loading").removeClass("show");
-            $(".loading-overlay").removeClass("show");
+            hideLoading();
 
             if (res.Status === 1) {
               console.log(res.Data);
@@ -228,8 +266,7 @@
           },
           error: function () {
             // 请求失败时也要隐藏加载图标和遮罩层
-            $("main > .layui-icon-loading").removeClass("show");
-            $(".loading-overlay").removeClass("show");
+            hideLoading();
           }
         });
       }
@@ -532,7 +569,9 @@
   </script>
 
   <!-- 加载遮罩层 -->
-  <div class="loading-overlay"></div>
+  <div class="loading-overlay">
+    <i class="layui-icon layui-icon-loading layui-icon-spin"></i>
+  </div>
 </body>
 
 </html>

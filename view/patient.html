@@ -1195,7 +1195,7 @@
                   </div>
                   <div class="expense-status">
                     <i class="layui-icon layui-icon-ok-circle" style="color: #4caf50"></i>
-                    <span>已缴费</span>
+                    <span>已上账</span>
                   </div>
                 </div>
 
@@ -2126,6 +2126,65 @@
             layer.msg("切换患者失败，请重试", { icon: 2, time: 2000 });
           }
         }
+        function loadChargeList() {
+          $.ajax({
+            url: appconfig.api + "/api/MobileWard/GetChargeDetailsList?patient_id=" + JSON.parse(userData).patient_id + "&admiss_times=" + JSON.parse(userData).admiss_times,
+            method: "GET",
+            dataType: "json",
+            success: function (res) {
+              console.log("费用列表API响应:", res);
+              if (res && res.length > 0) {
+                // 计算总费用
+                var totalAmount = 0;
+                var categoryTotals = {}; // 用于存储每个分类的总额
+
+                // 遍历所有账单项
+                res.forEach(function (item) {
+                  var price = parseFloat(item.charge_price || 0);
+                  var categoryName = item.bill_item_name || '其他费用';
+
+                  // 累加总费用
+                  totalAmount += price;
+
+                  // 按分类累加费用
+                  if (categoryTotals[categoryName]) {
+                    categoryTotals[categoryName] += price;
+                  } else {
+                    categoryTotals[categoryName] = price;
+                  }
+                });
+
+                console.log("总费用:", totalAmount);
+                console.log("分类费用:", categoryTotals);
+
+                // 更新总费用显示
+                $('.total-expense').text('¥ ' + totalAmount.toFixed(2));
+
+                // 生成分类费用明细 HTML
+                var expenseHtml = "";
+                for (var category in categoryTotals) {
+                  expenseHtml +=
+                    '<div class="expense-item">' +
+                    '<div class="expense-item-name">' + category + '</div>' +
+                    '<div class="expense-item-amount">¥ ' + categoryTotals[category].toFixed(2) + '</div>' +
+                    '</div>';
+                }
+
+                // 更新费用明细列表
+                $('.expense-details').html(expenseHtml);
+              } else {
+                $('.total-expense').text('¥ 0.00');
+                $('.expense-details').html('<div class="loading-text">暂无费用数据</div>');
+              }
+            },
+            error: function (xhr, status, error) {
+              console.error("网络请求失败:", error);
+              $('.total-expense').text('¥ 0.00');
+              $('.expense-details').html('<div class="loading-text">加载费用数据失败</div>');
+            },
+          })
+        }
+        loadChargeList();
       }
     );
   </script>

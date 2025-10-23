@@ -359,7 +359,7 @@
         <label class="contact-filter active" data-filter="all">全部</label>
         <label class="contact-filter" data-filter="doctor">医生</label>
         <label class="contact-filter" data-filter="nurse">护士</label>
-        <label class="contact-filter" data-filter="admin">管理</label>
+        <label class="contact-filter" data-filter="admin">员工</label>
     </div>
 
     <main>
@@ -376,166 +376,93 @@
     </div>
 
     <script src="/lib/layui-v2.6.3/layui.js" charset="utf-8"></script>
+    <script src="/js/lay-config.js?v=1.0.4" charset="utf-8"></script>
+
     <script>
-        // 模拟联系人数据
-        const contactsData = [
-            // 医生
-            {
-                id: 1,
-                name: '张主任',
-                position: 'doctor',
-                positionName: '科室主任',
-                department: '内科',
-                phone: '138****1001',
-                extension: '8001',
-                office: '内科办公室',
-                email: 'zhang.director@hospital.com',
-                status: 'online',
-                avatar: '张'
-            },
-            {
-                id: 2,
-                name: '李医生',
-                position: 'doctor',
-                positionName: '主治医师',
-                department: '内科',
-                phone: '138****1002',
-                extension: '8002',
-                office: '内科诊室1',
-                email: 'li.doctor@hospital.com',
-                status: 'busy',
-                avatar: '李'
-            },
-            {
-                id: 3,
-                name: '王医生',
-                position: 'doctor',
-                positionName: '住院医师',
-                department: '内科',
-                phone: '138****1003',
-                extension: '8003',
-                office: '内科诊室2',
-                email: 'wang.doctor@hospital.com',
-                status: 'online',
-                avatar: '王'
-            },
-            {
-                id: 4,
-                name: '刘医生',
-                position: 'doctor',
-                positionName: '副主任医师',
-                department: '内科',
-                phone: '138****1004',
-                extension: '8004',
-                office: '内科诊室3',
-                email: 'liu.doctor@hospital.com',
-                status: 'offline',
-                avatar: '刘'
-            },
+        // 实际联系人数据（从API获取）
+        let contactsData = [];
 
-            // 护士
-            {
-                id: 5,
-                name: '陈护士长',
-                position: 'nurse',
-                positionName: '护士长',
-                department: '内科',
-                phone: '138****2001',
-                extension: '8101',
-                office: '护士站',
-                email: 'chen.head@hospital.com',
-                status: 'online',
-                avatar: '陈'
-            },
-            {
-                id: 6,
-                name: '吴护士',
-                position: 'nurse',
-                positionName: '主管护师',
-                department: '内科',
-                phone: '138****2002',
-                extension: '8102',
-                office: '护士站',
-                email: 'wu.nurse@hospital.com',
-                status: 'online',
-                avatar: '吴'
-            },
-            {
-                id: 7,
-                name: '赵护士',
-                position: 'nurse',
-                positionName: '护师',
-                department: '内科',
-                phone: '138****2003',
-                extension: '8103',
-                office: '护士站',
-                email: 'zhao.nurse@hospital.com',
-                status: 'busy',
-                avatar: '赵'
-            },
-            {
-                id: 8,
-                name: '孙护士',
-                position: 'nurse',
-                positionName: '护士',
-                department: '内科',
-                phone: '138****2004',
-                extension: '8104',
-                office: '护士站',
-                email: 'sun.nurse@hospital.com',
-                status: 'online',
-                avatar: '孙'
-            },
-            {
-                id: 9,
-                name: '周护士',
-                position: 'nurse',
-                positionName: '护士',
-                department: '内科',
-                phone: '138****2005',
-                extension: '8105',
-                office: '护士站',
-                email: 'zhou.nurse@hospital.com',
-                status: 'offline',
-                avatar: '周'
-            },
+        // 将API数据转换为前端需要的格式
+        function transformEmployeeData(apiData) {
+            return apiData.map(emp => {
+                // 根据医保编号 yb_ys_code 判断职位类型
+                let position = 'admin';
+                let positionName = '员工';
 
-            // 管理人员
-            {
-                id: 10,
-                name: '钱主管',
-                position: 'admin',
-                positionName: '病房主管',
-                department: '内科',
-                phone: '138****3001',
-                extension: '8201',
-                office: '行政办公室',
-                email: 'qian.admin@hospital.com',
-                status: 'online',
-                avatar: '钱'
-            },
-            {
-                id: 11,
-                name: '郑秘书',
-                position: 'admin',
-                positionName: '科室秘书',
-                department: '内科',
-                phone: '138****3002',
-                extension: '8202',
-                office: '行政办公室',
-                email: 'zheng.secretary@hospital.com',
-                status: 'busy',
-                avatar: '郑'
-            }
-        ];
+                // 使用医保编号判断（N开头=护士，D开头=医生）
+                if (emp.yb_ys_code && emp.yb_ys_code.length > 0) {
+                    const firstChar = emp.yb_ys_code.charAt(0).toUpperCase();
+                    if (firstChar === 'N') {
+                        position = 'nurse';
+                        positionName = '护士';
+                    } else if (firstChar === 'D') {
+                        position = 'doctor';
+                        positionName = '医生';
+                    }
+                    // 其他字母开头的也归为员工（保持默认值）
+                }
+                // 没有医保编号的直接归为员工（保持默认值）
+
+                return {
+                    id: emp.emp_sn,
+                    name: emp.name || '未知',
+                    position: position,
+                    positionName: positionName,
+                    department: emp.dept_sn || '未知科室',
+                    phone: emp.dh || '无',
+                    extension: emp.code || '',
+                    office: '办公室',
+                    email: emp.email || emp.sfz || '无',
+                    status: 'online', // 默认在线状态
+                    avatar: emp.name ? emp.name.charAt(0) : '?',
+                    sex: emp.sex_name || '未知',
+                    yb_code: emp.yb_ys_code || '' // 保存医保编号
+                };
+            });
+        }        // 获取员工列表
+        function getEmployeeList() {
+            layui.use(['layer', 'appconfig'], function () {
+                const $ = layui.$;
+                const layer = layui.layer;
+                const appconfig = layui.appconfig;
+                const loginUser = JSON.parse(localStorage.getItem("loginUser")) || {};
+
+                // 显示加载中
+                const loadingIndex = layer.load(1, { shade: [0.1, '#fff'] });
+
+                $.ajax({
+                    url: appconfig.api + "/api/MobileWard/GetEmployees?dept_sn=" + (loginUser.dept_sn || ''),
+                    type: "GET",
+                    dataType: "json",
+                    success: function (response) {
+                        layer.close(loadingIndex);
+
+                        if (response && Array.isArray(response.Data)) {
+                            // 转换并保存数据
+                            contactsData = transformEmployeeData(response.Data);
+                            // 渲染列表
+                            renderContacts();
+                        } else {
+                            layer.msg('数据格式错误', { icon: 2 });
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        layer.close(loadingIndex);
+                        layer.msg('获取员工列表失败: ' + error, { icon: 2 });
+                        console.error('获取员工列表失败:', error);
+                    }
+                });
+            });
+        }
 
         let currentFilter = 'all';
         let searchKeyword = '';
 
         // 页面加载完成后初始化
         document.addEventListener('DOMContentLoaded', function () {
-            renderContacts();
             bindEvents();
+            // 从API获取员工列表
+            getEmployeeList();
         });
 
         // 渲染联系人列表
@@ -600,7 +527,7 @@
             const names = {
                 'doctor': '👨‍⚕️ 医生',
                 'nurse': '👩‍⚕️ 护士',
-                'admin': '👨‍💼 管理人员'
+                'admin': '👨‍💼 员工'
             };
             return names[position] || '其他';
         }
@@ -624,9 +551,9 @@
                             ${contact.avatar}
                         </div>
                         <div class="contact-info">
-                            <div class="contact-name">${contact.name}</div>
+                            <div class="contact-name">${contact.name}${contact.sex ? ' (' + contact.sex + ')' : ''}</div>
                             <span class="contact-position ${contact.position}">${contact.positionName}</span>
-                            <div class="contact-department">${contact.department}</div>
+                            <div class="contact-department">编号: ${contact.id}</div>
                         </div>
                         <div class="contact-status">
                             <span class="status-dot ${contact.status}"></span>
@@ -640,24 +567,16 @@
                             ${contact.phone}
                         </div>
                         <div class="contact-item">
-                            <i class="layui-icon layui-icon-service"></i>
-                            ${contact.extension}
-                        </div>
-                        <div class="contact-item">
-                            <i class="layui-icon layui-icon-location"></i>
-                            ${contact.office}
-                        </div>
-                        <div class="contact-item">
-                            <i class="layui-icon layui-icon-email"></i>
-                            ${contact.email}
+                            <i class="layui-icon layui-icon-username"></i>
+                            工号: ${contact.extension}
                         </div>
                     </div>
                     
                     <div class="contact-actions">
-                        <button class="action-btn" onclick="sendMessage(${contact.id})">
+                        <button class="action-btn" onclick="sendMessage('${contact.id}', '${contact.name}')">
                             <i class="layui-icon layui-icon-dialogue"></i> 消息
                         </button>
-                        <button class="action-btn primary" onclick="makeCall('${contact.phone}')">
+                        <button class="action-btn primary" onclick="makeCall('${contact.phone}', '${contact.name}')">
                             <i class="layui-icon layui-icon-cellphone"></i> 拨号
                         </button>
                     </div>
@@ -686,15 +605,24 @@
         }
 
         // 拨打电话
-        function makeCall(phone) {
+        function makeCall(phone, name) {
+            if (!phone || phone === '无') {
+                layui.use('layer', function () {
+                    const layer = layui.layer;
+                    layer.msg('该联系人未设置电话号码', { icon: 2 });
+                });
+                return;
+            }
+
             layui.use('layer', function () {
                 const layer = layui.layer;
-                layer.confirm(`确定要拨打 ${phone} 吗？`, {
+                layer.confirm(`确定要拨打 ${name} 的电话 ${phone} 吗？`, {
                     btn: ['拨号', '取消'],
                     icon: 3,
                     title: '拨号确认'
                 }, function (index) {
                     // 这里可以集成真实的拨号功能
+                    // window.location.href = 'tel:' + phone;
                     layer.msg(`正在拨打 ${phone}...`, { icon: 1 });
                     layer.close(index);
                 });
@@ -702,22 +630,23 @@
         }
 
         // 发送消息
-        function sendMessage(contactId) {
-            const contact = contactsData.find(c => c.id === contactId);
-            if (contact) {
-                layui.use('layer', function () {
-                    const layer = layui.layer;
-                    layer.prompt({
-                        formType: 2,
-                        value: '',
-                        title: `发送消息给 ${contact.name}`,
-                        area: ['300px', '150px']
-                    }, function (value, index) {
-                        layer.msg(`消息已发送给 ${contact.name}`, { icon: 1 });
+        function sendMessage(contactId, name) {
+            layui.use('layer', function () {
+                const layer = layui.layer;
+                layer.prompt({
+                    formType: 2,
+                    value: '',
+                    title: `发送消息给 ${name}`,
+                    area: ['300px', '150px']
+                }, function (value, index) {
+                    if (value && value.trim()) {
+                        layer.msg(`消息已发送给 ${name}`, { icon: 1 });
                         layer.close(index);
-                    });
+                    } else {
+                        layer.msg('消息内容不能为空', { icon: 2 });
+                    }
                 });
-            }
+            });
         }
 
         // 显示紧急联系人
