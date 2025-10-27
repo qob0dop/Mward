@@ -772,7 +772,7 @@
         }
       }
 
-      // 格式化日期显示
+      // 格式化日期显示（精确到分钟）
       function formatDate(dateStr) {
         if (!dateStr) return "-";
         try {
@@ -782,7 +782,6 @@
           var day = date.getDate().toString().padStart(2, "0");
           var hours = date.getHours().toString().padStart(2, "0");
           var minutes = date.getMinutes().toString().padStart(2, "0");
-          var seconds = date.getSeconds().toString().padStart(2, "0");
           return (
             year +
             "-" +
@@ -792,9 +791,7 @@
             " " +
             hours +
             ":" +
-            minutes +
-            ":" +
-            seconds
+            minutes
           );
         } catch (e) {
           return "-";
@@ -876,7 +873,7 @@
         );
       }
 
-      // 渲染卡片
+      // 渲染卡片（按apply_date降序排列）
       function renderCards(data) {
         var container = document.getElementById("cards-container");
 
@@ -890,8 +887,15 @@
           return;
         }
 
+        // 按时间倒序排列（最新的在前面）
+        var sortedData = data.slice().sort(function (a, b) {
+          var timeA = new Date(a.apply_date || 0).getTime();
+          var timeB = new Date(b.apply_date || 0).getTime();
+          return timeB - timeA;
+        });
+
         var cardsHTML = "";
-        data.forEach(function (item) {
+        sortedData.forEach(function (item) {
           cardsHTML += generateCardHTML(item);
         });
 

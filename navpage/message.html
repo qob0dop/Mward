@@ -612,6 +612,63 @@
 
                 // 显示新消息提示
                 layer.msg('收到新消息', { icon: 1, time: 1500 });
+
+                // 推送手机通知（使用 plus.push）
+                pushMobileNotification(messageInfo);
+            }
+
+            // 推送手机通知（5+ App）
+            function pushMobileNotification(messageInfo) {
+                // 获取 plus 对象（iframe 中需要从父窗口获取）
+                const plusObj = window.top.plus || window.parent.plus || window.plus;
+
+                // 检查是否在 5+ App 环境中
+                if (typeof plusObj === 'undefined' || !plusObj) {
+                    console.log('非 5+ App 环境，跳过手机通知（当前在 iframe 中，已尝试从父窗口获取 plus）');
+                    return;
+                }
+
+                console.log('✅ 检测到 5+ App 环境，准备推送通知');
+
+                // 确保 plus 对象已准备好
+                const doPush = function () {
+                    try {
+                        // 创建本地通知
+                        const options = {
+                            cover: false,  // 是否覆盖之前的通知
+                            title: messageInfo.title || '危急值通知',  // 通知标题
+                            content: messageInfo.content || '您有新的危急值消息',  // 通知内容
+                            payload: JSON.stringify({
+                                type: 'crisis_message',
+                                crisisId: messageInfo.crisisId,
+                                patientInfo: messageInfo.patientInfo
+                            })  // 自定义数据
+                        };
+
+                        // 创建并推送通知
+                        const message = plusObj.push.createMessage(
+                            options.content,
+                            options.payload,
+                            {
+                                title: options.title,
+                                cover: options.cover,
+                                sound: 'system',  // 使用系统默认提示音
+                                vibrate: true  // 震动
+                            }
+                        );
+
+                        console.log('✅ 手机通知推送成功:', options.title);
+                    } catch (error) {
+                        console.error('❌ 手机通知推送失败:', error);
+                    }
+                };
+
+                // 如果 plus 已准备好,直接执行;否则等待 plusready 事件
+                if (plusObj) {
+                    doPush();
+                } else {
+                    document.addEventListener('plusready', doPush, false);
+                }
             }
 
             // 显示桌面通知
@@ -724,8 +781,55 @@
 
             // 请求桌面通知权限
             function requestNotificationPermission() {
+                // 桌面通知权限（浏览器环境）
                 if ('Notification' in window && Notification.permission === 'default') {
                     Notification.requestPermission();
+                }
+
+                // 5+ App 通知权限
+                const setupPlusNotification = function () {
+                    // 获取 plus 对象（iframe 中需要从父窗口获取）
+                    const plusObj = window.top.plus || window.parent.plus || window.plus;
+
+                    if (typeof plusObj === 'undefined' || !plusObj) {
+                        console.log('非 5+ App 环境，跳过通知监听器注册');
+                        return;
+                    }
+
+                    try {
+                        // 监听通知点击事件
+                        plusObj.push.addEventListener('click', function (msg) {
+                            console.log('用户点击了通知:', msg);
+
+                            try {
+                                // 解析通知携带的数据
+                                const payload = JSON.parse(msg.payload);
+
+                                if (payload.type === 'crisis_message' && payload.crisisId) {
+                                    // 查找对应的消息
+                                    const message = messageData.find(m => m.crisisId === payload.crisisId);
+                                    if (message) {
+                                        // 显示消息详情
+                                        showMessageDetail(message.id);
+                                    }
+                                }
+                            } catch (error) {
+                                console.error('处理通知点击失败:', error);
+                            }
+                        }, false);
+
+                        console.log('✅ 5+ App 通知监听器已注册');
+                    } catch (error) {
+                        console.error('❌ 5+ App 通知监听器注册失败:', error);
+                    }
+                };
+
+                // 如果 plus 已准备好,直接执行;否则等待 plusready 事件
+                const plusObj = window.top.plus || window.parent.plus || window.plus;
+                if (plusObj) {
+                    setupPlusNotification();
+                } else {
+                    document.addEventListener('plusready', setupPlusNotification, false);
                 }
             }
 

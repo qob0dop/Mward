@@ -297,6 +297,44 @@
                 </div>
             </div>
 
+            <!-- 添加危急值到数据库 -->
+            <div class="card">
+                <h2>💾 添加危急值到数据库</h2>
+                <div class="form-group">
+                    <label>患者信息</label>
+                    <input type="text" id="dbPatientInfo" placeholder="例如: 张三，男，45岁" value="李四，女，38岁">
+                </div>
+                <div class="form-group">
+                    <label>患者ID</label>
+                    <input type="text" id="dbPatientId" placeholder="例如: P001" value="P001">
+                </div>
+                <div class="form-group">
+                    <label>科室编号</label>
+                    <input type="text" id="dbWardCode" placeholder="例如: NK001" value="NK001">
+                </div>
+                <div class="form-group">
+                    <label>科室名称</label>
+                    <input type="text" id="dbWardName" placeholder="例如: 内科" value="内科">
+                </div>
+                <div class="form-group">
+                    <label>危急值内容</label>
+                    <textarea id="dbCrisisString"
+                        placeholder="例如: 血钾：6.5 mmol/L">血钾：6.5 mmol/L（危急值，参考范围：3.5-5.5）</textarea>
+                </div>
+                <div class="form-group">
+                    <label>危急值类型</label>
+                    <select id="dbCrisisType">
+                        <option value="1">检验危急值</option>
+                        <option value="2">检查危急值</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>发送人姓名</label>
+                    <input type="text" id="dbSenderName" placeholder="例如: 检验科-王医生" value="检验科-王医生">
+                </div>
+                <button class="btn btn-success" onclick="addCrisisToDb()">添加到数据库</button>
+            </div>
+
             <!-- 向指定用户发送 -->
             <div class="card">
                 <h2>👤 向指定用户发送测试消息</h2>
@@ -386,8 +424,8 @@
     </div>
 
     <script>
-        const API_BASE = 'http://localhost:5251/api'; // 根据实际情况修改
-        const WS_BASE = 'ws://localhost:5251/ws';
+        const API_BASE = 'https://www.annotokyo.fun:8123/api'; // 根据实际情况修改
+        const WS_BASE = 'ws://www.annotokyo.fun:8123/ws';
         let ws = null;
 
         // 日志函数
@@ -529,6 +567,100 @@
             }
         }
 
+        // 添加危急值到数据库
+        async function addCrisisToDb() {
+            const patientInfo = document.getElementById('dbPatientInfo').value.trim();
+            const patientId = document.getElementById('dbPatientId').value.trim();
+            const wardCode = document.getElementById('dbWardCode').value.trim();
+            const wardName = document.getElementById('dbWardName').value.trim();
+            const crisisString = document.getElementById('dbCrisisString').value.trim();
+            const crisisType = document.getElementById('dbCrisisType').value;
+            const senderName = document.getElementById('dbSenderName').value.trim();
+
+            if (!wardCode || !crisisString) {
+                alert('科室编号和危急值内容不能为空');
+                return;
+            }
+
+            try {
+                log(`🔄 正在添加危急值到数据库...`, 'info');
+
+                const crisisData = {
+                    PatientInfo: patientInfo || '未知患者',
+                    PatientID: patientId || '',
+                    RequestWardCode: wardCode,
+                    RequestWardName: wardName || wardCode,
+                    CrisisString: crisisString,
+                    CritiCalType: crisisType,
+                    SenderName: senderName || '系统',
+                    SendCrisisTime: new Date().toISOString(),
+                    ReceiveFlag: '0',
+                    ReceiveNurseFlag: '0'
+                };
+
+                const response = await fetch(`${API_BASE}/message/test/add`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(crisisData)
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    const errorMsg = errorData.title || errorData.Message || JSON.stringify(errorData);
+                    log(`❌ 添加失败 (HTTP ${response.status}): ${errorMsg}`, 'error');
+                    console.error('详细错误:', errorData);
+                    return;
+                }
+
+                const result = await response.json();
+                if (result.Success) {
+                    log(`✅ 危急值添加成功！ID: ${result.CrisisId}`, 'success');
+                    log(`   患者: ${patientInfo}`, 'info');
+                    log(`   科室: ${wardName} (${wardCode})`, 'info');
+                    log(`   内容: ${crisisString}`, 'info');
+
+                    // 询问是否立即推送
+                    if (confirm(`危急值已添加到数据库 (ID: ${result.CrisisId})。\n是否立即推送到科室 ${wardCode} ？`)) {
+                        pushCrisisMessage(result.CrisisId, wardCode);
+                    }
+                } else {
+                    log(`❌ 添加失败: ${result.Message}`, 'error');
+                }
+            } catch (error) {
+                log(`❌ 添加失败: ${error.message}`, 'error');
+                console.error('详细错误:', error);
+            }
+        }
+
+        // 推送危急值消息
+        async function pushCrisisMessage(crisisId, wardCode) {
+            try {
+                log(`🔄 正在推送危急值 ${crisisId} 到科室 ${wardCode}...`, 'info');
+
+                const response = await fetch(`${API_BASE}/message/push/${crisisId}?wardCode=${wardCode}`, {
+                    method: 'POST'
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    const errorMsg = errorData.title || errorData.Message || JSON.stringify(errorData);
+                    log(`❌ 推送失败 (HTTP ${response.status}): ${errorMsg}`, 'error');
+                    console.error('详细错误:', errorData);
+                    return;
+                }
+
+                const result = await response.json();
+                if (result.Success) {
+                    log(`✅ 推送成功！医生: ${result.DoctorCount}人，护士: ${result.NurseCount}人`, 'success');
+                } else {
+                    log(`❌ 推送失败: ${result.Message}`, 'error');
+                }
+            } catch (error) {
+                log(`❌ 推送失败: ${error.message}`, 'error');
+                console.error('详细错误:', error);
+            }
+        }
+
         // 向科室发送
         async function sendToWard() {
             const wardCode = document.getElementById('wardCode').value.trim();
@@ -643,10 +775,10 @@
                             const div = document.createElement('div');
                             div.className = 'user-item';
                             div.innerHTML = `
-                                <strong>${user.UserId}</strong> 
-                                <span style="color: #666;">| ${user.Role === 'doctor' ? '医生' : '护士'}</span>
-                                <span style="color: #999;">| 科室: ${user.Ward || '未指定'}</span>
-                            `;
+                                    <strong>${user.UserId}</strong>
+                                    <span style="color: #666;">| ${user.Role === 'doctor' ? '医生' : '护士'}</span>
+                                    <span style="color: #999;">| 科室: ${user.Ward || '未指定'}</span>
+                                `;
                             userList.appendChild(div);
                         });
                     }
