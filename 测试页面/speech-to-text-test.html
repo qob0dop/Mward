@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>语音转文字性能测试</title>
+    <link rel="stylesheet" href="/lib/layui-v2.6.3/css/layui.css" media="all" />
+    <style>
+        body,
+        html {
+            height: 100%;
+            margin: 0;
+            background-color: rgb(242, 243, 245);
+        }
+
+        header {
+            font-size: 18px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+            height: 60px;
+            padding: 0 20px;
+            color: #fff;
+            background-color: rgb(4, 46, 167);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, .1);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+
+        .test-panel {
+            margin-bottom: 20px;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: #fff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, .1);
+        }
+
+        .panel-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            color: rgb(4, 46, 167);
+            border-bottom: 2px solid rgb(4, 46, 167);
+        }
+
+        .control-group {
+            margin-bottom: 15px;
+        }
+
+        .control-label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .file-upload-area {
+            position: relative;
+            min-height: 120px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all .3s;
+            text-align: center;
+            border: 2px dashed #d9d9d9;
+            border-radius: 8px;
+            background-color: #fafafa;
+        }
+
+        .file-upload-area:hover {
+            border-color: rgb(4, 46, 167);
+            background-color: #f0f2ff;
+        }
+
+        .file-upload-area.dragover {
+            border-color: rgb(4, 46, 167);
+            background-color: #e6f0ff;
+        }
+
+        .upload-icon {
+            font-size: 48px;
+            color: #999;
+        }
+
+        .upload-text {
+            margin-top: 10px;
+            color: #666;
+        }
+
+        .file-list {
+            margin-top: 15px;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            padding: 10px;
+            border-radius: 4px;
+            background-color: #f5f5f5;
+        }
+
+        .file-info {
+            flex: 1;
+        }
+
+        .file-name {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .file-size {
+            font-size: 12px;
+            margin-left: 10px;
+            color: #999;
+        }
+
+        .remove-file {
+            cursor: pointer;
+            color: #ff4d4f;
+        }
+
+        .remove-file:hover {
+            color: #ff7875;
+        }
+
+        .test-controls {
+            display: flex;
+            gap: 15px;
+            align-items: flex-end;
+            margin-top: 20px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .stat-card {
+            padding: 15px;
+            text-align: center;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .stat-card.success {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        }
+
+        .stat-card.error {
+            background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+        }
+
+        .stat-card.warning {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            margin-top: 5px;
+            color: rgba(255, 255, 255, .9);
+        }
+
+        .result-table {
+            margin-top: 20px;
+        }
+
+        .progress-bar {
+            overflow: hidden;
+            height: 24px;
+            margin-top: 10px;
+            border-radius: 12px;
+            background-color: #f0f0f0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            transition: width .3s;
+            text-align: center;
+            color: #fff;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            line-height: 24px;
+        }
+
+        .log-container {
+            max-height: 400px;
+            margin-top: 15px;
+            padding: 15px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            border-radius: 4px;
+            background-color: #1e1e1e;
+        }
+
+        .log-entry {
+            margin-bottom: 5px;
+            padding: 5px;
+            border-left: 3px solid #666;
+            color: #d4d4d4;
+        }
+
+        .log-entry.info {
+            border-left-color: #4fc3f7;
+        }
+
+        .log-entry.success {
+            border-left-color: #66bb6a;
+        }
+
+        .log-entry.error {
+            border-left-color: #ef5350;
+        }
+
+        .log-entry.warning {
+            border-left-color: #ffa726;
+        }
+
+        .log-time {
+            color: #888;
+            margin-right: 10px;
+        }
+
+        .status-badge {
+            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 12px;
+        }
+
+        .status-pending {
+            color: #666;
+            background-color: #f0f0f0;
+        }
+
+        .status-processing {
+            color: #1890ff;
+            background-color: #e6f7ff;
+        }
+
+        .status-success {
+            color: #52c41a;
+            background-color: #f6ffed;
+        }
+
+        .status-error {
+            color: #ff4d4f;
+            background-color: #fff1f0;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <i class="layui-icon layui-icon-voice" style="margin-right: 10px;"></i>
+        语音转文字性能测试工具
+    </header>
+
+    <div class="container">
+        <!-- 配置面板 -->
+        <div class="test-panel">
+            <div class="panel-title">
+                <i class="layui-icon layui-icon-set"></i> 测试配置
+            </div>
+
+            <!-- 文件上传区域 -->
+            <div class="control-group">
+                <label class="control-label">选择语音文件</label>
+                <div class="file-upload-area" id="uploadArea">
+                    <i class="layui-icon layui-icon-upload-circle upload-icon"></i>
+                    <div class="upload-text">
+                        点击选择或拖拽语音文件到此区域<br>
+                        <span style="font-size: 12px; color: #999;">支持格式: mp3, wav, m4a, amr, ogg</span>
+                    </div>
+                    <input type="file" id="fileInput" multiple accept="audio/*" style="display: none;">
+                </div>
+                <div class="file-list" id="fileList"></div>
+            </div>
+
+            <!-- 测试参数 -->
+            <div class="layui-row layui-col-space15">
+                <div class="layui-col-md4">
+                    <div class="control-group">
+                        <label class="control-label">并发数量</label>
+                        <input type="number" class="layui-input" id="concurrentCount" value="5" min="1" max="50"
+                            placeholder="同时发送的请求数">
+                    </div>
+                </div>
+                <div class="layui-col-md4">
+                    <div class="control-group">
+                        <label class="control-label">重复次数</label>
+                        <input type="number" class="layui-input" id="repeatCount" value="1" min="1" max="100"
+                            placeholder="每个文件重复测试次数">
+                    </div>
+                </div>
+                <div class="layui-col-md4">
+                    <div class="control-group">
+                        <label class="control-label">请求间隔(ms)</label>
+                        <input type="number" class="layui-input" id="requestDelay" value="0" min="0" max="5000"
+                            placeholder="每个请求之间的延迟">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 服务器配置 -->
+            <div class="control-group">
+                <label class="control-label">API 地址</label>
+                <input type="text" class="layui-input" id="apiUrl" placeholder="语音转文字API地址">
+            </div>
+
+            <!-- 控制按钮 -->
+            <div class="test-controls">
+                <button class="layui-btn layui-btn-lg" id="startTest">
+                    <i class="layui-icon layui-icon-play"></i> 开始测试
+                </button>
+                <button class="layui-btn layui-btn-lg layui-btn-danger" id="stopTest" disabled>
+                    <i class="layui-icon layui-icon-pause"></i> 停止测试
+                </button>
+                <button class="layui-btn layui-btn-lg layui-btn-normal" id="clearResults">
+                    <i class="layui-icon layui-icon-refresh"></i> 清空结果
+                </button>
+                <button class="layui-btn layui-btn-lg layui-btn-warm" id="exportResults">
+                    <i class="layui-icon layui-icon-download-circle"></i> 导出报告
+                </button>
+            </div>
+        </div>
+
+        <!-- 实时统计面板 -->
+        <div class="test-panel">
+            <div class="panel-title">
+                <i class="layui-icon layui-icon-chart"></i> 实时统计
+            </div>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="totalRequests">0</div>
+                    <div class="stat-label">总请求数</div>
+                </div>
+                <div class="stat-card success">
+                    <div class="stat-value" id="successRequests">0</div>
+                    <div class="stat-label">成功</div>
+                </div>
+                <div class="stat-card error">
+                    <div class="stat-value" id="errorRequests">0</div>
+                    <div class="stat-label">失败</div>
+                </div>
+                <div class="stat-card warning">
+                    <div class="stat-value" id="avgResponseTime">0ms</div>
+                    <div class="stat-label">平均响应时间</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="minResponseTime">0ms</div>
+                    <div class="stat-label">最快响应</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="maxResponseTime">0ms</div>
+                    <div class="stat-label">最慢响应</div>
+                </div>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressBar" style="width: 0%;">0%</div>
+            </div>
+        </div>
+
+        <!-- 测试日志 -->
+        <div class="test-panel">
+            <div class="panel-title">
+                <i class="layui-icon layui-icon-console"></i> 测试日志
+            </div>
+            <div class="log-container" id="logContainer"></div>
+        </div>
+
+        <!-- 详细结果表格 -->
+        <div class="test-panel">
+            <div class="panel-title">
+                <i class="layui-icon layui-icon-table"></i> 详细结果
+            </div>
+            <table class="layui-table" lay-skin="line">
+                <thead>
+                    <tr>
+                        <th>序号</th>
+                        <th>文件名</th>
+                        <th>状态</th>
+                        <th>响应时间</th>
+                        <th>识别结果</th>
+                        <th>错误信息</th>
+                    </tr>
+                </thead>
+                <tbody id="resultTableBody">
+                    <tr>
+                        <td colspan="6" style="text-align: center; color: #999;">暂无测试结果</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="/lib/layui-v2.6.3/layui.js" charset="utf-8"></script>
+    <script src="/js/lay-config.js" charset="utf-8"></script>
+    <script>
+        layui.use(['appconfig', 'layer', 'jquery'], function () {
+            const $ = layui.jquery;
+            const appconfig = layui.appconfig;
+            const layer = layui.layer;
+
+            // 测试状态
+            let isTestRunning = false;
+            let selectedFiles = [];
+            let testResults = [];
+            let testStats = {
+                total: 0,
+                success: 0,
+                error: 0,
+                responseTimes: []
+            };
+
+            // 初始化 API 地址
+            $('#apiUrl').val(appconfig.api + '/api/Speech/Recognition');
+
+            // 文件上传区域事件
+            $('#uploadArea').on('click', function () {
+                $('#fileInput').click();
+            });
+
+            $('#fileInput').on('change', function (e) {
+                handleFiles(e.target.files);
+            });
+
+            // 拖拽上传
+            const uploadArea = document.getElementById('uploadArea');
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('dragover');
+            });
+
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.classList.remove('dragover');
+            });
+
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+                handleFiles(e.dataTransfer.files);
+            });
+
+            // 处理文件选择
+            function handleFiles(files) {
+                for (let file of files) {
+                    if (file.type.startsWith('audio/')) {
+                        selectedFiles.push(file);
+                    } else {
+                        addLog('warning', `跳过非语音文件: ${file.name}`);
+                    }
+                }
+                updateFileList();
+                addLog('info', `已添加 ${files.length} 个文件`);
+            }
+
+            // 更新文件列表显示
+            function updateFileList() {
+                const fileList = $('#fileList');
+                fileList.empty();
+
+                if (selectedFiles.length === 0) {
+                    return;
+                }
+
+                selectedFiles.forEach((file, index) => {
+                    const fileItem = $(`
+                        <div class="file-item">
+                            <div class="file-info">
+                                <span class="file-name">${file.name}</span>
+                                <span class="file-size">${formatFileSize(file.size)}</span>
+                            </div>
+                            <i class="layui-icon layui-icon-close remove-file" data-index="${index}"></i>
+                        </div>
+                    `);
+                    fileList.append(fileItem);
+                });
+
+                // 删除文件事件
+                $('.remove-file').on('click', function () {
+                    const index = $(this).data('index');
+                    selectedFiles.splice(index, 1);
+                    updateFileList();
+                    addLog('info', '已删除文件');
+                });
+            }
+
+            // 格式化文件大小
+            function formatFileSize(bytes) {
+                if (bytes === 0) return '0 B';
+                const k = 1024;
+                const sizes = ['B', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return (bytes / Math.pow(k, i)).toFixed(2) + ' ' + sizes[i];
+            }
+
+            // 开始测试
+            $('#startTest').on('click', async function () {
+                if (selectedFiles.length === 0) {
+                    layer.msg('请先选择语音文件');
+                    return;
+                }
+
+                const apiUrl = $('#apiUrl').val().trim();
+                if (!apiUrl) {
+                    layer.msg('请输入API地址');
+                    return;
+                }
+
+                const concurrentCount = parseInt($('#concurrentCount').val()) || 5;
+                const repeatCount = parseInt($('#repeatCount').val()) || 1;
+                const requestDelay = parseInt($('#requestDelay').val()) || 0;
+
+                // 重置统计
+                resetStats();
+                isTestRunning = true;
+                $('#startTest').prop('disabled', true);
+                $('#stopTest').prop('disabled', false);
+
+                addLog('info', '========== 开始性能测试 ==========');
+                addLog('info', `文件数量: ${selectedFiles.length}, 并发数: ${concurrentCount}, 重复次数: ${repeatCount}`);
+
+                // 生成测试任务
+                const tasks = [];
+                for (let i = 0; i < repeatCount; i++) {
+                    selectedFiles.forEach((file, fileIndex) => {
+                        tasks.push({
+                            file: file,
+                            roundIndex: i + 1,
+                            fileIndex: fileIndex + 1
+                        });
+                    });
+                }
+
+                testStats.total = tasks.length;
+                updateStats();
+
+                // 执行并发测试
+                await executeConcurrentTasks(tasks, concurrentCount, requestDelay, apiUrl);
+
+                isTestRunning = false;
+                $('#startTest').prop('disabled', false);
+                $('#stopTest').prop('disabled', true);
+
+                addLog('success', '========== 测试完成 ==========');
+                showSummary();
+            });
+
+            // 停止测试
+            $('#stopTest').on('click', function () {
+                isTestRunning = false;
+                $('#startTest').prop('disabled', false);
+                $('#stopTest').prop('disabled', true);
+                addLog('warning', '测试已停止');
+            });
+
+            // 清空结果
+            $('#clearResults').on('click', function () {
+                resetStats();
+                testResults = [];
+                $('#resultTableBody').html('<tr><td colspan="6" style="text-align: center; color: #999;">暂无测试结果</td></tr>');
+                $('#logContainer').empty();
+                addLog('info', '已清空所有结果');
+            });
+
+            // 导出报告
+            $('#exportResults').on('click', function () {
+                if (testResults.length === 0) {
+                    layer.msg('暂无测试结果');
+                    return;
+                }
+
+                const report = generateReport();
+                downloadReport(report);
+                layer.msg('报告已导出');
+            });
+
+            // 执行并发任务
+            async function executeConcurrentTasks(tasks, concurrentCount, delay, apiUrl) {
+                const chunks = [];
+                for (let i = 0; i < tasks.length; i += concurrentCount) {
+                    chunks.push(tasks.slice(i, i + concurrentCount));
+                }
+
+                for (let chunkIndex = 0; chunkIndex < chunks.length; chunkIndex++) {
+                    if (!isTestRunning) break;
+
+                    const chunk = chunks[chunkIndex];
+                    const promises = chunk.map(task => sendRequest(task, apiUrl));
+
+                    await Promise.all(promises);
+
+                    // 更新进度
+                    const progress = ((chunkIndex + 1) / chunks.length * 100).toFixed(1);
+                    $('#progressBar').css('width', progress + '%').text(progress + '%');
+
+                    // 延迟
+                    if (delay > 0 && chunkIndex < chunks.length - 1) {
+                        await sleep(delay);
+                    }
+                }
+            }
+
+            // 发送单个请求
+            async function sendRequest(task, apiUrl) {
+                const startTime = Date.now();
+                const result = {
+                    fileName: task.file.name,
+                    roundIndex: task.roundIndex,
+                    fileIndex: task.fileIndex,
+                    status: 'pending',
+                    responseTime: 0,
+                    text: '',
+                    error: ''
+                };
+
+                try {
+                    addLog('info', `[请求 ${testStats.success + testStats.error + 1}/${testStats.total}] 发送: ${task.file.name}`);
+
+                    const formData = new FormData();
+                    formData.append('file', task.file);
+
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const endTime = Date.now();
+                    result.responseTime = endTime - startTime;
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        result.status = 'success';
+                        result.text = data.text || data.result || JSON.stringify(data);
+                        testStats.success++;
+                        testStats.responseTimes.push(result.responseTime);
+                        addLog('success', `[成功] ${task.file.name} - ${result.responseTime}ms`);
+                    } else {
+                        result.status = 'error';
+                        result.error = `HTTP ${response.status}: ${response.statusText}`;
+                        testStats.error++;
+                        addLog('error', `[失败] ${task.file.name} - ${result.error}`);
+                    }
+                } catch (error) {
+                    const endTime = Date.now();
+                    result.responseTime = endTime - startTime;
+                    result.status = 'error';
+                    result.error = error.message || '请求失败';
+                    testStats.error++;
+                    addLog('error', `[异常] ${task.file.name} - ${result.error}`);
+                }
+
+                testResults.push(result);
+                updateStats();
+                addResultToTable(result, testResults.length);
+
+                return result;
+            }
+
+            // 重置统计数据
+            function resetStats() {
+                testStats = {
+                    total: 0,
+                    success: 0,
+                    error: 0,
+                    responseTimes: []
+                };
+                updateStats();
+                $('#progressBar').css('width', '0%').text('0%');
+            }
+
+            // 更新统计显示
+            function updateStats() {
+                $('#totalRequests').text(testStats.total);
+                $('#successRequests').text(testStats.success);
+                $('#errorRequests').text(testStats.error);
+
+                if (testStats.responseTimes.length > 0) {
+                    const avg = testStats.responseTimes.reduce((a, b) => a + b, 0) / testStats.responseTimes.length;
+                    const min = Math.min(...testStats.responseTimes);
+                    const max = Math.max(...testStats.responseTimes);
+
+                    $('#avgResponseTime').text(avg.toFixed(0) + 'ms');
+                    $('#minResponseTime').text(min + 'ms');
+                    $('#maxResponseTime').text(max + 'ms');
+                } else {
+                    $('#avgResponseTime').text('0ms');
+                    $('#minResponseTime').text('0ms');
+                    $('#maxResponseTime').text('0ms');
+                }
+            }
+
+            // 添加结果到表格
+            function addResultToTable(result, index) {
+                if (index === 1) {
+                    $('#resultTableBody').empty();
+                }
+
+                const statusClass = result.status === 'success' ? 'status-success' : 'status-error';
+                const statusText = result.status === 'success' ? '成功' : '失败';
+
+                const row = $(`
+                    <tr>
+                        <td>${index}</td>
+                        <td>${result.fileName} (轮次${result.roundIndex})</td>
+                        <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                        <td>${result.responseTime}ms</td>
+                        <td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${result.text}">${result.text}</td>
+                        <td style="color: #ff4d4f;">${result.error}</td>
+                    </tr>
+                `);
+
+                $('#resultTableBody').append(row);
+            }
+
+            // 添加日志
+            function addLog(type, message) {
+                const time = new Date().toLocaleTimeString();
+                const logEntry = $(`
+                    <div class="log-entry ${type}">
+                        <span class="log-time">[${time}]</span>
+                        <span>${message}</span>
+                    </div>
+                `);
+
+                $('#logContainer').append(logEntry);
+                $('#logContainer').scrollTop($('#logContainer')[0].scrollHeight);
+            }
+
+            // 显示测试摘要
+            function showSummary() {
+                const successRate = (testStats.success / testStats.total * 100).toFixed(2);
+                const errorRate = (testStats.error / testStats.total * 100).toFixed(2);
+
+                addLog('info', `总请求数: ${testStats.total}`);
+                addLog('success', `成功: ${testStats.success} (${successRate}%)`);
+                addLog('error', `失败: ${testStats.error} (${errorRate}%)`);
+
+                if (testStats.responseTimes.length > 0) {
+                    const avg = (testStats.responseTimes.reduce((a, b) => a + b, 0) / testStats.responseTimes.length).toFixed(0);
+                    const min = Math.min(...testStats.responseTimes);
+                    const max = Math.max(...testStats.responseTimes);
+                    addLog('info', `响应时间: 平均 ${avg}ms, 最快 ${min}ms, 最慢 ${max}ms`);
+                }
+            }
+
+            // 生成报告
+            function generateReport() {
+                const now = new Date();
+                const timestamp = now.toLocaleString('zh-CN');
+
+                let report = `语音转文字性能测试报告\n`;
+                report += `生成时间: ${timestamp}\n`;
+                report += `======================================\n\n`;
+
+                report += `测试配置:\n`;
+                report += `- 文件数量: ${selectedFiles.length}\n`;
+                report += `- 并发数: ${$('#concurrentCount').val()}\n`;
+                report += `- 重复次数: ${$('#repeatCount').val()}\n`;
+                report += `- 请求间隔: ${$('#requestDelay').val()}ms\n`;
+                report += `- API地址: ${$('#apiUrl').val()}\n\n`;
+
+                report += `测试结果:\n`;
+                report += `- 总请求数: ${testStats.total}\n`;
+                report += `- 成功: ${testStats.success} (${(testStats.success / testStats.total * 100).toFixed(2)}%)\n`;
+                report += `- 失败: ${testStats.error} (${(testStats.error / testStats.total * 100).toFixed(2)}%)\n\n`;
+
+                if (testStats.responseTimes.length > 0) {
+                    const avg = (testStats.responseTimes.reduce((a, b) => a + b, 0) / testStats.responseTimes.length).toFixed(0);
+                    const min = Math.min(...testStats.responseTimes);
+                    const max = Math.max(...testStats.responseTimes);
+                    report += `响应时间:\n`;
+                    report += `- 平均: ${avg}ms\n`;
+                    report += `- 最快: ${min}ms\n`;
+                    report += `- 最慢: ${max}ms\n\n`;
+                }
+
+                report += `详细结果:\n`;
+                report += `序号\t文件名\t状态\t响应时间\t识别结果\t错误信息\n`;
+                testResults.forEach((result, index) => {
+                    report += `${index + 1}\t${result.fileName}\t${result.status}\t${result.responseTime}ms\t${result.text}\t${result.error}\n`;
+                });
+
+                return report;
+            }
+
+            // 下载报告
+            function downloadReport(content) {
+                const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `语音转文字测试报告_${new Date().getTime()}.txt`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }
+
+            // 辅助函数: 延迟
+            function sleep(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
+            }
+
+            // 初始化日志
+            addLog('info', '测试工具已就绪');
+        });
+    </script>
+</body>
+
+</html>

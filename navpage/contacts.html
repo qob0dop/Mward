@@ -343,12 +343,53 @@
         .department-header:first-child {
             margin-top: 0;
         }
+
+        /* 范围选择器样式 */
+        .scope-selector {
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            margin-left: 10px;
+            color: rgba(255, 255, 255, .9);
+        }
+
+        .scope-selector select {
+            font-size: 13px;
+            margin-left: 5px;
+            padding: 4px 8px;
+            cursor: pointer;
+            color: rgb(4, 46, 167);
+            border: 1px solid rgba(255, 255, 255, .4);
+            border-radius: 8px;
+            outline: none;
+            background: rgba(255, 255, 255, .95);
+        }
+
+        .scope-selector select:hover {
+            border-color: rgba(255, 255, 255, .7);
+            background: white;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            flex: 1;
+            min-width: 0;
+        }
     </style>
 </head>
 
 <body>
     <header>
-        <div style="font-size: 18px;">通讯录</div>
+        <div class="header-left">
+            <div style="font-size: 18px;">通讯录</div>
+            <div class="scope-selector">
+                <select id="scope-select">
+                    <option value="dept">同科室</option>
+                    <option value="all">全部</option>
+                </select>
+            </div>
+        </div>
         <div id="search-container">
             <i class="layui-icon layui-icon-search"></i>
             <input type="text" id="contact-search" placeholder="搜索联系人" />
@@ -427,11 +468,22 @@
                 const appconfig = layui.appconfig;
                 const loginUser = JSON.parse(localStorage.getItem("loginUser")) || {};
 
+                // 获取当前选择的范围
+                const scope = document.getElementById('scope-select').value;
+
+                // 根据范围构建URL
+                let url = appconfig.api + "/api/MobileWard/GetEmployees";
+                if (scope === 'dept') {
+                    // 同科室模式，添加dept_sn参数
+                    url += "?dept_sn=" + (loginUser.dept_sn || '');
+                }
+                // 全部模式不添加dept_sn参数
+
                 // 显示加载中
                 const loadingIndex = layer.load(1, { shade: [0.1, '#fff'] });
 
                 $.ajax({
-                    url: appconfig.api + "/api/MobileWard/GetEmployees?dept_sn=" + (loginUser.dept_sn || ''),
+                    url: url,
                     type: "GET",
                     dataType: "json",
                     success: function (response) {
@@ -586,6 +638,13 @@
 
         // 绑定事件
         function bindEvents() {
+            // 范围选择器事件
+            const scopeSelect = document.getElementById('scope-select');
+            scopeSelect.addEventListener('change', function () {
+                // 当范围改变时，重新获取员工列表
+                getEmployeeList();
+            });
+
             // 筛选按钮事件
             document.querySelectorAll('.contact-filter').forEach(btn => {
                 btn.addEventListener('click', function () {

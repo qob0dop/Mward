@@ -5,6 +5,14 @@
   <meta charset="UTF-8" />
   <title>移动查房系统-登录</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <!-- 本地 WGT 版本，直接在构建/发版时改这里，无需再读文件 -->
+  <meta name="wgt-version" content="1.1.1" />
+
+  <!--<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta http-equiv="Access-Control-Allow-Origin" content="*">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">-->
   <link rel="stylesheet" href="./lib/layui-v2.6.3/css/layui.css" media="all" />
   <!--[if lt IE 9]>
       <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
@@ -385,169 +393,31 @@
           try { return String(err); } catch (e2) { return '[Unserializable error]'; }
         }
       }
-      // 检查更新（从 plus.runtime 读取应用版本）
-      // 注意：此函数必须在 plus 准备好后才能调用
+      // 检查更新（最直接：从 <meta name="wgt-version"> 读取本地版本）
       function checkUpdate() {
-        console.log('开始检查更新...');
+        var meta = document.querySelector('meta[name="wgt-version"]');
+        var localWgtVersion = meta ? meta.getAttribute('content') : '';
+        console.log('本地版本号:', localWgtVersion);
+        $("#version").text("V " + localWgtVersion);
 
-        // 使用 plus.runtime.getProperty 获取更权威的应用信息（可包含来自 AndroidManifest 的信息）
-        function proceedWithInfo(info) {
-          // 如果 getProperty 返回 null/undefined，则回退到 plus.runtime 字段
-          var localWgtVersion = (info && info.version) || (plus && plus.runtime && plus.runtime.version) || '0.0.0';
-          var localVersionCode = (info && info.versionCode) || (plus && plus.runtime && plus.runtime.versionCode) || 0;
-          try {
-            if (info) {
-              console.log('🔍 准确版本信息:');
-              console.log('版本名称:', info.version);
-              console.log('版本号:', info.versionCode);
-              if (info.appid) console.log('应用ID:', info.appid);
-              // 额外打印原始对象以便调试（如不需要可注释）
-              console.log('原始 info 对象:', info);
+        const serverUrl = appconfig.api + "/wgt/update-manifest.json";
+        fetch(serverUrl)
+          .then(response => response.json())
+          .then(serverData => {
+            console.log('服务器最新版本号:', serverData.latest);
+            console.log('本地版本号:', localWgtVersion);
+            if (serverData.latest > localWgtVersion) {
+              if (confirm("检测到新版本，是否立即下载更新？")) {
+                console.log(appconfig.api + serverData.files[0].url);
+                downloadWgt(appconfig.api + serverData.files[0].url);
+              } else {
+                console.log("用户取消了更新");
+              }
             } else {
-              // 回退到 plus.runtime 的字段（在某些环境下可用）
-              var fallback = (plus && plus.runtime) ? { version: plus.runtime.version, versionCode: plus.runtime.versionCode } : null;
-              console.log('plus.runtime.getProperty 未返回 info，回退信息：', fallback);
-            }
-          } catch (e) {
-            console.warn('打印 info 时发生异常：', errToString(e));
-            console.log('plus.runtime.getProperty 返回的 info（原始对象）:', info);
-          }
-          console.log('本地版本:', localWgtVersion, '(versionCode:', localVersionCode + ')');
-
-          // 显示版本号
-          $("#version").text("V " + localWgtVersion);
-
-          // 检查网络连接状态（5+ 环境）
-          var networkType = (plus && plus.networkinfo) ? plus.networkinfo.getCurrentType() : -1;
-          console.log('当前网络类型:', networkType);
-
-          // 如果没有网络连接，跳过更新检查（在 plus 环境下判断 CONNECTION_NONE）
-          if (plus && plus.networkinfo && networkType === plus.networkinfo.CONNECTION_NONE) {
-            console.log('无网络连接，跳过更新检查');
-            return;
-          }
-
-          const serverUrl = appconfig.api + "/wgt/update-manifest.json";
-          console.log('检查更新地址:', serverUrl);
-
-          // 使用 fetch 检查更新（带超时控制）
-          var fetchTimeout = setTimeout(function () {
-            console.warn('检查更新超时（10秒）');
-          }, 10000);
-
-          fetch(serverUrl, {
-            method: 'GET',
-            cache: 'no-cache',
-            headers: {
-              'Accept': 'application/json'
+              console.log("已是最新版本");
             }
           })
-            .then(response => {
-              clearTimeout(fetchTimeout);
-
-              if (!response.ok) {
-                throw new Error('HTTP ' + response.status + ': ' + response.statusText);
-              }
-              return response.json();
-            })
-            .then(serverData => {
-              // 服务器JSON格式应为: { "latestVersionCode": 112, "latestVersionName": "1.1.2", "files": [...] }
-              console.log('服务器最新版本:', serverData.latestVersionName || serverData.latest, '(versionCode:', serverData.latestVersionCode + ')');
-              console.log('本地版本:', localWgtVersion, '(versionCode:', localVersionCode + ')');
-
-              // 使用 versionCode 和 versionName 双重递增校验（防止污染）
-              var needUpdate = false;
-              var serverVersionName = serverData.latestVersionName || serverData.latest;
-
-              if (!serverData.latestVersionCode || !localVersionCode || !serverVersionName || !localWgtVersion) {
-                console.warn('服务器或本地缺少版本信息，无法进行版本比较');
-                return;
-              }
-
-              // 检查 versionCode 是否递增
-              var codeIncreased = serverData.latestVersionCode > localVersionCode;
-
-              // 检查 versionName 是否递增（简单字符串比较）
-              var nameIncreased = serverVersionName > localWgtVersion;
-
-              console.log('版本比较:');
-              console.log('  versionCode:', localVersionCode, '→', serverData.latestVersionCode, codeIncreased ? '✓ 递增' : '✗ 未递增');
-              console.log('  versionName:', localWgtVersion, '→', serverVersionName, nameIncreased ? '✓ 递增' : '✗ 未递增');
-
-              if (codeIncreased && nameIncreased) {
-                // 两者都递增 → 正常更新
-                needUpdate = true;
-                console.log('✓ versionCode 和 versionName 都递增 → 需要更新');
-              } else if (codeIncreased && !nameIncreased) {
-                // code 递增但 name 未递增 → 异常
-                console.error('❌ 检测到版本异常！versionCode 递增但 versionName 未递增');
-                console.error('   这可能是服务器配置错误或版本号污染');
-                console.warn('⚠️ 拒绝更新以避免问题');
-              } else if (!codeIncreased && nameIncreased) {
-                // code 未递增但 name 递增 → 异常
-                console.error('❌ 检测到版本异常！versionName 递增但 versionCode 未递增');
-                console.error('   这可能是服务器配置错误');
-                console.warn('⚠️ 拒绝更新以避免问题');
-              } else {
-                // 都没有递增
-                if (serverData.latestVersionCode === localVersionCode && serverVersionName === localWgtVersion) {
-                  // 完全相同 → 已是最新版本
-                  console.log('✓ 已是最新版本 (versionCode 和 versionName 都匹配)');
-                } else {
-                  // 不相同但也没递增 → 异常（可能回退或污染）
-                  console.error('❌ 检测到版本异常！版本号不一致但未递增');
-                  console.error('   本地:', localWgtVersion, '(Code:', localVersionCode + ')');
-                  console.error('   服务器:', serverVersionName, '(Code:', serverData.latestVersionCode + ')');
-                }
-              }
-
-              if (needUpdate) {
-                var newVersionText = serverData.latest;
-                if (confirm("检测到新版本 " + newVersionText + "，是否立即下载更新？")) {
-                  console.log(appconfig.api + serverData.files[0].url);
-                  downloadWgt(appconfig.api + serverData.files[0].url);
-                } else {
-                  console.log("用户取消了更新");
-                }
-              } else {
-                console.log("已是最新版本");
-              }
-            })
-            .catch(err => {
-              clearTimeout(fetchTimeout);
-
-              // 网络错误详细处理
-              var errorMsg = errToString(err);
-              console.warn("检查更新失败（不影响使用）：", errorMsg);
-
-              // 仅在开发模式显示错误（可选）
-              // 生产环境静默失败，不打扰用户
-              if (errorMsg.includes('Failed to fetch')) {
-                console.log('提示：请检查网络连接或服务器地址是否正确');
-              }
-
-              // 不显示 layer.msg，避免影响用户体验
-            });
-        }
-
-        // 若 plus.runtime.getProperty 可用，优先使用其返回的 info（更权威）
-        if (plus && plus.runtime && typeof plus.runtime.getProperty === 'function') {
-          try {
-            plus.runtime.getProperty(plus.runtime.appid, function (info) {
-              // info 里通常含有 version/versionCode 等字段
-              proceedWithInfo(info);
-            }, function (err) {
-              console.warn('plus.runtime.getProperty 失败，回退到 plus.runtime 字段：', errToString(err));
-              proceedWithInfo(null);
-            });
-          } catch (e) {
-            console.warn('调用 plus.runtime.getProperty 异常，回退：', errToString(e));
-            proceedWithInfo(null);
-          }
-        } else {
-          // 没有 getProperty 时直接回退到 plus.runtime
-          proceedWithInfo(null);
-        }
+          .catch(err => console.error("检查更新失败：", errToString(err)));
       }
 
       // 下载 WGT 文件
@@ -587,42 +457,26 @@
         });
       }
 
-      // 初始化5+功能（检查更新和返回键监听）
-      function initPlusFeatures() {
-        console.log('初始化5+功能');
+      // 页面加载完成后检查更新
+      document.addEventListener("plusready", function () {
         checkUpdate();
 
         // 监听移动端返回键，弹窗确认是否退出
-        if (plus.key) {
-          plus.key.addEventListener('backbutton', function () {
-            layer.confirm('确认退出应用？', {
-              icon: 3,
-              title: '提示',
-              btn: ['确定', '取消']
-            }, function (index) {
-              // 确定退出
-              layer.close(index);
-              plus.runtime.quit();
-            }, function (index) {
-              // 取消
-              layer.close(index);
-            });
-          }, false);
-        }
-      }
-
-      // 页面加载完成后检查更新
-      if (window.plus) {
-        // plus 已经存在（可能是页面刷新或二次加载），直接初始化
-        console.log('plus 已存在，直接初始化');
-        initPlusFeatures();
-      } else {
-        // 监听 plusready 事件
-        document.addEventListener("plusready", function () {
-          console.log('plusready 事件触发');
-          initPlusFeatures();
+        plus.key.addEventListener('backbutton', function () {
+          layer.confirm('确认退出应用？', {
+            icon: 3,
+            title: '提示',
+            btn: ['确定', '取消']
+          }, function (index) {
+            // 确定退出
+            layer.close(index);
+            plus.runtime.quit();
+          }, function (index) {
+            // 取消
+            layer.close(index);
+          });
         }, false);
-      }
+      });
 
       // 检查localStorage中是否有保存的API地址
       var savedApiUrl = localStorage.getItem("api_url");

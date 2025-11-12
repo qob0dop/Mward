@@ -799,7 +799,7 @@
       let globalSelectedOrders = []; // 全局已选医嘱列表，存储完整医嘱对象及来源信息
       let lastPatternName = ""; // 最近一次打开的模板名称
       let panelMode = "all"; // 面板模式: all | selected
-
+      const parentOrder_no = GetParentOrderNo(); // 获取父医嘱号
       // 选项缓存与辅助方法（参考 yizhu.html 逻辑，做轻量实现）
       const frequencyCache = {
         1: { loaded: false, list: [] },
@@ -807,7 +807,11 @@
       }; // 长期/临时分开缓存
       const supplyCache = { loaded: false, list: [] };
       const doseUnitCacheMap = {}; // key: serial|order_code -> [{unit_code, unit_name, unit_type}]
-
+      function GetParentOrderNo() {
+        const urlParams = new URLSearchParams(window.location.search);
+        console.log("Parent Order No:", urlParams.get("parent_no"));
+        return urlParams.get("parent_no") || "";
+      }
       function fetchFrequencyList(longOnceFlag = "1") {
         const flag = String(longOnceFlag);
         if (frequencyCache[flag] && frequencyCache[flag].loaded) {
@@ -1842,8 +1846,8 @@
             drug_occ: order.drug_occ || "",
             drug_specification:
               order.drug_specification || order.order_spec || "",
-            end_time: "",
-            end_time_2: "",
+            end_time: null,
+            end_time_2: null,
             enter_oper: doctorCode,
             enter_time: currentTime,
             exec_unit: userData.admiss_ward || "",
@@ -1864,7 +1868,7 @@
             order_name: order.order_name || order.drug_name || "",
             order_time: currentTime,
             order_type: (order.long_once_flag || "0") === "1" ? "3" : "4",
-            parent_no: "65965879",
+            parent_no: parentOrder_no || null,
             patient_id: patientData.patient_id || "00000",
             prev_flag: "",
             Serial: order.serial || "",
@@ -1898,7 +1902,7 @@
           dataType: "json",
           success: function (response) {
             console.log("提交响应:", response);
-            if (response && response.Status) {
+            if (response && response.Status === 1) {
               layui.layer.msg("提交成功！", { icon: 1, time: 2000 });
               // 清空已选医嘱
               globalSelectedOrders = [];
