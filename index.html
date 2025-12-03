@@ -6,10 +6,6 @@
   <title>移动查房系统-登录</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
   <link rel="stylesheet" href="./lib/layui-v2.6.3/css/layui.css" media="all" />
-  <!--[if lt IE 9]>
-      <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
-      <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
   <style>
     .main-body {
       position: absolute;
@@ -335,7 +331,6 @@
           <div class="item">
             <span class="icon icon-3"></span>
             <input type="password" name="password" placeholder="请输入密码" maxlength="20" />
-            <span class="bind-password icon icon-4"></span>
           </div>
 
           <!--<div id="validatePanel" class="item" style="width: 137px;">
@@ -451,13 +446,15 @@
               return response.json();
             })
             .then(serverData => {
-              // 服务器JSON格式应为: { "latestVersionCode": 112, "latestVersionName": "1.1.2", "files": [...] }
+              // 服务器JSON格式应为: { "latestVersionCode": 112, "latestVersionName": "1.1.2", "latestType": "apk/wgt", "files": [...] }
               console.log('服务器最新版本:', serverData.latestVersionName || serverData.latest, '(versionCode:', serverData.latestVersionCode + ')');
               console.log('本地版本:', localWgtVersion, '(versionCode:', localVersionCode + ')');
+              console.log('更新类型:', serverData.latestType || 'wgt');
 
               // 使用 versionCode 和 versionName 双重递增校验（防止污染）
               var needUpdate = false;
               var serverVersionName = serverData.latestVersionName || serverData.latest;
+              var updateType = serverData.latestType || 'wgt';  // 获取更新类型，默认为 wgt
 
               if (!serverData.latestVersionCode || !localVersionCode || !serverVersionName || !localWgtVersion) {
                 console.warn('服务器或本地缺少版本信息，无法进行版本比较');
@@ -503,11 +500,31 @@
 
               if (needUpdate) {
                 var newVersionText = serverData.latest;
-                if (confirm("检测到新版本 " + newVersionText + "，是否立即下载更新？")) {
-                  console.log(appconfig.api + serverData.files[0].url);
-                  downloadWgt(appconfig.api + serverData.files[0].url);
+                var updateUrl = serverData.files[0].url;
+
+                // 根据更新类型采取不同的处理方式
+                if (updateType === 'apk') {
+                  // APK 更新：提示用户并跳转到下载页面
+                  if (confirm("检测到新版本 " + newVersionText + "（完整安装包），需要前往下载页面更新，是否立即前往？")) {
+                    console.log('跳转到 APK 下载页面:', appconfig.api + updateUrl);
+                    // 使用 plus.runtime.openURL 打开外部浏览器下载
+                    if (plus && plus.runtime && plus.runtime.openURL) {
+                      plus.runtime.openURL(appconfig.api + updateUrl);
+                    } else {
+                      // 降级方案：在当前页面打开
+                      window.location.href = appconfig.api + updateUrl;
+                    }
+                  } else {
+                    console.log("用户取消了更新");
+                  }
                 } else {
-                  console.log("用户取消了更新");
+                  // WGT 更新：使用原有的下载安装流程
+                  if (confirm("检测到新版本 " + newVersionText + "（热更新包），是否立即下载更新？")) {
+                    console.log('下载 WGT 更新包:', appconfig.api + updateUrl);
+                    downloadWgt(appconfig.api + updateUrl);
+                  } else {
+                    console.log("用户取消了更新");
+                  }
                 }
               } else {
                 console.log("已是最新版本");
@@ -629,11 +646,10 @@
       if (savedApiUrl) {
         appconfig.api = savedApiUrl;
       }
-
       // 设置图标点击事件
       $("#setting-btn").on("click", function () {
         var currentApiUrl =
-          localStorage.getItem("api_url") || "https://www.annotokyo.fun:8123";
+          localStorage.getItem("api_url") || "https://www.annotoky.fun:5251";
         layer.open({
           type: 1,
           title: "API设置",
@@ -662,7 +678,7 @@
             }
           },
           btn2: function () {
-            $("#modal-api-url").val("https://www.annotokyo.fun:8123");
+            $("#modal-api-url").val("http://192.168.0.192:5251");
             return false; // 不关闭弹窗
           },
           btn3: function (index) {
@@ -673,16 +689,6 @@
 
       // 登录过期的时候，跳出ifram框架
       if (top.location != self.location) top.location = self.location;
-
-      $(".bind-password").on("click", function () {
-        if ($(this).hasClass("icon-5")) {
-          $(this).removeClass("icon-5");
-          $("input[name='password']").attr("type", "password");
-        } else {
-          $(this).addClass("icon-5");
-          $("input[name='password']").attr("type", "text");
-        }
-      });
 
       $(".icon-nocheck").on("click", function () {
         if ($(this).hasClass("icon-check")) {
@@ -724,6 +730,7 @@
       form.on("submit(login)", function (data) {
         data = data.field;
         var username = data.username;
+        // var password = data.password;
         var password = data.password;
         var apiurl = appconfig.api; // 使用当前设置的API地址
 
@@ -753,8 +760,6 @@
             apiurl +
             "/api/MobileWard/GetLoginUser?uname=" +
             data.username +
-            "&pwd=" +
-            data.password +
             "&subsys_id=" +
             appconfig.subsys_id, //   获取控制器URL地址
           type: "get",
@@ -808,9 +813,6 @@
             layer.msg("访问数据失败！请检查网络链接是否畅通。");
           },
         });
-
-        //layer.msg('登录成功');
-        //window.location = 'view/wardlist.html';
         return false;
       });
     });

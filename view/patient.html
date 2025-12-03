@@ -169,6 +169,10 @@
       isolation: isolate;
     }
 
+    #layui-layer1 {
+      overflow: hidden;
+    }
+
     /* 确保iframe填满容器但不超出*/
     .tab-content-area iframe {
       width: 100% !important;
@@ -1150,23 +1154,17 @@
                     <i class="layui-icon layui-icon-cellphone"></i>
                     患者电话
                   </div>
-                  <div class="contact-value">
-                    138-8888-8888
-                    <button class="call-btn" onclick="window.open('tel:13888888888')">
-                      <i class="layui-icon layui-icon-cellphone"></i>
-                    </button>
+                  <div class="contact-value" id="patient-phone">
+                    <span class="loading-text">加载中...</span>
                   </div>
                 </div>
                 <div class="contact-item">
                   <div class="contact-label">
                     <i class="layui-icon layui-icon-user"></i>
-                    联系人电话
+                    联系人信息
                   </div>
-                  <div class="contact-value">
-                    张三（配偶）139-9999-9999
-                    <button class="call-btn" onclick="window.open('tel:13999999999')">
-                      <i class="layui-icon layui-icon-cellphone"></i>
-                    </button>
+                  <div class="contact-value" id="relation-info">
+                    <span class="loading-text">加载中...</span>
                   </div>
                 </div>
               </div>
@@ -1352,6 +1350,117 @@
         var patientListData = null;
         var patientListLoaded = false;
         var showingMyPatients = false; // 当前是否显示我的病人
+
+        // 加载患者详细信息
+        function loadPatientDetailInfo(patient_id) {
+          if (!patient_id) {
+            console.warn('patient_id 为空，无法加载详细信息');
+            updateContactInfo(null);
+            return;
+          }
+
+          $.ajax({
+            url: appconfig.api + "/api/MobileWard/GetPatientMi?patient_id=" + patient_id,
+            method: "GET",
+            dataType: "json",
+            success: function (res) {
+              if (res.Status === 1 && res.Data && res.Data.length > 0) {
+                console.log('患者详细信息:', res.Data[0]);
+                updateContactInfo(res.Data[0]);
+              } else {
+                console.warn('未获取到患者详细信息');
+                updateContactInfo(null);
+              }
+            },
+            error: function (xhr, status, error) {
+              console.error('获取患者详细信息失败:', error);
+              updateContactInfo(null);
+            }
+          });
+        }
+
+        // 更新联系信息显示
+        function updateContactInfo(patientDetail) {
+          var patientPhoneEl = $('#patient-phone');
+          var relationInfoEl = $('#relation-info');
+
+          if (!patientDetail) {
+            patientPhoneEl.html('<span style="color: #999;">暂无数据</span>');
+            relationInfoEl.html('<span style="color: #999;">暂无数据</span>');
+            return;
+          }
+
+          // 患者电话
+          var homeTel = patientDetail.home_tel || '';
+          if (homeTel && homeTel.trim() !== '') {
+            var cleanPhone = homeTel.replace(/[^\d]/g, '');
+            patientPhoneEl.html(
+              homeTel +
+              '<button class="call-btn" onclick="makePhoneCall(\'' + cleanPhone + '\')">' +
+              '<i class="layui-icon layui-icon-cellphone"></i>' +
+              '</button>'
+            );
+          } else {
+            patientPhoneEl.html('<span style="color: #999;">未填写</span>');
+          }
+
+          // 联系人信息
+          var relationName = patientDetail.relation_name || '';
+          var relationTel = patientDetail.relation_tel || '';
+          var relationCode = patientDetail.relation_code || '';
+
+          // 关系代码转换（可根据实际情况扩展）
+          var relationMap = {
+            '91': '其他',
+            '01': '配偶',
+            '02': '子女',
+            '03': '父母',
+            '04': '兄弟姐妹'
+          };
+          var relationText = relationMap[relationCode] || '';
+
+          if (relationName && relationTel && relationTel.trim() !== '') {
+            var cleanRelationPhone = relationTel.replace(/[^\d]/g, '');
+            var displayText = relationName;
+            if (relationText) {
+              displayText += '（' + relationText + '）';
+            }
+            displayText += ' ' + relationTel;
+
+            relationInfoEl.html(
+              displayText +
+              '<button class="call-btn" onclick="makePhoneCall(\'' + cleanRelationPhone + '\')">' +
+              '<i class="layui-icon layui-icon-cellphone"></i>' +
+              '</button>'
+            );
+          } else if (relationName) {
+            relationInfoEl.html('<span>' + relationName + '</span><span style="color: #999; margin-left: 8px;">（未填写电话）</span>');
+          } else {
+            relationInfoEl.html('<span style="color: #999;">未填写</span>');
+          }
+        }
+
+        // 拨打电话功能
+        window.makePhoneCall = function (phoneNumber) {
+          if (!phoneNumber) {
+            layer.msg('电话号码无效', { icon: 2 });
+            return;
+          }
+
+          // 优先使用 5+ API
+          if (window.plus && plus.device) {
+            try {
+              plus.device.dial(phoneNumber, true);
+              console.log('使用 5+ API 拨号:', phoneNumber);
+            } catch (e) {
+              console.error('5+ API 拨号失败:', e);
+              window.location.href = 'tel:' + phoneNumber;
+            }
+          } else {
+            // 使用 HTML5 tel 协议
+            window.location.href = 'tel:' + phoneNumber;
+          }
+        };
 
         // 选项卡配置 - 用于动态生成选项卡和处理逻辑
         var tabConfigs = [
@@ -1683,6 +1792,9 @@
           // 使用新的填充数据方法
           fillPatientData(jsonData);
 
+          // 加载患者详细信息（包括联系方式）
+          loadPatientDetailInfo(jsonData.patient_id);
+
           // 不在页面初始化时加载患者列表，改为按需加载
           // loadPatientList();
         }
@@ -1800,6 +1912,7 @@
               layui.layer.open({
                 type: 2,
                 area: ["100%", "100%"],
+                overflow: "hidden",
                 title: false,
                 closeBtn: 0,
                 content: config.src + patientParams,

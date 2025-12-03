@@ -6,27 +6,13 @@ import { viteStaticCopy } from "vite-plugin-static-copy";
 export default defineConfig({
   root: ".",
   base: "./",
-  // 将常用的静态资源文件夹原样复制到 dist 中，按需修改 folders 列表
-  plugins: [
-    viteStaticCopy({
-      targets: [
-        { src: "api/*", dest: "api" },
-        { src: "images/*", dest: "images" },
-        { src: "css/*", dest: "css" },
-        { src: "js/*", dest: "js" },
-        { src: "lib/*", dest: "lib" },
-      ],
-    }),
-  ],
   build: {
     outDir: "dist",
     // 使用插件把额外的静态资源文件夹直接复制到输出目录
     rollupOptions: {
       input: {
-        main: resolve(__dirname, "main.html"),
         login: resolve(__dirname, "index.html"),
         home: resolve(__dirname, "home.html"),
-        wgt_upload: resolve(__dirname, "wgt-upload.html"),
         patient: resolve(__dirname, "view/patient.html"),
         wardlist: resolve(__dirname, "view/wardlist.html"),
         edoclist: resolve(__dirname, "view/edoclist.html"),

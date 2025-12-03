@@ -809,7 +809,7 @@
 
         return (
           '<div class="card-item" data-id="' +
-          (item.jcapply_no || "") +
+          (item.exam_serial || item.exam_no || "") +
           '" data-patient-id="' +
           (item.patient_id || "") +
           '" data-admiss-times="' +
@@ -848,7 +848,7 @@
           "</div>" +
           '<div class="card-actions">' +
           '<button class="card-btn card-btn-detail" onclick="viewCardDetail(\'' +
-          (item.jcapply_no || "") +
+          (item.exam_serial || item.exam_no || "") +
           "', '" +
           (item.patient_id || "") +
           "')\">" +
@@ -937,48 +937,57 @@
 
       // 查看卡片详情
       window.viewCardDetail = function (jcapply_no, patient_id) {
-        // 显示加载提示
         var loadingIndex = layer.msg('正在加载PDF...', {
           icon: 16,
           shade: 0.3,
           time: 0
         });
 
-        // 发起请求获取 PDF 文件流
-        fetch(appconfig.api + `/api/JcJy/GetTestPdf`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        })
-          .then(response => {
-            if (!response.ok) {
-              throw new Error('获取PDF失败');
-            }
-            return response.blob();
-          })
-          .then(blob => {
+        // 获取 PDF 文件流
+        $.ajax({
+          url: appconfig.api + '/api/JcJy/GetJcReportPdf?exam_serial=' + encodeURIComponent(jcapply_no),
+          type: 'GET',
+          dataType: 'json',
+          success: function (res) {
             layer.close(loadingIndex);
+            if (res.Status === 1 && res.Data && res.Data.fileStream) {
+              try {
+                // 将 Base64 转换为 Blob
+                var base64Data = res.Data.fileStream;
+                var byteCharacters = atob(base64Data);
+                var byteNumbers = new Array(byteCharacters.length);
+                for (var i = 0; i < byteCharacters.length; i++) {
+                  byteNumbers[i] = byteCharacters.charCodeAt(i);
+                }
+                var byteArray = new Uint8Array(byteNumbers);
+                var blob = new Blob([byteArray], { type: 'application/pdf' });
 
-            // 创建 Blob URL
-            var pdfUrl = URL.createObjectURL(blob);
+                // 创建 Blob URL
+                var blobUrl = URL.createObjectURL(blob);
 
-            // 使用 layer 打开 PDF 查看器
-            layer.open({
-              type: 1,
-              title: '检查报告详情',
-              area: ['100%', '100%'],
-              content: '<iframe src="../lib/pdfjs/web/viewer.html?file=' + encodeURIComponent(pdfUrl) + '" style="width:100%;height:100%;border:none;"></iframe>',
-              cancel: function () {
-                // 关闭时释放 Blob URL
-                URL.revokeObjectURL(pdfUrl);
+                // 用 PDF.js viewer 展示
+                layer.open({
+                  type: 1,
+                  title: '检查报告详情',
+                  area: ['100%', '100%'],
+                  content: '<iframe src="../lib/pdfjs/web/viewer.html?file=' + encodeURIComponent(blobUrl) + '" style="width:100%;height:100%;border:none;"></iframe>',
+                  end: function () {
+                    // 关闭弹窗时释放 Blob URL
+                    URL.revokeObjectURL(blobUrl);
+                  }
+                });
+              } catch (e) {
+                layer.msg('PDF解析失败：' + e.message, { icon: 5 });
               }
-            });
-          })
-          .catch(error => {
+            } else {
+              layer.msg('未获取到PDF数据', { icon: 5 });
+            }
+          },
+          error: function () {
             layer.close(loadingIndex);
-            layer.msg('加载PDF失败: ' + error.message, { icon: 5 });
-          });
+            layer.msg('加载PDF失败', { icon: 5 });
+          }
+        });
       };
 
       // 删除卡片项目

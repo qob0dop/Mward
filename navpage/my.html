@@ -14,6 +14,7 @@
             background-color: rgb(242, 243, 245);
         }
 
+
         header {
             font-size: 18px;
             font-weight: bold;
@@ -578,6 +579,7 @@
         </div>
     </div>
 
+
     <script src="/lib/layui-v2.6.3/layui.js" charset="utf-8"></script>
     <script src="/js/lay-config.js?v=1.0.4" charset="utf-8"></script>
 
@@ -837,6 +839,41 @@
                 layer.msg('头像更换功能', { icon: 1 });
             });
         }
+
+        // 复制到剪贴板
+        window.copyToClipboard = function (text) {
+            var topPlus = top.plus || parent.plus || window.plus;
+
+            if (topPlus && topPlus.runtime) {
+                // 使用 5+ API 复制
+                topPlus.runtime.clipboard.setData(text);
+                layui.use('layer', function () {
+                    const layer = layui.layer;
+                    layer.msg('已复制到剪贴板', { icon: 1, time: 1500 });
+                });
+            } else {
+                // 浏览器环境，使用传统方法
+                var textarea = document.createElement('textarea');
+                textarea.value = text;
+                textarea.style.position = 'fixed';
+                textarea.style.opacity = '0';
+                document.body.appendChild(textarea);
+                textarea.select();
+                try {
+                    document.execCommand('copy');
+                    layui.use('layer', function () {
+                        const layer = layui.layer;
+                        layer.msg('已复制到剪贴板', { icon: 1, time: 1500 });
+                    });
+                } catch (err) {
+                    layui.use('layer', function () {
+                        const layer = layui.layer;
+                        layer.msg('复制失败，请手动复制', { icon: 2 });
+                    });
+                }
+                document.body.removeChild(textarea);
+            }
+        };
 
         // 保存资料
         function saveProfile() {

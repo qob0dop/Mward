@@ -421,7 +421,99 @@
 
     <script>
         // 实际联系人数据（从API获取）
-        let contactsData = [];
+        let contactsData = [
+            // 静态测试数据
+            {
+                id: 'D001',
+                name: '张医生',
+                position: 'doctor',
+                positionName: '医生',
+                department: '内科',
+                phone: '138****1001',
+                extension: 'D001',
+                office: '门诊楼3楼',
+                email: 'zhangys@hospital.com',
+                status: 'online',
+                avatar: '张',
+                sex: '男',
+                yb_code: 'D001'
+            },
+            {
+                id: 'D002',
+                name: '李医生',
+                position: 'doctor',
+                positionName: '医生',
+                department: '外科',
+                phone: '138****1002',
+                extension: 'D002',
+                office: '门诊楼4楼',
+                email: 'liys@hospital.com',
+                status: 'busy',
+                avatar: '李',
+                sex: '女',
+                yb_code: 'D002'
+            },
+            {
+                id: 'N001',
+                name: '王护士',
+                position: 'nurse',
+                positionName: '护士',
+                department: '内科',
+                phone: '138****2001',
+                extension: 'N001',
+                office: '护士站A',
+                email: 'wanghs@hospital.com',
+                status: 'online',
+                avatar: '王',
+                sex: '女',
+                yb_code: 'N001'
+            },
+            {
+                id: 'N002',
+                name: '刘护士',
+                position: 'nurse',
+                positionName: '护士',
+                department: '外科',
+                phone: '138****2002',
+                extension: 'N002',
+                office: '护士站B',
+                email: 'liuhs@hospital.com',
+                status: 'online',
+                avatar: '刘',
+                sex: '女',
+                yb_code: 'N002'
+            },
+            {
+                id: 'A001',
+                name: '陈主任',
+                position: 'admin',
+                positionName: '员工',
+                department: '行政办公室',
+                phone: '138****3001',
+                extension: 'A001',
+                office: '行政楼2楼',
+                email: 'chenzr@hospital.com',
+                status: 'offline',
+                avatar: '陈',
+                sex: '男',
+                yb_code: 'A001'
+            },
+            {
+                id: 'A002',
+                name: '赵秘书',
+                position: 'admin',
+                positionName: '员工',
+                department: '院长办公室',
+                phone: '138****3002',
+                extension: 'A002',
+                office: '行政楼3楼',
+                email: 'zhaoms@hospital.com',
+                status: 'online',
+                avatar: '赵',
+                sex: '女',
+                yb_code: 'A002'
+            }
+        ];
 
         // 将API数据转换为前端需要的格式
         function transformEmployeeData(apiData) {
@@ -490,7 +582,7 @@
                         layer.close(loadingIndex);
 
                         if (response && Array.isArray(response.Data)) {
-                            // 转换并保存数据
+                            // 转换并保存数据（会覆盖静态测试数据）
                             contactsData = transformEmployeeData(response.Data);
                             // 渲染列表
                             renderContacts();
@@ -500,8 +592,10 @@
                     },
                     error: function (xhr, status, error) {
                         layer.close(loadingIndex);
-                        layer.msg('获取员工列表失败: ' + error, { icon: 2 });
+                        layer.msg('获取员工列表失败，显示测试数据', { icon: 0 });
                         console.error('获取员工列表失败:', error);
+                        // API失败时使用静态测试数据
+                        renderContacts();
                     }
                 });
             });
@@ -513,7 +607,9 @@
         // 页面加载完成后初始化
         document.addEventListener('DOMContentLoaded', function () {
             bindEvents();
-            // 从API获取员工列表
+            // 先显示静态测试数据
+            renderContacts();
+            // 然后尝试从API获取员工列表（成功后会覆盖静态数据）
             getEmployeeList();
         });
 
@@ -676,16 +772,45 @@
             layui.use('layer', function () {
                 const layer = layui.layer;
                 layer.confirm(`确定要拨打 ${name} 的电话 ${phone} 吗？`, {
-                    btn: ['拨号', '取消'],
+                    btn: ['直接拨号', '取消'],
                     icon: 3,
                     title: '拨号确认'
                 }, function (index) {
-                    // 这里可以集成真实的拨号功能
-                    // window.location.href = 'tel:' + phone;
-                    layer.msg(`正在拨打 ${phone}...`, { icon: 1 });
                     layer.close(index);
+
+                    // 优先使用 5+ API (HBuilder App)
+                    if (window.plus && plus.device) {
+                        try {
+                            // 使用 5+ API 拨号
+                            plus.device.dial(phone, true); // true 表示直接拨号，false 表示打开拨号界面
+                            console.log('使用 5+ API 拨号:', phone);
+                        } catch (e) {
+                            console.error('5+ API 拨号失败:', e);
+                            // 降级到 HTML5 tel 协议
+                            fallbackToTel(phone, name);
+                        }
+                    } else {
+                        // 降级到 HTML5 tel 协议 (浏览器环境)
+                        fallbackToTel(phone, name);
+                    }
                 });
             });
+        }
+
+        // 降级方案：使用 HTML5 tel 协议
+        function fallbackToTel(phone, name) {
+            try {
+                // 清理电话号码中的特殊字符
+                const cleanPhone = phone.replace(/[^\d+]/g, '');
+                window.location.href = 'tel:' + cleanPhone;
+                console.log('使用 tel 协议拨号:', cleanPhone);
+            } catch (e) {
+                console.error('tel 协议拨号失败:', e);
+                layui.use('layer', function () {
+                    const layer = layui.layer;
+                    layer.msg('拨号功能不可用', { icon: 2 });
+                });
+            }
         }
 
         // 发送消息

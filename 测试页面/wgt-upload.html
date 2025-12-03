@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WGT ���°��ϴ�����</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB',
+                'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .label-optional {
+            color: #999;
+            font-weight: normal;
+            font-size: 12px;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+            font-family: inherit;
+        }
+
+        .file-upload {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-upload-input {
+            display: none;
+        }
+
+        .file-upload-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 40px 20px;
+            border: 2px dashed #667eea;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: #f8f9ff;
+            color: #667eea;
+            font-weight: 500;
+        }
+
+        .file-upload-label:hover {
+            border-color: #764ba2;
+            background: #f0f1ff;
+            color: #764ba2;
+        }
+
+        .file-upload-label.has-file {
+            border-color: #52c41a;
+            background: #f6ffed;
+            color: #52c41a;
+        }
+
+        .file-info {
+            margin-top: 10px;
+            padding: 10px;
+            background: #f5f5f5;
+            border-radius: 6px;
+            font-size: 13px;
+            color: #666;
+            display: none;
+        }
+
+        .file-info.show {
+            display: block;
+        }
+
+        .file-info-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 5px 0;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: #f5f5f5;
+            color: #666;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .progress-container {
+            margin-top: 20px;
+            display: none;
+        }
+
+        .progress-container.show {
+            display: block;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        .progress-text {
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+            animation: slideIn 0.3s;
+        }
+
+        .alert.show {
+            display: block;
+        }
+
+        .alert-success {
+            background: #f6ffed;
+            border: 1px solid #b7eb8f;
+            color: #52c41a;
+        }
+
+        .alert-error {
+            background: #fff2f0;
+            border: 1px solid #ffccc7;
+            color: #ff4d4f;
+        }
+
+        .alert-warning {
+            background: #fffbe6;
+            border: 1px solid #ffe58f;
+            color: #faad14;
+        }
+
+        .manifest-info {
+            background: #f8f9ff;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .manifest-info.show {
+            display: block;
+        }
+
+        .manifest-info-title {
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .manifest-info-row {
+            display: flex;
+            margin: 8px 0;
+            font-size: 13px;
+        }
+
+        .manifest-info-label {
+            font-weight: 500;
+            color: #666;
+            width: 120px;
+        }
+
+        .manifest-info-value {
+            color: #333;
+            flex: 1;
+        }
+
+        .result-container {
+            display: none;
+            margin-top: 20px;
+        }
+
+        .result-container.show {
+            display: block;
+        }
+
+        .result-json {
+            background: #f5f5f5;
+            border-radius: 8px;
+            padding: 15px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .icon {
+            width: 20px;
+            height: 20px;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .help-text {
+            font-size: 12px;
+            color: #999;
+            margin-top: 5px;
+        }
+
+        .settings-toggle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            color: #667eea;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .settings-toggle:hover {
+            color: #764ba2;
+        }
+
+        .settings-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .settings-content.expanded {
+            max-height: 300px;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 10px;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <h1>
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="17 8 12 3 7 8"></polyline>
+                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                </svg>
+                WGT ���°��ϴ�
+            </h1>
+            <div class="subtitle">�ϴ� UniApp Ӧ�ø��°���ϵͳ���Զ������汾��Ϣ</div>
+
+            <!-- �������� -->
+            <div class="settings-toggle" onclick="toggleSettings()">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="M12 1v6m0 6v6m-8.66-8.66l4.24 4.24m4.24 4.24l4.24 4.24M1 12h6m6 0h6m-4.24-8.66l-4.24 4.24m-4.24 4.24l-4.24 4.24"></path>
+                </svg>
+                <span id="settingsToggleText">չ������</span>
+            </div>
+
+            <div class="settings-content" id="settingsContent">
+                <div class="form-group">
+                    <label>API ��ַ</label>
+                    <input type="text" id="apiUrl" value="/api/wgt/upload" placeholder="���磺/api/wgt/upload">
+                    <div class="help-text">�޸��ϴ� API �ĵ�ַ��֧�����·���;���·��</div>
+                </div>
+
+                <div class="form-group">
+                    <label>API Key <span class="label-optional">(��ѡ)</span></label>
+                    <input type="password" id="apiKey" placeholder="��������� API Key�����ڴ�����">
+                    <div class="help-text">�� appsettings.json �����õ� Wgt:ApiKey</div>
+                </div>
+            </div>
+
+            <!-- ��Ϣ��ʾ -->
+            <div class="alert alert-success" id="successAlert"></div>
+            <div class="alert alert-error" id="errorAlert"></div>
+            <div class="alert alert-warning" id="warningAlert"></div>
+
+            <!-- �ļ��ϴ� -->
+            <div class="form-group">
+                <label>ѡ�� WGT �ļ� *</label>
+                <div class="file-upload">
+                    <input type="file" id="fileInput" class="file-upload-input" accept=".wgt" onchange="handleFileSelect(event)">
+                    <label for="fileInput" class="file-upload-label" id="fileLabel">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        <span id="fileLabelText">���ѡ�����ק WGT �ļ����˴�</span>
+                    </label>
+                </div>
+                <div class="file-info" id="fileInfo">
+                    <div class="file-info-row">
+                        <strong>�ļ�����</strong>
+                        <span id="fileName"></span>
+                    </div>
+                    <div class="file-info-row">
+                        <strong>�ļ���С��</strong>
+                        <span id="fileSize"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Manifest ��Ϣ��ʾ -->
+            <div class="manifest-info" id="manifestInfo">
+                <div class="manifest-info-title">?? ������ Manifest ��Ϣ</div>
+                <div class="manifest-info-row">
+                    <div class="manifest-info-label">Ӧ�����ƣ�</div>
+                    <div class="manifest-info-value" id="manifestName">-</div>
+                </div>
+                <div class="manifest-info-row">
+                    <div class="manifest-info-label">�汾�ţ�</div>
+                    <div class="manifest-info-value" id="manifestVersion">-</div>
+                </div>
+                <div class="manifest-info-row">
+                    <div class="manifest-info-label">�汾���룺</div>
+                    <div class="manifest-info-value" id="manifestVersionCode">-</div>
+                </div>
+                <div class="manifest-info-row">
+                    <div class="manifest-info-label">������</div>
+                    <div class="manifest-info-value" id="manifestDescription">-</div>
+                </div>
+            </div>
+
+            <!-- ��ѡ�ֶ� -->
+            <div class="form-group">
+                <label>�汾�� <span class="label-optional">(��ѡ����ս��Զ��� WGT ����)</span></label>
+                <input type="text" id="version" placeholder="���磺1.1.3">
+                <div class="help-text">�ֶ�ָ���汾�ŻḲ�� WGT �еİ汾��Ϣ</div>
+            </div>
+
+            <div class="form-group">
+                <label>�������� <span class="label-optional">(��ѡ����ʽ��yyyyMMdd)</span></label>
+                <input type="text" id="publishedAt" placeholder="���磺20250121">
+                <div class="help-text">��ս�ʹ�õ�ǰ����</div>
+            </div>
+
+            <div class="form-group">
+                <label>������Ϣ <span class="label-optional">(��ѡ)</span></label>
+                <textarea id="description" placeholder="���磺�޸������ Bug���Ż�������"></textarea>
+                <div class="help-text">��ս�ʹ�� WGT �е�Ӧ������</div>
+            </div>
+
+            <!-- �ϴ���ť -->
+            <button class="btn btn-primary" id="uploadBtn" onclick="uploadFile()" disabled>
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="17 8 12 3 7 8"></polyline>
+                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                </svg>
+                <span id="uploadBtnText">�ϴ����°�</span>
+            </button>
+
+            <!-- �ϴ����� -->
+            <div class="progress-container" id="progressContainer">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div class="progress-text" id="progressText">�ϴ���... 0%</div>
+            </div>
+
+            <!-- �ϴ���� -->
+            <div class="result-container" id="resultContainer">
+                <label>�ϴ����</label>
+                <pre class="result-json" id="resultJson"></pre>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedFile = null;
+
+        // �л��������
+        function toggleSettings() {
+            const content = document.getElementById('settingsContent');
+            const toggleText = document.getElementById('settingsToggleText');
+            const isExpanded = content.classList.contains('expanded');
+            
+            if (isExpanded) {
+                content.classList.remove('expanded');
+                toggleText.textContent = 'չ������';
+            } else {
+                content.classList.add('expanded');
+                toggleText.textContent = '��������';
+            }
+        }
+
+        // �����ļ�ѡ��
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            // ��֤�ļ���չ��
+            if (!file.name.toLowerCase().endsWith('.wgt')) {
+                showError('��ѡ�� .wgt �ļ�');
+                return;
+            }
+
+            selectedFile = file;
+            
+            // ���� UI
+            document.getElementById('fileLabel').classList.add('has-file');
+            document.getElementById('fileLabelText').textContent = '? �ļ���ѡ��';
+            
+            // ��ʾ�ļ���Ϣ
+            document.getElementById('fileName').textContent = file.name;
+            document.getElementById('fileSize').textContent = formatFileSize(file.size);
+            document.getElementById('fileInfo').classList.add('show');
+            
+            // �����ϴ���ť
+            document.getElementById('uploadBtn').disabled = false;
+            
+            // ���Խ��� manifest.json���ͻ���Ԥ����
+            parseManifest(file);
+            
+            // ���֮ǰ����Ϣ
+            clearAlerts();
+        }
+
+        // ���� WGT �ļ��е� manifest.json���ͻ���Ԥ����
+        async function parseManifest(file) {
+            try {
+                const JSZip = window.JSZip;
+                if (!JSZip) {
+                    console.warn('JSZip δ���أ������ͻ��˽���');
+                    return;
+                }
+
+                const zip = await JSZip.loadAsync(file);
+                const manifestFile = zip.file('manifest.json');
+                
+                if (manifestFile) {
+                    const manifestContent = await manifestFile.async('string');
+                    const manifest = JSON.parse(manifestContent);
+                    
+                    // ��ʾ������Ϣ
+                    document.getElementById('manifestName').textContent = manifest.name || '-';
+                    document.getElementById('manifestVersion').textContent = manifest.version?.name || '-';
+                    document.getElementById('manifestVersionCode').textContent = manifest.version?.code || '-';
+                    document.getElementById('manifestDescription').textContent = manifest.description || '-';
+                    document.getElementById('manifestInfo').classList.add('show');
+                    
+                    showWarning('�Ѵ� WGT �н��� manifest.json�����ǿͻ���Ԥ����ʵ���Է���������Ϊ׼��');
+                }
+            } catch (error) {
+                console.warn('�ͻ��˽��� manifest.json ʧ��:', error);
+            }
+        }
+
+        // �ϴ��ļ�
+        async function uploadFile() {
+            if (!selectedFile) {
+                showError('����ѡ���ļ�');
+                return;
+            }
+
+            const apiUrl = document.getElementById('apiUrl').value.trim();
+            const apiKey = document.getElementById('apiKey').value.trim();
+            const version = document.getElementById('version').value.trim();
+            const publishedAt = document.getElementById('publishedAt').value.trim();
+            const description = document.getElementById('description').value.trim();
+
+            if (!apiUrl) {
+                showError('������ API ��ַ');
+                return;
+            }
+
+            // ���� FormData
+            const formData = new FormData();
+            formData.append('file', selectedFile);
+            if (version) formData.append('version', version);
+            if (publishedAt) formData.append('publishedAt', publishedAt);
+            if (description) formData.append('description', description);
+
+            // ׼������ͷ
+            const headers = {};
+            if (apiKey) {
+                headers['X-Api-Key'] = apiKey;
+            }
+
+            // ��ʾ����
+            showProgress();
+            disableUpload();
+            clearAlerts();
+
+            try {
+                const xhr = new XMLHttpRequest();
+
+                // �����ϴ�����
+                xhr.upload.addEventListener('progress', (e) => {
+                    if (e.lengthComputable) {
+                        const percent = Math.round((e.loaded / e.total) * 100);
+                        updateProgress(percent);
+                    }
+                });
+
+                // �������
+                xhr.addEventListener('load', () => {
+                    hideProgress();
+                    enableUpload();
+
+                    if (xhr.status >= 200 && xhr.status < 300) {
+                        const result = JSON.parse(xhr.responseText);
+                        showSuccess('�ϴ��ɹ���');
+                        showResult(result);
+                    } else {
+                        let errorMsg = '�ϴ�ʧ��';
+                        try {
+                            const error = JSON.parse(xhr.responseText);
+                            errorMsg = error.error || error.message || errorMsg;
+                            if (error.details) {
+                                errorMsg += ': ' + error.details;
+                            }
+                        } catch (e) {
+                            errorMsg = xhr.statusText || errorMsg;
+                        }
+                        showError(`${errorMsg} (HTTP ${xhr.status})`);
+                    }
+                });
+
+                // ��������
+                xhr.addEventListener('error', () => {
+                    hideProgress();
+                    enableUpload();
+                    showError('���������������');
+                });
+
+                // ����ȡ��
+                xhr.addEventListener('abort', () => {
+                    hideProgress();
+                    enableUpload();
+                    showError('�ϴ���ȡ��');
+                });
+
+                // ��������
+                xhr.open('POST', apiUrl);
+                
+                // ��������ͷ
+                for (const [key, value] of Object.entries(headers)) {
+                    xhr.setRequestHeader(key, value);
+                }
+
+                xhr.send(formData);
+
+            } catch (error) {
+                hideProgress();
+                enableUpload();
+                showError('�ϴ�ʧ��: ' + error.message);
+            }
+        }
+
+        // ��ʾ����
+        function showProgress() {
+            document.getElementById('progressContainer').classList.add('show');
+            updateProgress(0);
+        }
+
+        // ���ؽ���
+        function hideProgress() {
+            document.getElementById('progressContainer').classList.remove('show');
+        }
+
+        // ���½���
+        function updateProgress(percent) {
+            document.getElementById('progressFill').style.width = percent + '%';
+            document.getElementById('progressText').textContent = `�ϴ���... ${percent}%`;
+        }
+
+        // ��ʾ���
+        function showResult(result) {
+            document.getElementById('resultJson').textContent = JSON.stringify(result, null, 2);
+            document.getElementById('resultContainer').classList.add('show');
+        }
+
+        // �����ϴ���ť
+        function disableUpload() {
+            const btn = document.getElementById('uploadBtn');
+            btn.disabled = true;
+            document.getElementById('uploadBtnText').textContent = '�ϴ���...';
+        }
+
+        // �����ϴ���ť
+        function enableUpload() {
+            const btn = document.getElementById('uploadBtn');
+            btn.disabled = false;
+            document.getElementById('uploadBtnText').textContent = '�ϴ����°�';
+        }
+
+        // ��ʾ�ɹ���Ϣ
+        function showSuccess(message) {
+            clearAlerts();
+            const alert = document.getElementById('successAlert');
+            alert.textContent = '? ' + message;
+            alert.classList.add('show');
+        }
+
+        // ��ʾ������Ϣ
+        function showError(message) {
+            clearAlerts();
+            const alert = document.getElementById('errorAlert');
+            alert.textContent = '? ' + message;
+            alert.classList.add('show');
+        }
+
+        // ��ʾ������Ϣ
+        function showWarning(message) {
+            clearAlerts();
+            const alert = document.getElementById('warningAlert');
+            alert.textContent = '? ' + message;
+            alert.classList.add('show');
+        }
+
+        // ���������Ϣ
+        function clearAlerts() {
+            document.querySelectorAll('.alert').forEach(alert => {
+                alert.classList.remove('show');
+            });
+        }
+
+        // ��ʽ���ļ���С
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+        }
+
+        // ֧����ק�ϴ�
+        const fileLabel = document.getElementById('fileLabel');
+        
+        fileLabel.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            fileLabel.style.borderColor = '#764ba2';
+            fileLabel.style.background = '#f0f1ff';
+        });
+
+        fileLabel.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            fileLabel.style.borderColor = '#667eea';
+            fileLabel.style.background = '#f8f9ff';
+        });
+
+        fileLabel.addEventListener('drop', (e) => {
+            e.preventDefault();
+            fileLabel.style.borderColor = '#667eea';
+            fileLabel.style.background = '#f8f9ff';
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                document.getElementById('fileInput').files = files;
+                handleFileSelect({ target: { files: files } });
+            }
+        });
+
+        // ҳ�����ʱ���Ĭ������
+        window.addEventListener('load', () => {
+            const today = new Date();
+            const dateStr = today.getFullYear() + 
+                String(today.getMonth() + 1).padStart(2, '0') + 
+                String(today.getDate()).padStart(2, '0');
+            document.getElementById('publishedAt').placeholder = `���磺${dateStr}�����죩`;
+        });
+    </script>
+
+    <!-- ��ѡ������ JSZip ���ڿͻ���Ԥ�� manifest.json -->
+    <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+</body>
+</html>

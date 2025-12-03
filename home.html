@@ -56,7 +56,6 @@
 
     // 全局函数：切换 iframe
     function showFrame(target) {
-      currentIframe = target; // 每次切换都同步当前 iframe
       const targetBtn = document.querySelector(
         `.nav-item[data-target="${target}"]`
       );
@@ -75,12 +74,19 @@
       Object.keys(iframeCache).forEach((key) => {
         iframeCache[key].style.display = "none";
       });
+      console.log("切换到页面:", target, "当前页面:", currentIframe);
+      if (currentIframe != target) {
+        // 如果已经创建，直接显示（保持页面状态）
+        console.log("当前页面已切换，显示缓存的 iframe:", target);
+        if (iframeCache[target]) {
+          console.log("页面已缓存");
 
-      // 如果已经创建，直接显示（保持页面状态）
-      if (iframeCache[target]) {
-        iframeCache[target].style.display = "block";
-        return;
+          iframeCache[target].style.display = "block";
+          currentIframe = target; // 每次切换都同步当前 iframe
+          return;
+        }
       }
+
 
       // 否则懒加载创建 iframe 并缓存
       const iframe = document.createElement("iframe");
@@ -89,6 +95,7 @@
       iframe.dataset.target = target;
       // 可根据需要添加 sandbox 属性，例如: sandbox="allow-scripts allow-same-origin"
       iframe.style.display = "block";
+      currentIframe = target; // 每次切换都同步当前 iframe
 
       if (mainContent) {
         mainContent.appendChild(iframe);
@@ -117,6 +124,7 @@
           }
         }, 100); // 延迟确保 iframe 已加载
       }
+
     });
 
     document.addEventListener("plusready", function () {

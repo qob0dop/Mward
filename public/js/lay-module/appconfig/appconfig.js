@@ -7,11 +7,21 @@ layui.define(function (exports) {
 
   // 检查localStorage中是否有保存的API地址
   var savedApiUrl = localStorage.getItem("api_url");
-  var defaultApi = "http://10.102.41.142:5251"; // 默认API地址
+  var defaultApi = "http://192.168.0.192:5251"; // 默认API地址
+
+  // 获取最终的 API 地址
+  var apiUrl = savedApiUrl || defaultApi;
+
+  // 将 HTTP/HTTPS 地址转换为 WS/WSS 地址
+  function httpToWs(httpUrl) {
+    if (!httpUrl) return "";
+    return httpUrl.replace(/^https:/, "wss:").replace(/^http:/, "ws:");
+  }
 
   var obj = {
     // api: "http://10.102.41.142:5105", //根据自己项目的端口而定
-    api: savedApiUrl || defaultApi, // 优先使用保存的API地址，没有则用默认值
+    api: apiUrl, // 优先使用保存的API地址，没有则用默认值
+    ws: httpToWs(apiUrl), // WebSocket 地址（自动从 HTTP 转换）
     twd_webpage: "http://10.102.38.186:8801",
     subsys_id: "zy_wpws2",
   };

@@ -24,12 +24,14 @@
 
     /* 头部操作区域样式 */
     .header-controls {
+      position: fixed;
+      width: 100%;
       display: flex;
       align-items: center;
       flex-wrap: wrap;
       justify-content: space-between;
       box-sizing: border-box;
-      height: 10%;
+      height: 50px;
       padding: 8px;
       border: 1px solid #e9ecef;
       border-radius: 6px;
@@ -51,6 +53,7 @@
       box-sizing: border-box;
       height: 90%;
       padding: 20px;
+      padding-top: 70px;
       border-radius: 8px;
       background: #fff;
       box-shadow: 0 2px 8px rgba(0, 0, 0, .1);
@@ -468,6 +471,9 @@
                   </div>
                 </div>
 
+                <!-- 隐藏的文字内容字段 -->
+                <input type="hidden" name="record_content" id="record-content-input" value="">
+
                 <!-- 录音功能区域 -->
                 <div class="layui-form-item">
                   <div class="layui-input-block" style="margin:0 10px">
@@ -485,8 +491,6 @@
                         
                         <span id="recording-status" style="color: #666; font-size: 12px;height:16px"></span>
                       </div>
-                      
-                      <div id="saved-audio-list" style="margin-top: 10px;"></div>
                     </div>
                   </div>
                 </div>
@@ -753,6 +757,18 @@
           return;
         }
 
+        // 将转换的文字填充到隐藏的表单字段中
+        const recordContentInput = document.getElementById('record-content-input');
+        if (recordContentInput) {
+          // 如果已有内容，追加新内容（多次转换的情况）
+          const existingContent = recordContentInput.value;
+          if (existingContent) {
+            recordContentInput.value = existingContent + '\n\n---\n\n' + text;
+          } else {
+            recordContentInput.value = text;
+          }
+        }
+
         // 在录音控件下方显示转换结果
         const audioContainer = document.getElementById("audio-container");
         const existingTextDiv = audioContainer.querySelector('.converted-text-display');
@@ -769,12 +785,12 @@
               <div style="font-size: 12px; color: #666; margin-bottom: 5px;">
                 <i class="layui-icon layui-icon-fonts"></i> 转换文字：
               </div>
-              <div class="text-content" style="line-height: 1.6; color: #333; white-space: pre-wrap;">${text}</div>
+              <div class="text-content" contenteditable="true" style="line-height: 1.6; color: #333; white-space: pre-wrap;">${text}</div>
             `;
           audioContainer.appendChild(textDisplay);
         }
 
-        layer.msg('转换成功！文字已显示在录音下方', { icon: 1, time: 2000 });
+        layer.msg('转换成功！文字已显示在录音下方并将在保存时提交', { icon: 1, time: 2000 });
       }
 
       // 将音频转换为WAV格式
@@ -1028,124 +1044,7 @@
         document.body.removeChild(textarea);
       };
 
-      // 保存录音到列表
-      function saveRecordingToList() {
-        if (!audioBlob) {
-          layer.msg("没有可保存的录音", { icon: 2 });
-          return;
-        }
-
-        const recordTime = new Date();
-        const recordName = "录音_" + formatTime(recordTime);
-        const duration = calculateDuration();
-
-        // 将音频转换为Base64字符串存储到localStorage
-        const reader = new FileReader();
-        reader.onload = function () {
-          const audioBase64 = reader.result;
-          const audioId = "audio_" + recordTime.getTime();
-
-          // 保存音频数据到localStorage
-          const audioData = {
-            id: audioId,
-            name: recordName,
-            time: recordTime.toISOString(),
-            duration: duration,
-            data: audioBase64, // Base64格式的音频数据
-            type: audioBlob.type
-          };
-
-          // 存储到localStorage中的音频库
-          let storedAudios = JSON.parse(localStorage.getItem("wardAudios") || "{}");
-          storedAudios[audioId] = audioData;
-          localStorage.setItem("wardAudios", JSON.stringify(storedAudios));
-
-          // 保存到临时存储（用于当前编辑会话）
-          const audioRecord = {
-            id: audioId,
-            name: recordName,
-            time: recordTime.toISOString(),
-            duration: duration,
-            blob: audioBlob,
-            url: URL.createObjectURL(audioBlob),
-          };
-
-          // 添加到当前记录的录音列表
-          if (!window.tempAudioRecords) {
-            window.tempAudioRecords = [];
-          }
-          window.tempAudioRecords.push(audioRecord);
-
-          // 更新显示
-          updateSavedAudioList();
-
-          // 清理当前录音状态
-          audioBlob = null;
-          document.getElementById("audio-preview").style.display = "none";
-          document.getElementById("audio-preview").src = "";
-          document.getElementById("recording-status").textContent = "";
-
-          layer.msg("录音已保存到本地存储", { icon: 1, time: 1500 });
-        };
-
-        // 读取音频文件为Base64
-        reader.readAsDataURL(audioBlob);
-      }
-
-      // 更新已保存的录音列表显示
-      function updateSavedAudioList() {
-        const container = document.getElementById("saved-audio-list");
-        if (
-          !window.tempAudioRecords ||
-          window.tempAudioRecords.length === 0
-        ) {
-          container.innerHTML = "";
-          return;
-        }
-
-        let html =
-          "<div style='margin-top: 10px;'><strong>已添加的录音：</strong></div>";
-        window.tempAudioRecords.forEach((record, index) => {
-          html += `
-              <div style="display: flex; align-items: center; gap: 10px; margin-top: 8px; padding: 8px; background: #fff; border-radius: 4px;">
-                <span style="flex: 1; font-size: 12px;">${record.name} (${record.duration})</span>
-                <audio controls style="width: 150px; height: 25px;">
-                  <source src="${record.url}" type="audio/wav">
-                </audio>
-                <button type="button" class="layui-btn layui-btn-xs layui-btn-normal" onclick="convertAudioToText(${index})" title="转换为文字">
-                  <i class="layui-icon layui-icon-edit"></i> 转文字
-                </button>
-                <button type="button" class="layui-btn layui-btn-xs layui-btn-danger" onclick="removeAudioRecord(${index})">
-                  删除
-                </button>
-              </div>
-            `;
-        });
-        container.innerHTML = html;
-      }
-
-      // 删除录音记录
-      window.removeAudioRecord = function (index) {
-        if (window.tempAudioRecords && window.tempAudioRecords[index]) {
-          // 释放URL对象
-          URL.revokeObjectURL(window.tempAudioRecords[index].url);
-          window.tempAudioRecords.splice(index, 1);
-          updateSavedAudioList();
-          layer.msg("录音已删除", { icon: 1, time: 1000 });
-        }
-      };
-
-      // 转换音频为文字
-      window.convertAudioToText = function (index) {
-        if (window.tempAudioRecords && window.tempAudioRecords[index]) {
-          const audioRecord = window.tempAudioRecords[index];
-          layer.msg("正在转换音频为文字，请稍候...", {
-            icon: 16,
-            time: 2000,
-          });
-          transformAudio(audioRecord.blob);
-        }
-      };
+      // 注释：已移除保存录音到列表的功能，现在直接转文字后保存
 
       // 转换记录列表中的音频为文字
       window.convertRecordAudioToText = function (audioId) {
@@ -1201,76 +1100,15 @@
           return;
         }
 
-        // 检查是否有录音内容
-        const hasCurrentRecording = audioBlob !== null; // 当前有未保存的录音
-        const hasSavedRecordings = window.tempAudioRecords && window.tempAudioRecords.length > 0; // 有已保存的录音
-
-        if (!hasCurrentRecording && !hasSavedRecordings) {
-          layer.msg("请先录制音频再保存查房记录", { icon: 2 });
+        // 检查是否有转换后的文字内容
+        const recordContent = formData.record_content;
+        if (!recordContent || recordContent.trim() === '') {
+          layer.msg("请先录制音频并转换为文字后再保存", { icon: 2, time: 2000 });
           return;
         }
 
-        // 如果有未保存的录音，先自动保存
-        if (hasCurrentRecording) {
-          layer.msg("正在自动保存录音...", { icon: 16, time: 1000 });
-
-          // 调用保存录音的逻辑，但不显示消息
-          const recordTime = new Date();
-          const recordName = "录音_" + formatTime(recordTime);
-          const duration = calculateDuration();
-
-          const reader = new FileReader();
-          reader.onload = function () {
-            const audioBase64 = reader.result;
-            const audioId = "audio_" + recordTime.getTime();
-
-            // 保存音频数据到localStorage
-            const audioData = {
-              id: audioId,
-              name: recordName,
-              time: recordTime.toISOString(),
-              duration: duration,
-              data: audioBase64,
-              type: audioBlob.type
-            };
-
-            let storedAudios = JSON.parse(localStorage.getItem("wardAudios") || "{}");
-            storedAudios[audioId] = audioData;
-            localStorage.setItem("wardAudios", JSON.stringify(storedAudios));
-
-            // 保存到临时存储
-            const audioRecord = {
-              id: audioId,
-              name: recordName,
-              time: recordTime.toISOString(),
-              duration: duration,
-              blob: audioBlob,
-              url: URL.createObjectURL(audioBlob),
-            };
-
-            if (!window.tempAudioRecords) {
-              window.tempAudioRecords = [];
-            }
-            window.tempAudioRecords.push(audioRecord);
-
-            // 清理当前录音状态
-            audioBlob = null;
-            document.getElementById("audio-preview").style.display = "none";
-            document.getElementById("audio-preview").src = "";
-            document.getElementById("recording-status").textContent = "";
-
-            // 更新显示
-            updateSavedAudioList();
-
-            // 录音保存完成后，继续保存查房记录
-            proceedToSaveWardRecord(formData, layerIndex);
-          };
-
-          reader.readAsDataURL(audioBlob);
-        } else {
-          // 没有当前录音，直接保存查房记录
-          proceedToSaveWardRecord(formData, layerIndex);
-        }
+        // 直接保存查房记录
+        proceedToSaveWardRecord(formData, layerIndex);
       }
 
       // 实际保存查房记录的函数
@@ -1278,14 +1116,7 @@
         const recordTime = new Date();
         const recordId = "ward_" + recordTime.getTime();
         const currentTime = recordTime.toISOString();
-
-        // 生成音频URL集合，用于绑定当前记录的所有音频
-        let soundUrlArray = [];
-        if (window.tempAudioRecords && window.tempAudioRecords.length > 0) {
-          soundUrlArray = window.tempAudioRecords.map(audio => audio.id);
-        }
-        const soundUrl = soundUrlArray.join(','); // 多个音频ID用逗号分隔
-
+        const textcontent = $('.text-content').text() || formData.record_content || "查房记录";
         // 注释掉API保存查房记录，暂时只与本地localStorage交互
         const ajaxData = {
           patient_id: userData.patient_id || "",
@@ -1296,8 +1127,8 @@
           emp_sn: loginUser.user_mi,
           emp_name: loginUser.name,
           exec_date: currentTime,
-          sound: formData.record_content || "查房记录",
-          sound_url: soundUrl, // 使用音频ID作为soundurl
+          sound: textcontent,
+          sound_url: "", // 不再保存音频ID
         };
         $.ajax({
           url: appconfig.api + "/api/MobileWard/AddWardRoundsRecord",
@@ -1334,8 +1165,8 @@
               // 关闭弹窗和清理状态
               layer.close(layerIndex);
 
-              // 清理临时状态
-              window.tempAudioRecords = [];
+              // 清理录音状态
+              cleanupRecording();
 
             } else {
               layer.msg("查房记录保存失败", { icon: 2 });

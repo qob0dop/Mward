@@ -18,6 +18,140 @@
       }
     }
 
+    /* 扫码界面样式 */
+    #qr-scanner-container {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 10000;
+      background: #000;
+    }
+
+    #qr-scanner-container.active {
+      display: block;
+    }
+
+    #qr-video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    #qr-canvas {
+      display: none;
+    }
+
+    .qr-scanner-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      pointer-events: none;
+    }
+
+    .qr-scanner-header {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      padding: 20px;
+      background: linear-gradient(to bottom, rgba(0, 0, 0, 0.7), transparent);
+      pointer-events: auto;
+      z-index: 1;
+    }
+
+    .qr-scanner-header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: white;
+    }
+
+    .qr-scanner-title {
+      font-size: 16px;
+    }
+
+    .qr-scanner-close {
+      font-size: 28px;
+      cursor: pointer;
+      padding: 5px;
+    }
+
+    .qr-scan-region {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 250px;
+      height: 250px;
+      border: 2px solid #1e9fff;
+      border-radius: 8px;
+      box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5);
+    }
+
+    .qr-scan-corner {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+    }
+
+    .qr-scan-corner.top-left {
+      top: -2px;
+      left: -2px;
+      border-top: 3px solid #1e9fff;
+      border-left: 3px solid #1e9fff;
+    }
+
+    .qr-scan-corner.top-right {
+      top: -2px;
+      right: -2px;
+      border-top: 3px solid #1e9fff;
+      border-right: 3px solid #1e9fff;
+    }
+
+    .qr-scan-corner.bottom-left {
+      bottom: -2px;
+      left: -2px;
+      border-bottom: 3px solid #1e9fff;
+      border-left: 3px solid #1e9fff;
+    }
+
+    .qr-scan-corner.bottom-right {
+      bottom: -2px;
+      right: -2px;
+      border-bottom: 3px solid #1e9fff;
+      border-right: 3px solid #1e9fff;
+    }
+
+    .qr-scanner-footer {
+      position: absolute;
+      bottom: 50px;
+      left: 0;
+      right: 0;
+      text-align: center;
+      color: white;
+      pointer-events: auto;
+    }
+
+    .qr-scanner-tip {
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+
+    .qr-scanner-flash-btn {
+      background: rgba(255, 255, 255, 0.3);
+      border: none;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
     /* 加载遮罩层（overlay）和居中 spinner */
     .loading-overlay {
       position: fixed;
@@ -28,7 +162,6 @@
 
       /* hidden by default */
       /* flex 居中内部内容 */
-      display: flex;
       align-items: center;
       justify-content: center;
       width: 100%;
@@ -69,10 +202,80 @@
       padding: 5px;
       color: #fff;
     }
+
+    #scan-icon {
+      margin-left: 10px;
+      width: 30px;
+    }
+
+    /* 病区搜索框样式 */
+    .ward-search-container {
+      position: relative;
+      padding: 10px 15px;
+      background: #f8f9fa;
+      border-bottom: 1px solid #e6e6e6;
+    }
+
+    .ward-search-container .layui-icon-search {
+      position: absolute;
+      top: 50%;
+      left: 25px;
+      transform: translateY(-50%);
+      font-size: 16px;
+      color: #999;
+      pointer-events: none;
+    }
+
+    #ward-search {
+      box-sizing: border-box;
+      width: 100%;
+      height: 36px;
+      padding: 8px 12px 8px 35px;
+      font-size: 14px;
+      border: 1px solid #e6e6e6;
+      border-radius: 18px;
+      outline: none;
+      background: #fff;
+      transition: all 0.3s ease;
+    }
+
+    #ward-search:focus {
+      border-color: #1e9fff;
+      box-shadow: 0 0 0 2px rgba(30, 159, 255, 0.1);
+    }
+
+    #ward-search::placeholder {
+      color: #ccc;
+    }
   </style>
 </head>
 
 <body>
+  <!-- 扫码界面 -->
+  <div id="qr-scanner-container">
+    <video id="qr-video" playsinline></video>
+    <canvas id="qr-canvas"></canvas>
+    <div class="qr-scanner-overlay">
+      <div class="qr-scanner-header">
+        <div class="qr-scanner-header-content">
+          <div class="qr-scanner-title">将二维码放入框内扫描</div>
+          <i class="layui-icon layui-icon-close qr-scanner-close" onclick="stopQRScanner()"></i>
+        </div>
+      </div>
+      <div class="qr-scan-region">
+        <div class="qr-scan-corner top-left"></div>
+        <div class="qr-scan-corner top-right"></div>
+        <div class="qr-scan-corner bottom-left"></div>
+        <div class="qr-scan-corner bottom-right"></div>
+      </div>
+      <div class="qr-scanner-footer">
+        <div class="qr-scanner-tip">请对准二维码</div>
+        <button class="qr-scanner-flash-btn" onclick="toggleFlashlight()" id="flashBtn" style="display:none;">
+          <i class="layui-icon layui-icon-light"></i> 手电筒
+        </button>
+      </div>
+    </div>
+  </div>
   <header>
     <div class="wardlist-switch" id="wardlist-switch">
       用户病区<i class="layui-icon layui-icon-down"></i>
@@ -82,6 +285,7 @@
       <input type="text" id="patient-search" placeholder="搜索患者"
         onfocus="this.style.borderColor='#1e9fff'; this.style.boxShadow='0 0 0 2px rgba(30,136,229,0.1)'"
         onblur="this.style.borderColor='#e6e6e6'; this.style.boxShadow='none'" />
+      <img id="scan-icon" src="../images/scan.svg" alt="">
     </div>
   </header>
   <div class="tool">
@@ -151,13 +355,19 @@
   <!-- 病区列表面板 -->
   <div class="ward-list">
     <div class="ward-list-header">
-      共xx个科室
+      共xx个病区
       <span class="close-btn" id="wardlist-close">×</span>
+    </div>
+    <div class="ward-search-container">
+      <i class="layui-icon layui-icon-search"></i>
+      <input type="text" id="ward-search" placeholder="搜索病区" />
     </div>
     <div class="ward-list-body"></div>
   </div>
   <script src="/lib/layui-v2.6.3/layui.js" charset="utf-8"></script>
   <script src="/js/lay-config.js?v=1.0.4" charset="utf-8"></script>
+  <script src="/lib/jsQR.js"></script>
+
 
   <script>
     // 处理移动端返回键（在 iframe 子页面中）
@@ -175,32 +385,19 @@
       let currentSort = "default"; // 当前排序方式
       let filteredStatus = "全部"; // 当前状态筛选
       let filteredGender = "全部"; // 当前性别筛选
+      let availableWards = []; // 存储可用的病区列表
+      let currentWardSn = null; // 当前选中的病区编号
+      let currentWardName = ""; // 当前选中的病区名称
+      let wardSearchKeyword = ""; // 病区搜索关键词
       // 显示/隐藏加载遮罩的助手函数
       function showLoading() {
-        try {
-          $(".loading-overlay .layui-icon-loading").addClass("show");
-          $(".loading-overlay").addClass("show");
-        } catch (e) {
-          console.error('showLoading error', e);
-          var ov = document.querySelector('.loading-overlay');
-          if (ov) ov.style.display = 'flex';
-        }
+        $(".loading-overlay .layui-icon-loading").addClass("show");
+        $(".loading-overlay").addClass("show");
       }
 
       function hideLoading() {
-        try {
-          $(".loading-overlay .layui-icon-loading").removeClass("show");
-          $(".loading-overlay").removeClass("show");
-          // fallback: ensure style is none
-          var ov = document.querySelector('.loading-overlay');
-          var sp = document.querySelector('.loading-overlay .layui-icon-loading');
-          if (ov) ov.style.display = ov.classList.contains('show') ? 'flex' : 'none';
-          if (sp) sp.style.display = sp.classList.contains('show') ? 'block' : 'none';
-        } catch (e) {
-          console.error('hideLoading error', e);
-          var ov = document.querySelector('.loading-overlay');
-          if (ov) ov.style.display = 'none';
-        }
+        $(".loading-overlay .layui-icon-loading").removeClass("show");
+        $(".loading-overlay").removeClass("show");
       }
       //加载患者信息
       window.addEventListener('message', function (event) {
@@ -243,14 +440,99 @@
           // 如果以上都没有打开,不处理（让父页面处理返回逻辑）
         }
       }, false);
-      function loadPatients(dept_sn) {
+
+      // 加载可用病区列表
+      function loadAvailableWards() {
+        showLoading();
+
+        $.ajax({
+          url: appconfig.api + "/api/MobileWard/GetAdtWards",
+          method: "GET",
+          success: function (res) {
+            hideLoading();
+
+            if (res && Array.isArray(res)) {
+              console.log("获取病区列表成功:", res);
+              availableWards = res;
+
+              // 存储 ward_sn 和 ward_name
+              availableWards.forEach(ward => {
+                ward.ward_sn = ward.ward_sn;
+                ward.ward_name = ward.ward_name;
+              });
+
+              // 渲染病区列表
+              renderWards(availableWards);
+
+              // 尝试从 localStorage 恢复上次选择的病区
+              var savedWardSn = localStorage.getItem('selectedWardSn');
+              var savedWardName = localStorage.getItem('selectedWardName');
+
+              if (savedWardSn && savedWardName) {
+                // 验证保存的病区是否仍然存在
+                var wardExists = availableWards.some(ward => ward.ward_sn === savedWardSn);
+
+                if (wardExists) {
+                  // 恢复上次选择的病区
+                  currentWardSn = savedWardSn;
+                  currentWardName = savedWardName;
+                  $("#wardlist-switch").html(
+                    currentWardName + ' <i class="layui-icon layui-icon-down"></i>'
+                  );
+
+                  // 加载该病区的患者列表
+                  loadPatients(currentWardSn);
+                  return;
+                }
+              }
+
+              // 如果没有保存的病区或病区不存在，默认选择第一个病区
+              if (availableWards.length > 0) {
+                currentWardSn = availableWards[0].ward_sn || "1011001";
+                currentWardName = availableWards[0].ward_name || "急诊一科";
+
+                // 保存到 localStorage
+                localStorage.setItem('selectedWardSn', currentWardSn);
+                localStorage.setItem('selectedWardName', currentWardName);
+
+                $("#wardlist-switch").html(
+                  currentWardName + ' <i class="layui-icon layui-icon-down"></i>'
+                );
+
+                // 加载该病区的患者列表
+                loadPatients(currentWardSn);
+              }
+            } else {
+              layui.use('layer', function () {
+                layui.layer.msg('获取病区列表失败', { icon: 2 });
+              });
+            }
+          },
+          error: function (xhr, status, error) {
+            hideLoading();
+            console.error("获取病区列表失败:", error);
+            layui.use('layer', function () {
+              layui.layer.msg('获取病区列表失败: ' + error, { icon: 2 });
+            });
+          }
+        });
+      }
+
+      function loadPatients(ward_sn) {
+        if (!ward_sn) {
+          console.warn("ward_sn 为空，无法加载患者列表");
+          return;
+        }
+
         // 显示加载图标和遮罩层
         showLoading();
+
+        console.log("加载患者列表，病区编号:", ward_sn);
 
         $.ajax({
           url:
             appconfig.api +
-            `/api/MobileWard/GetActPatientLists?ward=${dept_sn}&inout=I`,
+            `/api/MobileWard/GetActPatientLists?ward=${ward_sn}&inout=I`,
           method: "GET",
           success: function (res) {
             // 隐藏加载图标和遮罩层
@@ -436,8 +718,8 @@
         $(this).addClass("active");
         renderPatients();
       });
-      // UI 状态
-      loadPatients(loginUser.dept_sn);
+      // 初始化：加载病区列表
+      loadAvailableWards();
 
       //监听病区切换按钮
       $("#wardlist-switch").on("click", function () {
@@ -445,41 +727,403 @@
         $(".overlay").fadeToggle(300); // 同时切换遮罩
       });
 
-      //加载病区列表
-      function loadWards() {
-        $.ajax({
-          url:
-            appconfig.api +
-            "/api/MobileWard/GetYzUnitList?usermi=" +
-            loginUser.user_mi +
-            "&subsys_id=yz",
-          method: "GET",
-          success: function (res) {
-            if (res.Status === 1) {
-              console.log(res.Data);
-
-              renderWards(res.Data);
-            }
-          },
-        });
-      }
-
       //渲染病区列表
       function renderWards(loadedWards) {
-        $(".ward-list-header").text(`共${loadedWards.length}个科室`);
+        let filteredWards = loadedWards;
+
+        // 根据搜索关键词过滤病区
+        if (wardSearchKeyword.trim() !== "") {
+          filteredWards = loadedWards.filter((ward) => {
+            const keyword = wardSearchKeyword.toLowerCase();
+            return (
+              ward.ward_name.toLowerCase().includes(keyword) ||
+              (ward.ward_py_code && ward.ward_py_code.toLowerCase().includes(keyword)) ||
+              (ward.dept_name && ward.dept_name.toLowerCase().includes(keyword)) ||
+              ward.ward_sn.toString().includes(keyword)
+            );
+          });
+        }
+
+        $(".ward-list-header").text(`共${filteredWards.length}个病区`);
         const wardList = $(".ward-list-body");
         wardList.empty(); // 清空现有内容
+
+        if (filteredWards.length === 0) {
+          wardList.append('<div style="padding:20px; text-align:center; color:#888;">未找到匹配的病区</div>');
+          return;
+        }
+
         let html = "";
-        loadedWards.forEach((ward) => {
+        filteredWards.forEach((ward) => {
+          // 高亮当前选中的病区
+          const activeClass = ward.ward_sn === currentWardSn ? 'active' : '';
           html += `
-              <div class="ward-item" data-ward-id="${ward.ward_sn}">
+              <div class="ward-item ${activeClass}" data-ward-sn="${ward.ward_sn}" data-ward-name="${ward.ward_name}">
                 <label>${ward.ward_name}</label>
               </div>
             `;
         });
         wardList.append(html);
       }
+      // 扫码相关变量
+      let qrStream = null;
+      let qrAnimationId = null;
+      let qrVideoElement = null;
+      let qrCanvasElement = null;
+      let qrCanvasContext = null;
 
+      // 扫码功能 - 使用 jsQR
+      function startScan() {
+        layui.use('layer', function () {
+          const layer = layui.layer;
+
+          console.log('点击扫码按钮');
+
+          // 因为可能在iframe中，需要从顶层窗口获取 plus 对象
+          var topPlus = null;
+          try {
+            topPlus = top.plus || parent.plus || window.plus;
+          } catch (e) {
+            topPlus = window.plus;
+          }
+
+          console.log('window.plus 存在:', !!window.plus);
+          console.log('top.plus 存在:', !!(top && top.plus));
+          console.log('parent.plus 存在:', !!(parent && parent.plus));
+          console.log('最终使用的 plus 存在:', !!topPlus);
+          console.log('plus.android 存在:', !!(topPlus && topPlus.android));
+
+          // 在5+原生环境下，点击时检查并申请权限
+          if (topPlus && topPlus.android) {
+            console.log('检测到 Android 5+ 环境，开始申请相机权限');
+            try {
+              // 使用 plus.android.requestPermissions 申请权限
+              console.log("正在申请相机权限...");
+
+              topPlus.android.requestPermissions(
+                ['android.permission.CAMERA'],
+                function (e) {
+                  // 权限申请成功的回调
+                  console.log("相机权限申请结果回调", e);
+
+                  if (e.granted && e.granted.length > 0) {
+                    // 权限被授予
+                    console.log("相机权限已授权", e.granted);
+                    layer.msg('权限已授予', { icon: 1, time: 1000 });
+                    proceedToStartScanner();
+                  } else if (e.deniedAlways && e.deniedAlways.length > 0) {
+                    // 权限被永久拒绝
+                    console.log("相机权限被永久拒绝", e.deniedAlways);
+                    layer.confirm('相机权限被拒绝，需要前往设置中手动授权', {
+                      icon: 3,
+                      btn: ['前往设置', '取消']
+                    }, function (idx) {
+                      layer.close(idx);
+                      try {
+                        // 跳转到应用设置页
+                        var main = topPlus.android.runtimeMainActivity();
+                        var Intent = topPlus.android.importClass("android.content.Intent");
+                        var Uri = topPlus.android.importClass("android.net.Uri");
+                        var Settings = topPlus.android.importClass("android.provider.Settings");
+                        var intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                        var packageName = topPlus.android.invoke(main, "getPackageName");
+                        var uri = Uri.fromParts("package", packageName, null);
+                        intent.setData(uri);
+                        main.startActivity(intent);
+                      } catch (err) {
+                        console.error("无法打开设置页", err);
+                        layer.msg('请在系统设置中手动授予相机权限', { icon: 0, time: 3000 });
+                      }
+                    });
+                  } else if (e.deniedPresent && e.deniedPresent.length > 0) {
+                    // 权限被本次拒绝(但可以再次申请)
+                    console.log("相机权限被拒绝", e.deniedPresent);
+                    layer.msg('需要相机权限才能扫码，请重新尝试并允许权限', { icon: 2, time: 3000 });
+                  } else {
+                    console.warn("未知的权限申请结果", e);
+                    layer.msg('权限申请结果未知，请重试', { icon: 0, time: 2000 });
+                  }
+                },
+                function (e) {
+                  // 权限申请失败的回调
+                  console.error("相机权限申请失败", e);
+                  layer.msg("权限申请失败: " + JSON.stringify(e), { icon: 2, time: 3000 });
+                }
+              );
+            } catch (err) {
+              console.error("权限处理异常", err);
+              layer.msg("权限处理异常: " + err.message, { icon: 2 });
+              // 如果权限API出错，尝试直接启动扫码（让getUserMedia触发权限）
+              proceedToStartScanner();
+            }
+          }
+          // 非5+环境（浏览器/iOS webview）
+          else if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            // 浏览器环境：直接启动扫码，让浏览器处理权限
+            console.log("浏览器环境，直接启动扫码");
+            proceedToStartScanner();
+          }
+          // 其他情况
+          else {
+            layer.msg('您的浏览器不支持摄像头功能', { icon: 2 });
+          }
+
+          // 实际启动扫码器的函数
+          function proceedToStartScanner() {
+            // 检查浏览器是否支持
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+              layer.msg('您的浏览器不支持摄像头功能', { icon: 2 });
+              return;
+            }
+
+            // 检查 jsQR 是否加载
+            if (typeof jsQR === 'undefined') {
+              layer.msg('扫码库加载失败，请刷新页面重试', { icon: 2 });
+              return;
+            }
+
+            // 启动扫码
+            startQRScanner();
+          }
+        });
+      }
+
+      // 启动扫码器
+      function startQRScanner() {
+        layui.use('layer', function () {
+          const layer = layui.layer;
+
+          qrVideoElement = document.getElementById('qr-video');
+          qrCanvasElement = document.getElementById('qr-canvas');
+          qrCanvasContext = qrCanvasElement.getContext('2d');
+
+          // 显示扫码界面
+          document.getElementById('qr-scanner-container').classList.add('active');
+
+          // 请求摄像头权限
+          navigator.mediaDevices.getUserMedia({
+            video: {
+              facingMode: 'environment', // 使用后置摄像头
+              width: { ideal: 1280 },
+              height: { ideal: 720 }
+            }
+          })
+            .then(function (stream) {
+              qrStream = stream;
+              qrVideoElement.srcObject = stream;
+              qrVideoElement.setAttribute('playsinline', true);
+              qrVideoElement.play();
+
+              // 等待视频准备好后开始扫描
+              qrVideoElement.addEventListener('loadedmetadata', function () {
+                qrCanvasElement.width = qrVideoElement.videoWidth;
+                qrCanvasElement.height = qrVideoElement.videoHeight;
+                requestAnimationFrame(scanQRCode);
+              });
+
+              // 检查是否支持手电筒
+              const track = stream.getVideoTracks()[0];
+              const capabilities = track.getCapabilities ? track.getCapabilities() : {};
+              if (capabilities.torch) {
+                document.getElementById('flashBtn').style.display = 'inline-block';
+              }
+            })
+            .catch(function (err) {
+              console.error('摄像头访问失败:', err);
+              stopQRScanner();
+
+              if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+                layer.confirm('需要摄像头权限才能扫码，请在浏览器设置中允许访问摄像头', {
+                  icon: 3,
+                  btn: ['知道了']
+                });
+              } else if (err.name === 'NotFoundError') {
+                layer.msg('未检测到摄像头设备', { icon: 2 });
+              } else {
+                layer.msg('摄像头启动失败: ' + err.message, { icon: 2 });
+              }
+            });
+        });
+      }
+
+      // 扫描二维码
+      function scanQRCode() {
+        if (!qrVideoElement || qrVideoElement.readyState !== qrVideoElement.HAVE_ENOUGH_DATA) {
+          qrAnimationId = requestAnimationFrame(scanQRCode);
+          return;
+        }
+
+        try {
+          // 将视频帧绘制到 canvas
+          qrCanvasContext.drawImage(qrVideoElement, 0, 0, qrCanvasElement.width, qrCanvasElement.height);
+          const imageData = qrCanvasContext.getImageData(0, 0, qrCanvasElement.width, qrCanvasElement.height);
+
+          // 使用 jsQR 识别二维码
+          const code = jsQR(imageData.data, imageData.width, imageData.height, {
+            inversionAttempts: 'dontInvert'
+          });
+
+          if (code && code.data) {
+            // 扫码成功
+            console.log('扫码成功:', code.data);
+            stopQRScanner();
+            handleScanResult(code.data, 'QR_CODE');
+          } else {
+            // 继续扫描
+            qrAnimationId = requestAnimationFrame(scanQRCode);
+          }
+        } catch (e) {
+          console.error('扫码过程出错:', e);
+          qrAnimationId = requestAnimationFrame(scanQRCode);
+        }
+      }
+
+      // 停止扫码器
+      window.stopQRScanner = function () {
+        // 停止动画
+        if (qrAnimationId) {
+          cancelAnimationFrame(qrAnimationId);
+          qrAnimationId = null;
+        }
+
+        // 停止摄像头
+        if (qrStream) {
+          qrStream.getTracks().forEach(function (track) {
+            track.stop();
+          });
+          qrStream = null;
+        }
+
+        // 清空视频
+        if (qrVideoElement) {
+          qrVideoElement.srcObject = null;
+        }
+
+        // 隐藏扫码界面
+        document.getElementById('qr-scanner-container').classList.remove('active');
+      }
+
+      // 切换手电筒
+      window.toggleFlashlight = function () {
+        if (!qrStream) return;
+
+        const track = qrStream.getVideoTracks()[0];
+        if (!track || !track.getCapabilities) return;
+
+        const capabilities = track.getCapabilities();
+        if (!capabilities.torch) return;
+
+        const settings = track.getSettings();
+        const currentTorch = settings.torch || false;
+
+        track.applyConstraints({
+          advanced: [{ torch: !currentTorch }]
+        })
+          .then(function () {
+            layui.use('layer', function () {
+              layui.layer.msg(!currentTorch ? '手电筒已打开' : '手电筒已关闭', { icon: 1, time: 1000 });
+            });
+          })
+          .catch(function (err) {
+            console.error('切换手电筒失败:', err);
+          });
+      };
+
+      // 处理扫码结果
+      function handleScanResult(result, type) {
+        layui.use('layer', function () {
+          const layer = layui.layer;
+
+          console.log('扫码类型:', type);
+          console.log('扫码内容:', result);
+
+          // 显示扫码结果
+          // layer.open({
+          //   type: 1,
+          //   title: '扫码结果',
+          //   area: ['90%', 'auto'],
+          //   content: `
+          //               <div style="padding: 20px;">
+          //                   <div style="margin-bottom: 15px;">
+          //                       <div style="color: #666; font-size: 14px; margin-bottom: 5px;">扫码类型：</div>
+          //                       <div style="font-size: 16px; color: #333;">${type || '未知'}</div>
+          //                   </div>
+          //                   <div style="margin-bottom: 15px;">
+          //                       <div style="color: #666; font-size: 14px; margin-bottom: 5px;">扫码内容：</div>
+          //                       <div style="font-size: 16px; color: #333; word-break: break-all; padding: 10px; background: #f8f9fa; border-radius: 4px;">${result}</div>
+          //                   </div>
+          //                   <div style="text-align: center; margin-top: 20px;">
+          //                       <button class="layui-btn layui-btn-normal" onclick="copyToClipboard('${result.replace(/'/g, "\\'")}')">
+          //                           <i class="layui-icon layui-icon-file"></i> 复制内容
+          //                       </button>
+          //                       <button class="layui-btn layui-btn-primary" onclick="layer.closeAll()">
+          //                           <i class="layui-icon layui-icon-close"></i> 关闭
+          //                       </button>
+          //                   </div>
+          //               </div>
+          //           `
+          // });
+
+          // 业务处理：根据扫码内容进行相应操作
+          processScanData(result, type);
+        });
+      }
+
+      // 处理扫码数据的业务逻辑
+      function processScanData(data, type) {
+        // 判断是否是患者ID格式（示例：P123456 或 PATIENT_123456）
+        if (data) {
+          layui.use('layer', function () {
+            const layer = layui.layer;
+            layer.confirm('检测到患者信息，是否跳转到患者详情？', {
+              icon: 3,
+              btn: ['确定', '取消']
+            }, function (index) {
+              layer.close(index);
+              // 跳转到患者详情页
+              const selectedPatient = allPatients.find(
+                (patient) => patient.inpatient_no == data
+              );
+              if (selectedPatient == null) {
+                layui.use('layer', function () {
+                  const layer = layui.layer;
+                  layer.msg('未找到对应患者信息', { icon: 2, time: 2000 });
+                });
+                return;
+              }
+              else {
+                console.log("选中患者:", selectedPatient);
+                localStorage.setItem("userData", JSON.stringify(selectedPatient));
+                location.href = "../view/patient.html";
+              }
+
+            });
+          });
+        }
+        // 判断是否是URL
+        else if (data.startsWith('http://') || data.startsWith('https://')) {
+          layui.use('layer', function () {
+            const layer = layui.layer;
+            layer.confirm('检测到网址链接，是否在浏览器中打开？', {
+              icon: 3,
+              btn: ['打开', '取消']
+            }, function (index) {
+              layer.close(index);
+              var topPlus = top.plus || parent.plus || window.plus;
+              if (topPlus && topPlus.runtime) {
+                topPlus.runtime.openURL(data);
+              } else {
+                window.open(data, '_blank');
+              }
+            });
+          });
+        }
+        // 可以添加更多业务逻辑
+        // 例如：检测药品条码、检测设备编号等
+      }
+      $("#scan-icon").on("click", function () {
+        startScan();
+      });
       //关闭病区列表
       $("#wardlist-close").on("click", function () {
         $(".ward-list").fadeOut(300);
@@ -490,15 +1134,35 @@
         $(".ward-list").fadeOut(300);
         $(".overlay").fadeOut(300); // 同时关闭遮罩
       });
-      loadWards();
+
       //病区切换点击事件
       $(".ward-list-body").on("click", ".ward-item", function () {
-        const wardId = $(this).data("ward-id");
-        console.log("选中病区 ID:", wardId);
+        const wardSn = $(this).data("ward-sn");
+        const wardName = $(this).data("ward-name");
+
+        console.log("选中病区:", wardName, "编号:", wardSn);
+
+        // 更新当前选中的病区
+        currentWardSn = wardSn;
+        currentWardName = wardName;
+
+        // 保存到 localStorage，下次进入页面时自动恢复
+        localStorage.setItem('selectedWardSn', wardSn);
+        localStorage.setItem('selectedWardName', wardName);
+
+        // 更新按钮文本
         $("#wardlist-switch").html(
-          $(this).text() + ' <i class="layui-icon layui-icon-down"></i>'
-        ); // 更新按钮文本为选中病区名称
-        loadPatients(wardId); // 加载选中病区的患者
+          wardName + ' <i class="layui-icon layui-icon-down"></i>'
+        );
+
+        // 更新病区列表中的选中状态
+        $(".ward-list-body .ward-item").removeClass("active");
+        $(this).addClass("active");
+
+        // 加载选中病区的患者
+        loadPatients(wardSn);
+
+        // 关闭病区列表面板
         $(".ward-list").fadeOut(300);
         $(".overlay").fadeOut(300);
       });
@@ -521,10 +1185,16 @@
       // 初始化时设置默认选中状态
       $("#all-patients-label").addClass("active");
 
-      // 搜索功能
+      // 患者搜索功能
       $("#patient-search").on("input", function () {
         searchKeyword = $(this).val();
         renderPatients(); // 重新渲染患者列表
+      });
+
+      // 病区搜索功能
+      $("#ward-search").on("input", function () {
+        wardSearchKeyword = $(this).val();
+        renderWards(availableWards); // 重新渲染病区列表
       });
 
       // 清空搜索框时也重新渲染
