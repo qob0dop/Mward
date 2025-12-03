@@ -33,7 +33,9 @@
     .container {
       display: flex;
       height: calc(100vh - 35px - 60px);
+
       /* 减去header和搜索区域的高度 */
+
       background-color: #fafafa;
     }
 
@@ -87,7 +89,9 @@
     .template-grid {
       display: grid;
       margin-top: 0;
+
       /* 移除上边距，因为搜索框已经移到上方 */
+
       grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
       gap: 12px;
     }
@@ -236,7 +240,9 @@
 
     .order-panel.show {
       display: flex;
+
       /* 显示时改为flex */
+
       animation: slideUp .3s ease-out;
     }
 
@@ -313,6 +319,7 @@
       /* 让列表区域占用剩余空间，但可以滚动 */
       flex: 1;
       min-height: 0;
+
       /* 允许flex item缩小 */
       padding: 10px 15px;
     }
@@ -362,6 +369,7 @@
       flex-shrink: 0;
       justify-content: space-between;
       min-height: 50px;
+
       /* 确保最小高度 */
       padding: 10px 15px;
       border-top: 1px solid #e8e8e8;
@@ -526,7 +534,9 @@
     .selected-orders-fullpage .order-item {
       display: flex;
       flex-direction: column;
+
       /* 上下两层 */
+
       padding: 10px;
       border: 1px solid #f0f0f0;
       border-radius: 8px;
@@ -581,7 +591,9 @@
       font-weight: 600;
       padding: 9px 15px;
       text-align: right;
+
       /* 文本右对齐 */
+
       color: #333;
     }
 
@@ -632,6 +644,7 @@
 
     .layui-layer .layui-form-select dl {
       font-size: 14px;
+
       /* 提升清晰度的常用字号 */
       line-height: 22px;
       color: #333;
@@ -781,7 +794,7 @@
   </div>
 
   <script src="../lib/layui-v2.6.3/layui.js" charset="utf-8"></script>
-  <script src="../js/lay-config.js?v=1.0.4" charset="utf-8"></script>
+  <script src="../lib/lay-config.js?v=1.0.4" charset="utf-8"></script>
   <script src="../lib/mobile-select/mobile-select.iife.js"></script>
 
   <script>

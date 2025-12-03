@@ -134,16 +134,16 @@
 
         .test-controls {
             display: flex;
-            gap: 15px;
             align-items: flex-end;
             margin-top: 20px;
+            gap: 15px;
         }
 
         .stats-grid {
             display: grid;
+            margin-top: 15px;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 15px;
-            margin-top: 15px;
         }
 
         .stat-card {
@@ -190,21 +190,23 @@
         }
 
         .progress-fill {
+            line-height: 24px;
+
             height: 100%;
             transition: width .3s;
             text-align: center;
             color: #fff;
             background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-            line-height: 24px;
         }
 
         .log-container {
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            overflow-y: auto;
+
             max-height: 400px;
             margin-top: 15px;
             padding: 15px;
-            overflow-y: auto;
-            font-family: 'Courier New', monospace;
-            font-size: 12px;
             border-radius: 4px;
             background-color: #1e1e1e;
         }
@@ -212,8 +214,8 @@
         .log-entry {
             margin-bottom: 5px;
             padding: 5px;
-            border-left: 3px solid #666;
             color: #d4d4d4;
+            border-left: 3px solid #666;
         }
 
         .log-entry.info {
@@ -233,8 +235,9 @@
         }
 
         .log-time {
-            color: #888;
             margin-right: 10px;
+
+            color: #888;
         }
 
         .status-badge {
@@ -410,7 +413,7 @@
     </div>
 
     <script src="/lib/layui-v2.6.3/layui.js" charset="utf-8"></script>
-    <script src="/js/lay-config.js" charset="utf-8"></script>
+    <script src="/lib/lay-config.js" charset="utf-8"></script>
     <script>
         layui.use(['appconfig', 'layer', 'jquery'], function () {
             const $ = layui.jquery;

@@ -68,7 +68,6 @@
 
         main {
             overflow: hidden;
-
             height: 85%;
         }
 
@@ -93,7 +92,6 @@
 
         .message-card:hover {
             transform: translateY(-2px);
-
             box-shadow: 0 4px 8px rgba(0, 0, 0, .15);
         }
 
@@ -107,7 +105,6 @@
             right: 15px;
             width: 8px;
             height: 8px;
-
             content: '';
             border-radius: 50%;
             background-color: #ff5722;
@@ -141,7 +138,6 @@
 
         .message-type.urgent {
             animation: blink 1s infinite;
-
             background-color: #dc3545;
         }
 
@@ -190,7 +186,6 @@
 
         .no-messages {
             padding: 50px 20px;
-
             text-align: center;
             color: #999;
         }
@@ -211,7 +206,6 @@
         .action-btn {
             font-size: 24px;
             display: block;
-
             width: 50px;
             height: 50px;
             margin-bottom: 10px;
@@ -226,7 +220,6 @@
 
         .action-btn:hover {
             transform: scale(1.1);
-
             background-color: rgb(67, 92, 171);
         }
 
@@ -260,7 +253,6 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-
             padding: 20px;
             color: white;
             background-color: rgb(4, 46, 167);
@@ -285,25 +277,26 @@
             display: inline-block;
             width: 10px;
             height: 10px;
-            border-radius: 50%;
             margin-right: 8px;
-            transition: all 0.3s ease;
+            transition: all .3s ease;
+            border-radius: 50%;
         }
 
         .ws-online {
             background-color: #52c41a;
-            box-shadow: 0 0 8px rgba(82, 196, 26, 0.6);
+            box-shadow: 0 0 8px rgba(82, 196, 26, .6);
         }
 
         .ws-offline {
             background-color: #f5222d;
-            box-shadow: 0 0 8px rgba(245, 34, 45, 0.6);
+            box-shadow: 0 0 8px rgba(245, 34, 45, .6);
         }
 
         .ws-connecting {
-            background-color: #faad14;
-            box-shadow: 0 0 8px rgba(250, 173, 20, 0.6);
             animation: pulse 1.5s ease-in-out infinite;
+
+            background-color: #faad14;
+            box-shadow: 0 0 8px rgba(250, 173, 20, .6);
         }
 
         @keyframes pulse {
@@ -314,17 +307,17 @@
             }
 
             50% {
-                opacity: 0.5;
+                opacity: .5;
             }
         }
 
         #messageFullContent {
             font-size: 16px;
-            border: rgb(250, 177, 160);
-            padding: 15px;
             margin-bottom: 15px;
-            border-radius: 4px;
+            padding: 15px;
             white-space: pre-line;
+            border: rgb(250, 177, 160);
+            border-radius: 4px;
         }
     </style>
 </head>
@@ -375,7 +368,7 @@
     </div>
 
     <script src="/lib/layui-v2.6.3/layui.js" charset="utf-8"></script>
-    <script src="/js/lay-config.js" charset="utf-8"></script>
+    <script src="/lib/lay-config.js" charset="utf-8"></script>
     <script>
         layui.use(['appconfig', 'layer', 'form', 'jquery'], function () {
             const $ = layui.jquery;

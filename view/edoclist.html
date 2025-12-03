@@ -15,15 +15,17 @@
   <style>
     html,
     body {
+      overflow: hidden;
+
       height: 100%;
       margin: 0;
       padding: 0;
-      overflow: hidden;
     }
 
     .layui-btn:not(.layui-btn-lg):not(.layui-btn-sm):not(.layui-btn-xs) {
-      height: 34px;
       line-height: 34px;
+
+      height: 34px;
       padding: 0 8px;
     }
 
@@ -40,62 +42,68 @@
     }
 
     .layuimini-container {
-      height: 100vh;
-      overflow: hidden;
       display: flex;
+      overflow: hidden;
       flex-direction: column;
+
+      height: 100vh;
     }
 
     .layui-elem-quote {
-      padding: 5px;
-      font-weight: bold;
       font-size: 1.1rem;
+      font-weight: bold;
+
+      padding: 5px;
     }
 
     .layuimini-main {
-      margin: 10px 10px 0px 210px;
       flex-shrink: 0;
+
+      margin: 10px 10px 0 210px;
     }
 
     .layui-body {
-      padding-left: 200px;
-      left: 0px;
-      flex: 1;
-      overflow: hidden;
       position: relative;
+      left: 0;
+      overflow: hidden;
+      flex: 1;
+
+      padding-left: 200px;
     }
 
     .layui-layout-admin .layui-body {
-      padding-bottom: 0px;
+      padding-bottom: 0;
     }
 
     .layui-body .layadmin-tabsbody-item {
       position: absolute;
       top: 0;
+      right: 0;
       bottom: 0;
       left: 0;
-      right: 0;
       overflow: hidden;
       overflow-y: auto;
     }
 
     /* 导航栏切换样式 */
     .nav-toggle-btn {
-      z-index: 9999;
-      background: #009688;
-      border: none;
-      color: white;
-      padding: 8px 12px;
-      border-radius: 4px;
-      cursor: pointer;
       font-size: 16px;
-      transition: all 0.3s ease;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+
+      z-index: 9999;
+      padding: 8px 12px;
+      cursor: pointer;
+      transition: all .3s ease;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      background: #009688;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, .2);
     }
 
     .nav-toggle-btn:hover {
-      background: #00796b;
       transform: scale(1.05);
+
+      background: #00796b;
     }
 
     /* 导航栏隐藏状态 */
@@ -113,30 +121,30 @@
 
     /* 导航栏动画 */
     .layui-nav-side {
-      transition: transform 0.3s ease;
       position: fixed;
-
       bottom: 0;
       left: 0;
-      width: 200px;
-      overflow-y: auto;
       overflow-x: hidden;
+      overflow-y: auto;
+      width: 200px;
+
+      transition: transform .3s ease;
     }
 
     .layui-body {
-      transition: padding-left 0.3s ease;
+      transition: padding-left .3s ease;
     }
 
     .layuimini-main {
-      transition: margin-left 0.3s ease;
+      transition: margin-left .3s ease;
     }
 
     /* 病历列表样式 */
     .record-item {
       padding: 12px 15px;
-      border-bottom: 1px solid #f0f0f0;
       cursor: pointer;
-      transition: background-color 0.2s;
+      transition: background-color .2s;
+      border-bottom: 1px solid #f0f0f0;
     }
 
     .record-item:hover {
@@ -144,15 +152,15 @@
     }
 
     .record-item.active {
-      background-color: #e3f2fd;
       border-left: 3px solid #1e9fff;
+      background-color: #e3f2fd;
     }
 
     .record-title {
       font-size: 14px;
       font-weight: 600;
-      color: #333;
       margin-bottom: 6px;
+      color: #333;
     }
 
     .record-meta {
@@ -165,27 +173,29 @@
     }
 
     .record-content {
-      padding: 10px;
-      padding-top: 0px;
-      background: white;
-      white-space: pre-wrap;
-      line-height: 1.8;
       font-size: 14px;
+      line-height: 1.8;
+
+      padding: 10px;
+      padding-top: 0;
+      white-space: pre-wrap;
       color: #333;
+      background: white;
     }
 
     /* 分类样式 */
     .category-header {
-      padding: 10px 15px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
       font-size: 13px;
       font-weight: 600;
-      cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      transition: all 0.3s;
+
+      padding: 10px 15px;
+      cursor: pointer;
+      transition: all .3s;
+      color: white;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     }
 
     .category-header:hover {
@@ -193,7 +203,7 @@
     }
 
     .category-header i {
-      transition: transform 0.3s;
+      transition: transform .3s;
     }
 
     .category-header.collapsed i {
@@ -246,8 +256,9 @@
       }
 
       .nav-toggle-btn {
-        padding: 6px 10px;
         font-size: 14px;
+
+        padding: 6px 10px;
       }
     }
   </style>
@@ -328,7 +339,7 @@
   </div>
 
   <script src="/lib/layui-v2.6.3/layui.js" charset="utf-8"></script>
-  <script src="/js/lay-config.js?v=1.0.4" charset="utf-8"></script>
+  <script src="/lib/lay-config.js?v=1.0.4" charset="utf-8"></script>
   <script>
     // xml转换为js对象
     function xmlToJson(xml) {

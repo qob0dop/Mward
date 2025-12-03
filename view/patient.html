@@ -22,124 +22,133 @@
   <link rel="stylesheet" href="/css/patient.css" media="all" />
   <style>
     body {
-      background-color: transparent;
+      position: relative;
+      overflow: hidden !important;
+      height: 100vh !important;
       margin: 0;
       padding: 0;
-      height: 100vh !important;
-      overflow: hidden !important;
-      position: relative;
+
+      background-color: transparent;
     }
 
     .layuimini-container {
-      padding: 0;
-      margin: 0;
-      border: none;
       height: 100% !important;
+      margin: 0;
+      padding: 0;
+      border: none;
     }
 
     .main-content {
+      position: relative;
+
       display: flex;
+      overflow: hidden !important;
       flex-direction: column;
       height: 100vh !important;
       max-height: 100vh !important;
-      padding: 0;
       margin: 0;
-      position: relative;
-      overflow: hidden !important;
+      padding: 0;
     }
 
     /* 《======================顶部区域样式======================》 */
     .layui-elem-quote {
+      font-size: 1rem;
+      font-weight: bold;
+
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 3px 10px;
-      margin: 0;
       height: 35px;
       min-height: 35px;
+      margin: 0;
+      padding: 3px 10px;
+      color: #fff;
       border: none;
       background-color: rgb(4, 46, 167);
-      color: #fff;
-      font-weight: bold;
-      font-size: 1rem;
-      box-shadow: 0 2px 8px rgba(66, 165, 245, 0.3);
+      box-shadow: 0 2px 8px rgba(66, 165, 245, .3);
     }
 
     /* 《======================中间区域样式======================》 */
     .tab-content-area {
-      flex: 1 1 auto;
-      overflow: hidden !important;
-      margin: 0;
       position: relative;
-      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      overflow: hidden !important;
+      flex: 1 1 auto;
+      /* 精确计算可用高度，避免多重滚动条 */
+
+      height: calc(100vh - 80px);
       min-height: 0;
       max-height: 100%;
+      margin: 0;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
       isolation: isolate;
-      /* 精确计算可用高度，避免多重滚动条 */
-      height: calc(100vh - 80px);
       /* 顶部导航栏35px + 选项卡栏45px */
     }
 
     /* 病人切换列表样式 */
     #patient-switch-list {
-      display: none;
       position: absolute;
-      left: 0;
+      z-index: 999;
       top: 0;
       bottom: 0;
-      width: 0;
-      background: linear-gradient(180deg,
-          rgba(255, 255, 255, 0.95) 0%,
-          rgba(245, 247, 250, 0.95) 100%);
-      backdrop-filter: blur(10px);
-      z-index: 999;
-      box-shadow: 2px 0 20px rgba(30, 136, 229, 0.15);
+      left: 0;
+
+      display: none;
       overflow: hidden;
-      transition: width 0.3s ease;
+      width: 0;
+      transition: width .3s ease;
       border-radius: 0 12px 12px 0;
+      background: linear-gradient(180deg,
+          rgba(255, 255, 255, .95) 0%,
+          rgba(245, 247, 250, .95) 100%);
+      box-shadow: 2px 0 20px rgba(30, 136, 229, .15);
+      backdrop-filter: blur(10px);
     }
 
     #patient-switch-list.show {
       display: block;
-      width: 30%;
       overflow-y: auto;
+      width: 30%;
       /* 自动显示滚动条 */
     }
 
     /* 主要展示框 */
     .layui-tab-content {
-      height: 100% !important;
-      padding: 0;
-      margin: 0;
-      overflow: hidden !important;
       position: relative;
+      overflow: hidden !important;
+
+      height: 100% !important;
+      margin: 0;
+      padding: 0;
     }
 
     body.patient-list-open .layui-tab-content {
       margin-left: 30%;
-      transition: margin-left 0.3s ease;
+      transition: margin-left .3s ease;
     }
 
     /* 选项卡内容区域 */
     .layui-tab-item {
+      position: relative;
+      overflow: hidden !important;
+
       height: 100% !important;
       max-height: 100% !important;
-      padding: 0;
       margin: 0;
-      overflow: hidden !important;
-      position: relative;
+      padding: 0;
     }
 
     /* 患者信息选项卡特殊处理 - 允许滚动 */
     #tab-patient {
-      overflow-y: auto !important;
       overflow-x: hidden !important;
+      overflow-y: auto !important;
+      box-sizing: border-box !important;
+
       /* 确保滚动容器不会超出可视区域 */
       height: 100% !important;
-      box-sizing: border-box !important;
       /* 美化滚动条样式 */
+
       scrollbar-width: thin;
-      scrollbar-color: rgba(66, 165, 245, 0.3) transparent;
+      scrollbar-color: rgba(66, 165, 245, .3) transparent;
     }
 
     /* Webkit浏览器滚动条样式 */
@@ -152,20 +161,20 @@
     }
 
     #tab-patient::-webkit-scrollbar-thumb {
-      background: rgba(66, 165, 245, 0.3);
       border-radius: 3px;
+      background: rgba(66, 165, 245, .3);
     }
 
     #tab-patient::-webkit-scrollbar-thumb:hover {
-      background: rgba(66, 165, 245, 0.5);
+      background: rgba(66, 165, 245, .5);
     }
 
     /* iframe容器样式*/
     .tab-iframe-container {
-      height: 100%;
-      width: 100%;
-      overflow: hidden;
       position: relative;
+      overflow: hidden;
+      width: 100%;
+      height: 100%;
       isolation: isolate;
     }
 
@@ -175,44 +184,44 @@
 
     /* 确保iframe填满容器但不超出*/
     .tab-content-area iframe {
-      width: 100% !important;
-      height: 100% !important;
-      max-width: 100% !important;
-      max-height: 100% !important;
-      border: none;
-      display: block;
-      box-sizing: border-box;
       position: absolute;
       top: 0;
       left: 0;
+      display: block;
       /* 强制iframe不能超出父容器 */
       overflow: hidden;
+      box-sizing: border-box;
+      width: 100% !important;
+      max-width: 100% !important;
+      height: 100% !important;
+      max-height: 100% !important;
+      border: none;
     }
 
     /* 患者信息卡片样式 */
     .patient-info-container {
+      box-sizing: border-box;
+      height: auto;
       margin: 0;
       padding: 15px;
-      height: auto;
-      box-sizing: border-box;
       /* 移除容器级别的滚动条，只在整个选项卡级别滚动 */
     }
 
     .patient-main-card {
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
       overflow: hidden;
-      transition: all 0.3s ease;
+      transition: all .3s ease;
+      border-radius: 12px;
+      background: white;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, .1);
     }
 
     .patient-header {
-      background: linear-gradient(135deg, #42a5f5 0%, #1e88e5 100%);
+      position: relative;
       padding: 16px 20px;
-      color: white;
       cursor: pointer;
       user-select: none;
-      position: relative;
+      color: white;
+      background: linear-gradient(135deg, #42a5f5 0%, #1e88e5 100%);
     }
 
     .patient-header:hover {
@@ -234,7 +243,7 @@
 
     .expand-icon {
       font-size: 1.1rem;
-      transition: transform 0.3s ease;
+      transition: transform .3s ease;
     }
 
     .expand-icon.expanded {
@@ -242,23 +251,25 @@
     }
 
     .patient-meta {
+      font-size: .85rem;
+
       display: flex;
-      gap: 16px;
-      font-size: 0.85rem;
-      opacity: 0.9;
       flex-wrap: wrap;
+      opacity: .9;
+      gap: 16px;
     }
 
     .patient-details {
-      padding: 0;
-      max-height: 0;
       overflow: hidden;
-      transition: all 0.3s ease;
+      max-height: 0;
+      padding: 0;
+      transition: all .3s ease;
       background: #fafafa;
     }
 
     .patient-details.expanded {
       max-height: none;
+
       /* 移除高度限制，让内容自然展开 */
       padding: 18px 20px;
       /* 移除内部滚动条 */
@@ -271,26 +282,27 @@
     }
 
     .detail-section {
-      background: white;
-      border-radius: 6px;
       padding: 12px 14px;
       border-left: 3px solid #42a5f5;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+      border-radius: 6px;
+      background: white;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, .08);
     }
 
     .section-title {
-      font-size: 0.9rem;
+      font-size: .9rem;
       font-weight: 600;
-      color: #37474f;
-      margin-bottom: 8px;
       display: flex;
       align-items: center;
+      margin-bottom: 8px;
+      color: #37474f;
       gap: 6px;
     }
 
     .section-title i {
-      color: #42a5f5;
       font-size: 1rem;
+
+      color: #42a5f5;
     }
 
     .info-item {
@@ -304,17 +316,17 @@
     }
 
     .info-label {
-      font-size: 0.72rem;
-      color: #5f6368;
-      margin-bottom: 2px;
+      font-size: .72rem;
       font-weight: 500;
+      margin-bottom: 2px;
+      color: #5f6368;
     }
 
     .info-value {
-      font-size: 0.8rem;
-      color: #37474f;
+      font-size: .8rem;
       font-weight: 600;
       word-break: break-all;
+      color: #37474f;
     }
 
     /* 响应式布局 */
@@ -336,27 +348,27 @@
     /* 《======================顶部导航区域样式======================》 */
     .bottom-tabs {
       position: relative;
+      z-index: 1000;
       top: 0;
+      overflow: hidden;
       width: 100%;
       height: 45px;
-      background-color: #fff;
-      border-bottom: 1px solid #e1e5e9;
-      z-index: 1000;
       margin: 0;
       padding: 0;
-      overflow: hidden;
+      border-bottom: 1px solid #e1e5e9;
+      background-color: #fff;
     }
 
     .option-bar {
       position: relative;
       top: 0;
       display: flex;
-      height: 44px;
-      width: 100%;
-      padding: 0;
-      gap: 0;
-      white-space: nowrap;
       justify-content: space-between;
+      width: 100%;
+      height: 44px;
+      padding: 0;
+      white-space: nowrap;
+      gap: 0;
     }
 
     .option-bar::-webkit-scrollbar {
@@ -365,104 +377,108 @@
     }
 
     .tab-btn {
+      font-size: 1rem;
+      line-height: 44px;
+      position: relative;
+      overflow: hidden;
       flex: 1;
       min-width: 100px;
       max-width: 180px;
       height: 44px;
-      line-height: 44px;
       margin: 0;
       padding: 0 12px;
-      background: transparent;
+      cursor: pointer;
+      transition: all .2s ease;
+      text-align: center;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      color: #5f6368;
       border: none;
       border-radius: 0;
-      font-size: 1rem;
-      color: #5f6368;
-      cursor: pointer;
       outline: none;
-      transition: all 0.2s ease;
-      text-align: center;
-      position: relative;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      background: transparent;
     }
 
     .tab-btn.layui-this,
     .tab-btn.active {
-      color: #42a5f5;
       font-weight: 600;
+
+      color: #42a5f5;
     }
 
     .tab-btn.layui-this::after,
     .tab-btn.active::after {
-      content: "";
       position: absolute;
       bottom: 0;
       left: 0;
       width: 100%;
       height: 3px;
+
+      content: '';
       background: #42a5f5;
     }
 
     .tab-btn:hover {
       color: #42a5f5;
-      background: rgba(66, 165, 245, 0.05);
+      background: rgba(66, 165, 245, .05);
     }
 
     /* 《======================功能区域样式======================》 */
     .function-area {
+      margin-top: 0;
       padding: 8px 15px;
       border-top: 1px solid #e1e5e9;
       background: #fff;
-      margin-top: 0;
     }
 
     .function-title {
       font-size: 1.1rem;
       font-weight: 600;
-      color: #37474f;
-      margin-bottom: 8px;
       display: flex;
       align-items: center;
+      margin-bottom: 8px;
+      color: #37474f;
     }
 
     .function-title::before {
-      content: "";
       width: 3px;
       height: 16px;
-      background: #42a5f5;
       margin-right: 8px;
+
+      content: '';
       border-radius: 2px;
+      background: #42a5f5;
     }
 
     .function-buttons {
       display: flex;
-      gap: 8px;
       flex-wrap: wrap;
+      gap: 8px;
     }
 
     .function-btn {
+      font-size: .85rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
       flex: 1;
+      justify-content: center;
       min-width: 100px;
       height: 32px;
-      background: linear-gradient(135deg, #42a5f5 0%, #1976d2 100%);
+      cursor: pointer;
+      transition: all .2s ease;
       color: #fff;
       border: none;
       border-radius: 5px;
-      font-size: 0.85rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      background: linear-gradient(135deg, #42a5f5 0%, #1976d2 100%);
       gap: 5px;
     }
 
     .function-btn:hover {
-      background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
       transform: translateY(-1px);
-      box-shadow: 0 3px 8px rgba(66, 165, 245, 0.3);
+
+      background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
+      box-shadow: 0 3px 8px rgba(66, 165, 245, .3);
     }
 
     .function-btn:active {
@@ -475,29 +491,30 @@
 
     /* 《======================患者资料区域样式======================》 */
     .patient-info-section {
-      background: #fff;
-      border-radius: 6px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
       margin-top: 8px;
       padding: 12px 15px;
+      border-radius: 6px;
+      background: #fff;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, .08);
     }
 
     .patient-info-title {
       font-size: 1.1rem;
       font-weight: 600;
-      color: #37474f;
-      margin-bottom: 10px;
       display: flex;
       align-items: center;
+      margin-bottom: 10px;
+      color: #37474f;
     }
 
     .patient-info-title::before {
-      content: "";
       width: 3px;
       height: 16px;
-      background: #66bb6a;
       margin-right: 8px;
+
+      content: '';
       border-radius: 2px;
+      background: #66bb6a;
     }
 
     .contact-grid {
@@ -507,51 +524,52 @@
     }
 
     .contact-item {
-      background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
       padding: 10px 14px;
-      border-radius: 6px;
+      transition: all .2s ease;
       border-left: 3px solid #66bb6a;
-      transition: all 0.2s ease;
+      border-radius: 6px;
+      background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
     }
 
     .contact-item:hover {
       transform: translateY(-1px);
-      box-shadow: 0 2px 6px rgba(102, 187, 106, 0.2);
+      box-shadow: 0 2px 6px rgba(102, 187, 106, .2);
     }
 
     .contact-label {
-      font-size: 0.75rem;
-      color: #5f6368;
-      margin-bottom: 2px;
+      font-size: .75rem;
       font-weight: 500;
       display: flex;
       align-items: center;
+      margin-bottom: 2px;
+      color: #5f6368;
       gap: 4px;
     }
 
     .contact-value {
-      font-size: 0.85rem;
-      color: #37474f;
+      font-size: .85rem;
       font-weight: 600;
       display: flex;
       align-items: center;
+      color: #37474f;
       gap: 6px;
     }
 
     .call-btn {
-      background: #66bb6a;
+      font-size: .7rem;
+      padding: 2px 5px;
+      cursor: pointer;
+      transition: all .2s ease;
       color: white;
       border: none;
       border-radius: 3px;
-      padding: 2px 5px;
-      font-size: 0.7rem;
-      cursor: pointer;
-      transition: all 0.2s ease;
+      background: #66bb6a;
     }
 
     .call-btn:hover {
-      background: #5cb85c;
       transform: scale(1.05);
+
+      background: #5cb85c;
     }
 
     /* 响应式布局 */
@@ -563,24 +581,25 @@
 
     /* 《======================费用明细区域样式======================》 */
     .expense-area {
-      background: #fff;
-      border-radius: 6px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-      margin-top: 8px;
       overflow: hidden;
-      transition: all 0.3s ease;
+      margin-top: 8px;
+      transition: all .3s ease;
+      border-radius: 6px;
+      background: #fff;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, .08);
     }
 
     .expense-header {
-      padding: 10px 15px;
-      background: linear-gradient(135deg, #26c6da 0%, #00acc1 100%);
-      color: white;
-      cursor: pointer;
-      user-select: none;
       position: relative;
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      justify-content: space-between;
+
+      padding: 10px 15px;
+      cursor: pointer;
+      user-select: none;
+      color: white;
+      background: linear-gradient(135deg, #26c6da 0%, #00acc1 100%);
     }
 
     .expense-header:hover {
@@ -590,16 +609,16 @@
     .expense-title {
       font-size: 1rem;
       font-weight: 600;
-      color: white;
-      margin: 0;
       display: flex;
       align-items: center;
+      margin: 0;
+      color: white;
       gap: 6px;
     }
 
     .expense-expand-icon {
       font-size: 1.1rem;
-      transition: transform 0.3s ease;
+      transition: transform .3s ease;
     }
 
     .expense-expand-icon.expanded {
@@ -607,15 +626,16 @@
     }
 
     .expense-content {
-      padding: 0;
-      max-height: 0;
       overflow: hidden;
-      transition: all 0.3s ease;
+      max-height: 0;
+      padding: 0;
+      transition: all .3s ease;
       background: #fafafa;
     }
 
     .expense-content.expanded {
       max-height: none;
+
       /* 移除高度限制，让内容自然展开 */
       padding: 12px 15px;
       /* 移除内部滚动条 */
@@ -623,13 +643,13 @@
 
     .expense-summary {
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      background: linear-gradient(135deg, #e0f2f1 0%, #b2dfdb 100%);
-      padding: 10px 14px;
-      border-radius: 6px;
+      justify-content: space-between;
       margin-bottom: 10px;
+      padding: 10px 14px;
       border-left: 3px solid #26c6da;
+      border-radius: 6px;
+      background: linear-gradient(135deg, #e0f2f1 0%, #b2dfdb 100%);
     }
 
     .total-expense {
@@ -639,10 +659,10 @@
     }
 
     .expense-status {
-      font-size: 0.75rem;
-      color: #5f6368;
+      font-size: .75rem;
       display: flex;
       align-items: center;
+      color: #5f6368;
       gap: 3px;
     }
 
@@ -653,26 +673,27 @@
     }
 
     .expense-item {
-      background: #f9f9f9;
       padding: 8px 10px;
-      border-radius: 5px;
+      transition: all .2s ease;
       border-left: 3px solid #42a5f5;
-      transition: all 0.2s ease;
+      border-radius: 5px;
+      background: #f9f9f9;
     }
 
     .expense-item:hover {
-      background: #f0f0f0;
       transform: translateY(-1px);
+
+      background: #f0f0f0;
     }
 
     .expense-item-name {
-      font-size: 0.72rem;
-      color: #5f6368;
+      font-size: .72rem;
       margin-bottom: 2px;
+      color: #5f6368;
     }
 
     .expense-item-amount {
-      font-size: 0.85rem;
+      font-size: .85rem;
       font-weight: 600;
       color: #37474f;
     }
@@ -684,8 +705,8 @@
       }
 
       .expense-summary {
-        flex-direction: column;
         align-items: flex-start;
+        flex-direction: column;
         gap: 6px;
       }
     }
@@ -698,31 +719,33 @@
     }
 
     #patient-header-info {
-      margin: 0 auto;
+      font-size: .95rem;
       display: inline-block;
-      white-space: nowrap;
       overflow: hidden;
+
+      margin: 0 auto;
+      white-space: nowrap;
       text-overflow: ellipsis;
-      font-size: 0.95rem;
     }
 
     /* 患者列表样式优化 */
     #switch-patient-table+div .layui-table-body table tbody tr.selected {
-      background: linear-gradient(135deg,
-          rgba(66, 165, 245, 0.15) 0%,
-          rgba(25, 118, 210, 0.15) 100%) !important;
-      color: #42a5f5;
       font-weight: bold;
+      color: #42a5f5;
       border-left: 3px solid #42a5f5;
+      background: linear-gradient(135deg,
+          rgba(66, 165, 245, .15) 0%,
+          rgba(25, 118, 210, .15) 100%) !important;
     }
 
     #switch-patient-table+div .layui-table-body table tbody tr:hover {
-      background: linear-gradient(135deg,
-          rgba(66, 165, 245, 0.1) 0%,
-          rgba(42, 165, 245, 0.1) 100%) !important;
       cursor: pointer;
+      transition: all .3s ease;
       transform: translateX(2px);
-      transition: all 0.3s ease;
+
+      background: linear-gradient(135deg,
+          rgba(66, 165, 245, .1) 0%,
+          rgba(42, 165, 245, .1) 100%) !important;
     }
 
     /* 患者详情页专用样式 */
@@ -731,89 +754,93 @@
 
     /* 按钮样式优化 */
     .btn-switch-patient {
-      float: left;
       font-size: 13px;
-      margin-right: 6px;
       font-weight: normal;
-      transition: all 0.3s ease;
-      height: 28px;
       line-height: 28px;
-      padding: 0 8px;
-      min-width: 30px;
       position: relative;
+
+      float: left;
       overflow: hidden;
+      min-width: 30px;
+      height: 28px;
+      margin-right: 6px;
+      padding: 0 8px;
+      transition: all .3s ease;
     }
 
     .btn-switch-patient.active {
+      color: #fff !important;
+      border-color: #ff6b6b !important;
       background: linear-gradient(135deg,
           #ff6b6b 0%,
           #ee5a24 100%) !important;
-      border-color: #ff6b6b !important;
-      color: #fff !important;
-      box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+      box-shadow: 0 4px 15px rgba(255, 107, 107, .4);
     }
 
     /* 全局按钮悬停效果增强 */
     .layui-btn:hover {
       transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, .15);
     }
 
     /* 为了兼容性，添加一些现代化的按钮样式 */
     .modern-btn {
-      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-      border: none;
-      border-radius: 8px;
-      color: #fff;
       font-weight: 600;
       padding: 10px 20px;
       cursor: pointer;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
+      transition: all .3s ease;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      box-shadow: 0 4px 15px rgba(79, 172, 254, .3);
     }
 
     .modern-btn:hover {
-      background: linear-gradient(135deg, #1e88e5 0%, #1565c0 100%);
       transform: translateY(-2px);
-      box-shadow: 0 6px 25px rgba(30, 136, 229, 0.4);
+
+      background: linear-gradient(135deg, #1e88e5 0%, #1565c0 100%);
+      box-shadow: 0 6px 25px rgba(30, 136, 229, .4);
     }
 
     #patient-switch-list .list-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      position: sticky;
-      top: 0;
-      padding: 10px 16px;
-      height: 12px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-      background: linear-gradient(135deg, #42a5f5 0%, #1976d2 100%);
-      font-weight: bold;
       font-size: 1rem;
+      font-weight: bold;
+      position: sticky;
       z-index: 10;
+      top: 0;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 12px;
+      padding: 10px 16px;
       color: #fff;
+      border-bottom: 1px solid rgba(255, 255, 255, .2);
       border-radius: 0 12px 0 0;
-      box-shadow: 0 2px 8px rgba(66, 165, 245, 0.3);
+      background: linear-gradient(135deg, #42a5f5 0%, #1976d2 100%);
+      box-shadow: 0 2px 8px rgba(66, 165, 245, .3);
     }
 
     #patient-switch-list .list-header .close-btn {
-      cursor: pointer;
       font-size: 20px;
-      color: rgba(255, 255, 255, 0.9);
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: all 0.3s ease;
-      background: rgba(255, 255, 255, 0.1);
+      width: 28px;
+      height: 28px;
+
+      cursor: pointer;
+      transition: all .3s ease;
+      color: rgba(255, 255, 255, .9);
+      border-radius: 50%;
+      background: rgba(255, 255, 255, .1);
     }
 
     #patient-switch-list .list-header .close-btn:hover {
-      background: rgba(255, 255, 255, 0.2);
-      color: #fff;
       transform: scale(1.1);
+      color: #fff;
+      background: rgba(255, 255, 255, .2);
     }
 
     /* 病人列表表格样式优化 */
@@ -822,37 +849,41 @@
     }
 
     #patient-switch-list .layui-table tbody tr:hover {
-      background: linear-gradient(135deg,
-          rgba(33, 150, 243, 0.3) 0%,
-          rgba(30, 136, 229, 0.3) 100%) !important;
       cursor: pointer;
+      transition: all .3s ease;
       transform: translateX(5px);
-      transition: all 0.3s ease;
-      box-shadow: 0 2px 10px rgba(33, 150, 243, 0.2);
+
+      background: linear-gradient(135deg,
+          rgba(33, 150, 243, .3) 0%,
+          rgba(30, 136, 229, .3) 100%) !important;
+      box-shadow: 0 2px 10px rgba(33, 150, 243, .2);
     }
 
     #patient-switch-list .layui-table tbody tr.selected {
-      background: linear-gradient(135deg,
-          rgba(30, 136, 229, 0.3) 0%,
-          rgba(21, 101, 192, 0.3) 100%) !important;
-      border-left: 4px solid #1e88e5;
       font-weight: bold;
+      border-left: 4px solid #1e88e5;
+      background: linear-gradient(135deg,
+          rgba(30, 136, 229, .3) 0%,
+          rgba(21, 101, 192, .3) 100%) !important;
     }
 
     .btn-back {
-      float: right;
       font-size: 13px;
+
       /* margin-right: 15px; */
       font-weight: normal;
-      height: 28px;
       line-height: 28px;
+
+      float: right;
+      height: 28px;
       padding: 0 8px;
     }
 
     /* 加载状态样式 */
     .loading-container {
-      text-align: center;
       padding: 30px;
+
+      text-align: center;
       color: #999;
     }
 
@@ -861,8 +892,9 @@
     }
 
     .loading-text {
-      margin-top: 15px;
       font-size: 15px;
+
+      margin-top: 15px;
     }
 
     @media (max-width: 600px) {
@@ -880,33 +912,35 @@
 
       /* 窄屏时病人信息表单样式调整 */
       .layui-form-item {
-        flex-direction: row !important;
         align-items: center !important;
+        flex-direction: row !important;
         flex-wrap: nowrap !important;
         margin-bottom: 15px !important;
       }
 
       .layui-form-item .layui-form-label {
-        width: 30% !important;
-        max-width: 80px !important;
-        text-align: left !important;
-        margin-bottom: 0 !important;
         font-size: 13px;
-        padding: 9px 10px !important;
-        height: auto !important;
         line-height: 1.4 !important;
         display: flex !important;
         align-items: center !important;
+
+        width: 30% !important;
+        max-width: 80px !important;
+        height: auto !important;
+        margin-bottom: 0 !important;
+        padding: 9px 10px !important;
+        text-align: left !important;
       }
 
       .layui-form-item .layui-input-inline {
-        width: calc(70% - 8px) !important;
-        max-width: calc(100% - 88px) !important;
-        text-align: left;
-        margin-bottom: 0 !important;
-        margin-left: 0 !important;
         display: flex !important;
         align-items: center !important;
+
+        width: calc(70% - 8px) !important;
+        max-width: calc(100% - 88px) !important;
+        margin-bottom: 0 !important;
+        margin-left: 0 !important;
+        text-align: left;
       }
 
       /* 窄屏时输入框样式优化 */
@@ -914,20 +948,21 @@
       .layui-form-item .layui-input-inline .layui-select,
       .layui-form-item .layui-input-inline .layui-textarea {
         font-size: 13px !important;
-        padding: 9px 8px !important;
-        height: auto !important;
         line-height: 1.4 !important;
-        border-radius: 4px !important;
+        height: auto !important;
         margin: 0 !important;
+        padding: 9px 8px !important;
+        border-radius: 4px !important;
       }
     }
 
     /* 超窄屏幕（小于480px）进一步优化 */
     @media (max-width: 480px) {
       .layui-form-item .layui-form-label {
+        font-size: 12px !important;
+
         width: 32% !important;
         max-width: 70px !important;
-        font-size: 12px !important;
         padding: 9px 8px !important;
       }
 
@@ -950,8 +985,9 @@
         } */
 
       .tab-btn {
-        min-width: 70px;
         font-size: 16px;
+
+        min-width: 70px;
       }
 
       /* 超小屏幕下的图标样式调整 */
@@ -968,17 +1004,18 @@
     /* 现代化输入框样式 */
     .layui-input:focus,
     .layui-textarea:focus {
+      transition: all .3s ease;
+
       border-color: #1e88e5 !important;
-      box-shadow: 0 0 0 3px rgba(30, 136, 229, 0.1) !important;
       outline: none !important;
-      transition: all 0.3s ease;
+      box-shadow: 0 0 0 3px rgba(30, 136, 229, .1) !important;
     }
 
     .layui-input,
     .layui-textarea {
-      border-radius: 6px !important;
+      transition: all .3s ease;
       border: 1px solid #e1e5e9 !important;
-      transition: all 0.3s ease;
+      border-radius: 6px !important;
     }
 
     .layui-input:hover,
@@ -988,20 +1025,22 @@
 
     /* 表单标签现代化 */
     .layui-form-label {
-      color: #2d3748 !important;
       font-weight: 600 !important;
+
+      color: #2d3748 !important;
     }
 
     #my-patients-btn {
-      padding: 4px;
       font-size: 10px;
-      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      font-weight: 600;
+
+      padding: 4px;
+      transition: all .3s ease;
+      color: #fff;
       border: none;
       border-radius: 8px;
-      color: #fff;
-      font-weight: 600;
-      box-shadow: 0 3px 12px rgba(79, 172, 254, 0.3);
-      transition: all 0.3s ease;
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      box-shadow: 0 3px 12px rgba(79, 172, 254, .3);
     }
 
     /* 移动端禁用 hover 效果，防止触屏点击后一直高亮 */
@@ -1333,7 +1372,7 @@
   </div>
 
   <script src="/lib/layui-v2.6.3/layui.js" charset="utf-8"></script>
-  <script src="/js/lay-config.js?v=1.0.4" charset="utf-8"></script>
+  <script src="/lib/lay-config.js?v=1.0.4" charset="utf-8"></script>
   <script>
     layui.use(
       ["table", "treetable", "appconfig", "element", "layer"],
