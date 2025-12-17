@@ -1,0 +1,309 @@
+body,
+html {
+  height: 100%;
+  margin: 0;
+  background-color: rgb(242, 243, 245);
+}
+
+header {
+  font-size: 18px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+  height: 10%;
+  padding: 0 10px;
+  text-align: center;
+  color: #fff;
+  background-color: rgb(4, 46, 167);
+}
+
+.message-title {
+  flex: 1;
+  text-align: center;
+}
+
+.message-count {
+  font-size: 12px;
+  margin-left: 5px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  background-color: #ff5722;
+}
+
+.tool {
+  display: flex;
+  align-items: center;
+  height: 5%;
+  padding: 0 10px;
+  background-color: rgb(242, 243, 245);
+}
+
+.tool label {
+  font-size: 12px;
+  line-height: 12px;
+  margin: 5px;
+  padding: 5px 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: gray;
+  border-radius: 15px;
+  background-color: #fff;
+}
+
+.tool label.active {
+  color: rgb(67, 92, 171);
+  background-color: rgb(210, 216, 231);
+}
+
+main {
+  overflow: hidden;
+  height: 85%;
+}
+
+.message-container {
+  overflow: auto;
+  box-sizing: border-box;
+  height: 100%;
+  padding: 10px;
+  background-color: rgb(242, 243, 245);
+}
+
+.message-card {
+  position: relative;
+  margin-bottom: 10px;
+  padding: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-radius: 10px;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.message-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.message-card.unread {
+  border-left: 4px solid #1e9fff;
+}
+
+.message-card.unread::after {
+  position: absolute;
+  top: 8px;
+  right: 15px;
+  width: 8px;
+  height: 8px;
+  content: "";
+  border-radius: 50%;
+  background-color: #ff5722;
+}
+
+.message-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.message-type {
+  font-size: 12px;
+  padding: 3px 8px;
+  color: #fff;
+  border-radius: 12px;
+}
+
+.message-type.system {
+  background-color: #1e9fff;
+}
+
+.message-type.notice {
+  background-color: #ff5722;
+}
+
+.message-type.work {
+  background-color: #28a745;
+}
+
+.message-type.urgent {
+  animation: blink 1s infinite;
+  background-color: #dc3545;
+}
+
+@keyframes blink {
+  0%,
+  50% {
+    opacity: 1;
+  }
+
+  51%,
+  100% {
+    opacity: 0.5;
+  }
+}
+
+.message-time {
+  font-size: 12px;
+  color: #999;
+}
+
+.message-title-text {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.message-content {
+  font-size: 14px;
+  line-height: 1.4;
+  margin-bottom: 8px;
+  color: #666;
+}
+
+.message-sender {
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  color: #999;
+}
+
+.message-sender .layui-icon {
+  margin-right: 4px;
+}
+
+.no-messages {
+  padding: 50px 20px;
+  text-align: center;
+  color: #999;
+}
+
+.no-messages .layui-icon {
+  font-size: 64px;
+  margin-bottom: 20px;
+  color: #ddd;
+}
+
+.message-actions {
+  position: fixed;
+  z-index: 1000;
+  right: 20px;
+  bottom: 20px;
+}
+
+.action-btn {
+  font-size: 24px;
+  display: block;
+  width: 50px;
+  height: 50px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  background-color: rgb(4, 46, 167);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.action-btn:hover {
+  transform: scale(1.1);
+  background-color: rgb(67, 92, 171);
+}
+
+/* 消息详情弹窗样式 */
+.message-detail-overlay {
+  position: fixed;
+  z-index: 1001;
+  top: 0;
+  left: 0;
+  display: none;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.message-detail-modal {
+  position: fixed;
+  z-index: 1002;
+  top: 50%;
+  left: 50%;
+  overflow: hidden;
+  width: 90%;
+  max-width: 500px;
+  max-height: 80%;
+  transform: translate(-50%, -50%);
+  border-radius: 10px;
+  background: white;
+}
+
+.message-detail-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+  color: white;
+  background-color: rgb(4, 46, 167);
+}
+
+.message-detail-body {
+  overflow-y: auto;
+  max-height: 400px;
+  padding: 15px;
+}
+
+.close-btn {
+  font-size: 24px;
+  cursor: pointer;
+  color: white;
+  border: none;
+  background: none;
+}
+
+/* WebSocket 状态指示器 */
+.ws-status {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  margin-right: 8px;
+  transition: all 0.3s ease;
+  border-radius: 50%;
+}
+
+.ws-online {
+  background-color: #52c41a;
+  box-shadow: 0 0 8px rgba(82, 196, 26, 0.6);
+}
+
+.ws-offline {
+  background-color: #f5222d;
+  box-shadow: 0 0 8px rgba(245, 34, 45, 0.6);
+}
+
+.ws-connecting {
+  animation: pulse 1.5s ease-in-out infinite;
+  background-color: #faad14;
+  box-shadow: 0 0 8px rgba(250, 173, 20, 0.6);
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
+}
+
+#messageFullContent {
+  font-size: 16px;
+  margin-bottom: 15px;
+  padding: 15px;
+  white-space: pre-line;
+  border: rgb(250, 177, 160);
+  border-radius: 4px;
+}

@@ -1,0 +1,360 @@
+body,
+html {
+  height: 100%;
+  margin: 0;
+  background-color: rgb(242, 243, 245);
+}
+
+header {
+  font-size: 18px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+  height: 10%;
+  padding: 0 10px;
+  text-align: center;
+  color: #fff;
+  background-color: rgb(4, 46, 167);
+}
+
+#search-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+}
+
+.layui-icon-search {
+  font-size: 20px;
+  flex-shrink: 0;
+  margin-right: 5px;
+  cursor: pointer;
+  color: white;
+}
+
+#contact-search {
+  font-size: 14px;
+  width: 120px;
+  height: 30px;
+  padding: 4px 12px;
+  transition: all 0.3s ease;
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 15px;
+  outline: none;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+#contact-search::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+#contact-search:focus {
+  width: 140px;
+  border-color: rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.tool {
+  display: flex;
+  align-items: center;
+  height: 5%;
+  padding: 0 10px;
+  background-color: rgb(242, 243, 245);
+}
+
+.tool label {
+  font-size: 12px;
+  line-height: 12px;
+  margin: 5px;
+  padding: 5px 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: gray;
+  border-radius: 15px;
+  background-color: #fff;
+}
+
+.tool label.active {
+  color: rgb(67, 92, 171);
+  background-color: rgb(210, 216, 231);
+}
+
+main {
+  overflow: hidden;
+  height: 85%;
+}
+
+.contacts-container {
+  overflow: auto;
+  box-sizing: border-box;
+  height: 100%;
+  padding: 10px;
+  padding-top: 0;
+  background-color: rgb(242, 243, 245);
+}
+
+.contact-card {
+  position: relative;
+  margin-bottom: 10px;
+  padding: 15px;
+  transition: all 0.3s ease;
+  border-radius: 10px;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.contact-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.contact-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.contact-avatar {
+  font-size: 18px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  margin-right: 12px;
+  color: white;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.contact-avatar.doctor {
+  background: linear-gradient(135deg, #1e9fff 0%, #1890ff 100%);
+}
+
+.contact-avatar.nurse {
+  background: linear-gradient(135deg, #52c41a 0%, #389e0d 100%);
+}
+
+.contact-avatar.admin {
+  background: linear-gradient(135deg, #722ed1 0%, #531dab 100%);
+}
+
+.contact-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.contact-name {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 4px;
+  color: #333;
+}
+
+.contact-position {
+  font-size: 12px;
+  display: inline-block;
+  margin-bottom: 6px;
+  padding: 2px 6px;
+  color: #fff;
+  border-radius: 8px;
+}
+
+.contact-position.doctor {
+  background-color: #1e9fff;
+}
+
+.contact-position.nurse {
+  background-color: #52c41a;
+}
+
+.contact-position.admin {
+  background-color: #722ed1;
+}
+
+.contact-department {
+  font-size: 12px;
+  color: #666;
+}
+
+.contact-status {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: flex;
+  align-items: center;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  margin-right: 4px;
+  border-radius: 50%;
+}
+
+.status-dot.online {
+  background-color: #52c41a;
+}
+
+.status-dot.busy {
+  background-color: #faad14;
+}
+
+.status-dot.offline {
+  background-color: #d9d9d9;
+}
+
+.status-text {
+  font-size: 11px;
+  color: #999;
+}
+
+.contact-details {
+  display: grid;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #f0f0f0;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.contact-item {
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  color: #666;
+}
+
+.contact-item .layui-icon {
+  font-size: 14px;
+  margin-right: 6px;
+  color: #999;
+}
+
+.contact-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 12px;
+  gap: 8px;
+}
+
+.action-btn {
+  font-size: 12px;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: #666;
+  border: 1px solid #d9d9d9;
+  border-radius: 15px;
+  background: white;
+}
+
+.action-btn:hover {
+  color: #1e9fff;
+  border-color: #1e9fff;
+}
+
+.action-btn.primary {
+  color: white;
+  border-color: #1e9fff;
+  background-color: #1e9fff;
+}
+
+.action-btn.primary:hover {
+  border-color: #40a9ff;
+  background-color: #40a9ff;
+}
+
+.no-contacts {
+  padding: 50px 20px;
+  text-align: center;
+  color: #999;
+}
+
+.no-contacts .layui-icon {
+  font-size: 64px;
+  margin-bottom: 20px;
+  color: #ddd;
+}
+
+/* 快速拨号悬浮按钮 */
+.quick-dial {
+  position: fixed;
+  z-index: 1000;
+  right: 20px;
+  bottom: 20px;
+}
+
+.dial-btn {
+  font-size: 20px;
+  display: block;
+  width: 50px;
+  height: 50px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  background-color: rgb(4, 46, 167);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.dial-btn:hover {
+  transform: scale(1.1);
+  background-color: rgb(67, 92, 171);
+}
+
+/* 科室标题分组 */
+.department-header {
+  font-size: 14px;
+  font-weight: bold;
+  margin: 10px 0 5px;
+  padding: 10px 15px 5px;
+  color: #666;
+  border-radius: 8px;
+  background-color: rgb(242, 243, 245);
+}
+
+.department-header:first-child {
+  margin-top: 0;
+}
+
+/* 范围选择器样式 */
+.scope-selector {
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  margin-left: 10px;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.scope-selector select {
+  font-size: 13px;
+  margin-left: 5px;
+  padding: 4px 8px;
+  cursor: pointer;
+  color: rgb(4, 46, 167);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 8px;
+  outline: none;
+  background: rgba(255, 255, 255, 0.95);
+}
+
+.scope-selector select:hover {
+  border-color: rgba(255, 255, 255, 0.7);
+  background: white;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+}

@@ -780,7 +780,6 @@
       display: flex;
       align-items: center;
       justify-content: center;
-
       width: 100%;
       height: 40px;
       cursor: pointer;
@@ -843,7 +842,6 @@
     .child-order-index {
       font-size: 12px;
       font-weight: 600;
-
       display: inline-flex;
       align-items: center;
       flex-shrink: 0;
@@ -858,7 +856,6 @@
     .child-order-name {
       font-size: 14px;
       font-weight: 500;
-
       flex: 1;
       color: #1f2937;
     }
@@ -880,7 +877,6 @@
     /* 子医嘱时间 */
     .child-order-times {
       font-size: 12px;
-
       display: flex;
       margin: 8px 0;
       padding: 6px 8px;
@@ -897,7 +893,6 @@
     .child-time-field label {
       font-weight: 500;
       margin-right: 4px;
-
       color: #9ca3af;
     }
 
@@ -908,7 +903,6 @@
     /* 子医嘱详情 */
     .child-order-body {
       font-size: 13px;
-
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       gap: 8px;
@@ -923,13 +917,11 @@
       font-weight: 500;
       margin-right: 4px;
       white-space: nowrap;
-
       color: #9ca3af;
     }
 
     .child-field span {
       flex: 1;
-
       color: #4b5563;
     }
 
@@ -937,7 +929,6 @@
     .child-order-instruction {
       font-size: 12px;
       line-height: 1.5;
-
       margin-top: 8px;
       padding: 6px 8px;
       color: #92400e;
@@ -1051,6 +1042,7 @@
     }
 
     #btn-add-order {
+      margin-bottom: 0;
       color: #435cab;
       border-radius: 15px;
       background-color: #d2d8e7;
@@ -1122,9 +1114,9 @@
               <label for="order-type2">临时</label>
               <label for="order-type3">长期</label> -->
             <div>
-              <input type="radio" id="order-type1" name="order-type" value="1" title="全部" lay-filter="order-type" />
-              <input type="radio" id="order-type2" name="order-type" value="2" title="临时" checked
+              <input type="radio" id="order-type1" name="order-type" value="1" title="全部" checked
                 lay-filter="order-type" />
+              <input type="radio" id="order-type2" name="order-type" value="2" title="临时" lay-filter="order-type" />
               <input type="radio" id="order-type3" name="order-type" value="3" title="长期" lay-filter="order-type" />
             </div>
           </div>
@@ -4376,6 +4368,7 @@
         /* 缩小字体 */
 
         min-width: 40px !important;
+
         /* 缩小标签宽度 */
       }
 

@@ -27,7 +27,6 @@
       height: 100vh !important;
       margin: 0;
       padding: 0;
-
       background-color: transparent;
     }
 
@@ -40,7 +39,6 @@
 
     .main-content {
       position: relative;
-
       display: flex;
       overflow: hidden !important;
       flex-direction: column;
@@ -54,7 +52,6 @@
     .layui-elem-quote {
       font-size: 1rem;
       font-weight: bold;
-
       display: flex;
       align-items: center;
       justify-content: center;
@@ -73,6 +70,7 @@
       position: relative;
       overflow: hidden !important;
       flex: 1 1 auto;
+
       /* 精确计算可用高度，避免多重滚动条 */
 
       height: calc(100vh - 80px);
@@ -91,7 +89,6 @@
       top: 0;
       bottom: 0;
       left: 0;
-
       display: none;
       overflow: hidden;
       width: 0;
@@ -115,7 +112,6 @@
     .layui-tab-content {
       position: relative;
       overflow: hidden !important;
-
       height: 100% !important;
       margin: 0;
       padding: 0;
@@ -130,7 +126,6 @@
     .layui-tab-item {
       position: relative;
       overflow: hidden !important;
-
       height: 100% !important;
       max-height: 100% !important;
       margin: 0;
@@ -145,6 +140,7 @@
 
       /* 确保滚动容器不会超出可视区域 */
       height: 100% !important;
+
       /* 美化滚动条样式 */
 
       scrollbar-width: thin;
@@ -188,6 +184,7 @@
       top: 0;
       left: 0;
       display: block;
+
       /* 强制iframe不能超出父容器 */
       overflow: hidden;
       box-sizing: border-box;
@@ -252,7 +249,6 @@
 
     .patient-meta {
       font-size: .85rem;
-
       display: flex;
       flex-wrap: wrap;
       opacity: .9;
@@ -272,6 +268,7 @@
 
       /* 移除高度限制，让内容自然展开 */
       padding: 18px 20px;
+
       /* 移除内部滚动条 */
     }
 
@@ -301,7 +298,6 @@
 
     .section-title i {
       font-size: 1rem;
-
       color: #42a5f5;
     }
 
@@ -402,7 +398,6 @@
     .tab-btn.layui-this,
     .tab-btn.active {
       font-weight: 600;
-
       color: #42a5f5;
     }
 
@@ -413,7 +408,6 @@
       left: 0;
       width: 100%;
       height: 3px;
-
       content: '';
       background: #42a5f5;
     }
@@ -444,7 +438,6 @@
       width: 3px;
       height: 16px;
       margin-right: 8px;
-
       content: '';
       border-radius: 2px;
       background: #42a5f5;
@@ -476,7 +469,6 @@
 
     .function-btn:hover {
       transform: translateY(-1px);
-
       background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
       box-shadow: 0 3px 8px rgba(66, 165, 245, .3);
     }
@@ -511,7 +503,6 @@
       width: 3px;
       height: 16px;
       margin-right: 8px;
-
       content: '';
       border-radius: 2px;
       background: #66bb6a;
@@ -568,7 +559,6 @@
 
     .call-btn:hover {
       transform: scale(1.05);
-
       background: #5cb85c;
     }
 
@@ -594,7 +584,6 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-
       padding: 10px 15px;
       cursor: pointer;
       user-select: none;
@@ -638,6 +627,7 @@
 
       /* 移除高度限制，让内容自然展开 */
       padding: 12px 15px;
+
       /* 移除内部滚动条 */
     }
 
@@ -682,7 +672,6 @@
 
     .expense-item:hover {
       transform: translateY(-1px);
-
       background: #f0f0f0;
     }
 
@@ -722,7 +711,6 @@
       font-size: .95rem;
       display: inline-block;
       overflow: hidden;
-
       margin: 0 auto;
       white-space: nowrap;
       text-overflow: ellipsis;
@@ -742,7 +730,6 @@
       cursor: pointer;
       transition: all .3s ease;
       transform: translateX(2px);
-
       background: linear-gradient(135deg,
           rgba(66, 165, 245, .1) 0%,
           rgba(42, 165, 245, .1) 100%) !important;
@@ -758,7 +745,6 @@
       font-weight: normal;
       line-height: 28px;
       position: relative;
-
       float: left;
       overflow: hidden;
       min-width: 30px;
@@ -798,7 +784,6 @@
 
     .modern-btn:hover {
       transform: translateY(-2px);
-
       background: linear-gradient(135deg, #1e88e5 0%, #1565c0 100%);
       box-shadow: 0 6px 25px rgba(30, 136, 229, .4);
     }
@@ -809,7 +794,6 @@
       position: sticky;
       z-index: 10;
       top: 0;
-
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -829,7 +813,6 @@
       justify-content: center;
       width: 28px;
       height: 28px;
-
       cursor: pointer;
       transition: all .3s ease;
       color: rgba(255, 255, 255, .9);
@@ -852,7 +835,6 @@
       cursor: pointer;
       transition: all .3s ease;
       transform: translateX(5px);
-
       background: linear-gradient(135deg,
           rgba(33, 150, 243, .3) 0%,
           rgba(30, 136, 229, .3) 100%) !important;
@@ -873,7 +855,6 @@
       /* margin-right: 15px; */
       font-weight: normal;
       line-height: 28px;
-
       float: right;
       height: 28px;
       padding: 0 8px;
@@ -882,7 +863,6 @@
     /* 加载状态样式 */
     .loading-container {
       padding: 30px;
-
       text-align: center;
       color: #999;
     }
@@ -893,7 +873,6 @@
 
     .loading-text {
       font-size: 15px;
-
       margin-top: 15px;
     }
 
@@ -923,7 +902,6 @@
         line-height: 1.4 !important;
         display: flex !important;
         align-items: center !important;
-
         width: 30% !important;
         max-width: 80px !important;
         height: auto !important;
@@ -935,7 +913,6 @@
       .layui-form-item .layui-input-inline {
         display: flex !important;
         align-items: center !important;
-
         width: calc(70% - 8px) !important;
         max-width: calc(100% - 88px) !important;
         margin-bottom: 0 !important;
@@ -960,7 +937,6 @@
     @media (max-width: 480px) {
       .layui-form-item .layui-form-label {
         font-size: 12px !important;
-
         width: 32% !important;
         max-width: 70px !important;
         padding: 9px 8px !important;
@@ -986,7 +962,6 @@
 
       .tab-btn {
         font-size: 16px;
-
         min-width: 70px;
       }
 
@@ -1005,7 +980,6 @@
     .layui-input:focus,
     .layui-textarea:focus {
       transition: all .3s ease;
-
       border-color: #1e88e5 !important;
       outline: none !important;
       box-shadow: 0 0 0 3px rgba(30, 136, 229, .1) !important;
@@ -1026,14 +1000,12 @@
     /* 表单标签现代化 */
     .layui-form-label {
       font-weight: 600 !important;
-
       color: #2d3748 !important;
     }
 
     #my-patients-btn {
       font-size: 10px;
       font-weight: 600;
-
       padding: 4px;
       transition: all .3s ease;
       color: #fff;
@@ -1174,6 +1146,10 @@
                 <button class="function-btn" id="btn-electronic-medical" data-index="4">
                   <i class="layui-icon layui-icon-file"></i>
                   电子病历
+                </button>
+                <button class="function-btn" id="btn-clinical-nursing" data-index="6">
+                  <i class="layui-icon layui-icon-form"></i>
+                  临床护理
                 </button>
                 <button class="function-btn" id="btn-ward-records" data-index="7">
                   <i class="layui-icon layui-icon-edit"></i>
@@ -1554,33 +1530,43 @@
             title: "体温单",
             type: "popup",
             handler: function (jsonData) {
-              var _twdurl =
-                appconfig.twd_webpage +
-                "/?patient_id=" +
-                jsonData.patient_id +
-                "&admiss_times=" +
-                jsonData.admiss_times +
-                "&api_host=" +
-                appconfig.api +
-                "/";
-              var now = new Date();
-              var ticks = now.getTime();
-              layui.layer.open({
-                type: 2,
+              var imgUrl = appconfig.api + '/api/MobileWard/GetTemperatureChartImage?patient_id=' + encodeURIComponent(jsonData.patient_id) + '&ticks=' + Date.now();
+              var title = '体温单 - ' + (jsonData.name || '') + ' - ' + (jsonData.inpatient_no || '') + ' - ' + (jsonData.sex_name || '') + ' - ' + (jsonData.ages || '');
+              var html = [
+                '<div style="width:100vw;height:100vh;background:#fff;display:flex;flex-direction:column;">',
+                '  <div style="padding:8px 12px;border-bottom:1px solid #e5e7eb;display:flex;align-items:center;justify-content:space-between;">',
+                '    <div style="font-weight:600;color:#374151;">' + title + '</div>',
+                '    <button onclick="layui.layer.closeAll()" style="border:1px solid #d1d5db;background:#f9fafb;border-radius:6px;height:28px;padding:0 10px;cursor:pointer;">关闭</button>',
+                '  </div>',
+                '  <div style="flex:1;position:relative;overflow:auto;background:#f9fafb;">',
+                '    <div id="twd-loading" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#6b7280;">',
+                '      <i class="layui-icon layui-icon-loading layui-anim layui-anim-rotate layui-anim-loop" style="font-size:28px;margin-right:8px;"></i>图片加载中...',
+                '    </div>',
+                '    <img id="twd-img" src="' + imgUrl + '" alt="体温单" style="display:block;max-width:100%;height:auto;margin:0 auto;" />',
+                '  </div>',
+                '</div>'
+              ].join('');
+              var index = layui.layer.open({
+                type: 1,
                 area: ["100%", "100%"],
-                title:
-                  "体温单 - " +
-                  jsonData.name +
-                  " - " +
-                  jsonData.inpatient_no +
-                  " - " +
-                  jsonData.sex_name +
-                  " - " +
-                  jsonData.ages,
-                closeBtn: 1,
+                title: false,
+                closeBtn: 0,
                 shadeClose: true,
-                content: _twdurl + "&ticks=" + ticks,
+                content: html
               });
+              // 绑定加载与错误事件
+              setTimeout(function () {
+                var imgEl = document.getElementById('twd-img');
+                var loadingEl = document.getElementById('twd-loading');
+                if (imgEl) {
+                  imgEl.addEventListener('load', function () {
+                    if (loadingEl) loadingEl.style.display = 'none';
+                  });
+                  imgEl.addEventListener('error', function () {
+                    if (loadingEl) loadingEl.innerHTML = '<span style="color:#ef4444;">图片加载失败，请稍后重试</span>';
+                  });
+                }
+              }, 0);
             },
           },
           electronic: {
@@ -1590,6 +1576,14 @@
             tabId: "tab-dianzibingli",
             contentId: "dianzibingli-content",
             src: "edoclist.html",
+          },
+          clinicalNursing: {
+            index: 6,
+            title: "临床护理",
+            type: "iframe",
+            tabId: "tab-linchuanghuli",
+            contentId: "linchuanghuli-content",
+            src: "nursing.html",
           },
           wardRecords: {
             index: 7,
@@ -1937,6 +1931,17 @@
             case "btn-electronic-medical":
               // 电子病历 - 使用iframe在新页面打开
               var config = functionConfigs.electronic;
+              layui.layer.open({
+                type: 2,
+                area: ["100%", "100%"],
+                title: config.title + " - " + jsonData.name,
+                content: config.src + patientParams,
+              });
+              break;
+
+            case "btn-clinical-nursing":
+              // 临床护理 - 使用iframe在新页面打开
+              var config = functionConfigs.clinicalNursing;
               layui.layer.open({
                 type: 2,
                 area: ["100%", "100%"],

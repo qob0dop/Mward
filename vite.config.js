@@ -20,6 +20,7 @@ export default defineConfig({
         jy_apply: resolve(__dirname, "view/jy_apply.html"),
         oplist: resolve(__dirname, "view/oplist.html"),
         yizhu: resolve(__dirname, "view/yizhu.html"),
+        nursing: resolve(__dirname, "view/nursing.html"),
         add_order: resolve(__dirname, "view/add_order.html"),
         ward_records: resolve(__dirname, "view/ward_records.html"),
         patients: resolve(__dirname, "navpage/patients.html"),
@@ -30,6 +31,17 @@ export default defineConfig({
       },
     },
   },
+  plugins: [
+    // 关键：使用静态复制插件将js文件夹复制到dist根目录
+    viteStaticCopy({
+      targets: [
+        {
+          src: "js/**/*", // 复制js文件夹及其所有内容
+          dest: "./js", // 目标为dist根目录
+        },
+      ],
+    }),
+  ],
   server: {
     open: "/index.html",
     port: 5173,

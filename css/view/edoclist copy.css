@@ -1,0 +1,236 @@
+html,
+body {
+  overflow: hidden;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.layui-btn:not(.layui-btn-lg):not(.layui-btn-sm):not(.layui-btn-xs) {
+  line-height: 34px;
+  height: 34px;
+  padding: 0 8px;
+}
+
+.layui-input {
+  color: dodgerblue;
+}
+
+.layui-btn-radius {
+  width: 80px;
+}
+
+body {
+  background-color: transparent;
+}
+
+.layuimini-container {
+  display: flex;
+  overflow: hidden;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.layui-elem-quote {
+  font-size: 1.1rem;
+  font-weight: bold;
+  padding: 5px;
+}
+
+.layuimini-main {
+  flex-shrink: 0;
+  margin: 10px 10px 0 210px;
+}
+
+.layui-body {
+  position: relative;
+  left: 0;
+  overflow: hidden;
+  flex: 1;
+  padding-left: 200px;
+}
+
+.layui-layout-admin .layui-body {
+  padding-bottom: 0;
+}
+
+.layui-body .layadmin-tabsbody-item {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  overflow: hidden;
+  overflow-y: auto;
+}
+
+/* 导航栏切换样式 */
+.nav-toggle-btn {
+  font-size: 16px;
+  z-index: 9999;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  background: #009688;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.nav-toggle-btn:hover {
+  transform: scale(1.05);
+  background: #00796b;
+}
+
+/* 导航栏隐藏状态 */
+.nav-hidden .layui-nav-side {
+  transform: translateX(-100%);
+}
+
+.nav-hidden .layui-body {
+  padding-left: 0 !important;
+}
+
+.nav-hidden .layuimini-main {
+  margin-left: 10px !important;
+}
+
+/* 导航栏动画 */
+.layui-nav-side {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  width: 200px;
+  transition: transform 0.3s ease;
+}
+
+.layui-body {
+  transition: padding-left 0.3s ease;
+}
+
+.layuimini-main {
+  transition: margin-left 0.3s ease;
+}
+
+/* 病历列表样式 */
+.record-item {
+  padding: 12px 15px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.record-item:hover {
+  background-color: #f8f9fa;
+}
+
+.record-item.active {
+  border-left: 3px solid #1e9fff;
+  background-color: #e3f2fd;
+}
+
+.record-title {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #333;
+}
+
+.record-meta {
+  font-size: 12px;
+  color: #999;
+}
+
+.record-meta span {
+  margin-right: 12px;
+}
+
+.record-content {
+  font-size: 14px;
+  line-height: 1.8;
+  padding: 10px;
+  padding-top: 0;
+  white-space: pre-wrap;
+  color: #333;
+  background: white;
+}
+
+/* 分类样式 */
+.category-header {
+  font-size: 13px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 15px;
+  cursor: pointer;
+  transition: all 0.3s;
+  color: white;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.category-header:hover {
+  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+}
+
+.category-header i {
+  transition: transform 0.3s;
+}
+
+.category-header.collapsed i {
+  transform: rotate(-90deg);
+}
+
+.category-content {
+  display: block;
+  background: #fafafa;
+}
+
+.category-content.collapsed {
+  display: none;
+}
+
+.category-item {
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.category-item:last-child {
+  border-bottom: none;
+}
+
+/* 响应式 */
+@media screen and (max-width: 768px) {
+  .layui-nav-side {
+    width: 180px;
+  }
+
+  .layui-body {
+    padding-left: 180px;
+  }
+
+  .layuimini-main {
+    margin-left: 190px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .layui-nav-side {
+    width: 160px;
+  }
+
+  .layui-body {
+    padding-left: 160px;
+  }
+
+  .layuimini-main {
+    margin-left: 170px;
+  }
+
+  .nav-toggle-btn {
+    font-size: 14px;
+    padding: 6px 10px;
+  }
+}

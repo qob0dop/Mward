@@ -2,647 +2,472 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>电子病历</title>
-  <!--<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <meta http-equiv="Access-Control-Allow-Origin" content="*">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="format-detection" content="telephone=no">-->
-  <link rel="stylesheet" href="/lib/layui-v2.6.3/css/layui.css" media="all" />
-  <link rel="stylesheet" href="/css/public.css" media="all" />
   <style>
-    html,
-    body {
-      overflow: hidden;
-
+    /* 布局 */
+    body,
+    html {
+      font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
       height: 100%;
       margin: 0;
       padding: 0;
+      background: #f5f6fa;
     }
 
-    .layui-btn:not(.layui-btn-lg):not(.layui-btn-sm):not(.layui-btn-xs) {
-      line-height: 34px;
-
-      height: 34px;
-      padding: 0 8px;
-    }
-
-    .layui-input {
-      color: dodgerblue;
-    }
-
-    .layui-btn-radius {
-      width: 80px;
-    }
-
-    body {
-      background-color: transparent;
-    }
-
-    .layuimini-container {
+    main {
+      position: relative;
       display: flex;
       overflow: hidden;
-      flex-direction: column;
-
       height: 100vh;
     }
 
-    .layui-elem-quote {
-      font-size: 1.1rem;
-      font-weight: bold;
-
-      padding: 5px;
+    .left_area {
+      display: flex;
+      overflow: hidden;
+      flex-direction: column;
+      width: 320px;
+      border-right: 1px solid #e6e9ef;
+      background: #fff;
     }
 
-    .layuimini-main {
-      flex-shrink: 0;
-
-      margin: 10px 10px 0 210px;
-    }
-
-    .layui-body {
+    .right_area,
+    .right_are {
       position: relative;
-      left: 0;
       overflow: hidden;
       flex: 1;
-
-      padding-left: 200px;
+      background: #f9fafc;
+      --zoom-scale: 1;
     }
 
-    .layui-layout-admin .layui-body {
-      padding-bottom: 0;
-    }
-
-    .layui-body .layadmin-tabsbody-item {
+    .zoom-toolbar {
       position: absolute;
-      top: 0;
-      right: 0;
-      bottom: 0;
-      left: 0;
-      overflow: hidden;
-      overflow-y: auto;
+      z-index: 2;
+      top: 12px;
+      right: 12px;
+      display: inline-flex;
+      padding: 6px 8px;
+      border: 1px solid #d6d9e0;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .9);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, .08);
+      gap: 6px;
+      backdrop-filter: blur(4px);
     }
 
-    /* 导航栏切换样式 */
-    .nav-toggle-btn {
-      font-size: 16px;
-
-      z-index: 9999;
-      padding: 8px 12px;
-      cursor: pointer;
-      transition: all .3s ease;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      background: #009688;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, .2);
-    }
-
-    .nav-toggle-btn:hover {
-      transform: scale(1.05);
-
-      background: #00796b;
-    }
-
-    /* 导航栏隐藏状态 */
-    .nav-hidden .layui-nav-side {
-      transform: translateX(-100%);
-    }
-
-    .nav-hidden .layui-body {
-      padding-left: 0 !important;
-    }
-
-    .nav-hidden .layuimini-main {
-      margin-left: 10px !important;
-    }
-
-    /* 导航栏动画 */
-    .layui-nav-side {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      overflow-x: hidden;
-      overflow-y: auto;
-      width: 200px;
-
-      transition: transform .3s ease;
-    }
-
-    .layui-body {
-      transition: padding-left .3s ease;
-    }
-
-    .layuimini-main {
-      transition: margin-left .3s ease;
-    }
-
-    /* 病历列表样式 */
-    .record-item {
-      padding: 12px 15px;
-      cursor: pointer;
-      transition: background-color .2s;
-      border-bottom: 1px solid #f0f0f0;
-    }
-
-    .record-item:hover {
-      background-color: #f8f9fa;
-    }
-
-    .record-item.active {
-      border-left: 3px solid #1e9fff;
-      background-color: #e3f2fd;
-    }
-
-    .record-title {
-      font-size: 14px;
-      font-weight: 600;
-      margin-bottom: 6px;
-      color: #333;
-    }
-
-    .record-meta {
-      font-size: 12px;
-      color: #999;
-    }
-
-    .record-meta span {
-      margin-right: 12px;
-    }
-
-    .record-content {
-      font-size: 14px;
-      line-height: 1.8;
-
-      padding: 10px;
-      padding-top: 0;
-      white-space: pre-wrap;
-      color: #333;
-      background: white;
-    }
-
-    /* 分类样式 */
-    .category-header {
+    .zoom-btn {
       font-size: 13px;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-
-      padding: 10px 15px;
+      line-height: 1;
+      min-width: 46px;
+      height: 28px;
+      padding: 0 10px;
       cursor: pointer;
-      transition: all .3s;
-      color: white;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      transition: background .2s ease, color .2s ease, transform .2s ease;
+      color: #2c3e50;
+      border: 1px solid #cbd2dc;
+      border-radius: 6px;
+      background: #f8fafc;
     }
 
-    .category-header:hover {
-      background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+    .zoom-btn:hover {
+      color: #1b62f0;
+      border-color: #b8c3d6;
+      background: #eef3ff;
     }
 
-    .category-header i {
-      transition: transform .3s;
+    .zoom-btn:active {
+      transform: translateY(1px);
     }
 
-    .category-header.collapsed i {
-      transform: rotate(-90deg);
-    }
-
-    .category-content {
+    .doc-content {
       display: block;
-      background: #fafafa;
+      overflow: auto;
+      box-sizing: border-box;
+      width: calc(100% / var(--zoom-scale));
+      height: calc(100% / var(--zoom-scale));
+      padding: 12px;
+      transform: scale(var(--zoom-scale));
+      transform-origin: 0 0;
+      border: 0;
+      background: #fff;
+      touch-action: pan-x pan-y;
     }
 
-    .category-content.collapsed {
+    /* 折叠按钮 */
+    .toggle-btn {
+      position: absolute;
+      z-index: 10;
+      top: 12px;
+      left: 310px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      cursor: pointer;
+      transition: left .2s ease, transform .2s ease, background .2s ease;
+      color: #4a5568;
+      border: 1px solid #d6d9e0;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, .08);
+    }
+
+    .toggle-btn:hover {
+      background: #f3f6fb;
+    }
+
+    .toggle-btn .toggle-icon {
+      font-size: 14px;
+      line-height: 1;
+      transform: translateX(-1px);
+    }
+
+    /* 折叠状态 */
+    .menu-collapsed .left_area {
+      width: 0;
+      min-width: 0;
+      border: none;
+    }
+
+    .menu-collapsed .left_area .main-menu {
       display: none;
     }
 
-    .category-item {
-      border-bottom: 1px solid #e0e0e0;
+    .menu-collapsed .toggle-btn {
+      left: 12px;
+      transform: rotate(180deg);
     }
 
-    .category-item:last-child {
-      border-bottom: none;
+    /* 菜单样式 */
+    .main-menu {
+      overflow-y: auto;
+      box-sizing: border-box;
+      height: 100%;
+      padding: 10px;
+      background: linear-gradient(180deg, #fff, #f9fbff);
     }
 
-    /* 响应式 */
-    @media screen and (max-width: 768px) {
-      .layui-nav-side {
-        width: 180px;
-      }
-
-      .layui-body {
-        padding-left: 180px;
-      }
-
-      .layuimini-main {
-        margin-left: 190px;
-      }
+    .menu-item {
+      overflow: hidden;
+      margin-bottom: 10px;
+      border: 1px solid #e5e9f2;
+      border-radius: 8px;
+      background: #fff;
+      box-shadow: 0 1px 3px rgba(18, 38, 63, .05);
     }
 
-    @media screen and (max-width: 480px) {
-      .layui-nav-side {
-        width: 160px;
-      }
+    .menu-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 12px;
+      cursor: pointer;
+      user-select: none;
+      transition: background .2s ease;
+      background: #f3f6fb;
+    }
 
-      .layui-body {
-        padding-left: 160px;
-      }
+    .menu-head:hover {
+      background: #e8efff;
+    }
 
-      .layuimini-main {
-        margin-left: 170px;
-      }
+    .menu-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #2c3e50;
+    }
 
-      .nav-toggle-btn {
-        font-size: 14px;
+    .menu-switch {
+      width: 18px;
+      height: 18px;
+      transition: transform .2s ease;
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: 100% 100%;
+    }
 
-        padding: 6px 10px;
-      }
+    .menu-item.open .menu-switch {
+      transform: rotate(90deg);
+    }
+
+    .subItems {
+      display: none;
+      padding: 6px 0;
+      background: #fff;
+    }
+
+    .menu-item.open .subItems {
+      display: block;
+    }
+
+    .subItem {
+      font-size: 13px;
+      line-height: 1.4;
+      display: block;
+      padding: 8px 14px;
+      transition: background .15s ease, color .15s ease;
+      text-decoration: none;
+      word-break: break-all;
+      color: #34495e;
+      border-left: 2px solid transparent;
+    }
+
+    .subItem:hover {
+      color: #1b62f0;
+      border-left-color: #1b62f0;
+      background: #f0f5ff;
+    }
+
+    .subItem.active {
+      font-weight: 600;
+      color: #1554c7;
+      border-left-color: #1554c7;
+      background: #e6f0ff;
+    }
+
+    /* 滚动条优化 */
+    .main-menu::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .main-menu::-webkit-scrollbar-thumb {
+      border-radius: 10px;
+      background: rgba(0, 0, 0, .15);
+    }
+
+    .main-menu::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    /* 空状态 */
+    .empty-menu {
+      font-size: 13px;
+      padding: 24px;
+      text-align: center;
+      color: #98a6b5;
     }
   </style>
 </head>
 
-<body class="nav-hidden">
-  <!-- 导航栏切换按钮 -->
-  <!-- <button class="nav-toggle-btn" id="navToggleBtn" title="显示/隐藏导航栏">
-      <i class="layui-icon layui-icon-shrink-right" id="toggleIcon"></i>
-    </button> -->
-
-  <div class="layuimini-container">
-    <div class="layuimini-main">
-      <div class="layui-btn-container">
-        <blockquote class="layui-elem-quote" style="
-              font-size: 1.1rem;
-              display: inline-block;
-              line-height: 1;
-              padding: 8px;
-              font-weight: bold;
-            ">
-          <button class="nav-toggle-btn" id="navToggleBtn" title="显示/隐藏导航栏">
-            <i class="layui-icon layui-icon-shrink-right" id="toggleIcon"></i>
-          </button>
-          <span id="record-title">电子病历</span>
-        </blockquote>
-        <!-- <i class="layui-icon layui-icon-form" style="color: blue"></i>
-        <button type="button" id="btn_ward_name" class="layui-btn layui-btn-primary" style="border-color: transparent">
-          病区名称
-        </button>
-        <i class="layui-icon layui-icon-username" style="color: blue"></i>
-        <button type="button" id="btn_user_name" class="layui-btn layui-btn-primary" style="border-color: transparent">
-          患者姓名
-        </button>
-        <button class="layui-btn layui-btn-sm layui-bg-blue" id="reloadTest" style="display: none">
-          选择病区
-          <i class="layui-icon layui-icon-down layui-font-12"></i>
-        </button> -->
-        <!--<button class="layui-btn layui-btn-normal" lay-event="allPatient">全部患者</button>
-                <button class="layui-btn layui-btn-primary" lay-event="myPatient">我的患者</button>-->
-
-        <!-- <button
-            type="button"
-            class="layui-btn layui-btn-sm layui-btn-normal"
-            onclick="javascrript:window.history.back();"
-            style="float: right; font-size: 14px"
-          >
-            <i class="layui-icon"></i>返回
-          </button> -->
-      </div>
+<body>
+  <main>
+    <div class="left_area"></div>
+    <div class="right_area">
+      <!-- <div class="zoom-toolbar">
+        <button type="button" class="zoom-btn" data-action="out" title="缩小">-</button>
+        <button type="button" class="zoom-btn" data-action="reset" title="重置">50%</button>
+        <button type="button" class="zoom-btn" data-action="in" title="放大">+</button>
+      </div> -->
+      <div class="doc-content" title="文档预览"></div>
     </div>
-    <ul class="layui-nav layui-nav-tree layui-nav-side" lay-filter="choice" id="doc_menu">
-      <!-- 病历列表将动态加载到这里 -->
-    </ul>
-    <div class="layui-body" id="LAY_app_body">
-      <!-- 动态内容显示区域 -->
-      <div
-        style="position: absolute; top: 0; right: 0; bottom: 0; left: 0; padding: 15px; padding-top:0px;overflow: hidden;">
-        <div class="layui-card" style="height: 100%; display: flex; flex-direction: column;">
-          <div id="content-loading" style="
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                flex: 1;
-                color: #999;
-                font-size: 14px;
-              ">
-            <i class="layui-icon layui-icon-loading layui-anim layui-anim-rotate layui-anim-loop"
-              style="margin-right: 10px"></i>
-            正在加载病历列表...
-          </div>
-          <div id="content-display" class="record-content" style="display: none; flex: 1; overflow-y: auto;">
-            <!-- 病历内容将显示在这里 -->
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
+  </main>
   <script src="/lib/layui-v2.6.3/layui.js" charset="utf-8"></script>
   <script src="/lib/lay-config.js?v=1.0.4" charset="utf-8"></script>
   <script>
-    // xml转换为js对象
-    function xmlToJson(xml) {
-      const parser = new DOMParser();
-      const xmlDoc = parser.parseFromString(xml, "text/xml");
-
-      function parseNode(node) {
-        const obj = {};
-        if (node.nodeType === 1) {
-          if (node.attributes.length > 0) {
-            obj["@attributes"] = {};
-            for (let i = 0; i < node.attributes.length; i++) {
-              const attr = node.attributes[i];
-              obj["@attributes"][attr.nodeName] = attr.nodeValue;
-            }
-          }
-          if (node.hasChildNodes()) {
-            const children = node.childNodes;
-            for (let i = 0; i < children.length; i++) {
-              const child = children[i];
-              const childName = child.nodeName;
-              if (childName === "#text") {
-                const text = child.nodeValue.trim();
-                if (text) {
-                  obj["#text"] = text;
-                }
-              } else {
-                const childObj = parseNode(child);
-                if (obj[childName]) {
-                  if (!Array.isArray(obj[childName])) {
-                    obj[childName] = [obj[childName]];
-                  }
-                  obj[childName].push(childObj);
-                } else {
-                  obj[childName] = childObj;
-                }
-              }
-            }
-          }
-        }
-        const keys = Object.keys(obj); //拍平处理
-        if (keys.length === 1 && keys[0] === "#text") {
-          return obj["#text"];
-        }
-        return obj;
-      }
-
-      return parseNode(xmlDoc.documentElement);
-    }
-  </script>
-  <script>
     layui.use(["tree", "appconfig", "element"], function () {
-      var $ = layui.jquery;
-      var tree = layui.tree;
-      var appconfig = layui.appconfig;
-      var element = layui.element;
-      var userData = localStorage.getItem("userData");
+      const $ = layui.jquery;
+      const appconfig = layui.appconfig;
+      const userData = JSON.parse(localStorage.getItem("userData"));
+      getLeftMenu();
 
-      // 处理用户数据
-      if (userData) {
-        userData = JSON.parse(userData);
-      } else {
-        userData = { patient_id: "000368431100" }; // 默认数据
-      }
+      // 插入折叠按钮
+      const $toggleBtn = $('<button class="toggle-btn" id="toggle-menu" title="折叠/展开左侧菜单"><span class="toggle-icon">⟨</span></button>');
+      $("main").append($toggleBtn);
 
-      // 获取URL参数
-      function getUrlParam(name) {
-        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
-        var r = window.location.search.substr(1).match(reg);
-        if (r != null) return unescape(r[2]);
-        return null;
-      }
-
-      var patient_id = getUrlParam("patient_id") || userData.patient_id || "000368431100";
-
-      // 动态加载电子病历列表
-      $.ajax({
-        url: appconfig.api + "/api/MobileWard/GetDzblList?patient_id=" + patient_id,
-        type: "GET",
-        dataType: "json",
-        beforeSend: function () {
-          $("#content-loading")
-            .show()
-            .html(
-              '<i class="layui-icon layui-icon-loading layui-anim layui-anim-rotate layui-anim-loop" style="margin-right: 10px;"></i>正在加载病历列表...'
-            );
-        },
-        success: function (res) {
-          try {
-            if (res.Status !== 1 || !res.Data || res.Data.length === 0) {
-              $("#content-loading").html(
-                '<i class="layui-icon layui-icon-face-cry" style="margin-right: 10px;"></i>暂无病历数据'
-              );
-              return;
-            }
-
-            var records = res.Data;
-
-            // 按分类分组
-            var groupedRecords = {};
-            var categoryOrder = []; // 记录分类顺序
-
-            records.forEach(function (record) {
-              var categoryKey = record.record_type || 'unknown';
-              var categoryName = record.name || '未分类';
-
-              if (!groupedRecords[categoryKey]) {
-                groupedRecords[categoryKey] = {
-                  name: categoryName,
-                  records: []
-                };
-                categoryOrder.push(categoryKey);
-              }
-
-              groupedRecords[categoryKey].records.push(record);
-            });
-
-            var html = "";
-            var globalIndex = 0;
-
-            // 生成分类和病历列表
-            categoryOrder.forEach(function (categoryKey) {
-              var category = groupedRecords[categoryKey];
-              var categoryId = 'category-' + categoryKey;
-
-              html += '<div class="category-item">';
-              html += '<div class="category-header" data-category="' + categoryId + '">';
-              html += '<span>' + category.name + ' (' + category.records.length + ')</span>';
-              html += '<i class="layui-icon layui-icon-down"></i>';
-              html += '</div>';
-              html += '<div class="category-content" id="' + categoryId + '">';
-
-              category.records.forEach(function (record) {
-                var recordTime = record.record_time ? new Date(record.record_time).toLocaleString('zh-CN', {
-                  year: 'numeric',
-                  month: '2-digit',
-                  day: '2-digit',
-                  hour: '2-digit',
-                  minute: '2-digit'
-                }).replace(/\//g, '-') : '无记录时间';
-
-                var createTime = record.create_time ? new Date(record.create_time).toLocaleString('zh-CN', {
-                  year: 'numeric',
-                  month: '2-digit',
-                  day: '2-digit',
-                  hour: '2-digit',
-                  minute: '2-digit'
-                }).replace(/\//g, '-') : '';
-
-                html += '<div class="record-item' + (globalIndex === 0 ? ' active' : '') + '" data-index="' + globalIndex + '">';
-                html += '<div class="record-title">' + (record.doc_alias || '未命名病历') + '</div>';
-                html += '<div class="record-meta">';
-                html += '<span><i class="layui-icon layui-icon-time"></i> ' + recordTime + '</span>';
-                if (createTime) {
-                  html += '<span><i class="layui-icon layui-icon-username"></i> ' + (record.create_opera || '') + '</span>';
-                }
-                html += '</div>';
-                html += '</div>';
-
-                globalIndex++;
-              });
-
-              html += '</div>';
-              html += '</div>';
-            });
-
-            $("#doc_menu").html(html);
-
-            // 默认显示第一条病历内容
-            if (records.length > 0 && records[0].record_text) {
-              $("#record-title").text(records[0].doc_alias || '电子病历');
-              $("#content-display").html(records[0].record_text).show();
-              $("#content-loading").hide();
-            } else {
-              $("#content-loading").html(
-                '<i class="layui-icon layui-icon-file" style="margin-right: 10px;"></i>请选择左侧病历查看详情'
-              );
-            }
-
-            // 分类折叠/展开功能
-            $(document).on("click", ".category-header", function (e) {
-              e.stopPropagation();
-              var categoryId = $(this).data("category");
-              var content = $("#" + categoryId);
-
-              $(this).toggleClass("collapsed");
-              content.toggleClass("collapsed");
-            });
-
-            // 点击病历项切换内容
-            $(document).on("click", ".record-item", function () {
-              var index = $(this).data("index");
-              var record = records[index];
-
-              // 更新选中状态
-              $(".record-item").removeClass("active");
-              $(this).addClass("active");
-
-              // 显示病历内容
-              if (record.record_text) {
-                $("#record-title").text(record.doc_alias || '电子病历');
-                $("#content-display").html(record.record_text).show();
-                $("#content-loading").hide();
-              } else {
-                $("#content-loading").html(
-                  '<i class="layui-icon layui-icon-file" style="margin-right: 10px;"></i>该病历暂无内容'
-                ).show();
-                $("#content-display").hide();
-              }
-            });
-
-          } catch (error) {
-            console.error("数据解析错误:", error);
-            $("#content-loading").html(
-              '<i class="layui-icon layui-icon-close" style="color: #ff5722; margin-right: 10px;"></i><span style="color: #ff5722;">数据解析失败</span>'
-            );
-          }
-        },
-        error: function (xhr, status, error) {
-          console.error("请求失败:", error);
-          $("#content-loading").html(
-            '<i class="layui-icon layui-icon-close" style="color: #ff5722; margin-right: 10px;"></i><span style="color: #ff5722;">网络请求失败</span>'
-          );
-        },
+      // 折叠逻辑
+      $(document).on("click", "#toggle-menu", function () {
+        const $main = $("main");
+        const collapsed = $main.hasClass("menu-collapsed");
+        if (collapsed) {
+          $main.removeClass("menu-collapsed");
+        } else {
+          $main.addClass("menu-collapsed");
+        }
       });
 
-      // 初始化页面显示
-      $("#btn_ward_name").html(localStorage.ward_name || "病区名称");
+      // 缩放控制
+      const zoomState = {
+        value: 0.5,
+        min: 0.5,
+        max: 2,
+        step: 0.1
+      };
 
-      if (userData && userData.name) {
-        $("#btn_user_name").html(
-          userData.name +
-          " " +
-          (userData.sex_name || "") +
-          " " +
-          (userData.ages || "")
-        );
-      } else {
-        $("#btn_user_name").html("患者姓名");
+      function applyZoom() {
+        const rightArea = document.querySelector('.right_area');
+        if (!rightArea) return;
+        rightArea.style.setProperty('--zoom-scale', zoomState.value);
+        const resetBtn = document.querySelector('.zoom-btn[data-action="reset"]');
+        if (resetBtn) {
+          resetBtn.textContent = Math.round(zoomState.value * 100) + '%';
+        }
       }
 
-      $(".layuimini-container").show();
+      // 双指缩放（移动端）
+      (function initPinchZoom() {
+        const content = document.querySelector('.doc-content');
+        if (!content) return;
 
-      // 导航栏切换功能（默认隐藏，按本地偏好/屏幕宽度恢复）
-      (function initNavHidden() {
-        var body = $("body");
-        var icon = $("#toggleIcon");
-        var pref = localStorage.getItem("navHidden");
-        var shouldHide = true; // 默认隐藏
-        if (pref === "false" && window.innerWidth > 768) {
-          shouldHide = false;
+        const state = {
+          active: false,
+          startDist: 0,
+          startZoom: zoomState.value,
+        };
+
+        function getDistance(touches) {
+          const dx = touches[0].pageX - touches[1].pageX;
+          const dy = touches[0].pageY - touches[1].pageY;
+          return Math.sqrt(dx * dx + dy * dy);
         }
-        if (shouldHide) {
-          body.addClass("nav-hidden");
-          icon
-            .removeClass("layui-icon-shrink-right")
-            .addClass("layui-icon-spread-left");
-        } else {
-          body.removeClass("nav-hidden");
-          icon
-            .removeClass("layui-icon-spread-left")
-            .addClass("layui-icon-shrink-right");
-        }
+
+        content.addEventListener('touchstart', function (e) {
+          if (e.touches.length === 2) {
+            state.active = true;
+            state.startDist = getDistance(e.touches);
+            state.startZoom = zoomState.value;
+          }
+        }, { passive: true });
+
+        content.addEventListener('touchmove', function (e) {
+          if (state.active && e.touches.length === 2) {
+            e.preventDefault();
+            const dist = getDistance(e.touches);
+            const scale = dist / state.startDist;
+            zoomState.value = Math.min(zoomState.max, Math.max(zoomState.min, +(state.startZoom * scale).toFixed(2)));
+            applyZoom();
+          }
+        }, { passive: false });
+
+        const endHandler = function (e) {
+          if (e.touches.length < 2) {
+            state.active = false;
+          }
+        };
+
+        content.addEventListener('touchend', endHandler, { passive: true });
+        content.addEventListener('touchcancel', endHandler, { passive: true });
       })();
 
-      // 切换按钮点击事件
-      $("#navToggleBtn").on("click", function () {
-        var body = $("body");
-        var icon = $("#toggleIcon");
-
-        if (body.hasClass("nav-hidden")) {
-          // 显示导航栏
-          body.removeClass("nav-hidden");
-          icon
-            .removeClass("layui-icon-spread-left")
-            .addClass("layui-icon-shrink-right");
-          localStorage.setItem("navHidden", "false");
-        } else {
-          // 隐藏导航栏
-          body.addClass("nav-hidden");
-          icon
-            .removeClass("layui-icon-shrink-right")
-            .addClass("layui-icon-spread-left");
-          localStorage.setItem("navHidden", "true");
+      $(document).on('click', '.zoom-btn', function () {
+        const action = $(this).data('action');
+        if (action === 'in') {
+          zoomState.value = Math.min(zoomState.max, +(zoomState.value + zoomState.step).toFixed(2));
+        } else if (action === 'out') {
+          zoomState.value = Math.max(zoomState.min, +(zoomState.value - zoomState.step).toFixed(2));
+        } else if (action === 'reset') {
+          zoomState.value = 0.5;
         }
+        applyZoom();
       });
 
-      // 响应式处理：窄屏时自动隐藏导航栏
-      function checkScreenSize() {
-        if (window.innerWidth <= 768) {
-          if (!$("body").hasClass("nav-hidden")) {
-            $("#navToggleBtn").click();
+      applyZoom();
+
+      function setSwitchIcon($switch, isOpen) {
+        const openIcon = $switch.attr("open") || "";
+        const closeIcon = $switch.attr("close") || "";
+        const icon = isOpen ? openIcon : closeIcon;
+        if (icon) {
+          $switch.css("background-image", `url(${icon})`);
+        } else {
+          // 如果没有提供图片，用简单箭头
+          $switch.css({
+            "background-image": "none",
+            "border-left": "6px solid #718096",
+            "border-top": "5px solid transparent",
+            "border-bottom": "5px solid transparent",
+            width: "0",
+            height: "0",
+          });
+          if (isOpen) {
+            $switch.css({ transform: "rotate(90deg)" });
+          } else {
+            $switch.css({ transform: "rotate(0deg)" });
           }
         }
       }
 
-      // 页面加载时检查屏幕大小
-      checkScreenSize();
+      function bindMenuInteractions() {
+        // 默认展开第一个菜单
+        const $firstItem = $(".main-menu .menu-item").first();
+        $firstItem.addClass("open");
+        $firstItem.find(".subItems").show();
+        setSwitchIcon($firstItem.find(".menu-switch"), true);
 
-      // 监听窗口大小变化
-      $(window).on("resize", function () {
-        checkScreenSize();
-      });
+        // 事件委托：切换折叠/展开
+        $(document).on("click", ".menu-head", function () {
+          const $item = $(this).closest(".menu-item");
+          const $sub = $item.children(".subItems");
+          const $switch = $(this).find(".menu-switch");
+          const isOpen = $item.hasClass("open");
+
+          // 单开模式：关闭兄弟项
+          $item.siblings(".menu-item").removeClass("open").children(".subItems").slideUp(150);
+          $item.siblings(".menu-item").find(".menu-switch").each(function () {
+            setSwitchIcon($(this), false);
+          });
+
+          if (isOpen) {
+            $item.removeClass("open");
+            $sub.slideUp(150);
+            setSwitchIcon($switch, false);
+          } else {
+            $item.addClass("open");
+            $sub.slideDown(150);
+            setSwitchIcon($switch, true);
+          }
+        });
+
+        // 子项激活态
+        $(document).on("click", ".subItem", function (e) {
+          $(".subItem").removeClass("active");
+          $(this).addClass("active");
+          // 继续调用原有的 GetHtmlStr
+        });
+      }
+
+      function getLeftMenu() {
+        $.ajax({
+          url: appconfig.api + '/api/MobileWard/GetBlPageHtml?inp_no=' + userData.inpatient_no,
+          type: 'GET',
+          success: function (data) {
+            console.log(data);
+
+            if (data) {
+              $('.left_area').html(data);
+              bindMenuInteractions();
+            } else {
+              $('.left_area').html('<div class="empty-menu">暂无菜单数据</div>');
+            }
+          },
+          error: function () {
+            $('.left_area').html('<div class="empty-menu">菜单加载失败，请重试</div>');
+          }
+        })
+      }
+      // 暴露到全局，供 inline onclick 调用
+      window.GetHtmlStr = function (file_id) {
+        $.ajax({
+          url: appconfig.api + '/api/MobileWard/GetBlDetailHtml?file_id=' + file_id,
+          type: 'GET',
+          success: function (html) {
+            const container = document.querySelector('.doc-content');
+            if (container) {
+              container.innerHTML = html || '<div style="padding:16px;font-family:Segoe UI,Microsoft YaHei,sans-serif;color:#4a5568;">暂无内容</div>';
+            } else {
+              $('.right_area').html(html);
+            }
+          },
+          error: function () {
+            const container = document.querySelector('.doc-content');
+            if (container) {
+              container.innerHTML = '<div style="padding:16px;font-family:Segoe UI,Microsoft YaHei,sans-serif;color:#c53030;">加载文档失败，请重试</div>';
+            }
+            layer.msg('加载文档失败', { icon: 5 });
+          }
+        });
+      };
     });
   </script>
 </body>

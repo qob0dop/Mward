@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+    <title>临床护理</title>
+    <link rel="stylesheet" href="/lib/layui-v2.6.3/css/layui.css" media="all" />
+    <link rel="stylesheet" href="/css/public.css" media="all" />
+    <link rel="stylesheet" href="/lib/viewerjs/viewer.min.css" />
+    <style>
+        html,
+        body {
+            height: 100%;
+            background: #fff;
+        }
+
+        .page-wrapper {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .page-header {
+            position: sticky;
+            z-index: 10;
+            top: 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 14px;
+            border-bottom: 1px solid #e5e7eb;
+            background: #fff;
+        }
+
+        .page-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .page-content {
+            position: relative;
+            overflow: hidden;
+            flex: 1;
+            background: #f9fafb;
+        }
+
+        /* 两列布局 */
+        .nursing-layout {
+            display: grid;
+            height: 100%;
+            grid-template-columns: 320px 1fr;
+            gap: 0;
+        }
+
+        .nursing-sidebar {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            border-right: 1px solid #e5e7eb;
+            background: #fff;
+        }
+
+        .sidebar-header {
+            font-weight: 600;
+            padding: 10px 12px;
+            color: #374151;
+            border-bottom: 1px solid #eef2f7;
+        }
+
+        .sidebar-inner {
+            position: relative;
+            overflow: auto;
+            flex: 1;
+            padding: 8px 8px 16px 8px;
+            background: #fff;
+        }
+
+        .nursing-main {
+            position: relative;
+            height: 100%;
+            background: #f9fafb;
+        }
+
+        .nursing-main .viewer {
+            position: absolute;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            color: #6b7280;
+            inset: 0;
+        }
+
+        .viewer-inner {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f9fafb;
+            border: 1px dashed #e5e7eb;
+            border-radius: 6px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .viewer-loading {
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+            color: #6b7280;
+            gap: 6px;
+        }
+
+        .viewer-img {
+            display: block;
+            max-width: 100%;
+            max-height: 100%;
+            margin: 0 auto;
+            border-radius: 6px;
+            background: #fff;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, .08);
+        }
+
+        .placeholder {
+            position: absolute;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6b7280;
+            inset: 0;
+        }
+
+        .center-loading {
+            position: absolute;
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+            justify-content: center;
+            color: #6b7280;
+            inset: 0;
+        }
+
+        .meta-info {
+            font-size: 12px;
+            margin-top: 10px;
+            color: #9ca3af;
+        }
+
+        .close-btn {
+            height: 28px;
+            padding: 0 10px;
+            cursor: pointer;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            background: #f9fafb;
+        }
+
+        /* 适配返回的 Bootstrap 面板结构（无 Bootstrap 也能美观） */
+        #nurse-list .panel-group {
+            margin: 0;
+        }
+
+        #nurse-list .panel {
+            overflow: hidden;
+            margin-bottom: 8px;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            background: #fff;
+        }
+
+        #nurse-list .panel-heading {
+            padding: 10px 12px;
+            cursor: pointer;
+            user-select: none;
+            background: #f3f4f6;
+        }
+
+        #nurse-list .panel-title {
+            font-weight: 600;
+            color: #374151;
+        }
+
+        #nurse-list .panel-collapse {
+            display: none;
+        }
+
+        #nurse-list .panel-collapse.in {
+            display: block;
+        }
+
+        #nurse-list .panel-body {
+            padding: 8px 12px;
+            cursor: pointer;
+            transition: background .15s ease;
+            border-top: 1px solid #f1f5f9;
+        }
+
+        #nurse-list .panel-body:hover {
+            background: #f8fafc;
+        }
+
+        #nurse-list .panel-body.selected {
+            border-left: 3px solid #1e88e5;
+            background: #e6f2ff;
+        }
+
+        /* 覆盖 API 片段中可能带入的列宽与背景色 */
+        #nurse-list .mw-report-fragment .column {
+            width: 100% !important;
+            background: transparent !important;
+        }
+
+        #nurse-list [style*='background-color:'] {
+            background-color: transparent !important;
+        }
+
+        /* 折叠按钮 */
+        .toggle-btn {
+            position: absolute;
+            z-index: 10;
+            top: 12px;
+            left: 300px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            cursor: pointer;
+            transition: left .2s ease, transform .2s ease, background .2s ease;
+            color: #4a5568;
+            border: 1px solid #d6d9e0;
+            border-radius: 50%;
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, .08);
+        }
+
+        .toggle-btn:hover {
+            background: #f3f6fb;
+        }
+
+        .toggle-btn .toggle-icon {
+            font-size: 14px;
+            line-height: 1;
+            transform: translateX(-1px);
+        }
+
+        /* 折叠状态 */
+        .menu-collapsed .nursing-layout {
+            grid-template-columns: 0px 1fr;
+        }
+
+        .menu-collapsed .nursing-sidebar {
+            width: 0;
+            min-width: 0;
+            border: none;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .menu-collapsed .nursing-sidebar .sidebar-inner {
+            display: none;
+        }
+
+        .menu-collapsed .toggle-btn {
+            left: 12px;
+            transform: rotate(180deg);
+        }
+
+        /* 窄屏下自动收缩侧栏 */
+        @media (max-width: 768px) {
+            .nursing-layout {
+                grid-template-columns: 260px 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="page-wrapper">
+        <!-- <div class="page-header">
+            <div class="page-title">临床护理</div>
+            <button class="close-btn"
+                onclick="parent && parent.layui ? parent.layui.layer.closeAll() : window.history.back()">关闭</button>
+        </div> -->
+        <div class="page-content">
+            <button class="toggle-btn" id="toggle-menu" title="折叠/展开左侧"><span class="toggle-icon">⟨</span></button>
+            <div class="nursing-layout">
+                <aside class="nursing-sidebar">
+                    <div class="sidebar-header">护士文书</div>
+                    <div class="sidebar-inner" id="nurse-list">
+                        <div class="center-loading">
+                            <i class="layui-icon layui-icon-loading layui-anim layui-anim-rotate layui-anim-loop"
+                                style="font-size:28px; margin-bottom: 8px;"></i>
+                            <div>正在加载文书目录...</div>
+                            <div class="meta-info" id="meta"></div>
+                        </div>
+                    </div>
+                </aside>
+                <main class="nursing-main">
+                    <div class="viewer" id="nurse-viewer">
+                        <div class="viewer-inner">
+                            <div class="placeholder">请选择左侧文书查看内容</div>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </div>
+    </div>
+    <script src="/lib/layui-v2.6.3/layui.js" charset="utf-8"></script>
+    <script src="/lib/lay-config.js?v=1.0.4" charset="utf-8"></script>
+    <script src="/lib/viewerjs/viewer.min.js"></script>
+    <script>
+        // 解析查询参数
+        function getQuery() {
+            var q = {}; var s = location.search.replace(/^\?/, '');
+            s.split('&').forEach(function (p) { if (!p) return; var a = p.split('='); q[decodeURIComponent(a[0])] = decodeURIComponent(a[1] || ''); });
+            return q;
+        }
+
+        layui.use(['jquery', 'appconfig', 'layer'], function () {
+            var $ = layui.jquery;
+            var appconfig = layui.appconfig;
+            var layer = layui.layer;
+
+            var q = getQuery();
+            var patientId = q.patient_id;
+            if (!patientId) {
+                try {
+                    var userData = JSON.parse(localStorage.getItem('userData') || '{}');
+                    patientId = userData.patient_id || '';
+                } catch (e) {
+                    patientId = '';
+                }
+            }
+
+            // 展示页头 meta
+            var meta = [];
+            if (patientId) meta.push('患者ID: ' + patientId);
+            if (q.admiss_times) meta.push('住院次数: ' + q.admiss_times);
+            var metaEl = document.getElementById('meta');
+            if (metaEl) metaEl.textContent = meta.join('  |  ');
+
+            if (!patientId) {
+                $('#nurse-list').html('<div class="center-loading"><span style="color:#ef4444">未找到患者ID，无法加载护士文书</span></div>');
+                return;
+            }
+
+            // 加载护士文书左侧目录
+            var url = appconfig.api + '/api/MobileWard/GetNsReportPageHtml?patient_id=' + encodeURIComponent(patientId);
+            $.ajax({
+                url: url,
+                method: 'GET',
+                dataType: 'text', // 该接口返回纯 HTML 片段
+                success: function (res) {
+                    var htmlStr = '';
+                    if (typeof res === 'string') {
+                        htmlStr = res;
+                    } else if (res && res.Html) {
+                        htmlStr = res.Html;
+                    } else if (res && res.html) {
+                        htmlStr = res.html;
+                    }
+
+                    if (!htmlStr) {
+                        $('#nurse-list').html('<div class="center-loading"><span style="color:#ef4444">未获取到有效的文书目录</span></div>');
+                        return;
+                    }
+
+                    $('#nurse-list').html(htmlStr);
+
+                    // 绑定交互：折叠面板展开/收起
+                    $('#nurse-list').off('click.panelHeading').on('click.panelHeading', '.panel-heading', function () {
+                        var $heading = $(this);
+                        var $collapse = $heading.next('.panel-collapse');
+                        if ($collapse.length) {
+                            $collapse.toggleClass('in');
+                        }
+                    });
+
+                    // 绑定交互：选中面板项高亮并加载图片
+                    $('#nurse-list').off('click.panelBody').on('click.panelBody', '.panel-body', function (e) {
+                        var $item = $(this);
+                        var mrcode = $item.attr('value') || '';
+                        var code = $item.data('code') || '';
+                        var page = 1; // 目前默认第一页
+
+                        $('#nurse-list .panel-body').removeClass('selected');
+                        $item.addClass('selected');
+
+                        loadRecordImage({ mrcode: mrcode, code: code, page: page });
+                    });
+                },
+                error: function (xhr, status, err) {
+                    console.error('加载护士文书目录失败: ', err);
+                    $('#nurse-list').html('<div class="center-loading"><span style="color:#ef4444">加载失败，请稍后重试</span></div>');
+                }
+            });
+
+            // 左侧伸缩
+            $('#toggle-menu').on('click', function () {
+                var $pageContent = $('.page-content');
+                var collapsed = $pageContent.hasClass('menu-collapsed');
+                if (collapsed) {
+                    $pageContent.removeClass('menu-collapsed');
+                } else {
+                    $pageContent.addClass('menu-collapsed');
+                }
+                
+                // 等待 CSS 过渡完成后触发 resize 让 viewer 自动调整
+                setTimeout(function() {
+                    window.dispatchEvent(new Event('resize'));
+                }, 250); // 与 CSS transition 时间匹配
+            });
+
+            // Viewer.js 实例
+            var viewerInstance = null;
+            var currentBlobUrl = null;
+
+            // 在右侧展示加载/图片/错误
+            function renderViewer(contentHtml) {
+                $('#nurse-viewer .viewer-inner').html(contentHtml);
+            }
+
+            function loadRecordImage(params) {
+                if (!params.mrcode) {
+                    renderViewer('<div class="placeholder">未找到文书标识，无法加载</div>');
+                    return;
+                }
+
+                var page = params.page || 1;
+                var code = params.code || '';
+                var imgUrl = appconfig.api + '/api/MobileWard/GetNsRecordImage'
+                    + '?patientId=' + encodeURIComponent(patientId)
+                    + '&mrcode=' + encodeURIComponent(params.mrcode)
+                    + '&page=' + encodeURIComponent(page)
+                    + '&code=' + encodeURIComponent(code)
+                    + '&ticks=' + Date.now();
+
+                renderViewer(
+                    '<div class="viewer-loading">'
+                    + '<i class="layui-icon layui-icon-loading layui-anim layui-anim-rotate layui-anim-loop" style="font-size:28px;"></i>'
+                    + '<div>正在加载文书图片...</div>'
+                    + '</div>'
+                );
+
+                // 以二进制方式获取并转为 blob URL
+                fetch(imgUrl, { method: 'GET' })
+                    .then(function (resp) {
+                        if (!resp.ok) throw new Error('HTTP ' + resp.status);
+                        return resp.blob();
+                    })
+                    .then(function (blob) {
+                        var objectUrl = URL.createObjectURL(blob);
+                        var img = new Image();
+                        img.className = 'viewer-img';
+                        img.onload = function () {
+                            // 先清空容器（会自动触发旧 viewer 的清理）
+                            var $container = $('#nurse-viewer .viewer-inner');
+                            $container.empty();
+
+                            // 销毁之前的 viewer 实例并释放旧的 blob URL
+                            if (viewerInstance) {
+                                try {
+                                    viewerInstance.destroy();
+                                    viewerInstance = null;
+                                } catch (e) {
+                                    // 忽略销毁错误，已清空容器
+                                }
+                            }
+                            if (currentBlobUrl) {
+                                URL.revokeObjectURL(currentBlobUrl);
+                            }
+                            currentBlobUrl = objectUrl;
+
+                            // 添加新图片
+                            $container.append(img);
+
+                            // 初始化 Viewer.js
+                            viewerInstance = new Viewer(img, {
+                                inline: true,
+                                navbar: false,
+                                title: false,
+                                toolbar: {
+                                    zoomIn: 1,
+                                    zoomOut: 1,
+                                    oneToOne: 1,
+                                    reset: 1,
+                                    rotateLeft: 1,
+                                    rotateRight: 1
+                                }
+                            });
+                        };
+                        img.onerror = function () {
+                            URL.revokeObjectURL(objectUrl);
+                            renderViewer('<div class="placeholder" style="color:#ef4444;">图片解析失败，请稍后重试</div>');
+                        };
+                        img.src = objectUrl;
+                    })
+                    .catch(function (err) {
+                        console.error('获取文书图片失败:', err);
+                        renderViewer('<div class="placeholder" style="color:#ef4444;">图片加载失败，请稍后重试</div>');
+                    });
+            }
+        });
+    </script>
+</body>
+
+</html>

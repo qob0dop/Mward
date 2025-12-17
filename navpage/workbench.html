@@ -6,109 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Document</title>
   <link rel="stylesheet" href="/lib/layui-v2.6.3/css/layui.css" media="all" />
-  <style>
-    body,
-    html {
-      height: 100%;
-    }
-
-    header {
-      align-items: center;
-      padding-left: 15px;
-      display: flex;
-      font-size: 18px;
-      font-weight: bold;
-      line-height: 50px;
-      height: 10%;
-      text-align: center;
-      color: #fff;
-      background-color: rgb(4, 46, 167);
-    }
-
-    .workbench-area {
-      box-sizing: border-box;
-      margin: 10px;
-      padding: 20px;
-      padding-top: 10px;
-      border-radius: 10px;
-      background-color: #fff;
-    }
-
-    .workbench-area h3 {
-      font-weight: bold;
-      margin-bottom: 5px;
-    }
-
-    .workbench-content {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-    }
-
-    .work-item {
-      height: 80px;
-      text-align: center;
-    }
-
-    .work-item i {
-      font-size: 32px;
-    }
-
-    .layui-icon.layui-icon-date {
-      color: rgb(102, 172, 159);
-    }
-
-    .layui-icon.layui-icon-fire {
-      color: rgb(225, 112, 85);
-    }
-
-    .layui-icon.layui-icon-read {
-      color: rgb(94, 142, 241);
-    }
-
-    .layui-icon.layui-icon-template-1 {
-      color: rgb(255, 140, 0);
-    }
-
-    .layui-icon.layui-icon-survey {
-      color: rgb(46, 204, 113);
-    }
-
-    .layui-icon.layui-icon-heart-fill {
-      color: rgb(231, 76, 60);
-    }
-
-    .layui-icon.layui-icon-location {
-      color: rgb(155, 89, 182);
-    }
-
-    .layui-icon.layui-icon-chart {
-      color: rgb(52, 152, 219);
-    }
-
-    .layui-icon.layui-icon-file-b {
-      color: rgb(26, 188, 156);
-    }
-
-    .layui-icon.layui-icon-username {
-      color: rgb(241, 196, 15);
-    }
-
-    .layui-icon.layui-icon-cellphone {
-      color: rgb(52, 73, 94);
-    }
-
-    .layui-icon.layui-icon-tabs {
-      color: rgb(230, 126, 34);
-    }
-
-    .layui-icon.layui-icon-release {
-      color: rgb(231, 76, 60);
-    }
-
-    .layui-icon.layui-icon-form {
-      color: rgb(41, 128, 185);
-    }
-  </style>
+  <link rel="stylesheet" href="/css/navpage/workbench.css" />
 </head>
 
 <body>
@@ -189,24 +87,7 @@
     </div>
   </main>
   <script src="/lib/layui-v2.6.3/layui.js"></script>
-  <script>
-    // 处理移动端返回键（在 iframe 子页面中）
-    window.addEventListener('message', function (event) {
-      // 检查是否有打开的 layer 弹层
-      if (event.data && event.data.type === 'back') {
-        if (window.layui && layui.layer) {
-          var openLayers = document.querySelectorAll('.layui-layer');
-          if (openLayers && openLayers.length > 0) {
-            // 如果有弹层，关闭最上层的弹层
-            layui.layer.closeAll();
-            return;
-          }
-        }
-      }
-
-      // 如果没有弹层，不处理（让父页面处理返回逻辑）
-    }, false);
-  </script>
+  <script src="../js/navpage/workbench.js"></script>
 </body>
 
 </html>
