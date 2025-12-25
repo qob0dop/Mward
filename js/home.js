@@ -1,6 +1,6 @@
 // 全局变量，缓存已创建的 iframe
 const iframeCache = {};
-let currentIframe = "workbench"; // 当前显示的 iframe
+let currentIframe = "patients"; // 当前显示的 iframe
 let buttons = null;
 let mainContent = null;
 
@@ -120,5 +120,5 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   // 默认显示
-  showFrame("workbench");
+  showFrame("patients");
 });

@@ -1,17 +1,21 @@
 // 处理移动端返回键（在 iframe 子页面中）
 
-layui.use(["jquery", "appconfig"], function () {
+layui.use(["jquery", "appconfig", "layer"], function () {
   const $ = layui.$;
   const appconfig = layui.appconfig;
+  const layer = layui.layer;
   const loginUser = JSON.parse(localStorage.getItem("loginUser"));
   const patients = [];
   let allPatients = []; // 存储所有患者数据
+  let consultPatients = []; // 存储会诊患者数据
   let originalPatients = []; // 原始顺序快照
   let showMyPatientsOnly = false; // 标记是否只显示我的患者
+  let isConsultMode = false; // 是否处于我的会诊模式
   let searchKeyword = ""; // 搜索关键词
   let currentSort = "default"; // 当前排序方式
   let filteredStatus = "全部"; // 当前状态筛选
   let filteredGender = "全部"; // 当前性别筛选
+  let consultStatusFilter = "全部"; // 会诊状态筛选
   let availableWards = []; // 存储可用的病区列表
   let currentWardSn = null; // 当前选中的病区编号
   let currentWardName = ""; // 当前选中的病区名称
@@ -150,7 +154,39 @@ layui.use(["jquery", "appconfig"], function () {
       },
     });
   }
+  function loadconsultpatients() {
+    showLoading();
 
+    $.ajax({
+      url: appconfig.api + "/api/MobileWard/GetConsultationsByDoctor",
+      type: "GET",
+      data: { doctorId: loginUser.user_name },
+      dataType: "json",
+      success: function (res) {
+        hideLoading();
+        consultPatients = Array.isArray(res && res.Data) ? res.Data : [];
+
+        // 按申请时间倒序（最新在上）
+        consultPatients = consultPatients.slice().sort(function (a, b) {
+          console.log(getApplyTimestamp(b), getApplyTimestamp(a));
+          return getApplyTimestamp(b) - getApplyTimestamp(a);
+        });
+        console.log(consultPatients);
+
+        renderConsultPatients();
+
+        if (res && res.Status && res.Status !== 1) {
+          layer.msg(res.message || "获取会诊数据失败", { icon: 0, time: 1500 });
+        }
+      },
+      error: function () {
+        hideLoading();
+        layer.msg("获取会诊列表失败，请稍后再试", { icon: 2, time: 1500 });
+        consultPatients = [];
+        renderConsultPatients();
+      },
+    });
+  }
   function loadPatients(ward_sn) {
     if (!ward_sn) {
       console.warn("ward_sn 为空，无法加载患者列表");
@@ -187,6 +223,10 @@ layui.use(["jquery", "appconfig"], function () {
   }
   //渲染患者信息卡片列表
   function renderPatients() {
+    if (isConsultMode) {
+      renderConsultPatients();
+      return;
+    }
     const patientList = $(".patients-cardlist");
     patientList.empty(); // 清空现有内容
 
@@ -288,6 +328,188 @@ layui.use(["jquery", "appconfig"], function () {
     patientList.append(html);
   }
 
+  // 解析会诊申请时间
+  function getApplyTimestamp(item) {
+    // 只按申请时间字段优先：apply_date > apply_time > applyTime > request_time
+    const cand =
+      (item &&
+        (item.apply_date ||
+          item.applyDate ||
+          item.apply_time ||
+          item.applyTime ||
+          item.request_time)) ||
+      "";
+
+    if (!cand) return 0;
+
+    // 直接尝试原始字符串/Date
+    if (cand instanceof Date) {
+      const direct = cand.getTime();
+      return isNaN(direct) ? 0 : direct;
+    }
+
+    const raw = String(cand).trim();
+    if (!raw) return 0;
+
+    // 1) 先试 ISO 解析（含 T 的情况）
+    let ts = Date.parse(raw);
+
+    // 2) 兼容 "2025-12-10T09:06:37" / "2025-12-10 09:06:37"
+    if (isNaN(ts)) {
+      const isoLike = raw.includes("T") ? raw : raw.replace(/\s+/, "T");
+      ts = Date.parse(isoLike);
+    }
+
+    // 3) 再用斜杠替换横杠，去掉毫秒
+    if (isNaN(ts)) {
+      const normalized = raw
+        .replace("T", " ")
+        .replace(/\.\d+$/, "")
+        .replace(/-/g, "/");
+      ts = Date.parse(normalized);
+    }
+
+    // 4) 最后做一次拆分重组
+    if (isNaN(ts)) {
+      const parts = raw.split(/[ T]/);
+      if (parts.length >= 1) {
+        const datePart = parts[0].replace(/-/g, "/");
+        const timePart = parts[1] || "00:00:00";
+        ts = Date.parse(`${datePart} ${timePart}`);
+      }
+    }
+
+    return isNaN(ts) ? 0 : ts;
+  }
+
+  // 渲染会诊患者卡片列表（展示即可）
+  function renderConsultPatients() {
+    const listEl = $(".patients-cardlist");
+    listEl.empty();
+
+    if (!consultPatients || consultPatients.length === 0) {
+      listEl.append(
+        '<div style="padding:20px; text-align:center; color:#888;">暂无会诊记录</div>'
+      );
+      return;
+    }
+
+    // 按会诊状态过滤
+    let filtered = consultPatients;
+    filtered = filtered.filter(function (item) {
+      const handled = !!(
+        (item.consult_advise && String(item.consult_advise).trim()) ||
+        item.consult_doctor ||
+        item.consultDoctor
+      );
+      if (consultStatusFilter === "待处理") return !handled;
+      if (consultStatusFilter === "已处理") return handled;
+      return true; // 全部
+    });
+
+    if (filtered.length === 0) {
+      listEl.append(
+        '<div style="padding:20px; text-align:center; color:#888;">暂无会诊记录</div>'
+      );
+      return;
+    }
+
+    let html = "";
+    filtered.forEach(function (item) {
+      const name = item.patient_name || item.patientName || "患者";
+      const bed = item.bed_no || item.bedNo || "";
+      const applyDept = item.apply_dept_name || item.apply_dept || "";
+      const applyDoctor =
+        item.apply_opera_name ||
+        item.apply_doctor_name ||
+        item.apply_opera ||
+        "";
+      const reason = item.consult_reason || item.reason || "";
+      const applyTime =
+        item.apply_date || item.apply_time || item.applyTime || "";
+      const handled = !!(
+        (item.consult_advise && String(item.consult_advise).trim()) ||
+        item.consult_doctor ||
+        item.consultDoctor
+      );
+      const statusText = handled ? "已处理" : "待处理";
+      const statusColor = handled ? "#16baaa" : "#ffb800";
+      const patientId = item.patient_id || item.patientId || "";
+      const wardSn = item.apply_dept || item.applyDept || "";
+
+      html += `
+        <div class="patient-card consult-card" data-patient-id="${patientId}" data-apply-dept="${wardSn}">
+          <div class="patient-card-header" style="position:relative; padding-right:80px;">
+            ${bed ? `<label>${bed}床</label>` : ""}
+            <label>${name}</label>
+            <span style="position:absolute; right:10px; top:6px; padding:2px 8px; border-radius:10px; font-size:12px; color:#fff; background:${statusColor};">${statusText}</span>
+          </div>
+          <div class="patient-card-body">
+            ${
+              applyDept
+                ? `<label style="grid-column:1/3"><i class="layui-icon layui-icon-home"></i>申请科室：${applyDept}</label>`
+                : ""
+            }
+            ${
+              applyDoctor
+                ? `<label style="grid-column:1/3"><i class="layui-icon layui-icon-username"></i>申请医生：${applyDoctor}</label>`
+                : ""
+            }
+            ${
+              reason
+                ? `<label style="grid-column:1/3"><i class="layui-icon layui-icon-form"></i>会诊原因：${reason}</label>`
+                : ""
+            }
+            ${
+              applyTime
+                ? `<label style="grid-column:1/3"><i class="layui-icon layui-icon-date"></i>申请时间：${applyTime}</label>`
+                : ""
+            }
+          </div>
+        </div>`;
+    });
+
+    listEl.append(html);
+  }
+
+  // 根据会诊记录跳转患者详情
+  function openConsultPatient(wardSn, patientId) {
+    if (!wardSn || !patientId) {
+      layer.msg("缺少病区或患者信息，无法打开详情", { icon: 0, time: 1500 });
+      return;
+    }
+
+    showLoading();
+    $.ajax({
+      url:
+        appconfig.api +
+        `/api/MobileWard/GetActPatientLists?ward=${wardSn}&inout=I`,
+      method: "GET",
+      success: function (res) {
+        if (res && res.Status === 1 && Array.isArray(res.Data)) {
+          const matched = res.Data.find(
+            (p) => p.patient_id == patientId || p.patientId == patientId
+          );
+
+          if (matched) {
+            localStorage.setItem("userData", JSON.stringify(matched));
+            location.href = "../view/patient.html";
+          } else {
+            layer.msg("未找到匹配在院患者", { icon: 0, time: 1500 });
+          }
+        } else {
+          layer.msg("获取患者列表失败", { icon: 2, time: 1500 });
+        }
+      },
+      error: function () {
+        layer.msg("获取患者列表失败", { icon: 2, time: 1500 });
+      },
+      complete: function () {
+        hideLoading();
+      },
+    });
+  }
+
   // 解析入院时间字段（后端字段名推测：admiss_time / in_time / admit_time）；尝试多字段兼容
   function parseAdmitTime(p) {
     const cand =
@@ -349,6 +571,21 @@ layui.use(["jquery", "appconfig"], function () {
     $(this).addClass("active");
     renderPatients();
   });
+  $(document).on(
+    "click",
+    ".consult-status-filter .consult-status-option",
+    function () {
+      const status = $(this).data("consult-status");
+      if (status === consultStatusFilter) return;
+      consultStatusFilter = status;
+      $(".consult-status-filter .consult-status-option").removeClass("active");
+      $(this).addClass("active");
+      // 仅会诊模式下有效
+      if (isConsultMode) {
+        renderConsultPatients();
+      }
+    }
+  );
   // 初始化：加载病区列表
   loadAvailableWards();
 
@@ -823,7 +1060,9 @@ layui.use(["jquery", "appconfig"], function () {
     $(".ward-list").fadeOut(300);
     $(".overlay").fadeOut(300); // 同时关闭遮罩
   });
-
+  $(".filter-overlay").on("click", function () {
+    $(".filter-panel").css("width", "0");
+  });
   //病区切换点击事件
   $(".ward-list-body").on("click", ".ward-item", function () {
     const wardSn = $(this).data("ward-sn");
@@ -858,17 +1097,29 @@ layui.use(["jquery", "appconfig"], function () {
 
   // 全部患者/我的患者切换功能
   $("#all-patients-label").on("click", function () {
+    isConsultMode = false;
     showMyPatientsOnly = false;
     $("#all-patients-label").addClass("active");
     $("#my-patients-label").removeClass("active");
+    $("#my-consultations-label").removeClass("active");
     renderPatients(); // 重新渲染
   });
 
   $("#my-patients-label").on("click", function () {
+    isConsultMode = false;
     showMyPatientsOnly = true;
     $("#my-patients-label").addClass("active");
     $("#all-patients-label").removeClass("active");
+    $("#my-consultations-label").removeClass("active");
     renderPatients(); // 重新渲染
+  });
+
+  $("#my-consultations-label").on("click", function () {
+    isConsultMode = true;
+    $("#my-consultations-label").addClass("active");
+    $("#my-patients-label").removeClass("active");
+    $("#all-patients-label").removeClass("active");
+    loadconsultpatients();
   });
 
   // 初始化时设置默认选中状态
@@ -894,6 +1145,12 @@ layui.use(["jquery", "appconfig"], function () {
     }
   });
   $(".patients-cardlist").on("click", ".patient-card", function () {
+    if (isConsultMode) {
+      const wardSn = $(this).data("apply-dept");
+      const patientId = $(this).data("patient-id");
+      openConsultPatient(wardSn, patientId);
+      return;
+    }
     const patientId = $(this).data("patient-id");
     const selectedPatient = allPatients.find(
       (patient) => patient.inpatient_no == patientId

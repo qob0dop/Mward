@@ -109,7 +109,9 @@
   letter-spacing: 0;
   color: #fff;
   border-radius: 12px 12px 0 0;
-  background-color: #148be4;
+
+  /* background-color: #148be4; */
+  background: url("../images/header.jpg") no-repeat center center;
 }
 
 .login-main .login-top .bg1 {
@@ -135,8 +137,15 @@
   border-radius: 50%;
   background: #fff;
 }
-
+.logo {
+  padding-left: 20px;
+}
+#YYlogo {
+  height: 60px;
+  vertical-align: middle;
+}
 .login-main .login-bottom {
+  position: relative;
   width: 428px;
   padding-bottom: 53px;
   border-radius: 0 0 12px 12px;
@@ -162,9 +171,13 @@
 body {
   font-size: 12px;
   position: static;
-  background: url(../images/loginbg.png) 0 0 / cover no-repeat;
+  background-color: white;
+  /* background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+    url(../images/loginbg.png) top center / 100% 50% no-repeat; */
 }
-
+.background {
+  background: url(../images/loginbg.png) top center / 100% 50% cover no-repeat;
+}
 input::-webkit-input-placeholder {
   color: #a6aebf;
 }
@@ -202,7 +215,12 @@ html {
   letter-spacing: 0;
   color: #9abcda;
 }
-
+#setting-btn {
+  position: absolute;
+  top: 0;
+  right: 5px;
+  color: gray;
+}
 .login-main .login-bottom .tip .forget-password {
   font-stretch: normal;
   position: absolute;

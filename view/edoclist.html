@@ -25,9 +25,9 @@
 
     .left_area {
       display: flex;
-      overflow: hidden;
+      overflow: auto;
       flex-direction: column;
-      width: 320px;
+      width: 100%;
       border-right: 1px solid #e6e9ef;
       background: #fff;
     }
@@ -100,7 +100,7 @@
       z-index: 10;
       top: 12px;
       left: 310px;
-      display: inline-flex;
+      display: none;
       align-items: center;
       justify-content: center;
       width: 28px;
@@ -137,7 +137,8 @@
 
     .menu-collapsed .toggle-btn {
       left: 12px;
-      transform: rotate(180deg);
+      display: inline-flex;
+      /* transform: rotate(180deg); */
     }
 
     /* 菜单样式 */
@@ -403,11 +404,11 @@
           const isOpen = $item.hasClass("open");
 
           // 单开模式：关闭兄弟项
-          $item.siblings(".menu-item").removeClass("open").children(".subItems").slideUp(150);
-          $item.siblings(".menu-item").find(".menu-switch").each(function () {
-            setSwitchIcon($(this), false);
-          });
 
+          // $item.siblings(".menu-item").removeClass("open").children(".subItems").slideUp(150);
+          // $item.siblings(".menu-item").find(".menu-switch").each(function () {
+          //   setSwitchIcon($(this), false);
+          // });
           if (isOpen) {
             $item.removeClass("open");
             $sub.slideUp(150);
@@ -454,6 +455,7 @@
           success: function (html) {
             const container = document.querySelector('.doc-content');
             if (container) {
+              $('main').addClass("menu-collapsed");
               container.innerHTML = html || '<div style="padding:16px;font-family:Segoe UI,Microsoft YaHei,sans-serif;color:#4a5568;">暂无内容</div>';
             } else {
               $('.right_area').html(html);

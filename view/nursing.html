@@ -47,11 +47,13 @@
             background: #f9fafb;
         }
 
-        /* 两列布局 */
+        /* 两态布局：默认仅显示左侧，选择后全屏右侧 */
         .nursing-layout {
             display: grid;
             height: 100%;
-            grid-template-columns: 320px 1fr;
+            grid-template-columns: 100% 0;
+
+            /* 默认：只显示列表 */
             gap: 0;
         }
 
@@ -59,6 +61,8 @@
             display: flex;
             flex-direction: column;
             height: 100%;
+            min-height: 0;
+            /* 允许子元素在 flex/grid 下正确滚动 */
             border-right: 1px solid #e5e7eb;
             background: #fff;
         }
@@ -72,10 +76,19 @@
 
         .sidebar-inner {
             position: relative;
-            overflow: auto;
+            overflow-x: hidden;
+            overflow-y: auto;
+            /* 垂直滚动 */
             flex: 1;
+            min-height: 0;
+            /* 防止内容挤压导致无法滚动 */
             padding: 8px 8px 16px 8px;
             background: #fff;
+            -webkit-overflow-scrolling: touch;
+            /* iOS 弹性滚动 */
+            overscroll-behavior: contain;
+            /* 阻止滚动穿透 */
+            touch-action: pan-y;
         }
 
         .nursing-main {
@@ -95,16 +108,16 @@
         }
 
         .viewer-inner {
-            width: 100%;
-            height: 100%;
+            position: relative;
             display: flex;
+            overflow: hidden;
             align-items: center;
             justify-content: center;
-            background: #f9fafb;
+            width: 100%;
+            height: 100%;
             border: 1px dashed #e5e7eb;
             border-radius: 6px;
-            overflow: hidden;
-            position: relative;
+            background: #f9fafb;
         }
 
         .viewer-loading {
@@ -218,13 +231,15 @@
             background-color: transparent !important;
         }
 
-        /* 折叠按钮 */
+        /* 折叠按钮（查看模式下显示返回） */
         .toggle-btn {
             position: absolute;
             z-index: 10;
             top: 12px;
-            left: 300px;
-            display: inline-flex;
+            left: 12px;
+            display: none;
+
+            /* 默认不显示，进入查看模式后显示 */
             align-items: center;
             justify-content: center;
             width: 28px;
@@ -248,17 +263,17 @@
             transform: translateX(-1px);
         }
 
-        /* 折叠状态 */
+        /* 查看模式（折叠左侧，右侧全屏） */
         .menu-collapsed .nursing-layout {
-            grid-template-columns: 0px 1fr;
+            grid-template-columns: 0 1fr;
         }
 
         .menu-collapsed .nursing-sidebar {
+            overflow: hidden;
             width: 0;
             min-width: 0;
-            border: none;
             padding: 0;
-            overflow: hidden;
+            border: none;
         }
 
         .menu-collapsed .nursing-sidebar .sidebar-inner {
@@ -266,14 +281,14 @@
         }
 
         .menu-collapsed .toggle-btn {
-            left: 12px;
-            transform: rotate(180deg);
+            display: inline-flex;
+            /* 仅在查看模式显示返回按钮 */
         }
 
-        /* 窄屏下自动收缩侧栏 */
+        /* 窄屏：保持默认仅列表显示 */
         @media (max-width: 768px) {
             .nursing-layout {
-                grid-template-columns: 260px 1fr;
+                grid-template-columns: 100% 0;
             }
         }
     </style>
@@ -391,6 +406,13 @@
                         $('#nurse-list .panel-body').removeClass('selected');
                         $item.addClass('selected');
 
+                        // 进入查看模式：折叠左侧，右侧全屏
+                        var $pageContent = $('.page-content');
+                        if (!$pageContent.hasClass('menu-collapsed')) {
+                            $pageContent.addClass('menu-collapsed');
+                            setTimeout(function () { window.dispatchEvent(new Event('resize')); }, 250);
+                        }
+
                         loadRecordImage({ mrcode: mrcode, code: code, page: page });
                     });
                 },
@@ -400,7 +422,7 @@
                 }
             });
 
-            // 左侧伸缩
+            // 返回列表 / 展开左侧
             $('#toggle-menu').on('click', function () {
                 var $pageContent = $('.page-content');
                 var collapsed = $pageContent.hasClass('menu-collapsed');
@@ -409,11 +431,11 @@
                 } else {
                     $pageContent.addClass('menu-collapsed');
                 }
-                
-                // 等待 CSS 过渡完成后触发 resize 让 viewer 自动调整
-                setTimeout(function() {
+
+                // 等待过渡完成后触发 resize 让 viewer 自动调整
+                setTimeout(function () {
                     window.dispatchEvent(new Event('resize'));
-                }, 250); // 与 CSS transition 时间匹配
+                }, 250);
             });
 
             // Viewer.js 实例

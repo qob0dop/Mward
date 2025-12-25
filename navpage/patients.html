@@ -8,176 +8,244 @@
   <link rel="stylesheet" href="/css/navpage/patients.css" />
   <title>病人列表</title>
   <style>
-@keyframes spin
-{
-    from
-    {
+    @keyframes spin {
+      from {
         transform: rotate(0deg);
-    }
+      }
 
-    to
-    {
+      to {
         transform: rotate(360deg);
+      }
     }
-}
 
-/* 扫码界面样式 */
-#qr-scanner-container
-{
-    position: fixed;  z-index: 10000;  top: 0;  right: 0;  bottom: 0;  left: 0;  display: none;  background: #000;
-}
+    /* 扫码界面样式 */
+    #qr-scanner-container {
+      position: fixed;
+      z-index: 10000;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      display: none;
+      background: #000;
+    }
 
-#qr-scanner-container.active
-{
-    display: block;
-}
+    #qr-scanner-container.active {
+      display: block;
+    }
 
-#qr-video
-{
-    width: 100%;  height: 100%;  object-fit: cover;
-}
+    #qr-video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
 
-#qr-canvas
-{
-    display: none;
-}
+    #qr-canvas {
+      display: none;
+    }
 
-.qr-scanner-overlay
-{
-    position: absolute;  top: 0;  right: 0;  bottom: 0;  left: 0;  pointer-events: none;
-}
+    .qr-scanner-overlay {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      pointer-events: none;
+    }
 
-.qr-scanner-header
-{
-    position: absolute;  z-index: 1;  top: 0;  right: 0;  left: 0;  padding: 20px;  pointer-events: auto;  background: linear-gradient(to bottom, rgba(0, 0, 0, .7), transparent);
-}
+    .qr-scanner-header {
+      position: absolute;
+      z-index: 1;
+      top: 0;
+      right: 0;
+      left: 0;
+      padding: 20px;
+      pointer-events: auto;
+      background: linear-gradient(to bottom, rgba(0, 0, 0, .7), transparent);
+    }
 
-.qr-scanner-header-content
-{
-    display: flex;  align-items: center;  justify-content: space-between;  color: white;
-}
+    .qr-scanner-header-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: white;
+    }
 
-.qr-scanner-title
-{
-    font-size: 16px;
-}
+    .qr-scanner-title {
+      font-size: 16px;
+    }
 
-.qr-scanner-close
-{
-    font-size: 28px;  padding: 5px;  cursor: pointer;
-}
+    .qr-scanner-close {
+      font-size: 28px;
+      padding: 5px;
+      cursor: pointer;
+    }
 
-.qr-scan-region
-{
-    position: absolute;  top: 50%;  left: 50%;  width: 250px;  height: 250px;  transform: translate(-50%, -50%);  border: 2px solid #1e9fff;  border-radius: 8px;  box-shadow: 0 0 0 9999px rgba(0, 0, 0, .5);
-}
+    .qr-scan-region {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 250px;
+      height: 250px;
+      transform: translate(-50%, -50%);
+      border: 2px solid #1e9fff;
+      border-radius: 8px;
+      box-shadow: 0 0 0 9999px rgba(0, 0, 0, .5);
+    }
 
-.qr-scan-corner
-{
-    position: absolute;  width: 20px;  height: 20px;
-}
+    .qr-scan-corner {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+    }
 
-.qr-scan-corner.top-left
-{
-    top: -2px;  left: -2px;  border-top: 3px solid #1e9fff;  border-left: 3px solid #1e9fff;
-}
+    .qr-scan-corner.top-left {
+      top: -2px;
+      left: -2px;
+      border-top: 3px solid #1e9fff;
+      border-left: 3px solid #1e9fff;
+    }
 
-.qr-scan-corner.top-right
-{
-    top: -2px;  right: -2px;  border-top: 3px solid #1e9fff;  border-right: 3px solid #1e9fff;
-}
+    .qr-scan-corner.top-right {
+      top: -2px;
+      right: -2px;
+      border-top: 3px solid #1e9fff;
+      border-right: 3px solid #1e9fff;
+    }
 
-.qr-scan-corner.bottom-left
-{
-    bottom: -2px;  left: -2px;  border-bottom: 3px solid #1e9fff;  border-left: 3px solid #1e9fff;
-}
+    .qr-scan-corner.bottom-left {
+      bottom: -2px;
+      left: -2px;
+      border-bottom: 3px solid #1e9fff;
+      border-left: 3px solid #1e9fff;
+    }
 
-.qr-scan-corner.bottom-right
-{
-    right: -2px;  bottom: -2px;  border-right: 3px solid #1e9fff;  border-bottom: 3px solid #1e9fff;
-}
+    .qr-scan-corner.bottom-right {
+      right: -2px;
+      bottom: -2px;
+      border-right: 3px solid #1e9fff;
+      border-bottom: 3px solid #1e9fff;
+    }
 
-.qr-scanner-footer
-{
-    position: absolute;  right: 0;  bottom: 50px;  left: 0;  text-align: center;  pointer-events: auto;  color: white;
-}
+    .qr-scanner-footer {
+      position: absolute;
+      right: 0;
+      bottom: 50px;
+      left: 0;
+      text-align: center;
+      pointer-events: auto;
+      color: white;
+    }
 
-.qr-scanner-tip
-{
-    font-size: 14px;  margin-bottom: 20px;
-}
+    .qr-scanner-tip {
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
 
-.qr-scanner-flash-btn
-{
-    font-size: 14px;  padding: 10px 20px;  cursor: pointer;  color: white;  border: none;  border-radius: 20px;  background: rgba(255, 255, 255, .3);
-}
+    .qr-scanner-flash-btn {
+      font-size: 14px;
+      padding: 10px 20px;
+      cursor: pointer;
+      color: white;
+      border: none;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, .3);
+    }
 
-/* 加载遮罩层（overlay）和居中 spinner */
-.loading-overlay
-{
-    position: fixed;  z-index: 9998;  top: 0;  left: 0;  display: none;
+    /* 加载遮罩层（overlay）和居中 spinner */
+    .loading-overlay {
+      position: fixed;
+      z-index: 9998;
+      top: 0;
+      left: 0;
+      display: none;
 
-/* hidden by default */
-    /* flex 居中内部内容 */
-    align-items: center;  justify-content: center;  width: 100%;  height: 100%;  background-color: rgba(0, 0, 0, .3);
-}
+      /* hidden by default */
+      /* flex 居中内部内容 */
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, .3);
+    }
 
-.loading-overlay.show
-{
-    display: flex;
-}
+    .loading-overlay.show {
+      display: flex;
+    }
 
-.loading-overlay .layui-icon-loading
-{
-    font-size: 40px !important;  z-index: 9999;  display: none;  padding: 20px;  animation: spin 1s linear infinite !important;  color: #1e9fff;  border-radius: 50%;  background-color: rgba(255, 255, 255, .95);  box-shadow: 0 2px 10px rgba(0, 0, 0, .1);
-}
+    .loading-overlay .layui-icon-loading {
+      font-size: 40px !important;
+      z-index: 9999;
+      display: none;
+      padding: 20px;
+      animation: spin 1s linear infinite !important;
+      color: #1e9fff;
+      border-radius: 50%;
+      background-color: rgba(255, 255, 255, .95);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, .1);
+    }
 
-.loading-overlay .layui-icon-loading.show
-{
-    display: block !important;
-}
+    .loading-overlay .layui-icon-loading.show {
+      display: block !important;
+    }
 
-.patient-card-body .layui-icon
-{
-    font-size: 18px;  margin-right: 4px;
-}
+    .patient-card-body .layui-icon {
+      font-size: 18px;
+      margin-right: 4px;
+    }
 
-#admiss-status-label
-{
-    position: absolute;  top: 0;  right: 10px;  padding: 5px;  color: #fff;
-}
+    #admiss-status-label {
+      position: absolute;
+      top: 0;
+      right: 10px;
+      padding: 5px;
+      color: #fff;
+    }
 
-#scan-icon
-{
-    width: 30px;  margin-left: 10px;
-}
+    #scan-icon {
+      width: 30px;
+      margin-left: 10px;
+    }
 
-/* 病区搜索框样式 */
-.ward-search-container
-{
-    position: relative;  padding: 10px 15px;  border-bottom: 1px solid #e6e6e6;  background: #f8f9fa;
-}
+    /* 病区搜索框样式 */
+    .ward-search-container {
+      position: relative;
+      padding: 10px 15px;
+      border-bottom: 1px solid #e6e6e6;
+      background: #f8f9fa;
+    }
 
-.ward-search-container .layui-icon-search
-{
-    font-size: 16px;  position: absolute;  top: 50%;  left: 25px;  transform: translateY(-50%);  pointer-events: none;  color: #999;
-}
+    .ward-search-container .layui-icon-search {
+      font-size: 16px;
+      position: absolute;
+      top: 50%;
+      left: 25px;
+      transform: translateY(-50%);
+      pointer-events: none;
+      color: #999;
+    }
 
-#ward-search
-{
-    font-size: 14px;  box-sizing: border-box;  width: 100%;  height: 36px;  padding: 8px 12px 8px 35px;  transition: all .3s ease;  border: 1px solid #e6e6e6;  border-radius: 18px;  outline: none;  background: #fff;
-}
+    #ward-search {
+      font-size: 14px;
+      box-sizing: border-box;
+      width: 100%;
+      height: 36px;
+      padding: 8px 12px 8px 35px;
+      transition: all .3s ease;
+      border: 1px solid #e6e6e6;
+      border-radius: 18px;
+      outline: none;
+      background: #fff;
+    }
 
-#ward-search:focus
-{
-    border-color: #1e9fff;  box-shadow: 0 0 0 2px rgba(30, 159, 255, .1);
-}
+    #ward-search:focus {
+      border-color: #1e9fff;
+      box-shadow: 0 0 0 2px rgba(30, 159, 255, .1);
+    }
 
-#ward-search::placeholder
-{
-    color: #ccc;
-}
-
+    #ward-search::placeholder {
+      color: #ccc;
+    }
   </style>
 </head>
 
@@ -222,6 +290,7 @@
   <div class="tool">
     <label id="all-patients-label">全部患者</label>
     <label id="my-patients-label">我的患者</label>
+    <label id="my-consultations-label">我的会诊</label>
     <p id="filter-label">
       筛选 | <i class="layui-icon layui-icon-shrink-right"></i>
     </p>
@@ -249,6 +318,12 @@
           <label class="status-option" data-sort="常规">常规</label>
           <label class="status-option" data-sort="重">重</label>
           <label class="status-option" data-sort="危">危</label>
+        </div>
+        <h5>会诊状态</h5>
+        <div class="consult-status-filter">
+          <label class="consult-status-option active" data-consult-status="全部">全部</label>
+          <label class="consult-status-option" data-consult-status="待处理">待处理</label>
+          <label class="consult-status-option" data-consult-status="已处理">已处理</label>
         </div>
         <h5>性别</h5>
         <div class="gender-filter">

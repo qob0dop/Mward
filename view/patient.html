@@ -1139,9 +1139,9 @@
                 <span>快捷功能</span>
               </div>
               <div class="function-buttons">
-                <button class="function-btn" id="btn-temperature" data-index="8">
-                  <i class="layui-icon layui-icon-chart"></i>
-                  体温单
+                <button class="function-btn" id="btn-first-page" data-index="8">
+                  <i class="layui-icon layui-icon-file-b"></i>
+                  住院病案
                 </button>
                 <button class="function-btn" id="btn-electronic-medical" data-index="4">
                   <i class="layui-icon layui-icon-file"></i>
@@ -1151,9 +1151,14 @@
                   <i class="layui-icon layui-icon-form"></i>
                   临床护理
                 </button>
+
                 <button class="function-btn" id="btn-ward-records" data-index="7">
                   <i class="layui-icon layui-icon-edit"></i>
                   查房记录
+                </button>
+                <button class="function-btn" id="btn-internal-consultation" data-index="8">
+                  <i class="layui-icon layui-icon-survey"></i>
+                  院内会诊
                 </button>
               </div>
             </div>
@@ -1191,9 +1196,12 @@
               <div class="expense-header" id="expense-header">
                 <div class="expense-title">
                   <i class="layui-icon layui-icon-dollar"></i>
-                  <span>费用明细</span>
+                  <span>住院总费用</span>
+                  <div class="total-expense">¥ 0.00</div>
+
                 </div>
-                <i class="layui-icon layui-icon-down expense-expand-icon" id="expense-expand-icon"></i>
+                <div>详细 <i class="layui-icon layui-icon-down expense-expand-icon" id="expense-expand-icon"></i></div>
+
               </div>
 
               <!-- 费用详细内容（默认收缩） -->
@@ -1201,7 +1209,7 @@
                 <!-- 费用总览 -->
                 <div class="expense-summary">
                   <div>
-                    <div class="total-expense">¥ 15,680.50</div>
+                    <div class="total-expense">¥ 0.00</div>
                     <div style="font-size: 0.9rem; color: #666; margin-top: 2px">
                       住院总费用
                     </div>
@@ -1525,48 +1533,100 @@
 
         // 单独存储被移到功能区的配置，用于功能按钮处理
         var functionConfigs = {
-          temperature: {
+          firstPage: {
             index: 8,
-            title: "体温单",
+            title: "住院病案",
             type: "popup",
             handler: function (jsonData) {
-              var imgUrl = appconfig.api + '/api/MobileWard/GetTemperatureChartImage?patient_id=' + encodeURIComponent(jsonData.patient_id) + '&ticks=' + Date.now();
-              var title = '体温单 - ' + (jsonData.name || '') + ' - ' + (jsonData.inpatient_no || '') + ' - ' + (jsonData.sex_name || '') + ' - ' + (jsonData.ages || '');
-              var html = [
+              var apiUrl = appconfig.api + '/api/MobileWard/GetFirstPageHtml?patientId=' + encodeURIComponent(jsonData.patient_id);
+              var title = '住院病案 - ' + (jsonData.name || '') + ' - ' + (jsonData.inpatient_no || '') + ' - ' + (jsonData.sex_name || '') + ' - ' + (jsonData.ages || '');
+
+              // 显示加载中
+              var loadingHtml = [
                 '<div style="width:100vw;height:100vh;background:#fff;display:flex;flex-direction:column;">',
                 '  <div style="padding:8px 12px;border-bottom:1px solid #e5e7eb;display:flex;align-items:center;justify-content:space-between;">',
                 '    <div style="font-weight:600;color:#374151;">' + title + '</div>',
                 '    <button onclick="layui.layer.closeAll()" style="border:1px solid #d1d5db;background:#f9fafb;border-radius:6px;height:28px;padding:0 10px;cursor:pointer;">关闭</button>',
                 '  </div>',
-                '  <div style="flex:1;position:relative;overflow:auto;background:#f9fafb;">',
-                '    <div id="twd-loading" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#6b7280;">',
-                '      <i class="layui-icon layui-icon-loading layui-anim layui-anim-rotate layui-anim-loop" style="font-size:28px;margin-right:8px;"></i>图片加载中...',
+                '  <div id="first-page-content" style="flex:1;position:relative;overflow:auto;background:#fff;">',
+                '    <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#6b7280;">',
+                '      <i class="layui-icon layui-icon-loading layui-anim layui-anim-rotate layui-anim-loop" style="font-size:28px;margin-right:8px;"></i>加载中...',
                 '    </div>',
-                '    <img id="twd-img" src="' + imgUrl + '" alt="体温单" style="display:block;max-width:100%;height:auto;margin:0 auto;" />',
                 '  </div>',
                 '</div>'
               ].join('');
-              var index = layui.layer.open({
+
+              var layerIndex = layui.layer.open({
                 type: 1,
                 area: ["100%", "100%"],
                 title: false,
                 closeBtn: 0,
                 shadeClose: true,
-                content: html
+                content: loadingHtml
               });
-              // 绑定加载与错误事件
-              setTimeout(function () {
-                var imgEl = document.getElementById('twd-img');
-                var loadingEl = document.getElementById('twd-loading');
-                if (imgEl) {
-                  imgEl.addEventListener('load', function () {
-                    if (loadingEl) loadingEl.style.display = 'none';
-                  });
-                  imgEl.addEventListener('error', function () {
-                    if (loadingEl) loadingEl.innerHTML = '<span style="color:#ef4444;">图片加载失败，请稍后重试</span>';
-                  });
+
+              // 请求 HTML 内容
+              $.ajax({
+                url: apiUrl,
+                method: 'GET',
+                dataType: 'html',
+                success: function (html) {
+                  // 包裹一层缩放容器
+                  var zoomHtml = '<div id="firstPageZoomContainer" style="width:100%;height:100%;touch-action:pan-x pan-y;">' + html + '</div>';
+                  $('#first-page-content').html(zoomHtml);
+                  // 仅移动端启用双指缩放
+                  if (/Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent)) {
+                    var container = document.getElementById('firstPageZoomContainer');
+                    var scale = 1, lastScale = 1, startDist = 0, origin = { x: 0, y: 0 };
+                    let lastCenter = { x: 0, y: 0 };
+                    let offset = { x: 0, y: 0 }, lastOffset = { x: 0, y: 0 };
+                    let isPinching = false;
+                    function getDistance(t1, t2) {
+                      var dx = t2.clientX - t1.clientX;
+                      var dy = t2.clientY - t1.clientY;
+                      return Math.sqrt(dx * dx + dy * dy);
+                    }
+                    function getCenter(t1, t2) {
+                      return {
+                        x: (t1.clientX + t2.clientX) / 2,
+                        y: (t1.clientY + t2.clientY) / 2
+                      };
+                    }
+                    container.addEventListener('touchstart', function (e) {
+                      if (e.touches.length === 2) {
+                        isPinching = true;
+                        startDist = getDistance(e.touches[0], e.touches[1]);
+                        lastScale = scale;
+                        lastCenter = getCenter(e.touches[0], e.touches[1]);
+                        lastOffset = { ...offset };
+                      }
+                    }, { passive: false });
+                    container.addEventListener('touchmove', function (e) {
+                      if (isPinching && e.touches.length === 2) {
+                        e.preventDefault();
+                        var newDist = getDistance(e.touches[0], e.touches[1]);
+                        var newScale = lastScale * (newDist / startDist);
+                        newScale = Math.max(0.5, Math.min(3, newScale));
+                        // 平移
+                        var newCenter = getCenter(e.touches[0], e.touches[1]);
+                        offset.x = lastOffset.x + (newCenter.x - lastCenter.x);
+                        offset.y = lastOffset.y + (newCenter.y - lastCenter.y);
+                        scale = newScale;
+                        container.style.transform = `translate(${offset.x}px,${offset.y}px) scale(${scale})`;
+                        container.style.transformOrigin = '0 0';
+                      }
+                    }, { passive: false });
+                    container.addEventListener('touchend', function (e) {
+                      if (e.touches.length < 2) {
+                        isPinching = false;
+                      }
+                    });
+                  }
+                },
+                error: function () {
+                  $('#first-page-content').html('<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#ef4444;">加载失败，请稍后重试</div>');
                 }
-              }, 0);
+              });
             },
           },
           electronic: {
@@ -1923,9 +1983,9 @@
             new Date().getTime();
 
           switch (buttonId) {
-            case "btn-temperature":
-              // 体温单 - 使用弹窗
-              functionConfigs.temperature.handler(jsonData);
+            case "btn-first-page":
+              // 住院病案 - 使用弹窗
+              functionConfigs.firstPage.handler(jsonData);
               break;
 
             case "btn-electronic-medical":
@@ -1962,6 +2022,14 @@
                 content: config.src + patientParams,
               });
               break;
+            case "btn-internal-consultation":
+              layui.layer.open({
+                type: 2,
+                area: ["100%", "100%"],
+                title: "院内会诊 - " + jsonData.name,
+                content:
+                  "consultations.html" + patientParams,
+              });
           }
         });
 

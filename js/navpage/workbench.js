@@ -18,3 +18,9 @@ window.addEventListener(
   },
   false
 );
+layui.use(["element", "layer"], function () {
+  const $ = layui.$;
+  $("#consult").on("click", function () {
+    location.href = "/worktools/consult.html";
+  });
+});

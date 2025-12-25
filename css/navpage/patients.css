@@ -37,7 +37,7 @@ main {
 }
 .tool label {
   font-size: 12px;
-  line-height: 12px;
+  line-height: 15px;
   margin: 5px;
   padding: 5px 10px;
   cursor: pointer;

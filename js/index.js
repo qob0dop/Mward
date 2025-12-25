@@ -412,7 +412,7 @@ layui.use(["form", "jquery", "appconfig", "dropdown"], function () {
   // 设置图标点击事件
   $("#setting-btn").on("click", function () {
     var currentApiUrl =
-      localStorage.getItem("api_url") || "https://www.annotoky.fun:5251";
+      localStorage.getItem("api_url") || "https://www.annotokyo.fun:8123";
     layer.open({
       type: 1,
       title: "API设置",

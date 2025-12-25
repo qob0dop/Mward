@@ -81,8 +81,8 @@ layui.use(["appconfig", "layer", "form"], function () {
       '<div class="card-header">' +
       '<div class="card-title">' +
       '<i class="layui-icon layui-icon-file"></i>' +
-      (item.grp_name || "未指定项目") +
-      `<span class="project-type">${item.sample_type_name}</span>` +
+      `<span>${item.grp_name || "未指定项目"} 
+      <span class="project-type">${item.sample_type_name}</span></span>` +
       "</div>" +
       '<div class="card-status ' +
       statusInfo.class +
@@ -163,6 +163,18 @@ layui.use(["appconfig", "layer", "form"], function () {
 
   // 加载卡片数据
   function loadCardsData() {
+    // 加载前显示加载占位
+    try {
+      var container = document.getElementById("cards-container");
+      if (container) {
+        container.innerHTML =
+          '<div class="loading-state" style="display:flex;align-items:center;justify-content:center;flex-direction:column;height:200px;color:#6b7280;">' +
+          '<i class="layui-icon layui-icon-loading layui-anim layui-anim-rotate layui-anim-loop" style="font-size:30px;margin-bottom:8px;"></i>' +
+          "<div>正在加载申请列表...</div>" +
+          "</div>";
+      }
+    } catch (e) {}
+
     $.ajax({
       url:
         appconfig.api +

@@ -23,6 +23,7 @@ export default defineConfig({
         nursing: resolve(__dirname, "view/nursing.html"),
         add_order: resolve(__dirname, "view/add_order.html"),
         ward_records: resolve(__dirname, "view/ward_records.html"),
+        consultations: resolve(__dirname, "view/consultations.html"),
         patients: resolve(__dirname, "navpage/patients.html"),
         contacts: resolve(__dirname, "navpage/contacts.html"),
         message: resolve(__dirname, "navpage/message.html"),
@@ -36,8 +37,12 @@ export default defineConfig({
     viteStaticCopy({
       targets: [
         {
-          src: "js/**/*", // 复制js文件夹及其所有内容
-          dest: "./js", // 目标为dist根目录
+          src: "js", // 复制js文件夹及其所有内容
+          dest: "./", // 目标为dist根目录
+        },
+        {
+          src: "worktools", // 复制worktools文件夹及其所有内容
+          dest: "./", // 目标为dist根目录
         },
       ],
     }),

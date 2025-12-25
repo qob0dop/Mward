@@ -11,6 +11,9 @@ layui.use(["layer", "appconfig"], function () {
         $("#loginUserName").text(loginUser.name);
         // 设置头像首字
         $("#userAvatar").text(loginUser.name.charAt(0));
+        $("#loginDept").text(
+          "科室:" + (loginUser.dept_name || loginUser.dept_sn)
+        );
       }
       // 设置工号
       if (loginUser.user_mi) {

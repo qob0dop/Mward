@@ -10,38 +10,44 @@
 </head>
 
 <body>
-  <div class="main-body">
-    <div class="login-main">
-      <div class="login-top">
-        <span id="version"></span>
-        <span>移动医生查房系统</span>
-        <span class="bg1"></span>
-        <span class="bg2"></span>
-        <i class="layui-icon layui-icon-set-sm setting-icon" id="setting-btn" title="设置"></i>
+  <div class="background">
+
+    <div class="main-body">
+      <div class="login-main">
+        <div class="logo"> <img id="YYlogo" src="./images/YYlogo.png" alt="YY Logo" />
+        </div>
+        <div class="login-top">
+          <span id="version"></span>
+          <!-- <span>移动医生查房系统</span> -->
+          <!-- <span class="bg1"></span>
+          <span class="bg2"></span> -->
+        </div>
+        <form class="layui-form login-bottom">
+          <i class="layui-icon layui-icon-set-sm setting-icon" id="setting-btn" title="设置"></i>
+          <div class="center">
+            <div class="item">
+              <span class="icon icon-2"></span>
+              <input type="text" name="username" lay-verify="required" placeholder="请输入登录账号" maxlength="24" />
+              <span class="bind-password icon icon-4" style="background: url()" id="existname"><i
+                  class="layui-icon layui-icon-down"></i></span>
+            </div>
+            <div class="item">
+              <span class="icon icon-3"></span>
+              <input type="password" name="password" placeholder="请输入密码" maxlength="20" />
+            </div>
+          </div>
+          <div class="layui-form-item" style="text-align: center; width: 100%; height: 100%; margin: 0px">
+            <button class="login-btn" lay-submit="" lay-filter="login">
+              立即登录
+            </button>
+          </div>
+
+        </form>
       </div>
-      <form class="layui-form login-bottom">
-        <div class="center">
-          <div class="item">
-            <span class="icon icon-2"></span>
-            <input type="text" name="username" lay-verify="required" placeholder="请输入登录账号" maxlength="24" />
-            <span class="bind-password icon icon-4" style="background: url()" id="existname"><i
-                class="layui-icon layui-icon-down"></i></span>
-          </div>
-          <div class="item">
-            <span class="icon icon-3"></span>
-            <input type="password" name="password" placeholder="请输入密码" maxlength="20" />
-          </div>
-        </div>
-        <div class="layui-form-item" style="text-align: center; width: 100%; height: 100%; margin: 0px">
-          <button class="login-btn" lay-submit="" lay-filter="login">
-            立即登录
-          </button>
-        </div>
-      </form>
     </div>
-  </div>
-  <div class="footer">
-    谷翔科技 ©2024<!--<span class="padding-5">|</span><a target="_blank" href="http://www.miitbeian.gov.cn"></a>-->
+    <div class="footer">
+      谷翔科技 ©2024<!--<span class="padding-5">|</span><a target="_blank" href="http://www.miitbeian.gov.cn"></a>-->
+    </div>
   </div>
 
   <script src="./lib/layui-v2.6.3/layui.js" charset="utf-8"></script>

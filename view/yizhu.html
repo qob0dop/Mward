@@ -1042,6 +1042,7 @@
     }
 
     #btn-add-order {
+      margin-right: 0;
       margin-bottom: 0;
       color: #435cab;
       border-radius: 15px;
@@ -1057,14 +1058,14 @@
       <div class="layui-btn-container filter-buttons" id="order-btn-container" style="
             display: flex;
             gap: 10px;
-            flex-wrap: wrap;
-            justify-content: center;
+            flex-wrap: nowrap;
+            justify-content: flex-start;
             align-items: center;
             height: 40px;
-            overflow: hidden;
-            transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow-x: auto;
+            overflow-y: hidden;
           ">
-        <div style="display: flex; gap: 8px; align-items: center">
+        <div class="toolbar-main" style="display: flex; gap: 8px; align-items: center">
           <!-- 新增医嘱按钮 -->
           <!-- <div>
               <i
@@ -1080,8 +1081,11 @@
             <div class="layui-input-split layui-input-suffix layui-input" id="search-icon">
               <i class="layui-icon layui-icon-search" style="font-size: 20px"></i>
             </div>
-            <input id="yizhu-search-input" type="text" placeholder="医嘱名称/医生姓名/备注" class="layui-input" style="
-                  width: 160px;
+            <input id="yizhu-search-input" type="text" placeholder="医嘱名称/医生/备注" class="layui-input" style="
+                  width: 100%;
+                  min-width: 140px;
+                  max-width: 200px;
+                  flex: 0 1 200px;
                   font-size: 13px;
                   border-left: 0px;
                   border-radius: 0 15px 15px 0;
@@ -1097,22 +1101,16 @@
           </div>
         </div>
 
-        <div id="btn-filter-container" style="border-radius: 5px">
+        <div id="btn-filter-container" style="border-radius: 5px; flex-shrink: 0;">
           <i class="layui-icon layui-icon-slider" id="btn-filter-order" style="font-size: 25px; cursor: pointer"></i>
         </div>
+      </div>
 
-        <!-- 医嘱类型筛选 -->
-        <div style="
-              display: flex;
-              gap: 8px;
-              align-items: center;
-              flex-wrap: wrap;
-            ">
+      <!-- 筛选面板（下方展开，初始隐藏） -->
+      <div id="order-filter-panel" style="display: none; padding: 8px 4px 4px 4px;">
+        <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
           <div class="filter-condition">
             <span>医嘱类型:</span>
-            <!-- <label for="order-type1">全部</label>
-              <label for="order-type2">临时</label>
-              <label for="order-type3">长期</label> -->
             <div>
               <input type="radio" id="order-type1" name="order-type" value="1" title="全部" checked
                 lay-filter="order-type" />
@@ -1122,9 +1120,6 @@
           </div>
           <div class="filter-condition">
             <span>数据来源:</span>
-            <!-- <label for="data-source1">全部</label>
-              <label for="data-source2">医生</label>
-              <label for="data-source3">护士</label> -->
             <div>
               <input type="radio" id="data-source1" name="data-source" value="1" title="全部" lay-filter="data-source" />
               <input type="radio" id="data-source2" name="data-source" value="2" title="医生" checked
@@ -1132,33 +1127,7 @@
               <input type="radio" id="data-source3" name="data-source" value="3" title="护士" lay-filter="data-source" />
             </div>
           </div>
-          <!-- <span class="role-label">类型:</span>
-            <select
-            
-              id="order-type-select"
-              lay-filter="order-type-select"
-              class="layui-select"
-              style="font-size: 13px; width: 80px;"
-            >
-              <option value="long">长期医嘱</option>
-              <option value="temp" selected>临时医嘱</option>
-              <option value="all">全部医嘱</option>
-            </select>
-            <span class="role-label">开嘱人:</span>
-            <select
-              id="role-type-select"
-              lay-filter="role-type-select"
-              class="layui-select"
-              style="font-size: 13px; width: 120px;"
-            >
-              <option value="doctor" selected>医生</option>
-              <option value="nurse">护士</option>
-              <option value="mine">我的医嘱</option>
-              <option value="all-role">全部</option>
-            </select> -->
         </div>
-
-        <!-- 搜索框 -->
       </div>
     </form>
     <!-- 医嘱卡片容器 -->
@@ -1225,18 +1194,16 @@
       // 立即渲染表单元素，确保select框能正常工作
       form.render();
       $(document).on("click", "#btn-filter-order", function () {
-        const $container = $("#order-btn-container");
+        const $panel = $("#order-filter-panel");
         const $btnFilterContainer = $("#btn-filter-container");
-        const color = $btnFilterContainer.css("background-color");
-        const currentHeight = $container.css("height");
-        if (color === "rgb(211, 211, 211)") {
-          $container.css("height", "40px");
-          $btnFilterContainer.css("background-color", "rgba(0, 0, 0,0)");
-          $container.css("overflow", "hidden");
+        const isOpen = $panel.is(":visible");
+
+        if (isOpen) {
+          $panel.slideUp(150);
+          $btnFilterContainer.css("background-color", "rgba(0, 0, 0, 0)");
         } else {
+          $panel.slideDown(150);
           $btnFilterContainer.css("background-color", "lightgrey");
-          $container.css("height", "120px");
-          $container.css("overflow", "visible");
         }
       });
       // 确保手动表单的 select 使用 Layui 的 select 事件（lay-filter），以便选择 option 后能可靠触发

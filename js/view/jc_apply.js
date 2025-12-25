@@ -122,10 +122,10 @@ layui.use(["appconfig", "layer", "form"], function () {
       '<i class="layui-icon layui-icon-file"></i>' +
       '<span class="project-name">' +
       projectName +
-      "</span>" +
       '<span class="exam-type">(' +
       examType +
       ")</span>" +
+      "</span>" +
       "</div>" +
       '<div class="card-status ' +
       statusInfo.class +
@@ -230,6 +230,18 @@ layui.use(["appconfig", "layer", "form"], function () {
   loadJcResultList();
   // 加载卡片数据
   function loadCardsData() {
+    // 加载前显示加载占位
+    try {
+      var container = document.getElementById("cards-container");
+      if (container) {
+        container.innerHTML =
+          '<div class="loading-state" style="display:flex;align-items:center;justify-content:center;flex-direction:column;height:200px;color:#6b7280;">' +
+          '<i class="layui-icon layui-icon-loading layui-anim layui-anim-rotate layui-anim-loop" style="font-size:30px;margin-bottom:8px;"></i>' +
+          "<div>正在加载申请列表...</div>" +
+          "</div>";
+      }
+    } catch (e) {}
+
     $.ajax({
       url:
         appconfig.api +
@@ -301,7 +313,7 @@ layui.use(["appconfig", "layer", "form"], function () {
     layer.open({
       type: 1,
       title: result.GrpName,
-      area: ["80%", "90%"],
+      area: ["90%", "90%"],
       content: detailHtml,
     });
   };

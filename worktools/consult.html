@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>院内会诊</title>
+    <link rel="stylesheet" href="/lib/layui-v2.6.3/css/layui.css" media="all" />
+    <style>
+        :root {
+            --border: #e5e7eb;
+            --page-bg: #f6f7fb;
+            --card-bg: #fff;
+            --text-main: #111827;
+            --text-sub: #6b7280;
+            --accent: #2563eb;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: var(--text-main);
+            background: linear-gradient(135deg, #f7f9fc 0%, #eef2f7 100%);
+        }
+
+        .page {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 16px 16px 32px;
+        }
+
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            gap: 12px;
+        }
+
+        .title-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .title-group h1 {
+            font-size: 22px;
+            font-weight: 700;
+            margin: 0;
+            letter-spacing: .2px;
+        }
+
+        .title-group span {
+            font-size: 14px;
+            color: var(--text-sub);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .consultation-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 12px;
+        }
+
+        .consult-card {
+            padding: 14px 14px 10px;
+            transition: transform .15s ease, box-shadow .15s ease;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            background: var(--card-bg);
+            box-shadow: 0 8px 20px rgba(17, 24, 39, .04);
+        }
+
+        .consult-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 24px rgba(17, 24, 39, .08);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            gap: 8px;
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 700;
+            line-height: 1.3;
+            margin: 0;
+        }
+
+        .status-tag {
+            font-size: 12px;
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 10px;
+            white-space: nowrap;
+            border: 1px solid transparent;
+            border-radius: 999px;
+        }
+
+        .status-tag--done {
+            color: #15803d;
+            border-color: rgba(22, 163, 74, .2);
+            background: rgba(22, 163, 74, .1);
+        }
+
+        .status-tag--pending {
+            color: #b45309;
+            border-color: rgba(245, 158, 11, .25);
+            background: rgba(245, 158, 11, .1);
+        }
+
+        .card-meta {
+            font-size: 12px;
+            display: flex;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+            color: var(--text-sub);
+            gap: 10px;
+        }
+
+        .card-meta span {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .card-body {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .info-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 6px 0;
+            border-bottom: 1px dashed var(--border);
+            gap: 10px;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            font-size: 13px;
+            flex-shrink: 0;
+            min-width: 50px;
+            color: var(--text-sub);
+        }
+
+        .info-value {
+            font-size: 13px;
+            font-weight: 600;
+            text-align: justify;
+            word-break: break-all;
+            color: var(--text-main);
+        }
+
+        .advise-block {
+            font-size: 13px;
+            margin-top: 6px;
+            padding: 10px;
+            white-space: pre-line;
+            color: #374151;
+            border: 1px dashed var(--border);
+            border-radius: 8px;
+            background: #fafafa;
+        }
+
+        .card-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 8px;
+        }
+
+        /* 详情弹窗两列网格 */
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 8px 12px;
+        }
+
+        .detail-grid .info-row {
+            padding: 0;
+            border: none;
+        }
+
+        @media (max-width: 480px) {
+            .detail-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .muted {
+            font-weight: 500;
+            color: var(--text-sub);
+        }
+
+        .empty-state {
+            margin-top: 28px;
+            padding: 32px;
+            text-align: center;
+            color: var(--text-sub);
+            border: 1px dashed var(--border);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, .9);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .grid-fullline {
+            grid-column: 1 / -1;
+        }
+
+        @media (max-width: 640px) {
+            .page {
+                padding: 12px;
+            }
+
+            .consultation-list {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="page">
+        <header class="page-header">
+            <div class="title-group">
+                <h1>院内会诊</h1>
+                <span>查看并处理与您相关的会诊请求</span>
+            </div>
+            <div class="header-actions">
+                <button id="refreshBtn" class="layui-btn layui-btn-primary layui-btn-sm">
+                    <i class="layui-icon layui-icon-refresh-3"></i> 刷新
+                </button>
+            </div>
+        </header>
+
+        <div id="emptyState" class="empty-state hidden">暂无会诊记录</div>
+        <div id="consultationList" class="consultation-list"></div>
+    </div>
+
+    <script src="/lib/layui-v2.6.3/layui.js"></script>
+    <script src="/lib/lay-config.js"></script>
+    <script>
+        layui.use(["jquery", "layer", "appconfig"], function () {
+            var $ = layui.$;
+            var layer = layui.layer;
+            var appconfig = layui.appconfig;
+
+            var consultationListEl = $("#consultationList");
+            var emptyStateEl = $("#emptyState");
+            var loginUser = JSON.parse(localStorage.getItem("loginUser") || "{}");
+            var doctorId = loginUser.user_name;
+
+            if (!doctorId) {
+                layer.msg("请先登录", { icon: 0, time: 1200 });
+                setTimeout(function () {
+                    location.href = "../index.html";
+                }, 1200);
+                return;
+            }
+
+            function escapeHtml(value) {
+                return String(value)
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;")
+                    .replace(/'/g, "&#39;");
+            }
+
+            function pickValue(item, keys) {
+                for (var i = 0; i < keys.length; i++) {
+                    var val = item[keys[i]];
+                    if (val !== undefined && val !== null && val !== "") {
+                        return val;
+                    }
+                }
+                return "";
+            }
+
+            function formatDate(dt) {
+                if (!dt) return "";
+                try {
+                    var d = typeof dt === "string" ? new Date(dt) : dt;
+                    if (isNaN(d.getTime())) return String(dt);
+                    var y = d.getFullYear();
+                    var m = String(d.getMonth() + 1).padStart(2, "0");
+                    var da = String(d.getDate()).padStart(2, "0");
+                    var hh = String(d.getHours()).padStart(2, "0");
+                    var mm = String(d.getMinutes()).padStart(2, "0");
+                    return y + "-" + m + "-" + da + " " + hh + ":" + mm;
+                } catch (e) {
+                    return String(dt);
+                }
+            }
+
+            // 取申请时间的时间戳，用于排序
+            function getApplyTimestamp(item) {
+                var raw = pickValue(item, ["apply_date", "apply_time", "applyTime"]);
+                if (!raw) return 0;
+                var d = new Date(raw);
+                var t = d.getTime();
+                return isNaN(t) ? 0 : t;
+            }
+
+            var lastListData = [];
+
+            function renderCard(item, index) {
+                var isProcessed = !!pickValue(item, ["consult_doctor"]);
+                var statusText = isProcessed ? "已处理" : "待处理";
+                var statusClass = isProcessed ? "status-tag--done" : "status-tag--pending";
+
+                var title = pickValue(item, ["patient_name", "patientName"]) || "会诊记录";
+                var bedNo = pickValue(item, ["bed_no", "bedNo"]);
+                if (bedNo) title += "（床号 " + escapeHtml(bedNo) + "）";
+
+                var serial = pickValue(item, ["consult_serial", "consultation_code", "id"]);
+                var applyDate = formatDate(pickValue(item, ["apply_date", "apply_time", "applyTime"]));
+
+                var metaHtml = [];
+                if (serial) metaHtml.push("编号：" + escapeHtml(serial));
+                if (applyDate) metaHtml.push("申请时间：" + escapeHtml(applyDate));
+
+                // 简略字段：科室(申请科室)、申请医生、会诊原因
+                var miniFields = [
+                    { label: "科室", keys: ["apply_dept_name", "apply_dept"] },
+                    { label: "申请医生", keys: ["apply_opera_name", "apply_opera", "apply_doctor_name", "apply_doctor"] },
+                    { label: "会诊原因", keys: ["consult_reason", "reason"] },
+                ];
+
+                var rowsHtml = miniFields
+                    .map(function (field) {
+                        var val = pickValue(item, field.keys);
+                        if (!val) return "";
+                        return (
+                            '<div class="info-row">' +
+                            '<span class="info-label">' + escapeHtml(field.label) + "</span>" +
+                            '<span class="info-value">' + escapeHtml(val) + "</span>" +
+                            "</div>"
+                        );
+                    })
+                    .filter(Boolean)
+                    .join("");
+
+                return (
+                    '<div class="consult-card">' +
+                    '<div class="card-header">' +
+                    '<p class="card-title">' + escapeHtml(title) + "</p>" +
+                    '<span class="status-tag ' + statusClass + '">' + escapeHtml(statusText) + "</span>" +
+                    "</div>" +
+                    (metaHtml.length
+                        ? '<div class="card-meta"><span>' + metaHtml.join("</span><span>") + "</span></div>"
+                        : "") +
+                    '<div class="card-body">' + rowsHtml + "</div>" +
+                    '<div class="card-actions">' +
+                    '<button class="layui-btn layui-btn-sm btn-detail" data-index="' + index + '">查看详情</button>' +
+                    "</div>" +
+                    "</div>"
+                );
+            }
+
+            function renderList(data) {
+                if (!Array.isArray(data) || data.length === 0) {
+                    consultationListEl.empty();
+                    emptyStateEl.removeClass("hidden");
+                    return;
+                }
+
+                lastListData = data;
+
+                var html = data
+                    .map(function (item, idx) {
+                        return renderCard(item, idx);
+                    })
+                    .join("");
+
+                consultationListEl.html(html);
+                emptyStateEl.addClass("hidden");
+            }
+
+            function fetchConsultations() {
+                var loadingIdx = layer.load(1, { shade: [0.1, "#fff"] });
+                $.ajax({
+                    url: appconfig.api + "/api/MobileWard/GetConsultationsByDoctor",
+                    type: "GET",
+                    data: { doctorId: doctorId },
+                    dataType: "json",
+                    success: function (res) {
+                        layer.close(loadingIdx);
+                        var list = Array.isArray(res && res.Data) ? res.Data : [];
+                        // 按申请时间倒序（最新在上）
+                        var sorted = list.slice().sort(function (a, b) {
+                            return getApplyTimestamp(b) - getApplyTimestamp(a);
+                        });
+                        renderList(sorted);
+                        if (res && res.Status && res.Status !== 1) {
+                            layer.msg(res.message || "获取会诊数据失败", { icon: 0, time: 1500 });
+                        }
+                    },
+                    error: function () {
+                        layer.close(loadingIdx);
+                        layer.msg("获取会诊列表失败，请稍后再试", { icon: 2, time: 1500 });
+                        renderList([]);
+                    },
+                });
+            }
+
+            $("#refreshBtn").on("click", fetchConsultations);
+
+            function renderDetailContent(item) {
+                var detailFields = [
+                    { label: "患者", keys: ["patient_name", "patientName"] },
+                    { label: "床号", keys: ["bed_no", "bedNo"] },
+                    { label: "住院号", keys: ["inpatient_no"] },
+                    // { label: "编号", keys: ["consult_serial", "consultation_code", "id"] },
+                    { label: "申请科室", keys: ["apply_dept_name", "apply_dept"] },
+                    { label: "申请医生", keys: ["apply_opera_name", "apply_opera", "apply_doctor_name", "apply_doctor"] },
+                    { label: "会诊科室", keys: ["consult_dept_name", "consult_dept"] },
+                    // { label: "被申请医生", keys: ["consult_doctor3_name", "consult_doctor3"] },
+                    // { label: "会诊医生(处理)", keys: ["consult_doctor_name", "consult_doctor"] },
+                    { label: "申请时间", keys: ["apply_date", "apply_time", "applyTime"], isTime: true },
+                    { label: "会诊时间", keys: ["consult_date"], isTime: true },
+                    { label: "会诊原因", keys: ["consult_reason", "reason"], fullLine: true },
+                    { label: "治疗情况", keys: ["consult_treatment", "diagnosis", "diagnosis_name"], fullLine: true },
+                ];
+
+                var rows = detailFields
+                    .map(function (f) {
+                        var val = pickValue(item, f.keys);
+                        if (!val) return "";
+                        var show = f.isTime ? formatDate(val) : val;
+                        return (
+                            '<div class="info-row' + (f.fullLine ? ' grid-fullline' : '') + '">' +
+                            '<span class="info-label">' + escapeHtml(f.label) + '</span>' +
+                            '<span class="info-value">' + escapeHtml(show) + '</span>' +
+                            '</div>'
+                        );
+                    })
+                    .filter(Boolean)
+                    .join("");
+
+                var advise = pickValue(item, ["consult_advise"]);
+                var grid = '<div class="detail-grid">' + rows + '</div>';
+                var adviseHtml = advise ? '<div class="advise-block">' + escapeHtml(advise) + '</div>' : '';
+                return '<div style="max-height: 70vh; overflow:auto; padding:4px 2px 0 2px;">' + grid + adviseHtml + '</div>';
+            }
+
+            consultationListEl.on("click", ".btn-detail", function () {
+                var idx = $(this).data("index");
+                var item = lastListData[idx];
+                if (!item) return;
+                layer.open({
+                    type: 1,
+                    title: "会诊详情",
+                    area: ["90%", "90%"],
+                    shadeClose: true,
+                    content: renderDetailContent(item),
+                });
+            });
+
+            fetchConsultations();
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>患者院内会诊</title>
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="screen-orientation" content="portrait" />
+    <meta name="full-screen" content="yes" />
+    <meta name="x5-fullscreen" content="true" />
+    <meta name="360-fullscreen" content="true" />
+    <link rel="stylesheet" href="/lib/layui-v2.6.3/css/layui.css" media="all" />
+    <link rel="stylesheet" href="/css/public.css" media="all" />
+    <style>
+        body {
+            position: relative;
+            overflow: hidden !important;
+            height: 100vh !important;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f7fa;
+        }
+
+        .layuimini-container {
+            height: 100% !important;
+            margin: 0;
+            padding: 0;
+            border: none;
+        }
+
+        .page-header {
+            font-size: 1rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 35px;
+            margin: 0;
+            padding: 3px 10px;
+            color: #fff;
+            border: none;
+            background-color: rgb(4, 46, 167);
+            box-shadow: 0 2px 8px rgba(66, 165, 245, .3);
+        }
+
+        .content {
+            overflow-y: auto;
+            box-sizing: border-box;
+            height: calc(100vh - 35px);
+            padding: 12px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+
+        /* 会诊卡片样式 */
+        .consult-card {
+            margin-bottom: 12px;
+            border-radius: 12px;
+            background: #fff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, .08);
+        }
+
+        .consult-card .layui-card-header {
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: #fff;
+            background: linear-gradient(135deg, #42a5f5 0%, #1e88e5 100%);
+        }
+
+        .consult-card .layui-card-body {
+            padding-top: 10px;
+            padding-bottom: 10px;
+        }
+
+        .kv {
+            display: grid;
+            padding: 6px 0;
+            border-bottom: 1px dashed #eee;
+            grid-template-columns: 80px 1fr;
+            gap: 8px;
+        }
+
+        .kv:last-child {
+            border-bottom: none;
+        }
+
+        .kv .k {
+            font-size: .78rem;
+            color: #5f6368;
+        }
+
+        .kv .v {
+            font-size: .86rem;
+            white-space: pre-wrap;
+            word-break: break-word;
+            color: #37474f;
+        }
+
+        .empty-tip {
+            padding: 24px 0;
+            text-align: center;
+            color: #999;
+        }
+
+        .action-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="layuimini-container">
+        <!-- <blockquote class="layui-elem-quote page-header">患者院内会诊</blockquote> -->
+        <div class="content">
+            <div id="consultation-list"></div>
+        </div>
+    </div>
+
+    <script src="/lib/layui-v2.6.3/layui.js" charset="utf-8"></script>
+    <script src="/lib/lay-config.js?v=1.0.4" charset="utf-8"></script>
+    <script>
+        layui.use(["jquery", "appconfig", "element", "layer"], function () {
+            var $ = layui.jquery;
+            var appconfig = layui.appconfig;
+            var layer = layui.layer;
+            const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+            const loginUser = JSON.parse(localStorage.getItem('loginUser') || '{}');
+            function getQueryParam(name, defaultVal) {
+                var params = new URLSearchParams(window.location.search);
+                return params.get(name) || defaultVal;
+            }
+
+
+            var $list = $('#consultation-list');
+
+            function fmtDate(ts) {
+                if (!ts) return '';
+                var d = new Date(ts);
+                if (isNaN(d.getTime())) return ts;
+                var y = d.getFullYear();
+                var m = (d.getMonth() + 1).toString().padStart(2, '0');
+                var da = d.getDate().toString().padStart(2, '0');
+                var h = d.getHours().toString().padStart(2, '0');
+                var mi = d.getMinutes().toString().padStart(2, '0');
+                return y + '-' + m + '-' + da + ' ' + h + ':' + mi;
+            }
+
+            function renderCards(list) {
+                if (!list || list.length === 0) {
+                    $list.html('<div class="empty-tip">暂无会诊数据</div>');
+                    return;
+                }
+
+                var html = list.map(function (it) {
+                    var canEdit = !it.consult_advise;
+                    var serial = it.consult_serial || '';
+                    var doctor = loginUser.user_mi || it.consult_doctor || '';
+                    return [
+                        '<div class="layui-card consult-card">',
+                        '  <div class="layui-card-header">',
+                        '    <span>' + (it.patient_name || '-') + '（床位 ' + (it.bed_no || '-') + '）</span>',
+                        '    <span>单号：' + (it.consult_serial || '-') + '</span>',
+                        '  </div>',
+                        '  <div class="layui-card-body">',
+                        '    <div class="kv"><div class="k">申请科室</div><div class="v">' + (it.apply_dept_name || it.apply_dept || '-') + '</div></div>',
+                        '    <div class="kv"><div class="k">申请医生</div><div class="v">' + (it.apply_opera_name || it.apply_opera || '-') + '</div></div>',
+                        '    <div class="kv"><div class="k">会诊科室</div><div class="v">' + (it.consult_dept_name || it.consult_dept || '-') + '</div></div>',
+                        '    <div class="kv"><div class="k">会诊医生</div><div class="v">' + (it.consult_doctor_name || it.consult_doctor3_name || it.consult_doctor || '-') + '</div></div>',
+                        '    <div class="kv"><div class="k">申请时间</div><div class="v">' + fmtDate(it.apply_date) + '</div></div>',
+                        '    <div class="kv"><div class="k">会诊目的</div><div class="v">' + (it.consult_purpose || '-') + '</div></div>',
+                        '    <div class="kv"><div class="k">会诊理由</div><div class="v">' + (it.consult_reason || '-') + '</div></div>',
+                        '    <div class="kv"><div class="k">诊疗经过</div><div class="v">' + (it.consult_treatment || '-') + '</div></div>',
+                        '    <div class="kv"><div class="k">会诊时间</div><div class="v">' + fmtDate(it.consult_date) + '</div></div>',
+                        '    <div class="kv"><div class="k">会诊建议</div><div class="v">' + (it.consult_advise || '-') + '</div></div>',
+                        canEdit ? ('    <div class="kv"><div class="k">操作</div><div class="v"><div class="action-row"><button class="layui-btn layui-btn-sm btn-advise" data-serial="' + serial + '" data-doctor="' + doctor + '">填写会诊意见</button></div></div></div>') : '',
+                        '  </div>',
+                        '</div>'
+                    ].join('');
+                }).join('');
+
+                $list.html(html);
+            }
+
+            function openAdviseDialog(serial, doctor) {
+                if (!serial) {
+                    layer.msg('缺少会诊单号，无法提交', { icon: 0, time: 1500 });
+                    return;
+                }
+
+                var resolvedDoctor = doctor || loginUser.user_mi || userData.user_mi || '';
+                if (!resolvedDoctor) {
+                    layer.msg('缺少会诊医生账号，无法提交', { icon: 0, time: 1500 });
+                    return;
+                }
+
+                var formHtml = [
+                    '<div style="padding:16px 12px 4px 12px;">',
+                    '  <div style="margin-bottom:10px; font-size:14px; color:#555;">会诊单号：' + serial + '</div>',
+                    '  <textarea id="consult-advise-text" style="width:100%; height:160px; padding:10px; box-sizing:border-box; border:1px solid #e6e6e6; border-radius:6px;" placeholder="请输入会诊意见"></textarea>',
+                    '</div>'
+                ].join('');
+
+                layer.open({
+                    type: 1,
+                    title: '填写会诊意见',
+                    area: ['90%', '300px'],
+                    content: formHtml,
+                    btn: ['提交', '取消'],
+                    yes: function (index) {
+                        var advise = $('#consult-advise-text').val().trim();
+                        if (!advise) {
+                            layer.msg('请先填写会诊意见', { icon: 0, time: 1500 });
+                            return;
+                        }
+                        submitAdvice({
+                            consultSerial: serial,
+                            consultDoctor: resolvedDoctor,
+                            consultAdvise: advise,
+                            consultDate: new Date().toISOString()
+                        }, function () {
+                            layer.close(index);
+                            loadData();
+                        });
+                    }
+                });
+            }
+
+            function submitAdvice(payload, onSuccess) {
+                var loadingIndex = layer.load(0, { shade: 0.15 });
+
+                // 将参数拼接到 URL（改为 URL 参数形式）
+                var params = {
+                    consultSerial: payload.consultSerial || '',
+                    consultDoctor: payload.consultDoctor || '',
+                    consultAdvise: payload.consultAdvise || '',
+                    consultDate: payload.consultDate || ''
+                };
+                var query = Object.keys(params).map(function (k) {
+                    return encodeURIComponent(k) + '=' + encodeURIComponent(params[k]);
+                }).join('&');
+                var urlWithParams = appconfig.api + '/api/MobileWard/SubmitConsultationAdvice' + (query ? ('?' + query) : '');
+
+                $.ajax({
+                    url: urlWithParams,
+                    method: 'POST',
+                    dataType: 'json',
+                    data: null, // 参数已放在 URL
+                    success: function (res) {
+                        if (res && res.Status === 1) {
+                            layer.msg('提交成功', { icon: 1, time: 1200 });
+                            onSuccess && onSuccess();
+                        } else {
+                            layer.msg(res && res.Message ? res.Message : '提交失败', { icon: 2, time: 1500 });
+                        }
+                    },
+                    error: function (xhr, status, err) {
+                        console.error('提交会诊意见失败:', err);
+                        layer.msg('提交会诊意见失败', { icon: 2, time: 1500 });
+                    },
+                    complete: function () {
+                        layer.close(loadingIndex);
+                    }
+                });
+            }
+
+            function loadData() {
+                var loadingIndex = layer.load(0, { shade: 0.15 });
+                $.ajax({
+                    url: appconfig.api + "/api/MobileWard/GetConsultationsByDoctor",
+                    method: "GET",
+                    dataType: "json",
+                    data: { doctorId: loginUser.user_mi, patientId: userData.patient_id },
+                    success: function (res) {
+                        if (res && res.Status === 1) {
+                            renderCards(res.Data || []);
+                        } else {
+                            $list.html('<div class="empty-tip">未获取到会诊数据</div>');
+                        }
+                    },
+                    error: function (xhr, status, err) {
+                        console.error('获取会诊信息失败:', err);
+                        $list.html('<div class="empty-tip">获取会诊信息失败</div>');
+                    },
+                    complete: function () {
+                        layer.close(loadingIndex);
+                    }
+                });
+            }
+
+            loadData();
+
+            // 事件绑定：填写会诊意见
+            $(document).on('click', '.btn-advise', function () {
+                var serial = $(this).data('serial');
+                var doctor = $(this).data('doctor');
+                openAdviseDialog(serial, doctor);
+            });
+        });
+    </script>
+</body>
+
+</html>
