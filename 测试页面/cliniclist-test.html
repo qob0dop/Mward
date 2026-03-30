@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ClinicList.aspx 测试提交</title>
+    <link rel="stylesheet" href="/lib/layui-v2.6.3/css/layui.css" media="all" />
+    <style>
+body
+{
+    padding: 16px;
+}
+
+.group
+{
+    margin-bottom: 14px;
+}
+
+.row
+{
+    display: grid;  align-items: center;  margin-bottom: 8px;
+ grid-template-columns: 160px 1fr;  gap: 8px; 
+}
+
+.hint
+{ font-size: 12px;
+
+    color: #888; 
+}
+
+.divider
+{
+    margin: 18px 0;  border-top: 1px solid #eee;
+}
+
+.code
+{
+    font-family: Consolas, monospace;  padding: 10px;  border-radius: 4px;
+ background: #f7f7f7; 
+}
+
+    </style>
+</head>
+
+<body>
+    <h2>ClinicList.aspx 表单测试</h2>
+    <p class="hint">说明：此页使用原生 <b>POST 表单</b> 直接提交到目标地址，结果在新窗口打开，规避跨域限制。部分 ASP.NET 页面可能需要 <b>__VIEWSTATE</b>
+        等隐藏字段，若服务器校验严格，请先访问原页面获取并填入。</p>
+
+    <form id="testForm" method="post" action="http://192.168.10.188:8081/ClinicList.aspx" target="_blank"
+        accept-charset="utf-8">
+        <div class="group">
+            <h4>时间范围</h4>
+            <div class="row">
+                <label for="startdate">startdate</label>
+                <input class="layui-input" type="text" id="startdate" name="startdate" placeholder="例如 2025.01.01"
+                    value="2025.01.01">
+            </div>
+            <div class="row">
+                <label for="endDate">endDate</label>
+                <input class="layui-input" type="text" id="endDate" name="endDate" placeholder="例如 2026.01.27" value="">
+            </div>
+        </div>
+
+        <div class="group">
+            <h4>查询条件（searchX 与 strValue 对应）</h4>
+            <div class="row">
+                <label for="search1">search1（患者姓名）</label>
+                <input class="layui-input" type="text" id="search1" name="search1" placeholder="患者姓名" value="吴彩云">
+            </div>
+            <input type="hidden" name="strValue" value="F_PAT_NAME LIKE  '%@VALUE@%'">
+
+            <div class="row"><label for="search2">search2（住院号）</label><input class="layui-input" type="text"
+                    id="search2" name="search2" placeholder="住院号"></div>
+            <input type="hidden" name="strValue" value="F_PAT_NO LIKE  '%@VALUE@%'">
+
+            <div class="row"><label for="search3">search3（检查号）</label><input class="layui-input" type="text"
+                    id="search3" name="search3" placeholder="检查号"></div>
+            <input type="hidden" name="strValue" value="F_STU_NO LIKE  '%@VALUE@%'">
+
+            <div class="row"><label for="search4">search4（入院号）</label><input class="layui-input" type="text"
+                    id="search4" name="search4" placeholder="入院号"></div>
+            <input type="hidden" name="strValue" value="F_IN_HOSP_NO  LIKE  '%@VALUE@%'">
+
+            <div class="row"><label for="search5">search5（出院号）</label><input class="layui-input" type="text"
+                    id="search5" name="search5" placeholder="出院号"></div>
+            <input type="hidden" name="strValue" value="F_OUT_HOSP_NO LIKE '%@VALUE@%'">
+
+            <div class="row"><label for="search6">search6（自定义401）</label><input class="layui-input" type="text"
+                    id="search6" name="search6" placeholder="F_STU_CHAR401"></div>
+            <input type="hidden" name="strValue" value="F_STU_CHAR401  LIKE  '%@VALUE@%'">
+
+            <div class="row"><label for="search7">search7（F_MODALITY_ID）</label><input class="layui-input" type="text"
+                    id="search7" name="search7" placeholder="设备ID" value="0"></div>
+            <input type="hidden" name="strValue" value="F_MODALITY_ID ='@VALUE@'">
+
+            <div class="row"><label for="search9">search9（自定义602）</label><input class="layui-input" type="text"
+                    id="search9" name="search9" placeholder="F_STU_CHAR602"></div>
+            <input type="hidden" name="strValue" value="F_STU_CHAR602 LIKE '%@VALUE@%'">
+        </div>
+
+        <div class="group">
+            <h4>分页与触发控件</h4>
+            <div class="row">
+                <label for="pageSize">ctl00$MainContent$DropDownList1（每页条数）</label>
+                <input class="layui-input" type="number" id="pageSize" name="ctl00$MainContent$DropDownList1" value="50"
+                    min="1">
+            </div>
+            <div class="row">
+                <label>提交按钮</label>
+                <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                    <button class="layui-btn" type="submit" name="ctl00$MainContent$ctl01" value="查  询">提交（查 询）</button>
+                    <button class="layui-btn layui-btn-normal" type="button" id="fetchBtn">获取检查号（解析返回）</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="group">
+            <h4>视图状态（可能需要）</h4>
+            <div class="row">
+                <label for="__VIEWSTATE">__VIEWSTATE</label>
+                <input class="layui-input" type="text" id="__VIEWSTATE" name="__VIEWSTATE" placeholder="可选：从原页面复制">
+            </div>
+            <div class="row">
+                <label for="__VIEWSTATEGENERATOR">__VIEWSTATEGENERATOR</label>
+                <input class="layui-input" type="text" id="__VIEWSTATEGENERATOR" name="__VIEWSTATEGENERATOR"
+                    value="164A2954">
+            </div>
+        </div>
+    </form>
+
+    <div class="group">
+        <h4>解析结果</h4>
+        <div class="row"><label>检查号</label><input class="layui-input" type="text" id="checkNoOutput" readonly
+                placeholder="点击上方按钮后显示"></div>
+        <div class="hint" id="resultHint">等待查询...</div>
+    </div>
+
+    <div class="divider"></div>
+    <div class="hint">小贴士：
+        <ul>
+            <li>若服务器要求完整视图状态，先打开目标页，F12 查看隐藏字段，将 <b>__VIEWSTATE</b> 粘贴到上方。</li>
+            <li>此测试页通过表单导航提交，不受浏览器 CORS 限制。</li>
+            <li>各 <b>strValue</b> 为后端查询模板，<b>@VALUE@</b> 将由对应的 <b>searchX</b> 字段替换。</li>
+            <li>若“获取检查号”提示跨域，请在与目标同域环境打开本页或通过代理/后端转发。</li>
+        </ul>
+    </div>
+
+    <script>
+        const formEl = document.getElementById('testForm');
+        const startEl = document.getElementById('startdate');
+        const endEl = document.getElementById('endDate');
+        const fetchBtn = document.getElementById('fetchBtn');
+        const outputEl = document.getElementById('checkNoOutput');
+        const hintEl = document.getElementById('resultHint');
+
+        function formatDate(date) {
+            const y = date.getFullYear();
+            const m = String(date.getMonth() + 1).padStart(2, '0');
+            const d = String(date.getDate()).padStart(2, '0');
+            return `${y}.${m}.${d}`;
+        }
+
+        startEl.value = '2025.01.01';
+        endEl.value = formatDate(new Date());
+
+        function collectPayload() {
+            const fd = new FormData(formEl);
+            const params = new URLSearchParams();
+            fd.forEach((value, key) => {
+                params.append(key, value);
+            });
+            return params.toString();
+        }
+
+        function extractCheckNo(htmlText) {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(htmlText, 'text/html');
+            const rows = doc.querySelectorAll('table.tableLine tr');
+            for (const row of rows) {
+                const cells = row.querySelectorAll('td.table_td');
+                if (cells.length >= 5) {
+                    return cells[4].textContent.trim();
+                }
+            }
+            return '';
+        }
+
+        async function fetchCheckNo() {
+            hintEl.textContent = '查询中...';
+            outputEl.value = '';
+            try {
+                const body = collectPayload();
+                const res = await fetch(formEl.action, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body,
+                    credentials: 'include'
+                });
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const html = await res.text();
+                const checkNo = extractCheckNo(html);
+                if (checkNo) {
+                    outputEl.value = checkNo;
+                    hintEl.textContent = '已解析到检查号';
+                } else {
+                    hintEl.textContent = '未在返回内容中找到检查号，检查申请号或返回结构';
+                }
+            } catch (err) {
+                hintEl.textContent = '请求或解析失败：可能被跨域策略阻止，或服务器不可达。详细：' + err.message;
+            }
+        }
+
+        fetchBtn.addEventListener('click', fetchCheckNo);
+    </script>
+</body>
+
+</html>

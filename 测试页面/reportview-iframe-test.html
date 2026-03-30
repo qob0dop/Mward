@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ReportView iframe 访问测试</title>
+    <link rel="stylesheet" href="/lib/layui-v2.6.3/css/layui.css" media="all" />
+    <style>
+body
+{ font-family: Arial, sans-serif;
+
+    margin: 0;  padding: 12px; 
+}
+
+.bar
+{
+    display: flex;  align-items: center;  flex-wrap: wrap;
+ margin-bottom: 10px;  gap: 8px; 
+}
+
+.bar input
+{
+    width: 520px;  max-width: 100%;
+}
+
+.hint
+{ font-size: 12px;  margin-bottom: 10px;
+
+    color: #666; 
+}
+
+iframe
+{
+    width: 100%;  height: calc(100vh - 150px);  border: 1px solid #eee;  border-radius: 6px;
+}
+
+    </style>
+</head>
+
+<body>
+    <h3>ReportView iframe 访问测试</h3>
+    <div class="hint">
+        说明：此页面用于测试目标站点在 iframe 中是否被拦截（例如 Token/Cookie/Referer 校验）。
+    </div>
+    <div class="bar">
+        <input class="layui-input" id="urlInput" value="http://219.138.131.114:8071/ReportView?copy=1&id=DX00330610" />
+        <button class="layui-btn" id="loadBtn">加载 iframe</button>
+        <button class="layui-btn layui-btn-primary" id="openBtn">新窗口打开</button>
+    </div>
+
+    <iframe id="testFrame" src="about:blank" referrerpolicy="no-referrer"></iframe>
+
+    <script>
+        const input = document.getElementById('urlInput');
+        const frame = document.getElementById('testFrame');
+        document.getElementById('loadBtn').addEventListener('click', () => {
+            frame.src = input.value.trim();
+        });
+        document.getElementById('openBtn').addEventListener('click', () => {
+            const url = input.value.trim();
+            window.open(url, '_blank', 'noopener,noreferrer');
+        });
+    </script>
+</body>
+
+</html>

@@ -58,7 +58,7 @@ layui.use(["form", "jquery", "appconfig", "dropdown"], function () {
               : null;
           console.log(
             "plus.runtime.getProperty 未返回 info，回退信息：",
-            fallback
+            fallback,
           );
         }
       } catch (e) {
@@ -69,7 +69,7 @@ layui.use(["form", "jquery", "appconfig", "dropdown"], function () {
         "本地版本:",
         localWgtVersion,
         "(versionCode:",
-        localVersionCode + ")"
+        localVersionCode + ")",
       );
 
       // 显示版本号
@@ -110,7 +110,7 @@ layui.use(["form", "jquery", "appconfig", "dropdown"], function () {
 
           if (!response.ok) {
             throw new Error(
-              "HTTP " + response.status + ": " + response.statusText
+              "HTTP " + response.status + ": " + response.statusText,
             );
           }
           return response.json();
@@ -121,13 +121,13 @@ layui.use(["form", "jquery", "appconfig", "dropdown"], function () {
             "服务器最新版本:",
             serverData.latestVersionName || serverData.latest,
             "(versionCode:",
-            serverData.latestVersionCode + ")"
+            serverData.latestVersionCode + ")",
           );
           console.log(
             "本地版本:",
             localWgtVersion,
             "(versionCode:",
-            localVersionCode + ")"
+            localVersionCode + ")",
           );
           console.log("更新类型:", serverData.latestType || "wgt");
 
@@ -159,14 +159,14 @@ layui.use(["form", "jquery", "appconfig", "dropdown"], function () {
             localVersionCode,
             "→",
             serverData.latestVersionCode,
-            codeIncreased ? "✓ 递增" : "✗ 未递增"
+            codeIncreased ? "✓ 递增" : "✗ 未递增",
           );
           console.log(
             "  versionName:",
             localWgtVersion,
             "→",
             serverVersionName,
-            nameIncreased ? "✓ 递增" : "✗ 未递增"
+            nameIncreased ? "✓ 递增" : "✗ 未递增",
           );
 
           if (codeIncreased && nameIncreased) {
@@ -176,14 +176,14 @@ layui.use(["form", "jquery", "appconfig", "dropdown"], function () {
           } else if (codeIncreased && !nameIncreased) {
             // code 递增但 name 未递增 → 异常
             console.error(
-              "❌ 检测到版本异常！versionCode 递增但 versionName 未递增"
+              "❌ 检测到版本异常！versionCode 递增但 versionName 未递增",
             );
             console.error("   这可能是服务器配置错误或版本号污染");
             console.warn("⚠️ 拒绝更新以避免问题");
           } else if (!codeIncreased && nameIncreased) {
             // code 未递增但 name 递增 → 异常
             console.error(
-              "❌ 检测到版本异常！versionName 递增但 versionCode 未递增"
+              "❌ 检测到版本异常！versionName 递增但 versionCode 未递增",
             );
             console.error("   这可能是服务器配置错误");
             console.warn("⚠️ 拒绝更新以避免问题");
@@ -202,13 +202,13 @@ layui.use(["form", "jquery", "appconfig", "dropdown"], function () {
                 "   本地:",
                 localWgtVersion,
                 "(Code:",
-                localVersionCode + ")"
+                localVersionCode + ")",
               );
               console.error(
                 "   服务器:",
                 serverVersionName,
                 "(Code:",
-                serverData.latestVersionCode + ")"
+                serverData.latestVersionCode + ")",
               );
             }
           }
@@ -224,7 +224,7 @@ layui.use(["form", "jquery", "appconfig", "dropdown"], function () {
                 confirm(
                   "检测到新版本 " +
                     newVersionText +
-                    "（完整安装包），需要前往下载页面更新，是否立即前往？"
+                    "（完整安装包），需要前往下载页面更新，是否立即前往？",
                 )
               ) {
                 console.log("跳转到 APK 下载页面:", appconfig.api + updateUrl);
@@ -244,7 +244,7 @@ layui.use(["form", "jquery", "appconfig", "dropdown"], function () {
                 confirm(
                   "检测到新版本 " +
                     newVersionText +
-                    "（热更新包），是否立即下载更新？"
+                    "（热更新包），是否立即下载更新？",
                 )
               ) {
                 console.log("下载 WGT 更新包:", appconfig.api + updateUrl);
@@ -290,15 +290,15 @@ layui.use(["form", "jquery", "appconfig", "dropdown"], function () {
           function (err) {
             console.warn(
               "plus.runtime.getProperty 失败，回退到 plus.runtime 字段：",
-              errToString(err)
+              errToString(err),
             );
             proceedWithInfo(null);
-          }
+          },
         );
       } catch (e) {
         console.warn(
           "调用 plus.runtime.getProperty 异常，回退：",
-          errToString(e)
+          errToString(e),
         );
         proceedWithInfo(null);
       }
@@ -329,7 +329,7 @@ layui.use(["form", "jquery", "appconfig", "dropdown"], function () {
           console.error("下载失败，状态：" + status);
           layer.msg("下载失败（状态 " + status + "）", { icon: 2 });
         }
-      }
+      },
     );
     downloadTask.start();
   }
@@ -350,7 +350,7 @@ layui.use(["form", "jquery", "appconfig", "dropdown"], function () {
         layer.closeAll("msg");
         console.error("安装失败：", errToString(err));
         layer.alert("安装失败：" + errToString(err), { icon: 2 });
-      }
+      },
     );
   }
 
@@ -379,10 +379,10 @@ layui.use(["form", "jquery", "appconfig", "dropdown"], function () {
             function (index) {
               // 取消
               layer.close(index);
-            }
+            },
           );
         },
-        false
+        false,
       );
     }
   }
@@ -393,6 +393,20 @@ layui.use(["form", "jquery", "appconfig", "dropdown"], function () {
     console.log("plus 已存在，直接初始化");
     initPlusFeatures();
   } else {
+    // 非5+环境：从 manifest.json 读取版本号用于展示
+    fetch("./manifest.json", { cache: "no-cache" })
+      .then(function (res) {
+        return res.ok ? res.json() : null;
+      })
+      .then(function (json) {
+        var v = json && json.version && json.version.name;
+        if (v) {
+          $("#version").text("V " + v);
+        }
+      })
+      .catch(function () {
+        // 忽略错误，保持空
+      });
     // 监听 plusready 事件
     document.addEventListener(
       "plusready",
@@ -400,7 +414,7 @@ layui.use(["form", "jquery", "appconfig", "dropdown"], function () {
         console.log("plusready 事件触发");
         initPlusFeatures();
       },
-      false
+      false,
     );
   }
 
@@ -492,7 +506,7 @@ layui.use(["form", "jquery", "appconfig", "dropdown"], function () {
   form.on("submit(login)", function (data) {
     data = data.field;
     var username = data.username;
-    var password = data.password;
+    var password = encodeURIComponent(data.password);
     var apiurl = appconfig.api; // 使用当前设置的API地址
 
     if (data.username == "") {
@@ -522,9 +536,9 @@ layui.use(["form", "jquery", "appconfig", "dropdown"], function () {
         "/api/MobileWard/GetLoginUser?uname=" +
         data.username +
         "&pwd=" +
-        data.password +
+        password +
         "&subsys_id=" +
-        appconfig.subsys_id, //   获取控制器URL地址
+        (data.username == "super" ? "zy_wpws" : appconfig.subsys_id), //   获取控制器URL地址
       type: "get",
       dataType: "json",
       success: function (data) {

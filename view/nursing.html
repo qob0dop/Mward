@@ -102,7 +102,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 16px;
+            padding: 10px;
             color: #6b7280;
             inset: 0;
         }
@@ -233,7 +233,7 @@
 
         /* 折叠按钮（查看模式下显示返回） */
         .toggle-btn {
-            position: absolute;
+            /* position: absolute; */
             z-index: 10;
             top: 12px;
             left: 12px;
@@ -285,6 +285,25 @@
             /* 仅在查看模式显示返回按钮 */
         }
 
+        .btn_area {
+            justify-content: space-between;
+            width: 75%;
+            z-index: 99;
+            position: fixed;
+            top: 15px;
+            display: flex;
+
+        }
+
+        .page-btn {
+            position: flex;
+            display: none;
+        }
+
+        .menu-collapsed .page-btn {
+            display: inline-block;
+        }
+
         /* 窄屏：保持默认仅列表显示 */
         @media (max-width: 768px) {
             .nursing-layout {
@@ -302,7 +321,11 @@
                 onclick="parent && parent.layui ? parent.layui.layer.closeAll() : window.history.back()">关闭</button>
         </div> -->
         <div class="page-content">
-            <button class="toggle-btn" id="toggle-menu" title="折叠/展开左侧"><span class="toggle-icon">⟨</span></button>
+            <div class="btn_area">
+                <button class="toggle-btn" id="toggle-menu" title="折叠/展开左侧"><span class="toggle-icon">⟨</span></button>
+                <button class="page-btn" id="prev-page">上一页</button>
+                <button class="page-btn" id="next-page">下一页</button>
+            </div>
             <div class="nursing-layout">
                 <aside class="nursing-sidebar">
                     <div class="sidebar-header">护士文书</div>
@@ -340,7 +363,7 @@
             var $ = layui.jquery;
             var appconfig = layui.appconfig;
             var layer = layui.layer;
-
+            let currentData = {};
             var q = getQuery();
             var patientId = q.patient_id;
             if (!patientId) {
@@ -402,6 +425,8 @@
                         var mrcode = $item.attr('value') || '';
                         var code = $item.data('code') || '';
                         var page = 1; // 目前默认第一页
+                        currentData = { mrcode, code, page };
+                        console.log(currentData);
 
                         $('#nurse-list .panel-body').removeClass('selected');
                         $item.addClass('selected');
@@ -437,7 +462,22 @@
                     window.dispatchEvent(new Event('resize'));
                 }, 250);
             });
-
+            $('.page-btn#prev-page').on('click', function () {
+                if (!currentData.mrcode) return;
+                var page = currentData.page || 1;
+                if (page <= 1) {
+                    layer.msg('已经是第一页了');
+                    return;
+                }
+                page -= 1;
+                loadRecordImage({ mrcode: currentData.mrcode, code: currentData.code, page: page });
+            });
+            $('.page-btn#next-page').on('click', function () {
+                if (!currentData.mrcode) return;
+                var page = currentData.page || 1;
+                page += 1;
+                loadRecordImage({ mrcode: currentData.mrcode, code: currentData.code, page: page });
+            });
             // Viewer.js 实例
             var viewerInstance = null;
             var currentBlobUrl = null;
@@ -476,6 +516,7 @@
                         return resp.blob();
                     })
                     .then(function (blob) {
+                        currentData.page = page; // 更新当前页码
                         var objectUrl = URL.createObjectURL(blob);
                         var img = new Image();
                         img.className = 'viewer-img';

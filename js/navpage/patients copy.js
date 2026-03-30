@@ -18,189 +18,36 @@ layui.use(["jquery", "appconfig", "layer"], function () {
   let consultStatusFilter = "全部"; // 会诊状态筛选
   let consultRoleFilter = "全部"; // 会诊类别筛选（我申请/我处理）
   let availableWards = []; // 存储可用的病区列表
+  let allowedWardSns = []; // 存储当前用户有权限访问的病区编号
   let currentWardSn = null; // 当前选中的病区编号
   let currentWardName = ""; // 当前选中的病区名称
   let wardSearchKeyword = ""; // 病区搜索关键词
-  const favoritePatientIds = loadFavoritePatientIds(); // 用于收藏状态渲染
-  function loadFavoritePatientIds() {
-    try {
-      const stored = localStorage.getItem("favoritePatients");
-      if (!stored) return new Set();
-      const parsed = JSON.parse(stored);
-      if (Array.isArray(parsed)) {
-        return new Set(parsed.map((id) => String(id)));
-      }
-    } catch (error) {
-      console.warn("favoritePatients 解析失败", error);
-    }
-    return new Set();
-  }
-  function persistFavoritePatientIds() {
-    try {
-      localStorage.setItem(
-        "favoritePatients",
-        JSON.stringify(Array.from(favoritePatientIds)),
-      );
-    } catch (error) {
-      console.warn("favoritePatients 写入失败", error);
-    }
-  }
   class PatientsManager {
     allPatients = [];
   }
-  class WardsManager {
-    allowedWardSns = []; // 存储当前用户有权限访问的病区编号
-    // 病区缓存：读写完整对象，兼容旧的分散键
-    getSavedWard() {
-      var savedWardStr = localStorage.getItem("selectedWard");
-      if (savedWardStr) {
-        try {
-          var parsed = JSON.parse(savedWardStr);
-          if (parsed && parsed.ward_sn) return parsed;
-        } catch (e) {
-          console.warn("selectedWard 解析失败", e);
-        }
-      }
-      return null;
-    }
-    saveSelectedWard(wardObj) {
-      if (!wardObj) return;
+  // 病区缓存：读写完整对象，兼容旧的分散键
+  function getSavedWard() {
+    var savedWardStr = localStorage.getItem("selectedWard");
+    if (savedWardStr) {
       try {
-        localStorage.setItem("selectedWard", JSON.stringify(wardObj));
+        var parsed = JSON.parse(savedWardStr);
+        if (parsed && parsed.ward_sn) return parsed;
       } catch (e) {
-        console.warn("selectedWard 写入失败", e);
+        console.warn("selectedWard 解析失败", e);
       }
     }
-    // 加载可用病区列表
-    loadAvailableWards() {
-      const self = this; // 保留实例引用，避免回调丢失 this
-      showLoading();
 
-      // 先获取当前用户有权限访问的病区编号
-      const employeeMi =
-        (loginUser && (loginUser.user_mi || loginUser.user_name)) || "";
-
-      $.ajax({
-        url: appconfig.api + "/api/MobileWard/GetYsWards",
-        method: "GET",
-        data: { subsys_id: "zy_wpws", employee_mi: employeeMi },
-        success: function (res) {
-          if (res && res.Status === 1 && Array.isArray(res.Data)) {
-            self.allowedWardSns = res.Data.map((item) => String(item));
-            console.log("获取可访问病区编号成功:", self.allowedWardSns);
-          } else {
-            self.allowedWardSns = [];
-            console.warn(
-              "获取可访问病区编号失败或返回空，继续加载全部病区",
-              res,
-            );
-          }
-          fetchAllWards();
-        },
-        error: function (error) {
-          self.allowedWardSns = [];
-          console.error("获取可访问病区编号失败，继续加载全部病区:", error);
-          fetchAllWards();
-        },
-      });
-
-      // 在获取权限结果后加载病区列表，并根据权限进行筛选
-      function fetchAllWards() {
-        $.ajax({
-          url: appconfig.api + "/api/MobileWard/GetAdtWards",
-          method: "GET",
-          success: function (res) {
-            hideLoading();
-
-            if (res.Status && Array.isArray(res.Data)) {
-              console.log("获取病区列表成功:", res);
-              availableWards = res.Data;
-
-              // 根据权限名单进行过滤
-              if (self.allowedWardSns.length > 0) {
-                const allowedSet = new Set(self.allowedWardSns);
-                availableWards = availableWards.filter((ward) =>
-                  allowedSet.has(String(ward.ward_sn)),
-                );
-              }
-
-              // 存储 ward_sn 和 ward_name
-              availableWards.forEach((ward) => {
-                ward.ward_sn = ward.ward_sn;
-                ward.ward_name = ward.ward_name;
-              });
-
-              // 无可访问病区
-              if (!availableWards.length) {
-                renderWards([]);
-                layui.use("layer", function () {
-                  layui.layer.msg("暂无可访问病区", { icon: 0 });
-                });
-                return;
-              }
-
-              // 渲染病区列表
-              renderWards(availableWards);
-
-              // 尝试从 localStorage 恢复上次选择的病区（完整对象）
-              var savedWard = wardsManager.getSavedWard();
-              if (savedWard && savedWard.ward_sn) {
-                // 验证保存的病区是否仍然存在
-                var wardExists = availableWards.some(
-                  (ward) => String(ward.ward_sn) === String(savedWard.ward_sn),
-                );
-
-                if (wardExists) {
-                  // 恢复上次选择的病区
-                  currentWardSn = savedWard.ward_sn;
-                  currentWardName = savedWard.ward_name || "";
-                  $("#wardlist-switch").html(
-                    currentWardName +
-                      ' <i class="layui-icon layui-icon-down"></i>',
-                  );
-
-                  // 加载该病区的患者列表
-                  loadPatients(currentWardSn);
-                  return;
-                }
-              }
-
-              // 如果没有保存的病区或病区不存在，默认选择第一个病区
-              if (availableWards.length > 0) {
-                currentWardSn = availableWards[0].ward_sn || "1011001";
-                currentWardName = availableWards[0].ward_name || "急诊一科";
-
-                // 保存到 localStorage（完整对象）
-                wardsManager.saveSelectedWard(availableWards[0]);
-
-                $("#wardlist-switch").html(
-                  currentWardName +
-                    ' <i class="layui-icon layui-icon-down"></i>',
-                );
-
-                // 加载该病区的患者列表
-                loadPatients(currentWardSn);
-              }
-            } else {
-              layui.use("layer", function () {
-                layui.layer.msg("获取病区列表失败", { icon: 2 });
-              });
-            }
-          },
-          error: function (xhr, status, error) {
-            hideLoading();
-            console.error("获取病区列表失败:", error);
-            layui.use("layer", function () {
-              layui.layer.msg("获取病区列表失败: " + error, { icon: 2 });
-            });
-          },
-        });
-      }
-    }
+    return null;
   }
 
-  const wardsManager = new WardsManager();
-
+  function saveSelectedWard(wardObj) {
+    if (!wardObj) return;
+    try {
+      localStorage.setItem("selectedWard", JSON.stringify(wardObj));
+    } catch (e) {
+      console.warn("selectedWard 写入失败", e);
+    }
+  }
   // 显示/隐藏加载遮罩的助手函数
   function showLoading() {
     $(".loading-overlay .layui-icon-loading").addClass("show");
@@ -257,6 +104,127 @@ layui.use(["jquery", "appconfig", "layer"], function () {
     false,
   );
 
+  // 加载可用病区列表
+  function loadAvailableWards() {
+    showLoading();
+
+    // 先获取当前用户有权限访问的病区编号
+    const employeeMi =
+      (loginUser && (loginUser.user_mi || loginUser.user_name)) || "";
+
+    $.ajax({
+      url: appconfig.api + "/api/MobileWard/GetYsWards",
+      method: "GET",
+      data: { subsys_id: "zy_wpws", employee_mi: employeeMi },
+      success: function (res) {
+        if (res && res.Status === 1 && Array.isArray(res.Data)) {
+          allowedWardSns = res.Data.map((item) => String(item));
+          console.log("获取可访问病区编号成功:", allowedWardSns);
+        } else {
+          allowedWardSns = [];
+          console.warn("获取可访问病区编号失败或返回空，继续加载全部病区", res);
+        }
+        fetchAllWards();
+      },
+      error: function (xhr, status, error) {
+        allowedWardSns = [];
+        console.error("获取可访问病区编号失败，继续加载全部病区:", error);
+        fetchAllWards();
+      },
+    });
+
+    // 在获取权限结果后加载病区列表，并根据权限进行筛选
+    function fetchAllWards() {
+      $.ajax({
+        url: appconfig.api + "/api/MobileWard/GetAdtWards",
+        method: "GET",
+        success: function (res) {
+          hideLoading();
+
+          if (res.Status && Array.isArray(res.Data)) {
+            console.log("获取病区列表成功:", res);
+            availableWards = res.Data;
+
+            // 根据权限名单进行过滤
+            if (allowedWardSns.length > 0) {
+              const allowedSet = new Set(allowedWardSns);
+              availableWards = availableWards.filter((ward) =>
+                allowedSet.has(String(ward.ward_sn)),
+              );
+            }
+
+            // 存储 ward_sn 和 ward_name
+            availableWards.forEach((ward) => {
+              ward.ward_sn = ward.ward_sn;
+              ward.ward_name = ward.ward_name;
+            });
+
+            // 无可访问病区
+            if (!availableWards.length) {
+              renderWards([]);
+              layui.use("layer", function () {
+                layui.layer.msg("暂无可访问病区", { icon: 0 });
+              });
+              return;
+            }
+
+            // 渲染病区列表
+            renderWards(availableWards);
+
+            // 尝试从 localStorage 恢复上次选择的病区（完整对象）
+            var savedWard = getSavedWard();
+            if (savedWard && savedWard.ward_sn) {
+              // 验证保存的病区是否仍然存在
+              var wardExists = availableWards.some(
+                (ward) => String(ward.ward_sn) === String(savedWard.ward_sn),
+              );
+
+              if (wardExists) {
+                // 恢复上次选择的病区
+                currentWardSn = savedWard.ward_sn;
+                currentWardName = savedWard.ward_name || "";
+                $("#wardlist-switch").html(
+                  currentWardName +
+                    ' <i class="layui-icon layui-icon-down"></i>',
+                );
+
+                // 加载该病区的患者列表
+                loadPatients(currentWardSn);
+                return;
+              }
+            }
+
+            // 如果没有保存的病区或病区不存在，默认选择第一个病区
+            if (availableWards.length > 0) {
+              currentWardSn = availableWards[0].ward_sn || "1011001";
+              currentWardName = availableWards[0].ward_name || "急诊一科";
+
+              // 保存到 localStorage（完整对象）
+              saveSelectedWard(availableWards[0]);
+
+              $("#wardlist-switch").html(
+                currentWardName + ' <i class="layui-icon layui-icon-down"></i>',
+              );
+
+              // 加载该病区的患者列表
+              loadPatients(currentWardSn);
+            }
+          } else {
+            layui.use("layer", function () {
+              layui.layer.msg("获取病区列表失败", { icon: 2 });
+            });
+          }
+        },
+        error: function (xhr, status, error) {
+          hideLoading();
+          console.error("获取病区列表失败:", error);
+          layui.use("layer", function () {
+            layui.layer.msg("获取病区列表失败: " + error, { icon: 2 });
+          });
+        },
+      });
+    }
+  }
   function loadconsultpatients() {
     showLoading();
 
@@ -384,14 +352,6 @@ layui.use(["jquery", "appconfig", "layer"], function () {
     }
     let html = "";
     loadedPatients.forEach((patient) => {
-      const patientIdStr = String(patient.inpatient_no || "");
-      const isFavorite = favoritePatientIds.has(patientIdStr);
-      const favoriteLabelClass =
-        `favorite-patient ${isFavorite ? "active" : ""}`.trim();
-      const favoriteIconClass = isFavorite
-        ? "layui-icon-rate-solid"
-        : "layui-icon-rate";
-      const favoriteTitle = isFavorite ? "取消收藏" : "收藏患者";
       const bedLabelStyle =
         patient.sex_name === "女"
           ? 'style="background-color: rgb(253, 121, 168);"'
@@ -416,23 +376,15 @@ layui.use(["jquery", "appconfig", "layer"], function () {
         admissStatusLabel = `<label id="admiss-status-label"  style="background-color: ${statusColor};">${patient.admiss_status_name}<label id="admiss-status-triangle"></label></label>
                 `;
       }
+
       html += `
         <div class="patient-card" data-patient-id="${patient.inpatient_no}">
           <div class="patient-card-header">
             <label ${bedLabelStyle}>${patient.bed_no}床</label>
             <label>${patient.name}</label>
+            
           </div>
           ${admissStatusLabel}
-          <label
-            class="${favoriteLabelClass}"
-            data-patient-id="${patientIdStr}"
-            role="button"
-            tabindex="0"
-            aria-pressed="${isFavorite}"
-            title="${favoriteTitle}"
-          >
-            <i class="layui-icon ${favoriteIconClass}"></i>
-          </label>
           <div class="patient-card-body">
             <label><i class="layui-icon layui-icon-friends"></i>病号：${patient.inpatient_no}</label>
             <label><i class="layui-icon layui-icon-date"></i>年龄：${patient.age}</label>
@@ -738,24 +690,7 @@ layui.use(["jquery", "appconfig", "layer"], function () {
     const ts = Date.parse(cand.replace(/-/g, "/")); // 兼容 Safari
     return isNaN(ts) ? 0 : ts;
   }
-  function favoriteSort(list) {
-    try {
-      favoritePatientIds =
-        JSON.parse(localStorage.getItem("favoritePatients")) || [];
-    } catch (error) {
-      console.log("favoritePatients 解析失败", error);
-    }
-    const favorites = [];
-    const others = [];
-    list.forEach((patient) => {
-      if (favoritePatientIds.has(String(patient.inpatient_no))) {
-        favorites.push(patient);
-      } else {
-        others.push(patient);
-      }
-    });
-    return favorites.concat(others);
-  }
+
   // 应用排序；whenReturnOnly=true 时返回排序结果数组而不修改 allPatients
   function applySort(whenReturnOnly) {
     let base = allPatients;
@@ -771,9 +706,9 @@ layui.use(["jquery", "appconfig", "layer"], function () {
         .slice()
         .sort((a, b) => parseAdmitTime(a) - parseAdmitTime(b));
     }
-    if (whenReturnOnly) return favoriteSort(base);
+    if (whenReturnOnly) return base;
     // 非只返回模式下，更新 allPatients 的展示顺序（非必须，可选）
-    return favoriteSort(base);
+    return base;
   }
 
   // 绑定排序点击
@@ -835,13 +770,14 @@ layui.use(["jquery", "appconfig", "layer"], function () {
     },
   );
   // 初始化：加载病区列表
-  wardsManager.loadAvailableWards();
+  loadAvailableWards();
 
   //监听病区切换按钮
   $("#wardlist-switch").on("click", function () {
     $(".ward-list").fadeToggle(300);
     $(".overlay").fadeToggle(300); // 同时切换遮罩
   });
+
   //渲染病区列表
   function renderWards(loadedWards) {
     let filteredWards = loadedWards;
@@ -1332,7 +1268,7 @@ layui.use(["jquery", "appconfig", "layer"], function () {
     currentWardName = wardName;
 
     // 保存到 localStorage，下次进入页面时自动恢复
-    wardsManager.saveSelectedWard(wardObj);
+    saveSelectedWard(wardObj);
 
     // 更新按钮文本
     $("#wardlist-switch").html(
@@ -1417,48 +1353,12 @@ layui.use(["jquery", "appconfig", "layer"], function () {
     const serial = $(this).data("serial") || "";
     openConsultDetail(serial);
   });
-  $(".patients-cardlist").on("click", ".favorite-patient", function (e) {
-    e.preventDefault();
-    e.stopPropagation();
-    const $btn = $(this);
-    const patientId = String(
-      $btn.data("patient-id"),
-      // $btn.closest(".patient-card").data("patient-id") || "",
-    );
-    if (!patientId) {
-      return;
-    }
-    const willFavorite = !favoritePatientIds.has(patientId);
-    if (willFavorite) {
-      favoritePatientIds.add(patientId);
-    } else {
-      favoritePatientIds.delete(patientId);
-    }
-    persistFavoritePatientIds();
-    $btn.toggleClass("active", willFavorite);
-    $btn.attr("aria-pressed", willFavorite);
-    $btn.attr("title", willFavorite ? "取消收藏" : "收藏患者");
-    $btn
-      .find(".layui-icon")
-      .toggleClass("layui-icon-rate-solid", willFavorite)
-      .toggleClass("layui-icon-rate", !willFavorite);
-    layer.msg(willFavorite ? "已收藏患者" : "已取消收藏", {
-      icon: 1,
-      time: 1000,
-    });
-  });
-  $(".patients-cardlist").on("keydown", ".favorite-patient", function (e) {
-    if (e.key === "Enter" || e.key === " ") {
-      e.preventDefault();
-      $(this).trigger("click");
-    }
-  });
-  $(".patients-cardlist").on("click", ".patient-card", function (e) {
-    const $target = $(e.target);
+  $(".patients-cardlist").on("click", ".patient-card", function () {
     // 如果点击的是会诊详情/其他按钮，则不触发卡片跳转
     if (
-      $target.closest(
-        ".favorite-patient, .consult-detail-btn, .btn-advise, button, a, .layui-btn",
+      event &&
+      $(event.target).closest(
+        ".consult-detail-btn, .btn-advise, button, a, .layui-btn",
       ).length
     ) {
       return;

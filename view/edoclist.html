@@ -430,7 +430,7 @@
 
       function getLeftMenu() {
         $.ajax({
-          url: appconfig.api + '/api/MobileWard/GetBlPageHtml?inp_no=' + userData.inpatient_no,
+          url: appconfig.api + '/api/Report/GetBlPageHtml?inp_no=' + userData.inpatient_no,
           type: 'GET',
           success: function (data) {
             console.log(data);
@@ -450,7 +450,7 @@
       // 暴露到全局，供 inline onclick 调用
       window.GetHtmlStr = function (file_id) {
         $.ajax({
-          url: appconfig.api + '/api/MobileWard/GetBlDetailHtml?file_id=' + file_id,
+          url: appconfig.api + '/api/Report/GetBlDetailHtml?file_id=' + file_id,
           type: 'GET',
           success: function (html) {
             const container = document.querySelector('.doc-content');

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>云胶片查看器</title>
+    <style>
+body
+{ width: 100%;  height: 100%;
+    margin: 0;  padding: 0; 
+}
+
+    </style>
+</head>
+
+<body>
+    <script>
+        (function () {
+            if (typeof plus === 'undefined') {
+                console.error('HBuilder环境未初始化');
+                return;
+            }
+
+            var wv = plus.webview.currentWebview();
+
+            // 监听返回键
+            if (plus.key && plus.key.addEventListener) {
+                plus.key.addEventListener('backbutton', function () {
+                    if (wv) {
+                        wv.close('slide-out-right', 200);
+                    }
+                });
+            }
+
+            console.log('云胶片壳WebView已初始化，返回键监听已启用');
+        })();
+    </script>
+</body>
+
+</html>

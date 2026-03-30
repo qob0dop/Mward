@@ -12,7 +12,7 @@ layui.use(["layer", "appconfig"], function () {
         // 设置头像首字
         $("#userAvatar").text(loginUser.name.charAt(0));
         $("#loginDept").text(
-          "科室:" + (loginUser.dept_name || loginUser.dept_sn)
+          "科室:" + (loginUser.dept_name || loginUser.dept_sn),
         );
       }
       // 设置工号
@@ -124,7 +124,7 @@ function showMyPatients() {
       target: "patients",
       action: "showMyPatients",
     },
-    "*"
+    "*",
   );
 }
 
@@ -216,19 +216,11 @@ function showAbout() {
                         <i class="layui-icon layui-icon-app"></i>
                     </div>
                     <h4 style="color: #333; margin-bottom: 10px;">移动查房系统</h4>
-                    <p style="color: #666; margin-bottom: 20px;">版本 v2.1.0</p>
+                    <p style="color: #666; margin-bottom: 20px;">版本1.3.2.x</p>
                     <div style="text-align: left; font-size: 14px; line-height: 1.6;">
-                        <div style="margin-bottom: 10px;"><strong>更新日期：</strong>2025-09-28</div>
-                        <div style="margin-bottom: 10px;"><strong>开发商：</strong>医院信息科</div>
-                        <div style="margin-bottom: 10px;"><strong>技术支持：</strong>400-1234-5678</div>
+                        <div style="margin-bottom: 10px;"><strong>开发商：</strong>谷翔科技</div>
                         <hr style="margin: 15px 0; border: none; border-top: 1px solid #f0f0f0;">
-                        <div style="margin-bottom: 10px;"><strong>更新内容：</strong></div>
-                        <div style="color: #666;">
-                            • 新增消息推送功能<br>
-                            • 优化患者查询性能<br>
-                            • 修复已知问题<br>
-                            • 提升用户体验
-                        </div>
+                        
                     </div>
                 </div>
             `;
@@ -251,7 +243,7 @@ function goToMessage() {
       type: "switchTab",
       target: "message",
     },
-    "*"
+    "*",
   );
 }
 
@@ -332,7 +324,7 @@ function logout() {
         layer.close(index);
         window.location.href = "../index.html"; // 跳转到index.html
         // 这里可以添加实际的退出逻辑
-      }
+      },
     );
   });
 }
@@ -356,5 +348,5 @@ window.addEventListener(
 
     // 如果没有弹层，不处理（让父页面处理返回逻辑）
   },
-  false
+  false,
 );

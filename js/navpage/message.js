@@ -198,12 +198,12 @@ layui.use(["appconfig", "layer", "form", "jquery"], function () {
         console.log("收到已处理的新消息，不添加到列表:", msg.PatientCrisisID);
         return;
       }
-
+      console;
       // 添加新的未处理消息
       addNewMessage({
         type: "urgent",
-        title: `危急值通知：${msg.PatientInfo || "患者"}`,
-        content: msg.CrisisString,
+        title: `危急值通知：${msg.HZXM || "患者"}`,
+        content: msg.Content,
         sender: "系统推送",
         fullContent: `患者信息：${msg.PatientInfo || "未知"}\n\n危急值内容：\n${
           msg.CrisisString
@@ -502,7 +502,7 @@ layui.use(["appconfig", "layer", "form", "jquery"], function () {
   async function loadHistoryMessages() {
     const userInfo = getUserInfo();
     const wardCode = userInfo.wardCode;
-
+    const doctorId = userInfo.userId;
     if (!wardCode) {
       console.error("未获取到科室编号");
       return;
@@ -520,8 +520,8 @@ layui.use(["appconfig", "layer", "form", "jquery"], function () {
 
       // 并行请求未处理和已处理的消息
       const [unprocessedRes, processedRes] = await Promise.all([
-        fetch(`${WS_CONFIG.API_BASE}/message/unprocessed/ward/${wardCode}`),
-        fetch(`${WS_CONFIG.API_BASE}/message/processed/ward/${wardCode}`),
+        fetch(`${WS_CONFIG.API_BASE}/Message/processed/doctor/${doctorId}`),
+        fetch(`${WS_CONFIG.API_BASE}/Message/unprocessed/doctor/${doctorId}`),
       ]);
 
       if (!unprocessedRes.ok || !processedRes.ok) {
@@ -603,11 +603,10 @@ layui.use(["appconfig", "layer", "form", "jquery"], function () {
       console.log("历史消息已存在，跳过:", msg.PatientCrisisID);
       return;
     }
-
+    console.log(msg);
     // 根据 ReceiveFlag 确定处置状态：1=已处置，0=未处置
     // ReceiveFlag 可能是字符串 '0'/'1' 或数字 0/1
-    const isProcessed =
-      String(msg.ReceiveFlag) === "1" || msg.ReceiveFlag === 1;
+    const isProcessed = String(msg.IS_DEAL) === "1" || msg.IS_DEAL === 1;
     const opinionStatus = isProcessed ? "processed" : "pending";
     console.log(
       "消息状态 - ReceiveFlag:",
@@ -618,11 +617,11 @@ layui.use(["appconfig", "layer", "form", "jquery"], function () {
     const newMessage = {
       id: messageIdCounter++,
       type: "urgent",
-      title: `危急值通知：${msg.PatientInfo || "患者"}`,
-      content: msg.CrisisString || "危急值信息",
+      title: `危急值通知：${msg.HZXM || "患者"}`,
+      content: msg.Content || "危急值信息",
       sender: "系统推送",
-      time: msg.SendCrisisTime
-        ? new Date(msg.SendCrisisTime).toLocaleString()
+      time: msg.WJZTBSJ
+        ? new Date(msg.WJZTBSJ).toLocaleString()
         : new Date().toLocaleString(),
       isRead: isProcessed, // 已处理的标记为已读
       fullContent: `${msg.CrisisString || "未知"}`,

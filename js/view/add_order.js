@@ -3,6 +3,7 @@ layui.use(["appconfig", "form"], function () {
   const form = layui.form;
   const $ = layui.$;
   const orderTemplates = [];
+  const loginUser = JSON.parse(localStorage.getItem("loginUser") || "{}");
   const userData = JSON.parse(localStorage.getItem("userData") || "{}");
   let currentType = "dept"; // 当前选择的模板类型
   let filteredTemplates = []; // 搜索过滤后的模板
@@ -20,6 +21,72 @@ layui.use(["appconfig", "form"], function () {
   }; // 长期/临时分开缓存
   const supplyCache = { loaded: false, list: [] };
   const doseUnitCacheMap = {}; // key: serial|order_code -> [{unit_code, unit_name, unit_type}]
+  // 频次编码 -> 医保频次映射
+  function mapMedFrequency(code) {
+    const c = String(code || "")
+      .trim()
+      .toUpperCase();
+    if (!c) return "99";
+    if (["BID", "BID1", "BID2", "BID3", "BID4", "BID5", "BID6"].includes(c))
+      return "1";
+    if (["BIW", "BIW1", "BIW2"].includes(c)) return "2";
+    if (["Q12H"].includes(c)) return "4";
+    if (["Q1H1", "Q1H2"].includes(c)) return "5";
+    if (["Q3H1", "Q3H2", "Q3H3"].includes(c)) return "6";
+    if (["Q6H1", "Q6H2", "Q6H3"].includes(c)) return "7";
+    if (["Q8H", "Q8H1", "Q8H2"].includes(c)) return "8";
+    if (
+      ["QD1", "QD2", "QD3", "QD4", "QD5", "QD6", "QD7", "QD8", "QD9"].includes(
+        c
+      )
+    )
+      return "9";
+    if (["QID1", "QID2", "QID3", "QID4", "QID5", "QID6"].includes(c))
+      return "10";
+    if (["QOD1", "QOD2"].includes(c)) return "11";
+    if (["QW1", "QW2", "QW3", "QW4", "QW5", "QW6", "QW7"].includes(c))
+      return "12";
+    if (c === "ST") return "13";
+    return "99";
+  }
+
+  // 简易日期格式：YYYY-MM-DD
+  function formatToYMD(val) {
+    if (!val) return "";
+    function toDate(input) {
+      if (input instanceof Date) return input;
+      if (typeof input === "string") {
+        const s = input.trim();
+        if (/^\d{8}$/.test(s)) {
+          return new Date(`${s.slice(0, 4)}-${s.slice(4, 6)}-${s.slice(6, 8)}`);
+        }
+        const parsedStr = new Date(s.replace(/\//g, "-"));
+        if (!isNaN(parsedStr.getTime())) return parsedStr;
+      }
+      const parsed = new Date(input);
+      return isNaN(parsed.getTime()) ? null : parsed;
+    }
+    const d = toDate(val);
+    if (!d) return val || "";
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${y}-${m}-${day}`;
+  }
+
+  // 日期时间格式：YYYY-MM-DD HH:mm:ss
+  function formatToYMDHMS(val) {
+    if (!val) return "";
+    const d = val instanceof Date ? val : new Date(val);
+    if (isNaN(d.getTime())) return "";
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    const hh = String(d.getHours()).padStart(2, "0");
+    const mm = String(d.getMinutes()).padStart(2, "0");
+    const ss = String(d.getSeconds()).padStart(2, "0");
+    return `${y}-${m}-${day} ${hh}:${mm}:${ss}`;
+  }
   function GetParentOrderNo() {
     const urlParams = new URLSearchParams(window.location.search);
     console.log("Parent Order No:", urlParams.get("parent_no"));
@@ -157,17 +224,20 @@ layui.use(["appconfig", "form"], function () {
 
   // 加载模板列表
   function loadYzPatternList() {
+    const deptSn = userData.dept || "";
+    const opera = currentType === "dept" ? "" : loginUser.user_mi || "";
     $.ajax({
-      url: appconfig.api + "/api/MobileWard/GetYzPatternList?dept_sn=1010300",
+      url: appconfig.api + "/api/MobileWard/GetYzPatternList",
       type: "get",
       dataType: "json",
+      data: { dept_sn: deptSn, opera: opera },
       success: function (res) {
         if (res.Status === 1) {
           orderTemplates.length = 0; // 清空现有数据
-          res.Data.forEach((item) => {
+          (res.Data || []).forEach((item) => {
             orderTemplates.push(item);
           });
-          console.log(orderTemplates);
+          console.log("模板列表(", currentType, "):", orderTemplates);
           renderTemplateList();
         } else {
           layui.layer.msg("获取医嘱模板失败", { icon: 2, time: 3000 });
@@ -186,68 +256,57 @@ layui.use(["appconfig", "form"], function () {
   function renderTemplateList() {
     const templateListContainer = $("#template-list");
 
-    if (currentType === "dept") {
-      if (orderTemplates.length === 0) {
-        templateListContainer.html(
-          '<div class="loading">正在加载模板...</div>'
-        );
-        updateSearchStats(0, 0);
-        return;
-      }
-
-      // 根据搜索关键词过滤模板
-      const templatesToShow = searchKeyword
-        ? filteredTemplates
-        : orderTemplates;
-
-      templateListContainer.empty();
-
-      if (templatesToShow.length === 0 && searchKeyword) {
-        templateListContainer.html(
-          '<div class="empty-state">未找到匹配的模板<br>请尝试其他关键词</div>'
-        );
-      } else {
-        // 显示科室模板
-        templatesToShow.forEach((template, index) => {
-          const originalIndex = searchKeyword
-            ? orderTemplates.indexOf(template)
-            : index;
-          const templateCard = `
-                  <div class="template-card" data-index="${originalIndex}">
-                    <div class="template-title">${
-                      template.pattern_name || "模板" + (originalIndex + 1)
-                    }</div>
-                    <div class="template-desc">
-                      <strong>模板编码:</strong> ${
-                        template.pattern_code || "暂无"
-                      }<br>
-                      ${
-                        template.description
-                          ? "<strong>描述:</strong> " + template.description
-                          : ""
-                      }
-                      ${
-                        template.create_date
-                          ? "<br><strong>创建时间:</strong> " +
-                            template.create_date
-                          : ""
-                      }
-                    </div>
-                  </div>
-                `;
-          templateListContainer.append(templateCard);
-        });
-      }
-
-      // 更新搜索统计
-      updateSearchStats(templatesToShow.length, orderTemplates.length);
-    } else {
-      // 个人模板暂时为空
-      templateListContainer.html(
-        '<div class="empty-state">暂无个人模板<br>个人模板功能正在开发中...</div>'
-      );
+    // 通用渲染：科室/个人共用
+    if (orderTemplates.length === 0) {
+      const emptyText = currentType === "dept" ? "暂无模板" : "暂无个人模板";
+      templateListContainer.html(`<div class="empty-state">${emptyText}</div>`);
       updateSearchStats(0, 0);
+      return;
     }
+
+    // 根据搜索关键词过滤模板
+    const templatesToShow = searchKeyword ? filteredTemplates : orderTemplates;
+
+    templateListContainer.empty();
+
+    if (templatesToShow.length === 0 && searchKeyword) {
+      templateListContainer.html(
+        '<div class="empty-state">未找到匹配的模板<br>请尝试其他关键词</div>'
+      );
+    } else {
+      templatesToShow.forEach((template, index) => {
+        const originalIndex = searchKeyword
+          ? orderTemplates.indexOf(template)
+          : index;
+        const templateCard = `
+                <div class="template-card" data-index="${originalIndex}">
+                  <div class="template-title">${
+                    template.pattern_name || "模板" + (originalIndex + 1)
+                  }</div>
+                  <div class="template-desc">
+                    <strong>模板编码:</strong> ${
+                      template.pattern_code || "暂无"
+                    }<br>
+                    ${
+                      template.description
+                        ? "<strong>描述:</strong> " + template.description
+                        : ""
+                    }
+                    ${
+                      template.create_date
+                        ? "<br><strong>创建时间:</strong> " +
+                          template.create_date
+                        : ""
+                    }
+                  </div>
+                </div>
+              `;
+        templateListContainer.append(templateCard);
+      });
+    }
+
+    // 更新搜索统计
+    updateSearchStats(templatesToShow.length, orderTemplates.length);
 
     // 绑定模板卡片点击事件
     $(".template-card").on("click", function () {
@@ -302,9 +361,9 @@ layui.use(["appconfig", "form"], function () {
   // 更新搜索统计信息
   function updateSearchStats(showCount, totalCount) {
     const statsElement = $("#searchStats");
-    if (searchKeyword && currentType === "dept") {
+    if (searchKeyword) {
       statsElement.text(`找到 ${showCount} 个模板，共 ${totalCount} 个`);
-    } else if (currentType === "dept" && totalCount > 0) {
+    } else if (totalCount > 0) {
       statsElement.text(`共 ${totalCount} 个模板`);
     } else {
       statsElement.text("");
@@ -324,7 +383,8 @@ layui.use(["appconfig", "form"], function () {
     searchKeyword = "";
     filteredTemplates = [];
 
-    renderTemplateList();
+    // 导航切换时重新拉取对应类型的模板列表
+    loadYzPatternList();
   });
 
   function LoadYzPatternDetail(patternCode, patternName) {
@@ -338,8 +398,8 @@ layui.use(["appconfig", "form"], function () {
       type: "get",
       dataType: "json",
       data: {
-        dept_sn: "1010300",
-        emp_sn: "00000",
+        dept_sn: userData.dept || "",
+        emp_sn: loginUser.user_mi || "",
         pattern_code: patternCode,
       },
       success: function (res) {
@@ -978,8 +1038,20 @@ layui.use(["appconfig", "form"], function () {
 
       console.log("确认添加的全局医嘱:", globalSelectedOrders);
 
-      // 调用提交函数
-      submitSelectedOrders();
+      // 先走审核，通过后再提交；有提示则让用户确认
+      auditSelectedOrders({
+        autoSubmitOnPass: true,
+        onProceedAfterIssue: submitSelectedOrders,
+      });
+    });
+
+    // 全屏审核
+    $("#fullpageAuditBtn").on("click", function () {
+      if (!globalSelectedOrders || globalSelectedOrders.length === 0) {
+        layui.layer.msg("暂无已选医嘱可审核", { icon: 2, time: 2000 });
+        return;
+      }
+      auditSelectedOrders();
     });
   }
 
@@ -1132,6 +1204,279 @@ layui.use(["appconfig", "form"], function () {
           errorMsg = xhr.responseJSON.Message;
         }
         layui.layer.msg(errorMsg, { icon: 2, time: 3000 });
+      },
+    });
+  }
+
+  // 录入审核：将已选医嘱作为 AD_LIST 提交到融合审核
+  function auditSelectedOrders(options) {
+    const opts = options || {};
+    const autoSubmitOnPass = !!opts.autoSubmitOnPass;
+    const onPass =
+      typeof opts.onPass === "function"
+        ? opts.onPass
+        : autoSubmitOnPass
+        ? submitSelectedOrders
+        : null;
+    const onProceedAfterIssue =
+      typeof opts.onProceedAfterIssue === "function"
+        ? opts.onProceedAfterIssue
+        : onPass;
+    const onCancel = typeof opts.onCancel === "function" ? opts.onCancel : null;
+    try {
+      const wardData = JSON.parse(
+        localStorage.getItem("selectedWard") ||
+          localStorage.getItem("wardData") ||
+          "{}"
+      );
+      const now = new Date();
+      const currentDateTime = formatToYMDHMS(now);
+
+      // 构建 AD_LIST（多个医嘱）
+      const adList = (globalSelectedOrders || []).map(function (order) {
+        const longFlag = String(order.long_once_flag || "0");
+        const freqCode = (order.frequency || order.frequ_code || "").trim();
+        return {
+          DATA_ID:
+            (userData.inpatient_no || "") + (userData.admiss_times || ""),
+          UPDATE_TIME: formatToYMDHMS(userData.admiss_date),
+          FIXMEDINS_CODE: "H42080400001",
+          FIXMEDINS_NAME: "荆门市中医医院",
+          AREA_CODE: "",
+          AREA_NAME: "",
+          PATIENT_ID: userData.patient_id,
+          ZYH: (userData.inpatient_no || "") + (userData.admiss_times || ""),
+          RPNO: "",
+          AD_ID: order.act_order_no || "",
+          AD_CATOGRAY: longFlag === "1" ? "1" : "2",
+          AD_CODE: order.order_code || "",
+          AD_NAME: order.order_name || order.drug_name || "",
+          AD_ITEM_CODE: order.order_code || "",
+          AD_ITEM_NAME: order.order_name || order.drug_name || "",
+          AD_ITEM_QUANTITY: order.charge_amount || "1",
+          AD_ITEM_AMOUNT: +order.charge_amount * +order.linked_price || 0,
+          MED_ROUTE: order.supply_code || "99",
+          MED_FREQUENCY: mapMedFrequency(freqCode),
+          AD_CRTE_DATE: currentDateTime,
+          AD_CRTE_DEPT_CODE: userData.ward || userData.admiss_ward || "",
+          AD_CRTE_DEPT_NAME: userData.ward_name || wardData.ward_name || "",
+          AD_CRTE_DR_CODE: loginUser.user_mi || loginUser.user_id || "",
+          AD_CRTE_DR_NAME: loginUser.name || loginUser.user_name || "",
+          AD_B_EXEC_DATE: "",
+          AD_E_EXEC_DATE: "",
+          PAY_TYPE: "2",
+        };
+      });
+
+      const payload = {
+        CALLER: {
+          CALLER_SYS_NAME: "HIS住院工作站",
+          CALLER_USER_ID: loginUser.user_mi || loginUser.user_id || "",
+          CALLER_USER_NAME: loginUser.name || loginUser.user_name || "",
+        },
+        AD_BASE_INFO: {
+          DATA_ID:
+            (userData.inpatient_no || "") + (userData.admiss_times || ""),
+          UPDATE_TIME: formatToYMDHMS(userData.admiss_date),
+          FIXMEDINS_CODE: "H42080400001",
+          FIXMEDINS_NAME: "荆门市中医医院",
+          AREA_CODE: "",
+          AREA_NAME: "",
+          PATIENT_ID: userData.patient_id || "",
+          ZYH: (userData.inpatient_no || "") + (userData.admiss_times || ""),
+          PSN_NAME: userData.name || "",
+          HI_SETL_LV: "3",
+          GEND: userData.sex || "",
+          BRDY: formatToYMD(userData.birth_date) || "",
+          CERTNO: userData.idcard || "-",
+          BEDNO: userData.bed_no || "",
+          PREGNANCY: "",
+          TRUM: "",
+          MED_TYPE: "21",
+          INSUTYPE: "",
+          ADM_TIME: formatToYMDHMS(userData.admiss_date),
+          ADM_DEPT_CODE: userData.admiss_dept || "",
+          ADM_DEPT_NAME: userData.ward_name || wardData.ward_name || "",
+          ADM_CATY: wardData.tcmms_code1 || "",
+          WARDAREA_CODE: wardData.ward_sn || userData.admiss_ward || "",
+          WARDAREA_NAME: wardData.ward_name || userData.ward_name || "",
+          IPT_DR_CODE: loginUser.user_mi || loginUser.user_id || "",
+          IPT_DR_NAME: loginUser.name || loginUser.user_name || "",
+          RESP_NURS_CODE: userData.refer_nurse || "",
+          RESP_NURS_NAME: userData.refer_nurse_name || "",
+          DSCG_TIME: "",
+          DSCG_DEPT_CODE: "",
+          DSCG_DEPT_NAME: "",
+          DSCG_CATY: "",
+          MEDFEE_SUMAMT: "0",
+          STATUS: "1",
+        },
+        AD_DISE_LIST: [
+          {
+            DATA_ID:
+              (userData.inpatient_no || "") + (userData.admiss_times || ""),
+            UPDATE_TIME: formatToYMDHMS(userData.admiss_date),
+            FIXMEDINS_CODE: "H42080400001",
+            FIXMEDINS_NAME: "荆门市中医医院",
+            AREA_CODE: "",
+            AREA_NAME: "",
+            PATIENT_ID: userData.patient_id || "",
+            ZYH: (userData.inpatient_no || "") + (userData.admiss_times || ""),
+            MAINDIAG_FLAG: "1",
+            DIAG_CODE: userData.admiss_diag || "",
+            DIAG_NAME: userData.admiss_diag_name || "",
+            SEQ: "1",
+          },
+        ],
+        AD_OPRN_OPRT_LIST: [],
+        AD_LIST: adList,
+        AD_FEE_LIST: [],
+      };
+
+      const url = appconfig.api + "/fusion_audit/open_api/advice_audit";
+      const loadingIndex = layui.layer.load(1, { shade: [0.3, "#000"] });
+      $.ajax({
+        url,
+        method: "POST",
+        contentType: "application/json",
+        dataType: "json",
+        data: JSON.stringify(payload),
+        success: function (res) {
+          layui.layer.close(loadingIndex);
+          try {
+            const ok =
+              res &&
+              (res.code === 0 ||
+                res.Status === 1 ||
+                res.success === true ||
+                res.code === 200);
+            if (ok) {
+              const data = res && res.data;
+              const redirectUrl = data && data.url;
+              if (!redirectUrl) {
+                layui.layer.msg("审核通过，正在提交", { icon: 1, time: 1500 });
+                if (typeof onPass === "function") onPass();
+              } else {
+                // 提取 id 参数
+                let reqId = "";
+                try {
+                  const u = new URL(redirectUrl);
+                  reqId = u.searchParams.get("id") || "";
+                } catch (_) {}
+                if (!reqId) {
+                  layui.layer.msg("审核返回待查看URL，但未能解析ID", {
+                    icon: 0,
+                    time: 3000,
+                  });
+                } else {
+                  fetchAuditResult(reqId, {
+                    onContinue: onProceedAfterIssue,
+                    onCancel: onCancel,
+                  });
+                }
+              }
+            } else {
+              const msg =
+                (res && (res.message || res.Message)) || "接口返回非成功状态";
+              layui.layer.msg(msg, { icon: 2, time: 4000 });
+            }
+          } catch (e) {
+            layui.layer.msg("接口返回解析失败", { icon: 2, time: 3000 });
+          }
+        },
+        error: function (xhr) {
+          layui.layer.close(loadingIndex);
+          let text = "网络/CORS错误，无法请求审核接口";
+          if (xhr && xhr.responseText) {
+            console.error("审核错误响应:", xhr.responseText);
+          }
+          layui.layer.msg(text, { icon: 2, time: 5000 });
+        },
+      });
+    } catch (e) {
+      console.error("auditSelectedOrders 异常:", e);
+      layui.layer.msg("审核请求构建失败", { icon: 2, time: 3000 });
+    }
+  }
+
+  // 拉取审核结果并弹窗显示
+  function fetchAuditResult(requestId, options) {
+    const opts = options || {};
+    const onContinue =
+      typeof opts.onContinue === "function" ? opts.onContinue : null;
+    const onCancel = typeof opts.onCancel === "function" ? opts.onCancel : null;
+    const url =
+      appconfig.api +
+      "/fusion_audit/open_api/inpatient/audit_result/advice_audit/" +
+      encodeURIComponent(requestId);
+    const loadingIndex = layui.layer.load(1, { shade: [0.3, "#000"] });
+    $.ajax({
+      url,
+      method: "GET",
+      dataType: "json",
+      success: function (res) {
+        layui.layer.close(loadingIndex);
+        const data = res && res.data;
+        if (!data) {
+          layui.layer.msg("未获取到审核结果数据", { icon: 0, time: 3000 });
+          return;
+        }
+
+        const rules = (data.inpatientRuleList || []).map(function (r) {
+          const items = [];
+          items.push(
+            `<div><strong>医嘱:</strong> ${
+              r.adItemName || r.adName || ""
+            }</div>`
+          );
+          if (r.ruleList && r.ruleList.length) {
+            r.ruleList.forEach(function (rl) {
+              items.push(
+                `<div>` +
+                  `<div><strong>规则:</strong> ${
+                    rl.ruleName || rl.ruleCode || ""
+                  }</div>` +
+                  (rl.tips
+                    ? `<div><strong>提示:</strong> ${rl.tips}</div>`
+                    : "") +
+                  `</div>`
+              );
+            });
+          }
+          return `<div style="padding:8px;border-bottom:1px solid #eee;">${items.join(
+            ""
+          )}</div>`;
+        });
+
+        const bodyHtml =
+          `<div style="max-height:420px;overflow:auto;">` +
+          (rules.length ? rules.join("") : "<div>无违规提示</div>") +
+          `</div>`;
+
+        layui.layer.open({
+          type: 1,
+          title: "审核结果",
+          area: ["90%", "auto"],
+          shadeClose: true,
+          content: bodyHtml,
+          btn: ["知道了，仍要提交", "取消提交"],
+          btnAlign: "c",
+          yes: function (index) {
+            layui.layer.close(index);
+            if (onContinue) onContinue();
+          },
+          btn2: function (index) {
+            layui.layer.close(index);
+            if (onCancel) onCancel();
+          },
+        });
+      },
+      error: function (xhr) {
+        layui.layer.close(loadingIndex);
+        let text = "获取审核结果失败";
+        if (xhr && xhr.responseText)
+          console.error("审核结果错误响应:", xhr.responseText);
+        layui.layer.msg(text, { icon: 2, time: 4000 });
       },
     });
   }

@@ -261,12 +261,98 @@ body
 
 
 
+
+
+
+
+
+
     </style> -->
 
     <style>
+        #sort-select {
+            line-height: 32px;
+            width: 160px;
+            height: 32px;
+            padding: 0 10px;
+            transition: border-color .15s ease, box-shadow .15s ease;
+            color: #1f2933;
+            border: 1px solid #d8e0e8;
+            border-radius: 6px;
+            background: linear-gradient(180deg, #fff, #f7f9fb);
+        }
 
+        #sort-select:focus {
+            border-color: #1e9fff;
+            outline: none;
+            background: #fff;
+            box-shadow: 0 0 0 2px rgba(30, 159, 255, .15);
+        }
 
+        /* 工具栏与搜索框样式 */
+        .toolbar-container {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 10px;
+        }
 
+        .toolbar-title,
+        .toolbar-actions {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .search-input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            flex: 0 1 220px;
+            width: 220px;
+            max-width: 280px;
+        }
+
+        .search-input-wrapper input {
+            line-height: 32px;
+            width: 100%;
+            height: 32px;
+            padding: 0 30px 0 32px;
+            border-radius: 16px;
+        }
+
+        .search-input-wrapper .search-icon {
+            font-size: 16px;
+            position: absolute;
+            left: 10px;
+            color: #9aa0a6;
+        }
+
+        #jy-clear-search {
+            position: absolute;
+            right: 6px;
+            display: none;
+        }
+
+        /* 移动端适配：搜索框占满一行 */
+        @media (max-width: 768px) {
+            .search-input-wrapper {
+                flex: 1 1 100%;
+                order: 3;
+                width: 100%;
+                max-width: none;
+            }
+
+            .toolbar-actions {
+                order: 2;
+            }
+
+            .toolbar-title {
+                order: 1;
+            }
+        }
     </style>
 </head>
 
@@ -286,20 +372,40 @@ body
                 <div class="cards-view" id="cards-view">
                     <!-- 工具栏 -->
                     <div class="toolbar-container">
-                        <div class="toolbar-title">
-                            <i class="layui-icon layui-icon-template-1"></i>
-                            检验申请列表
+                        <div class="toolbar-title" style="gap: 8px; align-items: center;">
+                            <div
+                                style="display: flex; align-items: center; justify-content: space-between;width: 100%;">
+                                <button class="layui-btn layui-btn-primary layui-btn-sm" id="btn-sort">
+                                    <i class="layui-icon layui-icon-slider"></i> 排序
+                                </button>
+                                <select id="sort-select" class="layui-input"
+                                    style="width: 80px; height: 32px; line-height: 32px;font-size: 12px;">
+                                    <option value="reg_date">按申请日期</option>
+                                    <option value="report_date">按报告日期</option>
+                                </select>
+                                <button class="layui-btn layui-btn-warm layui-btn-sm" id="btn-new-apply-card">
+                                    <i class="layui-icon layui-icon-add-1"></i> 新建申请
+                                </button>
+                            </div>
+
+                            <div class="search-input-wrapper">
+                                <i class="layui-icon layui-icon-search search-icon"></i>
+                                <input id="jy-search-input" type="text" placeholder="搜索项目/样本/状态" class="layui-input" />
+                                <button type="button" id="jy-clear-search" class="layui-btn layui-btn-xs"
+                                    title="清空">✕</button>
+                            </div>
                         </div>
                         <div class="toolbar-actions">
-                            <button class="layui-btn layui-btn-warm layui-btn-sm" id="btn-new-apply-card">
-                                <i class="layui-icon layui-icon-add-1"></i> 新建申请
-                            </button>
+
                         </div>
                     </div>
 
                     <!-- 卡片容器 -->
                     <div class="cards-container" id="cards-container">
-                        <div class="empty-state">
+                        <div class="empty-state"><button class="layui-btn layui-btn-warm layui-btn-sm"
+                                id="btn-new-apply-card">
+                                <i class="layui-icon layui-icon-add-1"></i> 新建申请
+                            </button>
                             <i class="layui-icon layui-icon-template-1"></i>
                             <div class="empty-state-text">暂无检验申请数据</div>
                             <div class="empty-state-desc">

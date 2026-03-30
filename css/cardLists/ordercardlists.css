@@ -1,29 +1,47 @@
-.ordercardlists-container
-{
-    overflow: auto;  background-color: rgb(247, 247, 248);
+.ordercardlists-container {
+  overflow: auto;
+  background-color: rgb(247, 247, 248);
 }
-.order-card
-{
-    box-sizing: border-box;  width: 100%;  margin: 10px;  padding: 10px;  padding-bottom: 0; /* 避免底部留白太多 */  border-radius: 10px;  background-color: #fff;
+.order-card {
+  box-sizing: border-box;
+  width: 100%;
+  margin: 10px;
+  padding: 10px;
+  padding-bottom: 0; /* 避免底部留白太多 */
+  border-radius: 10px;
+  background-color: #fff;
 }
 
-.order-card-header
-{
-    display: flex;justify-content: space-between;  height: 30px;  padding: 5px;  border-radius: 5px;  background-color: rgb(0, 153, 255);
+.order-card-header {
+  display: flex;
+  justify-content: space-between;
+  height: 30px;
+  padding: 5px;
+  border-radius: 5px;
+  background-color: rgb(0, 153, 255);
 }
-.order-card-header .order-name
-{
-    font-size: 20px;  font-weight: bold;  color: #fff;
+.order-card-header .order-name {
+  font-size: 20px;
+  font-weight: bold;
 }
-.order-card-header .order-type
-{
-    font-size: 16px;  line-height: 16px;  float: right;  height: 16px;  padding: 5px;  color: #1e9fff;  border-radius: 5px;  background-color: #f0f7ff;
+.order-card-header .order-type {
+  font-size: 16px;
+  line-height: 16px;
+  float: right;
+  height: 16px;
+  padding: 5px;
+  color: #1e9fff;
+  border-radius: 5px;
+  background-color: #f0f7ff;
 }
-.order-card-body
-{
-    display: grid;  padding: 10px;  grid-template-columns: 1fr 1fr;
+.order-card-body {
+  display: grid;
+  padding: 10px;
+  grid-template-columns: 1fr 1fr;
 }
-.order-card-actions
-{
-    display: flex;  justify-content: flex-end;  padding: 5px;  border-top: 1px solid #eee;
+.order-card-actions {
+  display: flex;
+  justify-content: flex-end;
+  padding: 5px;
+  border-top: 1px solid #eee;
 }

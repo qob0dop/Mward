@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pre Leave Department API Test</title>
+    <style>
+        :root {
+            --bg: #0f172a;
+            --panel: #111827;
+            --accent: #38bdf8;
+            --text: #e2e8f0;
+            --muted: #94a3b8;
+            --danger: #ef4444;
+            --success: #22c55e;
+            --border: #1f2937;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Segoe UI", sans-serif;
+            background: radial-gradient(circle at 20% 20%, rgba(56, 189, 248, 0.08), transparent 30%),
+                radial-gradient(circle at 80% 0%, rgba(99, 102, 241, 0.08), transparent 28%),
+                var(--bg);
+            color: var(--text);
+        }
+
+        .page {
+            max-width: 1080px;
+            margin: 24px auto 48px;
+            padding: 0 16px;
+        }
+
+        header {
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        h1 {
+            margin: 0;
+            font-weight: 700;
+            letter-spacing: 0.4px;
+        }
+
+        p.desc {
+            margin: 0 0 16px;
+            color: var(--muted);
+            max-width: 900px;
+            line-height: 1.6;
+        }
+
+        .panel {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+        }
+
+        .row {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+
+        label {
+            font-size: 13px;
+            color: var(--muted);
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        input,
+        textarea,
+        button {
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: #0b1220;
+            color: var(--text);
+            font-size: 14px;
+            padding: 10px 12px;
+            width: 100%;
+        }
+
+        input:focus,
+        textarea:focus {
+            outline: 1px solid var(--accent);
+            border-color: var(--accent);
+        }
+
+        textarea {
+            min-height: 280px;
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+            resize: vertical;
+            line-height: 1.4;
+            background: #0b1220;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+
+        button {
+            cursor: pointer;
+            width: auto;
+            border: 1px solid var(--border);
+            transition: transform 0.08s ease, box-shadow 0.12s ease, border-color 0.12s ease;
+            background: linear-gradient(135deg, #1f2937, #0f172a);
+        }
+
+        button.primary {
+            background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+            border-color: #38bdf8;
+            color: #0c1220;
+            font-weight: 600;
+        }
+
+        button:hover {
+            transform: translateY(-1px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: var(--muted);
+            margin-top: 8px;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 999px;
+            background: var(--muted);
+            box-shadow: 0 0 0 6px rgba(56, 189, 248, 0.08);
+        }
+
+        .dot.success {
+            background: var(--success);
+        }
+
+        .dot.error {
+            background: var(--danger);
+        }
+
+        pre {
+            background: #0b1220;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px;
+            overflow: auto;
+            font-size: 13px;
+            line-height: 1.45;
+            margin: 10px 0 0;
+        }
+
+        .columns {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+
+        @media (min-width: 960px) {
+            .columns {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            textarea {
+                min-height: 360px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="page">
+        <header>
+            <h1>Pre Leave Department API Test</h1>
+            <span class="status" id="status"><span class="dot"></span>Idle</span>
+        </header>
+        <p class="desc">
+            Quick harness to POST JSON to the pre_leave_department endpoint. Edit the endpoint if needed,
+            tweak the payload, then click Send. Note: browser CORS rules still apply if the server is not CORS-enabled.
+        </p>
+
+        <div class="panel">
+            <div class="row">
+                <div style="flex: 1 1 420px; min-width: 320px;">
+                    <label for="endpoint">Endpoint</label>
+                    <input id="endpoint" type="text"
+                        value="http://192.180.200.11:80/fusion_audit/open_api/pre_leave_department" />
+                </div>
+                <div style="flex: 1 1 220px; min-width: 220px;">
+                    <label for="token">Authorization (optional)</label>
+                    <input id="token" type="text" placeholder="Bearer ... (leave empty if none)" />
+                </div>
+            </div>
+
+            <div class="row" style="margin-top: 8px;">
+                <div style="flex: 1 1 320px; min-width: 280px;">
+                    <label for="data-base">Data API base URL</label>
+                    <input id="data-base" type="text" value="http://localhost:5251" />
+                </div>
+                <div style="flex: 1 1 180px; min-width: 160px;">
+                    <label for="zyh">zyh</label>
+                    <input id="zyh" type="text" value="7317951" />
+                </div>
+                <div style="flex: 1 1 200px; min-width: 180px;">
+                    <label for="adid">adId</label>
+                    <input id="adid" type="text" value="56443107" />
+                </div>
+            </div>
+
+            <div class="row">
+                <div style="flex: 1 1 260px; min-width: 240px;">
+                    <label for="path-base">AD_BASE_INFO path</label>
+                    <input id="path-base" type="text" value="/api/AdInfo/GetAdBaseInfo?zyh={zyh}" />
+                </div>
+                <div style="flex: 1 1 260px; min-width: 240px;">
+                    <label for="path-dise">AD_DISE_LIST path</label>
+                    <input id="path-dise" type="text" value="/api/AdInfo/GetAdDiseList?zyh={zyh}" />
+                </div>
+            </div>
+
+            <div class="row">
+                <div style="flex: 1 1 260px; min-width: 240px;">
+                    <label for="path-oprn">AD_OPRN_OPRT_LIST path</label>
+                    <input id="path-oprn" type="text" value="/api/AdInfo/GetAdOprnOprtList?zyh={zyh}" />
+                </div>
+                <div style="flex: 1 1 260px; min-width: 240px;">
+                    <label for="path-ad">AD_LIST path</label>
+                    <input id="path-ad" type="text" value="/api/AdInfo/GetAdList?zyh={zyh}&adId={adId}" />
+                </div>
+                <div style="flex: 0 0 auto; align-self: flex-end;">
+                    <button type="button" id="fetch-btn">Fetch data into payload</button>
+                </div>
+            </div>
+
+            <div class="columns">
+                <div>
+                    <label for="request-body">Request JSON</label>
+                    <textarea id="request-body" spellcheck="false"></textarea>
+                    <div class="actions">
+                        <button type="button" class="primary" id="send-btn">Send request</button>
+                        <button type="button" id="sample-btn">Load sample payload</button>
+                        <button type="button" id="clear-btn">Clear</button>
+                    </div>
+                </div>
+                <div>
+                    <label>Response</label>
+                    <pre id="response">(waiting for request)</pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const endpointInput = document.getElementById('endpoint');
+        const tokenInput = document.getElementById('token');
+        const dataBaseInput = document.getElementById('data-base');
+        const zyhInput = document.getElementById('zyh');
+        const adidInput = document.getElementById('adid');
+        const pathBaseInput = document.getElementById('path-base');
+        const pathDiseInput = document.getElementById('path-dise');
+        const pathOprnInput = document.getElementById('path-oprn');
+        const pathAdInput = document.getElementById('path-ad');
+        const requestBody = document.getElementById('request-body');
+        const responseBox = document.getElementById('response');
+        const status = document.getElementById('status');
+
+        const samplePayload = {
+            CALLER: {
+                CALLER_SYS_NAME: "EMR",
+                CALLER_USER_ID: "200001",
+                CALLER_USER_NAME: "王**"
+            },
+            AD_BASE_INFO: {
+                ZYH: "2020101001",
+                ADMISSION_ID: "AD-001",
+                DEPT_CODE: "DEPT01",
+                DEPT_NAME: "呼吸内科",
+                BED_NO: "06",
+                PRE_LEAVE_REASON: "Routine discharge",
+                "......": "......"
+            },
+            AD_DISE_LIST: [
+                {
+                    ZYBZ: "1",
+                    JBZD: "支气管扩张伴感染",
+                    JBDM: "J47.x03",
+                    ICD_VERSION: "ICD-10",
+                    DIAG_TIME: "2026-01-05T09:00:00",
+                    "......": "......"
+                }
+            ],
+            AD_OPRN_OPRT_LIST: [],
+            AD_LIST: [
+                {
+                    AD_CODE: "001",
+                    AD_NAME: "血常规",
+                    ORDER_NO: "ORD-1001",
+                    ORDER_TIME: "2026-01-04T14:30:00",
+                    "......": "......"
+                }
+            ],
+            AD_FEE_LIST: [
+                {
+                    AD_ITEM_CODE: "001",
+                    AD_ITEM_NAME: "血常规",
+                    AMOUNT: 1,
+                    PRICE: 30.5,
+                    FEE_TIME: "2026-01-04T15:00:00",
+                    "......": "......"
+                }
+            ]
+        };
+
+        function setStatus(text, kind = 'idle') {
+            const dot = status.querySelector('.dot');
+            dot.classList.remove('success', 'error');
+            if (kind === 'success') dot.classList.add('success');
+            if (kind === 'error') dot.classList.add('error');
+            status.lastChild.textContent = text;
+        }
+
+        function loadSample() {
+            requestBody.value = JSON.stringify(samplePayload, null, 2);
+        }
+
+        function buildUrl(template) {
+            const base = dataBaseInput.value.trim().replace(/\/$/, '');
+            const zyh = encodeURIComponent(zyhInput.value.trim());
+            const adId = encodeURIComponent(adidInput.value.trim());
+            const path = template
+                .replaceAll('{zyh}', zyh)
+                .replaceAll('{adId}', adId);
+            if (/^https?:\/\//i.test(path)) return path;
+            return base + path;
+        }
+
+        function pickData(obj, expectArray = false) {
+            if (expectArray) {
+                if (Array.isArray(obj)) return obj;
+                if (Array.isArray(obj?.Data)) return obj.Data;
+                if (obj?.Data && typeof obj.Data === 'object') return [obj.Data];
+                return [];
+            }
+            if (obj && typeof obj === 'object' && !Array.isArray(obj)) return obj;
+            if (obj?.Data && typeof obj.Data === 'object') return obj.Data;
+            return {};
+        }
+
+        async function fetchSection(url, expectArray) {
+            const res = await fetch(url);
+            if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+            const data = await res.json();
+            return pickData(data, expectArray);
+        }
+
+        async function fetchDataIntoPayload() {
+            const paths = {
+                base: pathBaseInput.value || '',
+                dise: pathDiseInput.value || '',
+                oprn: pathOprnInput.value || '',
+                ad: pathAdInput.value || ''
+            };
+
+            setStatus('Fetching data...', 'idle');
+            try {
+                const [baseInfo, diseList, oprnList, adList] = await Promise.all([
+                    fetchSection(buildUrl(paths.base), false),
+                    fetchSection(buildUrl(paths.dise), true),
+                    fetchSection(buildUrl(paths.oprn), true),
+                    fetchSection(buildUrl(paths.ad), true)
+                ]);
+
+                let current;
+                try {
+                    current = JSON.parse(requestBody.value || '{}');
+                } catch {
+                    current = {};
+                }
+
+                const merged = {
+                    ...samplePayload,
+                    ...current,
+                    AD_BASE_INFO: baseInfo.Data,
+                    AD_DISE_LIST: diseList,
+                    AD_OPRN_OPRT_LIST: oprnList,
+                    AD_LIST: adList
+                };
+
+                requestBody.value = JSON.stringify(merged, null, 2);
+                setStatus('Data loaded', 'success');
+            } catch (err) {
+                setStatus('Fetch failed', 'error');
+                responseBox.textContent = 'Data fetch error: ' + err.message;
+            }
+        }
+
+        async function sendRequest() {
+            const url = endpointInput.value.trim();
+            if (!url) {
+                responseBox.textContent = 'Endpoint is required.';
+                setStatus('Missing endpoint', 'error');
+                return;
+            }
+
+            let parsed;
+            try {
+                parsed = JSON.parse(requestBody.value || '{}');
+            } catch (err) {
+                responseBox.textContent = 'Invalid JSON: ' + err.message;
+                setStatus('JSON error', 'error');
+                return;
+            }
+
+            const headers = { 'Content-Type': 'application/json' };
+            const token = tokenInput.value.trim();
+            if (token) headers['Authorization'] = token;
+
+            const body = JSON.stringify(parsed);
+            setStatus('Sending...', 'idle');
+            responseBox.textContent = 'Waiting for response...';
+            const start = performance.now();
+
+            try {
+                const res = await fetch(url, {
+                    method: 'POST',
+                    headers,
+                    body
+                });
+                const elapsed = (performance.now() - start).toFixed(0);
+                const text = await res.text();
+                let parsedBody;
+                try {
+                    parsedBody = JSON.parse(text);
+                } catch {
+                    parsedBody = text;
+                }
+                const summary = `Status: ${res.status} ${res.statusText}\nElapsed: ${elapsed} ms`;
+                responseBox.textContent = summary + '\n\n' + (typeof parsedBody === 'string' ? parsedBody : JSON.stringify(parsedBody, null, 2));
+                setStatus(`Done (${res.status})`, res.ok ? 'success' : 'error');
+            } catch (err) {
+                setStatus('Request failed', 'error');
+                responseBox.textContent = 'Network / CORS error: ' + err.message;
+            }
+        }
+
+        function clearFields() {
+            requestBody.value = '';
+            responseBox.textContent = '(waiting for request)';
+            setStatus('Idle', 'idle');
+        }
+
+        document.getElementById('send-btn').addEventListener('click', sendRequest);
+        document.getElementById('sample-btn').addEventListener('click', loadSample);
+        document.getElementById('clear-btn').addEventListener('click', clearFields);
+        document.getElementById('fetch-btn').addEventListener('click', fetchDataIntoPayload);
+
+        loadSample();
+    </script>
+</body>
+
+</html>

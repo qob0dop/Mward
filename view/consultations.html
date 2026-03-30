@@ -138,6 +138,8 @@
                 return params.get(name) || defaultVal;
             }
 
+            const consultSerialParam = getQueryParam('consult_serial', '');
+
 
             var $list = $('#consultation-list');
 
@@ -277,10 +279,26 @@
                     url: appconfig.api + "/api/MobileWard/GetConsultationsByDoctor",
                     method: "GET",
                     dataType: "json",
-                    data: { doctorId: loginUser.user_mi, patientId: userData.patient_id },
+                    data: (function () {
+                        var params = {
+                            doctorId: loginUser.user_mi,
+                            consult_serial: consultSerialParam
+                        };
+                        // 只有在未指定 consult_serial 时才带 patientId
+                        if (!consultSerialParam) {
+                            params.patientId = userData.patient_id;
+                        }
+                        return params;
+                    })(),
                     success: function (res) {
                         if (res && res.Status === 1) {
-                            renderCards(res.Data || []);
+                            var list = res.Data || [];
+                            if (consultSerialParam) {
+                                list = list.filter(function (it) {
+                                    return (it.consult_serial || it.consultSerial || '') == consultSerialParam;
+                                });
+                            }
+                            renderCards(list);
                         } else {
                             $list.html('<div class="empty-tip">未获取到会诊数据</div>');
                         }

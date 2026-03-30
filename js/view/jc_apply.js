@@ -157,6 +157,12 @@ layui.use(["appconfig", "layer", "form"], function () {
       '<i class="layui-icon layui-icon-search"></i>' +
       "详情" +
       "</button>" +
+      '<button class="card-btn card-btn-film" onclick="viewCloudFilm(&quot;' +
+      (item.exam_no || item.exam_serial || "") +
+      '&quot;)">' +
+      '<i class="layui-icon layui-icon-picture"></i>' +
+      "云胶片" +
+      "</button>" +
       '<button class="card-btn card-btn-delete" onclick="deleteCardItem(\'' +
       (item.exam_no || "") +
       "', '" +
@@ -323,7 +329,7 @@ layui.use(["appconfig", "layer", "form"], function () {
     jcapply_no,
     patient_id,
     admiss_times,
-    exam_status
+    exam_status,
   ) {
     // if (exam_status == 0) {
     //   layer.msg("该申请已登记，不能删除", { icon: 5 });
@@ -360,9 +366,145 @@ layui.use(["appconfig", "layer", "form"], function () {
           },
         });
         layer.close(index);
-      }
+      },
     );
   };
+
+  // 查看云胶片，根据申请号获取检查号并打开云胶片页面
+  window.viewCloudFilm = function (apply_no) {
+    if (!apply_no) {
+      layer.msg("无法查看云胶片：缺少申请号", { icon: 5 });
+      return;
+    }
+
+    var loading = layer.msg("正在获取检查号...", {
+      icon: 16,
+      shade: 0.3,
+      time: 0,
+    });
+    $.ajax({
+      url: appconfig.api + "/api/JcJy/GetExamNoByApplyNo",
+      type: "GET",
+      dataType: "json",
+      data: { apply_no: apply_no },
+      success: function (res) {
+        layer.close(loading);
+        if (res && res.Status === 1 && res.Data) {
+          var openid = String(res.Data).trim();
+          var url =
+            "http://219.138.131.114:8071/ReportView?copy=1&id=" +
+            encodeURIComponent(openid);
+          // 直接应用内打开，不显示选择弹窗
+          var plusObj =
+            typeof top !== "undefined" && top.plus ? top.plus : window.plus;
+          if (plusObj && plusObj.webview) {
+            if (!openCloudFilmWithWebview(url)) {
+              // webview创建失败，降级到系统浏览器
+              if (plusObj.runtime && plusObj.runtime.openURL) {
+                try {
+                  plusObj.runtime.openURL(url, function () {
+                    layer.msg("无法打开系统浏览器", { icon: 5 });
+                  });
+                } catch (e) {
+                  window.open(url, "_blank", "noopener,noreferrer");
+                }
+              }
+            }
+          } else if (window.cordova && window.cordova.InAppBrowser) {
+            openUrlInBrowser(url, {
+              title: "云胶片",
+              confirmMessage: "即将打开云胶片页面，是否继续？",
+            });
+          } else {
+            window.open(url, "_blank", "noopener,noreferrer");
+          }
+        } else {
+          layer.msg("无法查看云胶片：未获取到检查号", { icon: 5 });
+        }
+      },
+      error: function () {
+        layer.close(loading);
+        layer.msg("无法查看云胶片：请求失败", { icon: 5 });
+      },
+    });
+  };
+
+  function openCloudFilmWithWebview(url) {
+    // 在多层iframe中，使用top获取最顶层的plus对象
+    var plusObj =
+      typeof top !== "undefined" && top.plus ? top.plus : window.plus;
+    if (plusObj && plusObj.webview) {
+      try {
+        var timestamp = new Date().getTime();
+        var webviewId = "cloud-film-" + timestamp;
+
+        // 创建WebView加载第三方页面
+        var webview = plusObj.webview.create(url, webviewId, {
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          zindex: 999,
+          hardwareAccelerated: true,
+        });
+
+        // 在webview加载完成后监听返回键
+        webview.addEventListener("loaded", function () {
+          console.log("云胶片WebView已加载，绑定返回键监听");
+        });
+
+        // 监听返回键
+        if (plusObj.key && plusObj.key.addEventListener) {
+          // 从当前webview访问plus.key来监听全局返回键
+          var backButtonHandler = function () {
+            console.log("捕获返回键，关闭云胶片WebView");
+            webview.close("slide-out-right", 200);
+          };
+
+          plusObj.key.addEventListener("backbutton", backButtonHandler, false);
+
+          // 标记用于后续清理
+          webview._backButtonHandler = backButtonHandler;
+        }
+
+        webview.show("slide-in-right", 200);
+        return true;
+      } catch (e) {
+        console.error("plus.webview.create 失败：", e);
+        return false;
+      }
+    }
+    return false;
+  }
+
+  function copyText(text, onSuccess) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(
+        function () {
+          if (onSuccess) onSuccess();
+        },
+        function () {
+          fallbackCopy(text, onSuccess);
+        },
+      );
+      return;
+    }
+    fallbackCopy(text, onSuccess);
+  }
+
+  function fallbackCopy(text, onSuccess) {
+    var input = document.createElement("input");
+    input.value = text;
+    document.body.appendChild(input);
+    input.select();
+    try {
+      document.execCommand("copy");
+      if (onSuccess) onSuccess();
+    } catch (e) {
+      layer.msg("复制失败，请手动复制", { icon: 5 });
+    }
+    document.body.removeChild(input);
+  }
 
   // 页面加载时直接加载卡片数据
   loadCardsData();
@@ -503,7 +645,7 @@ layui.use(["appconfig", "layer", "form"], function () {
           "getApplySn 结果 - success:",
           success,
           "applyData:",
-          applyData
+          applyData,
         );
 
         if (success && applyData) {
@@ -550,7 +692,7 @@ layui.use(["appconfig", "layer", "form"], function () {
             admiss_times: admiss_times,
             apply_doctor: loginUserData.user_mi,
             scheduled_date: localDateTime,
-            inpatient_no: patientData.inpatient_no || "",
+            inpatient_no: userData.inpatient_no || "",
             apply_unit: userData.admiss_ward || localStorage.ward_sn || "",
             erem_flag: "0", // 默认非急诊
             exam_status: "0",
@@ -563,7 +705,7 @@ layui.use(["appconfig", "layer", "form"], function () {
 
             // 检查附加信息
             exam_add_info: " ",
-            exam_add_info2: patientData.admiss_diag_name || " ",
+            exam_add_info2: userData.admiss_diag_name || " ",
             exam_add_info3: " ",
             exam_add_info4: " ",
           };
@@ -783,7 +925,7 @@ layui.use(["appconfig", "layer", "form"], function () {
             // 套餐选择事件
             var $packageSelect = $(layero).find("#package-select");
             var $packageDisplay = $packageSelect.find(
-              ".package-select-display"
+              ".package-select-display",
             );
             var $packageDropdown = $packageSelect.find(".package-dropdown");
 
@@ -817,7 +959,7 @@ layui.use(["appconfig", "layer", "form"], function () {
               // 处理选择逻辑
               if (packageId) {
                 selectedPackage = examPackages.find(
-                  (pkg) => pkg.id == packageId
+                  (pkg) => pkg.id == packageId,
                 );
                 selectedItems = []; // 切换套餐时清空已选项目
                 showItems(selectedPackage);

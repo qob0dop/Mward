@@ -36,6 +36,56 @@ layui.use(["appconfig", "layer", "form"], function () {
   var testPackages = [];
   var allTestItems = []; // 所有检验项目数据
   var cardsData = []; // 卡片数据
+  var sortMode = "reg_date"; // reg_date | report_date
+
+  var sortSelect = document.getElementById("sort-select");
+  var sortButton = document.getElementById("btn-sort");
+  var searchInput = document.getElementById("jy-search-input");
+  var clearSearchBtn = document.getElementById("jy-clear-search");
+  var searchQuery = "";
+
+  if (sortSelect) {
+    sortSelect.addEventListener("change", function () {
+      sortMode = this.value || "reg_date";
+      renderCards(cardsData);
+    });
+  }
+
+  if (sortButton && sortSelect) {
+    sortButton.addEventListener("click", function () {
+      sortSelect.focus();
+      // 简单的视觉反馈
+      sortSelect.classList.add("sort-select-active");
+      setTimeout(function () {
+        sortSelect.classList.remove("sort-select-active");
+      }, 200);
+    });
+  }
+
+  // 过滤函数：按关键词过滤卡片数据
+  function filterBySearch(data) {
+    var list = Array.isArray(data) ? data : [];
+    var q = (searchQuery || "").trim().toLowerCase();
+    if (!q) return list;
+    return list.filter(function (item) {
+      var grpName = String(item.grp_name || item.name || "").toLowerCase();
+      var sampleType = String(
+        item.sample_type_name || item.sample_type || "",
+      ).toLowerCase();
+      var statusName = String(
+        item.status_name || formatStatus(item.status).text || "",
+      ).toLowerCase();
+      var execUnit = String(item.exec_unit || "").toLowerCase();
+      var code = String(item.grp_code || item.code || "").toLowerCase();
+      return (
+        grpName.indexOf(q) !== -1 ||
+        sampleType.indexOf(q) !== -1 ||
+        statusName.indexOf(q) !== -1 ||
+        execUnit.indexOf(q) !== -1 ||
+        code.indexOf(q) !== -1
+      );
+    });
+  }
 
   // 格式化状态显示
   function formatStatus(status) {
@@ -44,6 +94,8 @@ layui.use(["appconfig", "layer", "form"], function () {
         return { text: "申请", class: "status-pending" };
       case "1":
         return { text: "已登记", class: "status-completed" };
+      case "3":
+        return { text: "已完成", class: "status-completed" };
       default:
         return { text: "未保存", class: "status-cancelled" };
     }
@@ -69,6 +121,7 @@ layui.use(["appconfig", "layer", "form"], function () {
   function generateCardHTML(item) {
     var statusInfo = formatStatus(item.status);
     var formattedDate = formatDate(item.reg_date);
+    var reportDate = formatDate(item.report_date);
 
     return (
       '<div class="card-item" data-id="' +
@@ -99,9 +152,9 @@ layui.use(["appconfig", "layer", "form"], function () {
       "</div>" +
       "</div>" +
       '<div class="date-item">' +
-      '<div class="date-label">数量</div>' +
+      '<div class="date-label">报告时间</div>' +
       '<div class="date-value">' +
-      (item.charge_amount || "0") +
+      (reportDate || "-") +
       "</div>" +
       "</div>" +
       "</div>" +
@@ -146,11 +199,18 @@ layui.use(["appconfig", "layer", "form"], function () {
       return;
     }
 
-    // 按时间倒序排列（最新的在前面）
-    var sortedData = data.slice().sort(function (a, b) {
-      var timeA = new Date(a.reg_date || 0).getTime();
-      var timeB = new Date(b.reg_date || 0).getTime();
-      return timeB - timeA;
+    function getSortValue(item) {
+      var val = sortMode === "report_date" ? item.report_date : item.reg_date;
+      var ts = new Date(val || 0).getTime();
+      return isNaN(ts) ? 0 : ts;
+    }
+
+    // 应用搜索过滤
+    var filtered = filterBySearch(data);
+
+    // 按选中方式倒序排列（最新的在前面）
+    var sortedData = filtered.slice().sort(function (a, b) {
+      return getSortValue(b) - getSortValue(a);
     });
 
     var cardsHTML = "";
@@ -159,6 +219,32 @@ layui.use(["appconfig", "layer", "form"], function () {
     });
 
     container.innerHTML = cardsHTML;
+  }
+
+  // 搜索输入事件（防抖）
+  if (searchInput) {
+    searchInput.addEventListener(
+      "input",
+      debounce(function () {
+        searchQuery = searchInput.value || "";
+        if (clearSearchBtn) {
+          clearSearchBtn.style.display = searchQuery ? "block" : "none";
+        }
+        renderCards(cardsData);
+      }, 200),
+    );
+  }
+
+  // 清空搜索
+  if (clearSearchBtn) {
+    clearSearchBtn.addEventListener("click", function () {
+      if (searchInput) {
+        searchInput.value = "";
+      }
+      searchQuery = "";
+      clearSearchBtn.style.display = "none";
+      renderCards(cardsData);
+    });
   }
 
   // 加载卡片数据
@@ -193,7 +279,8 @@ layui.use(["appconfig", "layer", "form"], function () {
         };
         if (parseRes.code === 0) {
           cardsData = parseRes.data;
-          renderCards(cardsData);
+          // 获取报告时间并合并后再渲染
+          fetchReportDatesAndRender();
         } else {
           cardsData = [];
           renderCards([]);
@@ -202,6 +289,39 @@ layui.use(["appconfig", "layer", "form"], function () {
       error: function () {
         layer.msg("获取数据失败", { icon: 5 });
         renderCards([]);
+      },
+    });
+  }
+
+  // 获取检验报告时间并合并到 cardsData 后渲染
+  function fetchReportDatesAndRender() {
+    $.ajax({
+      url:
+        appconfig.api + "/api/JcJy/GetJyReportPdfDate?patient_id=" + patient_id,
+      type: "GET",
+      dataType: "json",
+      success: function (res) {
+        if (res.Status === 1 && Array.isArray(res.Data)) {
+          var map = {};
+          res.Data.forEach(function (entry) {
+            if (entry && entry.jyapply_no) {
+              map[entry.jyapply_no] = entry;
+            }
+          });
+          cardsData = (cardsData || []).map(function (item) {
+            var m = map[item.jyapply_no];
+            if (m) {
+              item.receiving_date = m.receiving_date || item.receiving_date;
+              item.report_date = m.report_date || item.report_date;
+            }
+            return item;
+          });
+        }
+        renderCards(cardsData);
+      },
+      error: function () {
+        // 获取报告时间失败时，仍然渲染原始列表
+        renderCards(cardsData);
       },
     });
   }
@@ -280,7 +400,7 @@ layui.use(["appconfig", "layer", "form"], function () {
     jyapply_no,
     patient_id,
     admiss_times,
-    exam_status
+    exam_status,
   ) {
     // if (exam_status == 0) {
     //   layer.msg("该申请已登记，不能删除", { icon: 5 });
@@ -316,7 +436,7 @@ layui.use(["appconfig", "layer", "form"], function () {
           },
         });
         layer.close(index);
-      }
+      },
     );
   };
 
@@ -414,7 +534,7 @@ layui.use(["appconfig", "layer", "form"], function () {
     console.log("提交检验申请 - allTestItems长度:", allTestItems.length);
 
     var loginUser = localStorage.getItem("loginUser");
-    var patientData = JSON.parse(localStorage.getItem("patientData") || "{}");
+    var patientData = JSON.parse(localStorage.getItem("userData") || "{}");
 
     if (!loginUser) {
       layer.msg("登录信息已过期，请重新登录", { icon: 5 });
@@ -461,7 +581,7 @@ layui.use(["appconfig", "layer", "form"], function () {
           "getApplySn 结果 - success:",
           success,
           "applyData:",
-          applyData
+          applyData,
         );
 
         if (success && applyData) {
@@ -734,7 +854,7 @@ layui.use(["appconfig", "layer", "form"], function () {
             // 套餐选择事件
             var $packageSelect = $(layero).find("#package-select");
             var $packageDisplay = $packageSelect.find(
-              ".package-select-display"
+              ".package-select-display",
             );
             var $packageDropdown = $packageSelect.find(".package-dropdown");
 
@@ -768,7 +888,7 @@ layui.use(["appconfig", "layer", "form"], function () {
               // 处理选择逻辑
               if (packageId) {
                 selectedPackage = testPackages.find(
-                  (pkg) => pkg.id == packageId
+                  (pkg) => pkg.id == packageId,
                 );
                 selectedItems = []; // 切换套餐时清空已选项目
                 showItems(selectedPackage);

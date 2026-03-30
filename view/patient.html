@@ -1151,12 +1151,19 @@
                   <i class="layui-icon layui-icon-form"></i>
                   临床护理
                 </button>
-
-                <button class="function-btn" id="btn-ward-records" data-index="7">
+                <button class="function-btn" id="btn-blood-sugar" data-index="6">
+                  <i class="layui-icon layui-icon-form"></i>
+                  血糖指标
+                </button>
+                <button class="function-btn" id="btn-ECG" data-index="7">
+                  <i class="layui-icon layui-icon-form"></i>
+                  心电图
+                </button>
+                <button class="function-btn" id="btn-ward-records" data-index="8">
                   <i class="layui-icon layui-icon-edit"></i>
                   查房记录
                 </button>
-                <button class="function-btn" id="btn-internal-consultation" data-index="8">
+                <button class="function-btn" id="btn-internal-consultation" data-index="9">
                   <i class="layui-icon layui-icon-survey"></i>
                   院内会诊
                 </button>
@@ -1538,7 +1545,7 @@
             title: "住院病案",
             type: "popup",
             handler: function (jsonData) {
-              var apiUrl = appconfig.api + '/api/MobileWard/GetFirstPageHtml?patientId=' + encodeURIComponent(jsonData.patient_id);
+              var apiUrl = appconfig.api + '/api/Report/GetFirstPageHtml?patientId=' + encodeURIComponent(jsonData.patient_id);
               var title = '住院病案 - ' + (jsonData.name || '') + ' - ' + (jsonData.inpatient_no || '') + ' - ' + (jsonData.sex_name || '') + ' - ' + (jsonData.ages || '');
 
               // 显示加载中
@@ -2030,9 +2037,62 @@
                 content:
                   "consultations.html" + patientParams,
               });
+              break;
+            case "btn-blood-sugar":
+              layui.layer.open({
+                type: 2,
+                area: ["100%", "100%"],
+                title: "血糖记录 - " + jsonData.name,
+                content:
+                  `${appconfig.api}/bloodsugar/GlucoseReport.aspx?zyh=${jsonData.inpatient_no}`,
+              });
+              break;
+            case "btn-ECG":
+              openEcgPdfWithPdfjsBlob(jsonData);
+
+
+          }
+          // 先获取 PDF 二进制流 -> 生成 blob URL -> 用 pdfjs viewer 打开
+          function openEcgPdfWithPdfjsBlob(jsonData) {
+            var pdfUrl = `${appconfig.api}/api/Report/GetEcgPdf?inpatient_no=${encodeURIComponent(jsonData.inpatient_no || "")}`;
+            var loadingIndex = layer.load(1, { shade: [0.2, "#000"] });
+
+            try {
+              var xhr = new XMLHttpRequest();
+              xhr.open("GET", pdfUrl, true);
+              xhr.responseType = "arraybuffer";
+              xhr.onload = function () {
+                layer.close(loadingIndex);
+                if (xhr.status >= 200 && xhr.status < 300 && xhr.response) {
+                  var blob = new Blob([xhr.response], { type: "application/pdf" });
+                  var blobUrl = URL.createObjectURL(blob);
+                  var viewerPath = "../lib/pdfjs/web/viewer.html"; // 相对 patient.html 的路径
+                  var viewerUrl = viewerPath + "?file=" + encodeURIComponent(blobUrl);
+
+                  layui.layer.open({
+                    type: 2,
+                    area: ["100%", "100%"],
+                    title: "心电图记录 - " + (jsonData.name || ""),
+                    content: viewerUrl,
+                    end: function () {
+                      try { URL.revokeObjectURL(blobUrl); } catch (e) { }
+                    },
+                  });
+                } else {
+                  layer.msg("获取 PDF 失败: " + xhr.status, { icon: 2 });
+                }
+              };
+              xhr.onerror = function () {
+                layer.close(loadingIndex);
+                layer.msg("网络错误，无法获取 PDF", { icon: 2 });
+              };
+              xhr.send();
+            } catch (e) {
+              layer.close(loadingIndex);
+              layer.msg("加载 PDF 出错", { icon: 2 });
+            }
           }
         });
-
         // 切换患者功能 - 只控制显示隐藏
         $("#btn-switch-patient").on("click", function () {
           var $btn = $(this);
@@ -2365,7 +2425,7 @@
 
                 // 遍历所有账单项
                 res.forEach(function (item) {
-                  var price = parseFloat(item.charge_price || 0);
+                  var price = parseFloat(item.charge_price * item.charge_amount || 0);
                   var categoryName = item.bill_item_name || '其他费用';
 
                   // 累加总费用
