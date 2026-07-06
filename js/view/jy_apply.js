@@ -37,6 +37,8 @@ layui.use(["appconfig", "layer", "form"], function () {
   var allTestItems = []; // 所有检验项目数据
   var cardsData = []; // 卡片数据
   var sortMode = "reg_date"; // reg_date | report_date
+  var jyResultsCache = {}; // 检验结果缓存
+  var expandedJyapplyNos = {}; // 已展开的卡片
 
   var sortSelect = document.getElementById("sort-select");
   var sortButton = document.getElementById("btn-sort");
@@ -117,14 +119,288 @@ layui.use(["appconfig", "layer", "form"], function () {
     }
   }
 
+  function escapeHtml(text) {
+    return String(text == null ? "" : text)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/\"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
+  function parseNumericText(text) {
+    var value = String(text == null ? "" : text).trim();
+    if (!value) {
+      return null;
+    }
+
+    return /^-?\d+(?:\.\d+)?$/.test(value) ? Number(value) : null;
+  }
+
+  function parseReferenceRange(reference) {
+    var value = String(reference == null ? "" : reference).trim();
+    if (!value) {
+      return null;
+    }
+
+    var matches = value.match(/-?\d+(?:\.\d+)?/g);
+    if (!matches || matches.length === 0) {
+      return null;
+    }
+
+    if (matches.length === 1) {
+      var single = Number(matches[0]);
+      return isNaN(single) ? null : { low: single, high: single };
+    }
+
+    var low = Number(matches[0]);
+    var high = Number(matches[1]);
+    if (isNaN(low) || isNaN(high)) {
+      return null;
+    }
+
+    return low <= high ? { low: low, high: high } : { low: high, high: low };
+  }
+
+  function getResultDisplay(row) {
+    var resultText = String(row && row.result != null ? row.result : "").trim();
+    var referenceText = String(
+      row && row.reference != null ? row.reference : "",
+    ).trim();
+    var numericResult = parseNumericText(resultText);
+    var referenceRange = parseReferenceRange(referenceText);
+
+    if (numericResult != null && referenceRange) {
+      if (numericResult > referenceRange.high) {
+        return {
+          text: resultText + " ↑",
+          className: "jy-item-result result-high",
+        };
+      }
+
+      if (numericResult < referenceRange.low) {
+        return {
+          text: resultText + " ↓",
+          className: "jy-item-result result-low",
+        };
+      }
+
+      return {
+        text: resultText,
+        className: "jy-item-result",
+      };
+    }
+
+    if (resultText && referenceText && resultText === referenceText) {
+      return {
+        text: resultText,
+        className: "jy-item-result",
+      };
+    }
+
+    if (resultText && referenceText) {
+      return {
+        text: resultText,
+        className: "jy-item-result result-text-abnormal",
+      };
+    }
+
+    return {
+      text: resultText || "-",
+      className: "jy-item-result",
+    };
+  }
+
+  function renderJyResultPanel(jyapplyNo, cacheItem) {
+    var cached = cacheItem || {};
+
+    if (cached.loading) {
+      return (
+        '<div class="jy-result-panel active" data-jyapply-no="' +
+        escapeHtml(jyapplyNo) +
+        '">' +
+        '<div class="jy-result-panel-header">检验结果</div>' +
+        '<div class="jy-result-loading"><i class="layui-icon layui-icon-loading layui-anim layui-anim-rotate layui-anim-loop"></i><span>正在获取检验结果...</span></div>' +
+        "</div>"
+      );
+    }
+
+    if (cached.error) {
+      return (
+        '<div class="jy-result-panel active" data-jyapply-no="' +
+        escapeHtml(jyapplyNo) +
+        '">' +
+        '<div class="jy-result-panel-header">检验结果</div>' +
+        '<div class="jy-result-empty error">' +
+        escapeHtml(cached.error) +
+        "</div>" +
+        "</div>"
+      );
+    }
+
+    var rows = Array.isArray(cached.rows) ? cached.rows : [];
+    if (rows.length === 0) {
+      return (
+        '<div class="jy-result-panel active" data-jyapply-no="' +
+        escapeHtml(jyapplyNo) +
+        '">' +
+        '<div class="jy-result-panel-header">检验结果</div>' +
+        '<div class="jy-result-empty">暂无检验结果</div>' +
+        "</div>"
+      );
+    }
+
+    var tableHtml =
+      '<div class="jy-result-panel active" data-jyapply-no="' +
+      escapeHtml(jyapplyNo) +
+      '">' +
+      '<div class="jy-result-panel-header">检验结果</div>' +
+      '<div class="jy-result-table-wrap">' +
+      '<table class="jy-result-table">' +
+      "<thead>" +
+      "<tr>" +
+      "<th>检查项目</th>" +
+      "<th>结果</th>" +
+      "<th>单位</th>" +
+      "<th>参考值</th>" +
+      "</tr>" +
+      "</thead>" +
+      "<tbody>";
+
+    rows.forEach(function (row) {
+      var resultDisplay = getResultDisplay(row);
+      tableHtml +=
+        "<tr>" +
+        '<td class="jy-item-name">' +
+        escapeHtml(row.item_name || "-") +
+        "</td>" +
+        '<td class="' +
+        resultDisplay.className +
+        '">' +
+        escapeHtml(resultDisplay.text) +
+        "</td>" +
+        '<td class="jy-item-unit">' +
+        escapeHtml(row.result_unit || "-") +
+        "</td>" +
+        '<td class="jy-item-reference">' +
+        escapeHtml(row.reference || "-") +
+        "</td>" +
+        "</tr>";
+    });
+
+    tableHtml += "</tbody></table></div></div>";
+    return tableHtml;
+  }
+
+  function isJyResultExpanded(jyapplyNo) {
+    return !!expandedJyapplyNos[jyapplyNo];
+  }
+
+  function bindCardClickEvents() {
+    var container = document.getElementById("cards-container");
+    if (!container || container.__jyCardBound) {
+      return;
+    }
+
+    container.__jyCardBound = true;
+    container.addEventListener("click", function (event) {
+      if (event.target.closest(".card-actions")) {
+        return;
+      }
+
+      var card = event.target.closest(".card-item");
+      if (!card) {
+        return;
+      }
+
+      var jyapplyNo = card.getAttribute("data-id") || "";
+      if (!jyapplyNo) {
+        return;
+      }
+
+      toggleJyResults(jyapplyNo);
+    });
+  }
+
+  function toggleJyResults(jyapplyNo) {
+    if (jyResultsCache[jyapplyNo] && jyResultsCache[jyapplyNo].loading) {
+      renderCards(cardsData);
+      return;
+    }
+
+    if (expandedJyapplyNos[jyapplyNo]) {
+      delete expandedJyapplyNos[jyapplyNo];
+      renderCards(cardsData);
+      return;
+    }
+
+    expandedJyapplyNos[jyapplyNo] = true;
+
+    if (jyResultsCache[jyapplyNo] && !jyResultsCache[jyapplyNo].loading) {
+      renderCards(cardsData);
+      return;
+    }
+
+    jyResultsCache[jyapplyNo] = {
+      loading: true,
+      rows: [],
+      error: "",
+    };
+    renderCards(cardsData);
+    loadJyResults(jyapplyNo);
+  }
+
+  function loadJyResults(jyapplyNo) {
+    $.ajax({
+      url:
+        appconfig.api +
+        "/api/JcJy/GetJyResults?jyapply_no=" +
+        encodeURIComponent(jyapplyNo),
+      type: "GET",
+      dataType: "json",
+      success: function (res) {
+        var rows =
+          res && res.Status === 1 && Array.isArray(res.Data) ? res.Data : [];
+
+        jyResultsCache[jyapplyNo] = {
+          loading: false,
+          rows: rows,
+          error:
+            res && res.Status !== 1
+              ? res.Message || res.msg || "获取检验结果失败"
+              : "",
+        };
+
+        if (expandedJyapplyNos[jyapplyNo]) {
+          renderCards(cardsData);
+        }
+      },
+      error: function () {
+        jyResultsCache[jyapplyNo] = {
+          loading: false,
+          rows: [],
+          error: "网络错误，无法获取检验结果",
+        };
+
+        if (expandedJyapplyNos[jyapplyNo]) {
+          renderCards(cardsData);
+        }
+      },
+    });
+  }
+
   // 生成卡片HTML
   function generateCardHTML(item) {
     var statusInfo = formatStatus(item.status);
     var formattedDate = formatDate(item.reg_date);
     var reportDate = formatDate(item.report_date);
+    var isActive = isJyResultExpanded(item.jyapply_no);
+    var cacheItem = jyResultsCache[item.jyapply_no];
 
     return (
-      '<div class="card-item" data-id="' +
+      '<div class="card-item' +
+      (isActive ? " active" : "") +
+      '" data-id="' +
       (item.jyapply_no || "") +
       '" data-patient-id="' +
       (item.patient_id || "") +
@@ -181,6 +457,7 @@ layui.use(["appconfig", "layer", "form"], function () {
       "</button>" +
       "</div>" +
       "</div>" +
+      (isActive ? renderJyResultPanel(item.jyapply_no || "", cacheItem) : "") +
       "</div>"
     );
   }
@@ -219,6 +496,7 @@ layui.use(["appconfig", "layer", "form"], function () {
     });
 
     container.innerHTML = cardsHTML;
+    bindCardClickEvents();
   }
 
   // 搜索输入事件（防抖）
@@ -635,7 +913,7 @@ layui.use(["appconfig", "layer", "form"], function () {
             sex: patientData.sex || "",
             status: "0",
             add_new: true,
-            ward: userData.admiss_ward || "",
+            ward: userData.ward || "",
             status_name: "未保存",
           };
 

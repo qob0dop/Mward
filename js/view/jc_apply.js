@@ -693,7 +693,7 @@ layui.use(["appconfig", "layer", "form"], function () {
             apply_doctor: loginUserData.user_mi,
             scheduled_date: localDateTime,
             inpatient_no: userData.inpatient_no || "",
-            apply_unit: userData.admiss_ward || localStorage.ward_sn || "",
+            apply_unit: userData.ward || localStorage.ward_sn || "",
             erem_flag: "0", // 默认非急诊
             exam_status: "0",
             add_new: true,

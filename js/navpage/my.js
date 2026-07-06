@@ -115,6 +115,21 @@ function showWorkStats() {
   showModal("工作统计", statsContent);
 }
 
+// 查看报表
+function showReport() {
+  const appconfig = layui.appconfig;
+  layui.use("layer", function () {
+    const layer = layui.layer;
+    layer.open({
+      type: 2,
+      title: "查看报表",
+      area: ["90%", "90%"],
+      content: appconfig.api + "/report/webroot/decision/login",
+      maxmin: true,
+    });
+  });
+}
+
 // 我的患者
 function showMyPatients() {
   // 向父窗口发送消息，请求切换到 patients 页面并筛选我的患者
